@@ -194,7 +194,7 @@ export default function HeroSection() {
                 {currentSpecialty.word}
               </span>
               <br />
-              who take your insurance
+              near you — book in minutes
             </h1>
 
             <SearchBar

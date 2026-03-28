@@ -9,7 +9,7 @@ interface FeatureCardData {
 }
 
 const cards: FeatureCardData[] = [
-  { emoji: "🩺", title: "Browse physios who take your insurance", cta: "See specialties", href: "#" },
+  { emoji: "🩺", title: "Browse verified physios near you", cta: "See specialties", href: "/search" },
   { emoji: "⭐", title: "Read reviews from patients", cta: "See providers", href: "#" },
   { emoji: "📅", title: "Book an appointment today, online", cta: "See availability", href: "#" },
 ];
