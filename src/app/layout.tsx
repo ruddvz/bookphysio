@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "bookphysio.in — Book Physiotherapists Online",
+  description:
+    "Find and book physiotherapists near you who accept your health insurance. In-clinic, home visits, and online sessions available across India.",
+  keywords: "physiotherapist, physiotherapy, book physio, physio near me, India",
+  openGraph: {
+    title: "bookphysio.in — Book Physiotherapists Online",
+    description:
+      "Find and book physiotherapists near you who accept your health insurance.",
+    siteName: "bookphysio.in",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -23,10 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

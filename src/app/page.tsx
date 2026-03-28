@@ -1,9 +1,23 @@
+import Navbar from '@/components/Navbar'
+import HeroSection from '@/components/HeroSection'
+import TopSpecialties from '@/components/TopSpecialties'
+import InsurancePlans from '@/components/InsurancePlans'
+import HowItWorks from '@/components/HowItWorks'
+import AppSection from '@/components/AppSection'
+import Footer from '@/components/Footer'
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">
-        Clone target not yet built. Run <code className="font-mono text-foreground">/clone-website</code> to start.
-      </p>
-    </main>
-  );
+    <>
+      <Navbar />
+      <main>
+        <HeroSection />
+        <TopSpecialties />
+        <InsurancePlans />
+        <HowItWorks />
+        <AppSection />
+      </main>
+      <Footer />
+    </>
+  )
 }
