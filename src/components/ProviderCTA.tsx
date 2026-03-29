@@ -87,9 +87,8 @@ export default function ProviderCTA() {
       <div
         className={cn(
           "container-bp",
-          "flex flex-col md:flex-row items-center"
+          "flex flex-col md:flex-row items-center gap-8 md:gap-16"
         )}
-        style={{ gap: "64px" }}
       >
         {/* Left col — image */}
         <div

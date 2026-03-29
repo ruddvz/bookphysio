@@ -96,7 +96,7 @@
 > All pages exist. This phase makes them pixel-perfect and production-ready.
 > Work one step at a time. Each step = one prompt = one commit.
 
-- [ ] **8.1** Homepage — hero illustration, section spacing, mobile breakpoints
+- [x] **8.1** Homepage — hero illustration, section spacing, mobile breakpoints
 - [ ] **8.2** Search Results — filter sidebar polish, DoctorCard polish, map view toggle
 - [ ] **8.3** Doctor Profile — sticky BookingCard, slot picker, responsive layout
 - [ ] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX

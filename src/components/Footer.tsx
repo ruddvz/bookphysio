@@ -230,6 +230,7 @@ export default function Footer() {
 
       {/* Legal bar */}
       <div
+        className="footer-legal"
         style={{
           backgroundColor: '#222222',
           padding: '16px 60px',
@@ -315,6 +316,16 @@ export default function Footer() {
         @media (max-width: 480px) {
           .footer-grid {
             grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .footer-legal {
+            padding: 16px 24px !important;
+          }
+        }
+        @media (max-width: 390px) {
+          .footer-legal {
+            padding: 16px 16px !important;
           }
         }
       `}</style>

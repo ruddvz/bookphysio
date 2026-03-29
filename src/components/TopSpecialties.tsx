@@ -8,12 +8,12 @@ interface Specialty {
 }
 
 const specialties: Specialty[] = [
-  { emoji: "🏃", label: "Sports Physio", href: "#" },
-  { emoji: "🧠", label: "Neuro Physio", href: "#" },
-  { emoji: "🦴", label: "Ortho Physio", href: "#" },
-  { emoji: "👶", label: "Paediatric Physio", href: "#" },
-  { emoji: "🌸", label: "Women's Health", href: "#" },
-  { emoji: "👴", label: "Geriatric Physio", href: "#" },
+  { emoji: "🏃", label: "Sports Physio", href: "/specialty/sports" },
+  { emoji: "🧠", label: "Neuro Physio", href: "/specialty/neuro" },
+  { emoji: "🦴", label: "Ortho Physio", href: "/specialty/ortho" },
+  { emoji: "👶", label: "Paediatric Physio", href: "/specialty/paediatric" },
+  { emoji: "🌸", label: "Women's Health", href: "/specialty/womens-health" },
+  { emoji: "👴", label: "Geriatric Physio", href: "/specialty/geriatric" },
 ];
 
 function SpecialtyCard({ emoji, label, href }: Specialty) {

@@ -11,6 +11,7 @@ export default function AppSection() {
       style={{ backgroundColor: '#FFC794', padding: '80px 0', overflow: 'hidden' }}
     >
       <div
+        className="app-section-inner"
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -22,7 +23,7 @@ export default function AppSection() {
         }}
       >
         {/* LEFT */}
-        <div style={{ flex: '0 0 45%' }}>
+        <div className="app-section-left" style={{ flex: '0 0 45%' }}>
           <h2
             style={{
               fontSize: '36px',
@@ -136,6 +137,7 @@ export default function AppSection() {
 
         {/* RIGHT */}
         <div
+          className="app-section-right"
           style={{
             flex: '0 0 55%',
             position: 'relative',
@@ -181,6 +183,29 @@ export default function AppSection() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .app-section-inner {
+            flex-direction: column !important;
+            padding: 0 24px !important;
+          }
+          .app-section-left {
+            flex: none !important;
+            width: 100% !important;
+          }
+          .app-section-right {
+            flex: none !important;
+            width: 100% !important;
+            min-height: 280px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .app-section-inner {
+            padding: 0 16px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

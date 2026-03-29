@@ -11,15 +11,10 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.1 — Homepage Polish
-- [ ] **8.1** Hero section: illustration cards (doctor card, booking confirmation, stats pill) ← partially done
-- [ ] **8.1** InsurancePlans section: spacing + mobile
-- [ ] **8.1** TopSpecialties section: card grid, hover states
-- [ ] **8.1** HowItWorks section: step cards polish ← partially done
-- [ ] **8.1** AppSection: QR code, app store badges, peach bg
-- [ ] **8.1** ProviderCTA: layout, CTA button
-- [ ] **8.1** Footer: links, India insurance column
-- [ ] **8.1** Full-page mobile pass (375px)
+### Next up: Step 8.2 — Search Results Polish
+- [ ] **8.2** Filter sidebar polish
+- [ ] **8.2** DoctorCard polish
+- [ ] **8.2** Map view toggle
 
 ---
 
@@ -37,6 +32,7 @@
 | 8 | Messages | Both patient + provider message pages are stubs | P3 |
 | 9 | Global | No loading skeletons or empty states | P2 |
 | 10 | Global | CI/CD (GitHub Actions) not configured | P3 |
+| 11 | Homepage | InsurancePlans section not built — post-launch only | P3 |
 
 ---
 
@@ -48,3 +44,4 @@
 - [x] Added /patient + /provider to middleware protected routes
 - [x] Playwright config + ui-audit script + Supabase config added
 - [x] EXECUTION-PLAN.md updated to reflect true build state
+- [x] **8.1 Homepage Polish** — TopSpecialties hrefs, AppSection mobile, ProviderCTA mobile, Footer mobile padding, InsurancePlans deferred to P3
