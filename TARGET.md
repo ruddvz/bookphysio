@@ -53,9 +53,9 @@ https://www.zocdoc.com
 - [ ] Notifications — `/provider/notifications`
 
 #### Admin Panel (authenticated)
-- [ ] Admin Dashboard — `/admin` — platform stats overview
-- [ ] Provider Approval Queue — `/admin/listings`
-- [ ] User Management — `/admin/users`
+- [x] Admin Dashboard — `/admin` — platform stats overview
+- [x] Provider Approval Queue — `/admin/listings`
+- [x] User Management — `/admin/users`
 - [ ] Analytics — `/admin/analytics`
 
 ### Fidelity Level
