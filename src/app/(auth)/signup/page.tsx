@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowRight, Smartphone, User } from 'lucide-react'
+import BpLogo from '@/components/BpLogo'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -24,20 +25,6 @@ interface SignupErrors {
   general?: string
 }
 
-function BpLogo() {
-  return (
-    <div className="flex items-center gap-2.5 mb-7">
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-        <rect width="36" height="36" rx="10" fill="#00766C"/>
-        <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
-      </svg>
-      <span className="text-[20px] font-bold text-[#333333]">
-        BookPhysio
-      </span>
-    </div>
-  )
-}
-
 export default function SignupPage() {
   const router = useRouter()
   const [form, setForm] = useState<SignupFormState>({ name: '', phone: '' })
@@ -50,6 +37,16 @@ export default function SignupPage() {
     setForm((prev) => ({ ...prev, [field]: value }))
     if (errors[field as keyof SignupErrors]) {
       setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }))
+    }
+  }
+
+  function handleBlur(field: keyof SignupFormState) {
+    const value = form[field]
+    if (!value) return
+    const singleField = signupSchema.pick({ [field]: true } as Record<typeof field, true>)
+    const result = singleField.safeParse({ [field]: value })
+    if (!result.success) {
+      setErrors((prev) => ({ ...prev, [field]: result.error.issues[0].message }))
     }
   }
 
@@ -119,7 +116,7 @@ export default function SignupPage() {
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               onFocus={() => setNameFocused(true)}
-              onBlur={() => setNameFocused(false)}
+              onBlur={() => { setNameFocused(false); handleBlur('name') }}
               className={`w-full pl-10 pr-4 py-2.5 text-[15px] text-[#333333] bg-white rounded-[8px] outline-none border-[1.5px] transition-colors ${
                 errors.name ? 'border-[#DC2626]' : nameFocused ? 'border-[#00766C]' : 'border-[#E5E5E5]'
               }`}
@@ -154,7 +151,7 @@ export default function SignupPage() {
               value={form.phone}
               onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
               onFocus={() => setPhoneFocused(true)}
-              onBlur={() => setPhoneFocused(false)}
+              onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
               className="flex-1 px-3.5 py-2.5 text-[15px] text-[#333333] border-none outline-none bg-white"
               autoComplete="tel"
             />
@@ -167,7 +164,7 @@ export default function SignupPage() {
           type="submit"
           disabled={loading}
           className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-6 transition-colors outline-none ${
-            loading ? 'bg-[#4aada6] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+            loading ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
           }`}
         >
           {loading ? 'Sending OTP…' : (

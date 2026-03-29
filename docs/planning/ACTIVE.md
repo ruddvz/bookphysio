@@ -11,9 +11,7 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.4 — Auth Pages Polish
-- [ ] **8.4** OTP 6-digit input auto-advance
-- [ ] **8.4** Form validation UX
+### Next up: Step 8.5 — Doctor Signup Polish
 
 ---
 
@@ -46,3 +44,4 @@
 - [x] **8.1 Homepage Polish** — TopSpecialties hrefs, AppSection mobile, ProviderCTA mobile, Footer mobile padding, InsurancePlans deferred to P3
 - [x] **8.2 Search Results Polish** — filters wired to URL params, init from URL, clear all, mobile drawer, Map View "Soon" badge
 - [x] **8.3 Doctor Profile Polish** — Today label on date picker, BookingCard max-height overflow, mobile sticky booking bar, rating pill in hero
+- [x] **8.4 Auth Pages Polish** — BpLogo extracted to shared component, OTP autoFocus + auto-submit + type="tel", blur validation on login/signup, loading state color consistency, forgot-password Zod validation + loading

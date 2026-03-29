@@ -3,23 +3,10 @@
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
+import BpLogo from '@/components/BpLogo'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
-
-function BpLogo() {
-  return (
-    <div className="flex items-center gap-2.5 mb-7">
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-        <rect width="36" height="36" rx="10" fill="#00766C"/>
-        <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
-      </svg>
-      <span className="text-[20px] font-bold text-[#333333]">
-        BookPhysio
-      </span>
-    </div>
-  )
-}
 
 function VerifyOtpContent() {
   const router = useRouter()
@@ -39,15 +26,28 @@ function VerifyOtpContent() {
   const [loading, setLoading] = useState(false)
   const inputRefs = useRef<HTMLInputElement[]>([])
 
+  const focusInput = useCallback((index: number) => {
+    inputRefs.current[index]?.focus()
+  }, [])
+
+  // Focus first input on mount
+  useEffect(() => {
+    focusInput(0)
+  }, [focusInput])
+
   useEffect(() => {
     if (countdown <= 0) return
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [countdown])
 
-  const focusInput = useCallback((index: number) => {
-    inputRefs.current[index]?.focus()
-  }, [])
+  // Auto-submit when all 6 digits are filled
+  useEffect(() => {
+    if (otp.every((d) => d !== '') && !loading) {
+      handleVerify()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otp])
 
   function handleInput(index: number, value: string) {
     const digit = value.replace(/\D/g, '').slice(-1)
@@ -161,7 +161,7 @@ function VerifyOtpContent() {
             ref={(el) => {
               if (el) inputRefs.current[index] = el
             }}
-            type="text"
+            type="tel"
             inputMode="numeric"
             pattern="[0-9]"
             maxLength={1}

@@ -99,7 +99,7 @@
 - [x] **8.1** Homepage — hero illustration, section spacing, mobile breakpoints
 - [x] **8.2** Search Results — filter sidebar polish, DoctorCard polish, map view toggle
 - [x] **8.3** Doctor Profile — sticky BookingCard, slot picker, responsive layout
-- [ ] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX
+- [x] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX
 - [ ] **8.5** Doctor Signup — 5-step form polish, progress indicator
 - [ ] **8.6** Booking Wizard — step progress bar, GST breakdown, Razorpay button
 - [ ] **8.7** Patient Dashboard — upcoming card, quick actions, past appointments
