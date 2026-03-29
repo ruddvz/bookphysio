@@ -4,6 +4,7 @@
 node_modules/
 dist/
 build/
+out/
 .env
 .env.local
 .env.*.local
@@ -12,3 +13,6 @@ build/
 coverage/
 .next/
 .turbo/
+playwright-report/
+test-results/
+supabase/.temp/
