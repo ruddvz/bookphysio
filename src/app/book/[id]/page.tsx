@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 
-const BookingPageClient = dynamic(() => import('./BookingPageClient'), { ssr: false })
+const BookingPageClient = dynamic(() => import('./BookingPageClient'))
 
 export async function generateStaticParams() { return [] as never[] }
 
