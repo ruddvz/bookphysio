@@ -1,24 +1,25 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { Search, UserCheck, CalendarDays, Sparkles } from 'lucide-react'
 
 const STEPS = [
   {
-    icon: '🔍',
+    icon: Search,
     title: 'Search',
     text: 'Enter your condition or a physiotherapist name and select your location.',
   },
   {
-    icon: '👨‍⚕️',
+    icon: UserCheck,
     title: 'Choose Provider',
     text: 'Compare expert physiotherapists by specialty, rating, fees, and distance.',
   },
   {
-    icon: '📅',
+    icon: CalendarDays,
     title: 'Pick a Slot',
     text: 'Select your preferred date and time from the live availability of the provider.',
   },
   {
-    icon: '✨',
+    icon: Sparkles,
     title: 'Book Instantly',
     text: 'Confirm your booking with a quick session request and get expert care.',
   },
@@ -29,23 +30,26 @@ export default function HowItWorksPage() {
     <>
       <Navbar />
 
-      <main style={{ backgroundColor: '#FFFFFF', minHeight: '100vh', padding: '80px 0' }}>
-        <div style={{ maxWidth: '1142px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-            <h1 style={{ fontSize: '48px', fontWeight: 700, color: '#333333', marginBottom: '24px' }}>
+      <main className="bg-white min-h-screen py-20">
+        <div className="max-w-[1142px] mx-auto px-6">
+          <div className="text-center mb-20">
+            <h1 className="text-[48px] font-bold text-[#333333] mb-6 tracking-tight">
               How BookPhysio Works
             </h1>
-            <p style={{ fontSize: '20px', color: '#666666', maxWidth: '600px', margin: '0 auto' }}>
+            <p className="text-[20px] text-[#666666] max-w-[600px] mx-auto">
               Booking expert physiotherapy has never been easier. Follow our simple four-tap process.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '48px' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
             {STEPS.map((step, idx) => (
-              <div key={idx} style={{ textAlign: 'center', padding: '32px 24px', backgroundColor: '#F9FBFB', borderRadius: '16px', border: '1px solid #E6F4F3' }}>
-                <div style={{ fontSize: '48px', marginBottom: '24px' }}>{step.icon}</div>
-                <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#00766C', marginBottom: '16px' }}>{step.title}</h3>
-                <p style={{ fontSize: '16px', lineHeight: 1.6, color: '#555555' }}>{step.text}</p>
+              <div key={idx} className="text-center p-8 bg-[#F9FBFB] rounded-[16px] border border-[#E6F4F3] hover:shadow-md transition-shadow">
+                <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
+                  <step.icon className="w-8 h-8 text-[#00766C]" />
+                </div>
+                <div className="text-[13px] font-bold text-[#9CA3AF] mb-2 uppercase tracking-wider">Step {idx + 1}</div>
+                <h3 className="text-[24px] font-bold text-[#00766C] mb-4">{step.title}</h3>
+                <p className="text-[16px] leading-relaxed text-[#555555]">{step.text}</p>
               </div>
             ))}
           </div>

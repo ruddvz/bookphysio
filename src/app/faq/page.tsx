@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { HelpCircle } from 'lucide-react'
 
 const FAQS = [
   {
@@ -25,28 +26,27 @@ export default function FAQPage() {
     <>
       <Navbar />
 
-      <main style={{ backgroundColor: '#F7F8F9', minHeight: '100vh', padding: '80px 0' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: 700, textAlign: 'center', marginBottom: '48px', color: '#333333' }}>
-            Frequently Asked Questions
-          </h1>
+      <main className="bg-[#F7F8F9] min-h-screen py-20">
+        <div className="max-w-[800px] mx-auto px-6">
+          <div className="text-center mb-12">
+            <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
+              <HelpCircle className="w-8 h-8 text-[#00766C]" />
+            </div>
+            <h1 className="text-[40px] font-bold text-[#333333] tracking-tight">
+              Frequently Asked Questions
+            </h1>
+          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex flex-col gap-6">
             {FAQS.map((faq, idx) => (
               <div
                 key={idx}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '12px',
-                  border: '1px solid #E5E5E5',
-                  padding: '24px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                }}
+                className="bg-white rounded-[12px] border border-[#E5E5E5] p-6 shadow-sm hover:shadow-md transition-shadow"
               >
-                <h3 style={{ fontSize: '20px', fontWeight: 600, color: '#333333', marginBottom: '12px' }}>
+                <h3 className="text-[20px] font-semibold text-[#333333] mb-3">
                   {faq.question}
                 </h3>
-                <p style={{ fontSize: '16px', lineHeight: 1.6, color: '#555555' }}>
+                <p className="text-[16px] leading-relaxed text-[#555555]">
                   {faq.answer}
                 </p>
               </div>

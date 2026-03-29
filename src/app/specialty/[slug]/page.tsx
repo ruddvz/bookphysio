@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
+import { Stethoscope } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Data
@@ -19,101 +20,19 @@ const SPECIALTY_MAP: Record<string, string> = {
 }
 
 const MOCK_DOCTORS: Doctor[] = [
-  {
-    id: '1',
-    name: 'Dr. Priya Sharma',
-    credentials: 'BPT, MPT (Sports)',
-    specialty: 'Sports Physiotherapist',
-    rating: 4.9,
-    reviewCount: 187,
-    location: 'Andheri West, Mumbai',
-    distance: '1.2 km',
-    nextSlot: 'Today at 2:30 PM',
-    visitTypes: ['In-clinic', 'Home Visit'],
-    fee: 700,
-    icpVerified: true,
-  },
-  {
-    id: '2',
-    name: 'Dr. Rohit Mehta',
-    credentials: 'BPT, MPT (Ortho)',
-    specialty: 'Orthopedic Physiotherapist',
-    rating: 4.7,
-    reviewCount: 132,
-    location: 'Bandra, Mumbai',
-    distance: '3.4 km',
-    nextSlot: 'Today at 4:00 PM',
-    visitTypes: ['In-clinic', 'Online'],
-    fee: 800,
-    icpVerified: true,
-  },
-  {
-    id: '3',
-    name: 'Dr. Ananya Krishnan',
-    credentials: 'BPT, MPT (Neuro)',
-    specialty: 'Neurological Physiotherapist',
-    rating: 4.8,
-    reviewCount: 94,
-    location: 'Koramangala, Bangalore',
-    distance: '2.1 km',
-    nextSlot: 'Tomorrow at 10:00 AM',
-    visitTypes: ['In-clinic', 'Home Visit', 'Online'],
-    fee: 900,
-    icpVerified: true,
-  },
-  {
-    id: '4',
-    name: 'Dr. Vikram Singh',
-    credentials: 'BPT',
-    specialty: 'Sports Physiotherapist',
-    rating: 4.6,
-    reviewCount: 68,
-    location: 'Lajpat Nagar, Delhi',
-    distance: '4.2 km',
-    nextSlot: 'Today at 5:30 PM',
-    visitTypes: ['In-clinic'],
-    fee: 600,
-    icpVerified: false,
-  },
-  {
-    id: '5',
-    name: 'Dr. Sneha Patel',
-    credentials: 'BPT, MPT (Paeds)',
-    specialty: 'Paediatric Physiotherapist',
-    rating: 4.9,
-    reviewCount: 211,
-    location: 'Powai, Mumbai',
-    distance: '5.1 km',
-    nextSlot: 'Today at 11:00 AM',
-    visitTypes: ['In-clinic', 'Home Visit'],
-    fee: 1000,
-    icpVerified: true,
-  },
-  {
-    id: '6',
-    name: 'Dr. Arun Nair',
-    credentials: 'BPT, MPT (Cardio)',
-    specialty: 'Cardiopulmonary Physiotherapist',
-    rating: 4.5,
-    reviewCount: 45,
-    location: 'T. Nagar, Chennai',
-    distance: '6.8 km',
-    nextSlot: 'Tomorrow at 9:00 AM',
-    visitTypes: ['In-clinic', 'Online'],
-    fee: 750,
-    icpVerified: true,
-  },
+  { id: '1', name: 'Dr. Priya Sharma', credentials: 'BPT, MPT (Sports)', specialty: 'Sports Physiotherapist', rating: 4.9, reviewCount: 187, location: 'Andheri West, Mumbai', distance: '1.2 km', nextSlot: 'Today at 2:30 PM', visitTypes: ['In-clinic', 'Home Visit'], fee: 700, icpVerified: true },
+  { id: '2', name: 'Dr. Rohit Mehta', credentials: 'BPT, MPT (Ortho)', specialty: 'Orthopedic Physiotherapist', rating: 4.7, reviewCount: 132, location: 'Bandra, Mumbai', distance: '3.4 km', nextSlot: 'Today at 4:00 PM', visitTypes: ['In-clinic', 'Online'], fee: 800, icpVerified: true },
+  { id: '3', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit', 'Online'], fee: 900, icpVerified: true },
+  { id: '4', name: 'Dr. Vikram Singh', credentials: 'BPT', specialty: 'Sports Physiotherapist', rating: 4.6, reviewCount: 68, location: 'Lajpat Nagar, Delhi', distance: '4.2 km', nextSlot: 'Today at 5:30 PM', visitTypes: ['In-clinic'], fee: 600, icpVerified: false },
+  { id: '5', name: 'Dr. Sneha Patel', credentials: 'BPT, MPT (Paeds)', specialty: 'Paediatric Physiotherapist', rating: 4.9, reviewCount: 211, location: 'Powai, Mumbai', distance: '5.1 km', nextSlot: 'Today at 11:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 1000, icpVerified: true },
+  { id: '6', name: 'Dr. Arun Nair', credentials: 'BPT, MPT (Cardio)', specialty: 'Cardiopulmonary Physiotherapist', rating: 4.5, reviewCount: 45, location: 'T. Nagar, Chennai', distance: '6.8 km', nextSlot: 'Tomorrow at 9:00 AM', visitTypes: ['In-clinic', 'Online'], fee: 750, icpVerified: true },
 ]
 
 // ---------------------------------------------------------------------------
 // Metadata
 // ---------------------------------------------------------------------------
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const displayName = SPECIALTY_MAP[slug] ?? 'Physiotherapists'
   return {
@@ -126,11 +45,7 @@ export async function generateMetadata({
 // Page
 // ---------------------------------------------------------------------------
 
-export default async function SpecialtyPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function SpecialtyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const displayName = SPECIALTY_MAP[slug] ?? 'Physiotherapists'
 
@@ -138,36 +53,15 @@ export default async function SpecialtyPage({
     <>
       <Navbar />
 
-      <main style={{ backgroundColor: '#F7F8F9', minHeight: '100vh' }}>
+      <main className="bg-[#F7F8F9] min-h-screen">
         {/* Hero banner */}
-        <section style={{ backgroundColor: '#00766C' }}>
-          <div
-            style={{
-              maxWidth: '1142px',
-              margin: '0 auto',
-              padding: '56px 60px',
-            }}
-            className="specialty-hero-inner"
-          >
-            <h1
-              style={{
-                fontSize: '36px',
-                fontWeight: 700,
-                color: '#FFFFFF',
-                margin: '0 0 12px',
-                lineHeight: 1.2,
-              }}
-            >
+        <section className="bg-gradient-to-br from-[#00766C] to-[#005A52]">
+          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-14">
+            <h1 className="text-[36px] font-bold text-white mb-3 leading-tight tracking-tight flex items-center gap-3">
+              <Stethoscope className="w-8 h-8 text-white/80" />
               Book {displayName}
             </h1>
-            <p
-              style={{
-                fontSize: '16px',
-                color: 'rgba(255,255,255,0.85)',
-                margin: 0,
-                fontWeight: 400,
-              }}
-            >
+            <p className="text-[16px] text-white/85">
               Verified physios &middot; Same-day appointments &middot; In-clinic, Home Visit &amp; Online
             </p>
           </div>
@@ -175,32 +69,12 @@ export default async function SpecialtyPage({
 
         {/* Content area */}
         <section>
-          <div
-            style={{
-              maxWidth: '1142px',
-              margin: '0 auto',
-              padding: '40px 60px',
-            }}
-            className="specialty-content-inner"
-          >
-            <h2
-              style={{
-                fontSize: '22px',
-                fontWeight: 600,
-                color: '#333333',
-                margin: '0 0 24px',
-              }}
-            >
+          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-10">
+            <h2 className="text-[22px] font-semibold text-[#333333] mb-6">
               {MOCK_DOCTORS.length} {displayName} available
             </h2>
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-              }}
-            >
+            <div className="flex flex-col gap-4">
               {MOCK_DOCTORS.map((doctor) => (
                 <DoctorCard key={doctor.id} doctor={doctor} />
               ))}
@@ -208,17 +82,6 @@ export default async function SpecialtyPage({
           </div>
         </section>
       </main>
-
-      {/* Responsive padding */}
-      <style>{`
-        @media (max-width: 768px) {
-          .specialty-hero-inner,
-          .specialty-content-inner {
-            padding-left: 24px !important;
-            padding-right: 24px !important;
-          }
-        }
-      `}</style>
 
       <Footer />
     </>

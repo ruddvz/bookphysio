@@ -3,27 +3,13 @@
 import { useState } from 'react'
 
 const SPECIALTIES = [
-  'Sports Physio',
-  'Neuro Physio',
-  'Ortho Physio',
-  'Paediatric Physio',
-  "Women's Health",
-  'Geriatric Physio',
-  'Post-Surgery Rehab',
-  'Pain Management',
+  'Sports Physio', 'Neuro Physio', 'Ortho Physio', 'Paediatric Physio',
+  "Women's Health", 'Geriatric Physio', 'Post-Surgery Rehab', 'Pain Management',
 ]
 
 const CITIES = [
-  'Mumbai',
-  'Delhi',
-  'Bangalore',
-  'Chennai',
-  'Hyderabad',
-  'Pune',
-  'Kolkata',
-  'Ahmedabad',
-  'Jaipur',
-  'Surat',
+  'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad',
+  'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
 ]
 
 type VisitType = 'Any' | 'In-clinic' | 'Home Visit' | 'Online'
@@ -43,31 +29,6 @@ const INITIAL_STATE: FilterState = {
   visitType: 'Any',
   availability: 'Any day',
   maxFee: 2000,
-}
-
-const SECTION_HEADING_STYLE: React.CSSProperties = {
-  fontSize: '13px',
-  fontWeight: 600,
-  color: '#666666',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  marginBottom: '12px',
-}
-
-const DIVIDER_STYLE: React.CSSProperties = {
-  height: '1px',
-  backgroundColor: '#E5E5E5',
-  margin: '16px 0',
-}
-
-const LABEL_STYLE: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  fontSize: '14px',
-  color: '#333333',
-  cursor: 'pointer',
-  padding: '4px 0',
 }
 
 export default function SearchFilters() {
@@ -104,32 +65,22 @@ export default function SearchFilters() {
   return (
     <aside
       aria-label="Search filters"
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '8px',
-        border: '1px solid #E5E5E5',
-        padding: '20px',
-        width: '280px',
-        flexShrink: 0,
-        alignSelf: 'flex-start',
-        position: 'sticky',
-        top: '96px',
-      }}
+      className="bg-white rounded-[8px] border border-[#E5E5E5] p-5 w-[280px] shrink-0 self-start sticky top-24"
     >
       {/* Specialty */}
       <section aria-labelledby="filter-specialty">
-        <p id="filter-specialty" style={SECTION_HEADING_STYLE}>
+        <p id="filter-specialty" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
           Specialty
         </p>
-        <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+        <fieldset className="border-none m-0 p-0">
           <legend className="sr-only">Filter by specialty</legend>
           {SPECIALTIES.map((specialty) => (
-            <label key={specialty} style={LABEL_STYLE}>
+            <label key={specialty} className="flex items-center gap-2 text-[14px] text-[#333333] cursor-pointer py-1">
               <input
                 type="checkbox"
                 checked={filters.specialties.includes(specialty)}
                 onChange={() => toggleSpecialty(specialty)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                className="accent-[#00766C] w-4 h-4"
               />
               {specialty}
             </label>
@@ -137,55 +88,43 @@ export default function SearchFilters() {
         </fieldset>
       </section>
 
-      <div style={DIVIDER_STYLE} role="separator" />
+      <div className="h-px bg-[#E5E5E5] my-4" role="separator" />
 
       {/* City */}
       <section aria-labelledby="filter-city">
-        <p id="filter-city" style={SECTION_HEADING_STYLE}>
+        <p id="filter-city" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
           City
         </p>
         <select
           value={filters.city}
           onChange={(e) => setCity(e.target.value)}
           aria-label="Filter by city"
-          style={{
-            width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: '1px solid #E5E5E5',
-            fontSize: '14px',
-            color: '#333333',
-            backgroundColor: '#FFFFFF',
-            cursor: 'pointer',
-            appearance: 'auto',
-          }}
+          className="w-full px-2.5 py-2 rounded-[6px] border border-[#E5E5E5] text-[14px] text-[#333333] bg-white cursor-pointer outline-none focus:border-[#00766C]"
         >
           {CITIES.map((city) => (
-            <option key={city} value={city}>
-              {city}
-            </option>
+            <option key={city} value={city}>{city}</option>
           ))}
         </select>
       </section>
 
-      <div style={DIVIDER_STYLE} role="separator" />
+      <div className="h-px bg-[#E5E5E5] my-4" role="separator" />
 
       {/* Visit Type */}
       <section aria-labelledby="filter-visit-type">
-        <p id="filter-visit-type" style={SECTION_HEADING_STYLE}>
+        <p id="filter-visit-type" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
           Visit Type
         </p>
-        <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+        <fieldset className="border-none m-0 p-0">
           <legend className="sr-only">Filter by visit type</legend>
           {(['Any', 'In-clinic', 'Home Visit', 'Online'] as VisitType[]).map((type) => (
-            <label key={type} style={LABEL_STYLE}>
+            <label key={type} className="flex items-center gap-2 text-[14px] text-[#333333] cursor-pointer py-1">
               <input
                 type="radio"
                 name="visitType"
                 value={type}
                 checked={filters.visitType === type}
                 onChange={() => setVisitType(type)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                className="accent-[#00766C] w-4 h-4"
               />
               {type}
             </label>
@@ -193,24 +132,24 @@ export default function SearchFilters() {
         </fieldset>
       </section>
 
-      <div style={DIVIDER_STYLE} role="separator" />
+      <div className="h-px bg-[#E5E5E5] my-4" role="separator" />
 
       {/* Availability */}
       <section aria-labelledby="filter-availability">
-        <p id="filter-availability" style={SECTION_HEADING_STYLE}>
+        <p id="filter-availability" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
           Availability
         </p>
-        <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+        <fieldset className="border-none m-0 p-0">
           <legend className="sr-only">Filter by availability</legend>
           {(['Any day', 'Today', 'Tomorrow', 'This week'] as Availability[]).map((avail) => (
-            <label key={avail} style={LABEL_STYLE}>
+            <label key={avail} className="flex items-center gap-2 text-[14px] text-[#333333] cursor-pointer py-1">
               <input
                 type="radio"
                 name="availability"
                 value={avail}
                 checked={filters.availability === avail}
                 onChange={() => setAvailability(avail)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                className="accent-[#00766C] w-4 h-4"
               />
               {avail}
             </label>
@@ -218,21 +157,14 @@ export default function SearchFilters() {
         </fieldset>
       </section>
 
-      <div style={DIVIDER_STYLE} role="separator" />
+      <div className="h-px bg-[#E5E5E5] my-4" role="separator" />
 
       {/* Fee Range */}
       <section aria-labelledby="filter-fee">
-        <p id="filter-fee" style={SECTION_HEADING_STYLE}>
+        <p id="filter-fee" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
           Fee Range
         </p>
-        <p
-          style={{
-            fontSize: '14px',
-            color: '#333333',
-            marginBottom: '10px',
-            fontWeight: 500,
-          }}
-        >
+        <p className="text-[14px] text-[#333333] mb-2.5 font-medium">
           ₹0 – ₹{filters.maxFee.toLocaleString('en-IN')}
         </p>
         <input
@@ -243,21 +175,9 @@ export default function SearchFilters() {
           value={filters.maxFee}
           onChange={(e) => setMaxFee(Number(e.target.value))}
           aria-label="Maximum fee per session"
-          style={{
-            width: '100%',
-            accentColor: '#00766C',
-            cursor: 'pointer',
-          }}
+          className="w-full accent-[#00766C] cursor-pointer"
         />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '12px',
-            color: '#666666',
-            marginTop: '4px',
-          }}
-        >
+        <div className="flex justify-between text-[12px] text-[#666666] mt-1">
           <span>₹0</span>
           <span>₹2,000</span>
         </div>

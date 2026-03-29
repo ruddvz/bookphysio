@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { ArrowRight } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -9,17 +10,8 @@ import { useRouter } from 'next/navigation'
 
 type VisitType = 'in_clinic' | 'home_visit' | 'online'
 
-interface FeeMap {
-  in_clinic: number
-  home_visit: number
-  online: number
-}
-
-interface BookingCardProps {
-  doctorId: string
-  fee: FeeMap
-  visitTypes: readonly VisitType[]
-}
+interface FeeMap { in_clinic: number; home_visit: number; online: number }
+interface BookingCardProps { doctorId: string; fee: FeeMap; visitTypes: readonly VisitType[] }
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -41,11 +33,7 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
 // Helper: generate 7 days starting from today
 // ---------------------------------------------------------------------------
 
-interface DayEntry {
-  label: string   // e.g. "Mon"
-  dayNum: number  // e.g. 28
-  iso: string     // e.g. "2026-03-28"
-}
+interface DayEntry { label: string; dayNum: number; iso: string }
 
 function getNext7Days(): DayEntry[] {
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -54,11 +42,7 @@ function getNext7Days(): DayEntry[] {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
     const iso = d.toISOString().split('T')[0]
-    return {
-      label: DAY_NAMES[d.getDay()],
-      dayNum: d.getDate(),
-      iso,
-    }
+    return { label: DAY_NAMES[d.getDay()], dayNum: d.getDate(), iso }
   })
 }
 
@@ -67,45 +51,27 @@ function getNext7Days(): DayEntry[] {
 // ---------------------------------------------------------------------------
 
 interface TimeSlotGroupProps {
-  heading: string
-  slots: string[]
-  selectedTime: string | null
-  onSelect: (time: string) => void
+  heading: string; slots: string[]; selectedTime: string | null; onSelect: (time: string) => void
 }
 
 function TimeSlotGroup({ heading, slots, selectedTime, onSelect }: TimeSlotGroupProps) {
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <p
-        style={{
-          fontSize: '12px',
-          fontWeight: 600,
-          color: '#666666',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginBottom: '8px',
-        }}
-      >
+    <div className="mb-4">
+      <p className="text-[12px] font-semibold text-[#666666] uppercase tracking-wider mb-2">
         {heading}
       </p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      <div className="flex flex-wrap gap-2">
         {slots.map((slot) => {
           const isSelected = selectedTime === slot
           return (
             <button
               key={slot}
               onClick={() => onSelect(slot)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '24px',
-                border: isSelected ? '1px solid #00766C' : '1px solid #E5E5E5',
-                backgroundColor: isSelected ? '#00766C' : '#F5F5F5',
-                color: isSelected ? '#FFFFFF' : '#333333',
-                fontSize: '13px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
+              className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all outline-none ${
+                isSelected
+                  ? 'border border-[#00766C] bg-[#00766C] text-white'
+                  : 'border border-[#E5E5E5] bg-[#F5F5F5] text-[#333333] hover:border-[#00766C]'
+              }`}
             >
               {slot}
             </button>
@@ -129,78 +95,35 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
 
   const selectedFee = fee[visitType]
+  const canBook = selectedDate && selectedTime
 
   function handleBook() {
-    if (!selectedDate || !selectedTime) return
-    const params = new URLSearchParams({
-      date: selectedDate,
-      time: selectedTime,
-      type: visitType,
-    })
+    if (!canBook) return
+    const params = new URLSearchParams({ date: selectedDate, time: selectedTime!, type: visitType })
     router.push(`/book/${doctorId}?${params.toString()}`)
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '8px',
-        border: '1px solid #E5E5E5',
-        padding: '24px',
-        position: 'sticky',
-        top: '96px',
-      }}
-    >
+    <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-6 sticky top-24">
       {/* Fee */}
-      <div style={{ marginBottom: '20px' }}>
-        <span
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            color: '#333333',
-          }}
-        >
-          ₹{selectedFee}
-        </span>
-        <span
-          style={{
-            fontSize: '14px',
-            color: '#666666',
-            marginLeft: '4px',
-          }}
-        >
-          / session
-        </span>
+      <div className="mb-5">
+        <span className="text-[24px] font-bold text-[#333333]">₹{selectedFee}</span>
+        <span className="text-[14px] text-[#666666] ml-1">/ session</span>
       </div>
 
       {/* Visit type tabs */}
-      <div
-        style={{
-          display: 'flex',
-          borderBottom: '1px solid #E5E5E5',
-          marginBottom: '20px',
-        }}
-      >
+      <div className="flex border-b border-[#E5E5E5] mb-5">
         {visitTypes.map((type) => {
           const isActive = visitType === type
           return (
             <button
               key={type}
               onClick={() => setVisitType(type)}
-              style={{
-                flex: 1,
-                padding: '10px 4px',
-                fontSize: '13px',
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? '#00766C' : '#666666',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: isActive ? '2px solid #00766C' : '2px solid transparent',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                marginBottom: '-1px',
-                whiteSpace: 'nowrap',
-              }}
+              className={`flex-1 py-2.5 px-1 text-[13px] bg-transparent border-none cursor-pointer transition-all -mb-px whitespace-nowrap outline-none ${
+                isActive
+                  ? 'font-semibold text-[#00766C] border-b-2 border-[#00766C]'
+                  : 'font-normal text-[#666666] border-b-2 border-transparent'
+              }`}
             >
               {VISIT_TYPE_LABELS[type]}
             </button>
@@ -209,127 +132,49 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       </div>
 
       {/* Date selector */}
-      <p
-        style={{
-          fontSize: '13px',
-          fontWeight: 600,
-          color: '#333333',
-          marginBottom: '10px',
-        }}
-      >
-        Select Date
-      </p>
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          marginBottom: '20px',
-          paddingBottom: '4px',
-        }}
-      >
+      <p className="text-[13px] font-semibold text-[#333333] mb-2.5">Select Date</p>
+      <div className="flex gap-2 overflow-x-auto mb-5 pb-1">
         {days.map((day) => {
           const isSelected = selectedDate === day.iso
           return (
             <button
               key={day.iso}
-              onClick={() => {
-                setSelectedDate(day.iso)
-                setSelectedTime(null)
-              }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                border: isSelected ? '1px solid #00766C' : '1px solid #E5E5E5',
-                backgroundColor: isSelected ? '#00766C' : '#F5F5F5',
-                color: isSelected ? '#FFFFFF' : '#333333',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                minWidth: '52px',
-                flexShrink: 0,
-              }}
+              onClick={() => { setSelectedDate(day.iso); setSelectedTime(null) }}
+              className={`flex flex-col items-center px-3 py-2 rounded-[8px] cursor-pointer transition-all min-w-[52px] shrink-0 outline-none ${
+                isSelected
+                  ? 'border border-[#00766C] bg-[#00766C] text-white'
+                  : 'border border-[#E5E5E5] bg-[#F5F5F5] text-[#333333] hover:border-[#00766C]'
+              }`}
             >
-              <span style={{ fontSize: '11px', fontWeight: 500 }}>{day.label}</span>
-              <span style={{ fontSize: '16px', fontWeight: 700 }}>{day.dayNum}</span>
+              <span className="text-[11px] font-medium">{day.label}</span>
+              <span className="text-[16px] font-bold">{day.dayNum}</span>
             </button>
           )
         })}
       </div>
 
       {/* Time slots */}
-      <p
-        style={{
-          fontSize: '13px',
-          fontWeight: 600,
-          color: '#333333',
-          marginBottom: '12px',
-        }}
-      >
-        Select Time
-      </p>
-      <TimeSlotGroup
-        heading="Morning"
-        slots={TIME_SLOTS.morning}
-        selectedTime={selectedTime}
-        onSelect={setSelectedTime}
-      />
-      <TimeSlotGroup
-        heading="Afternoon"
-        slots={TIME_SLOTS.afternoon}
-        selectedTime={selectedTime}
-        onSelect={setSelectedTime}
-      />
-      <TimeSlotGroup
-        heading="Evening"
-        slots={TIME_SLOTS.evening}
-        selectedTime={selectedTime}
-        onSelect={setSelectedTime}
-      />
+      <p className="text-[13px] font-semibold text-[#333333] mb-3">Select Time</p>
+      <TimeSlotGroup heading="Morning" slots={TIME_SLOTS.morning} selectedTime={selectedTime} onSelect={setSelectedTime} />
+      <TimeSlotGroup heading="Afternoon" slots={TIME_SLOTS.afternoon} selectedTime={selectedTime} onSelect={setSelectedTime} />
+      <TimeSlotGroup heading="Evening" slots={TIME_SLOTS.evening} selectedTime={selectedTime} onSelect={setSelectedTime} />
 
       {/* CTA button */}
       <button
         onClick={handleBook}
-        disabled={!selectedDate || !selectedTime}
-        style={{
-          width: '100%',
-          padding: '14px',
-          backgroundColor: !selectedDate || !selectedTime ? '#A0CEC9' : '#00766C',
-          color: '#FFFFFF',
-          fontSize: '16px',
-          fontWeight: 600,
-          borderRadius: '24px',
-          border: 'none',
-          cursor: !selectedDate || !selectedTime ? 'not-allowed' : 'pointer',
-          marginTop: '8px',
-          marginBottom: '8px',
-          transition: 'background-color 0.15s',
-        }}
-        onMouseEnter={(e) => {
-          if (selectedDate && selectedTime) {
-            ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#005A52'
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (selectedDate && selectedTime) {
-            ;(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#00766C'
-          }
-        }}
+        disabled={!canBook}
+        className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mt-2 mb-2 transition-colors outline-none ${
+          canBook
+            ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+            : 'bg-[#A0CEC9] cursor-not-allowed'
+        }`}
       >
-        Book Session →
+        Book Session
+        <ArrowRight className="w-4 h-4" />
       </button>
 
       {/* No hidden charges */}
-      <p
-        style={{
-          fontSize: '12px',
-          color: '#666666',
-          textAlign: 'center',
-          margin: 0,
-        }}
-      >
+      <p className="text-[12px] text-[#666666] text-center">
         No hidden charges
       </p>
     </div>
