@@ -1,7 +1,7 @@
 import { CalendarDays, Clock, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-export function generateStaticParams() { return [] }
+export async function generateStaticParams() { return [] as never[] }
 
 export default async function PatientAppointmentDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

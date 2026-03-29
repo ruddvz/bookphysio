@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { Stethoscope } from 'lucide-react'
 
-export function generateStaticParams() { return [] }
+export async function generateStaticParams() { return [] as never[] }
 
 // ---------------------------------------------------------------------------
 // Data
