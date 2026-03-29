@@ -28,11 +28,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set build env vars
+        # Placeholders let the Supabase SDK initialise without throwing during
+        # static export. API routes are not served by GitHub Pages anyway.
+        # Real secrets (repo Settings → Secrets) override these.
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' && secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-role-key' }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}" >> $GITHUB_ENV
+          echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
+
       - name: Build static export
         run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
