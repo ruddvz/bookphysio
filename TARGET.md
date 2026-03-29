@@ -30,8 +30,8 @@ https://www.zocdoc.com
 - [x] Forgot Password — `/forgot-password`
 
 #### Patient Dashboard (authenticated)
-- [ ] Dashboard Home — `/patient/dashboard` — upcoming appointments, quick actions
-- [ ] Appointments List — `/patient/appointments` — upcoming + past tabs
+- [x] Dashboard Home — `/patient/dashboard` — upcoming appointments, quick actions
+- [x] Appointments List — `/patient/appointments` — upcoming + past tabs
 - [ ] Appointment Detail — `/patient/appointments/{id}`
 - [ ] Find a Doctor (in-dashboard search) — `/patient/search`
 - [ ] Messages / Chat — `/patient/messages`
@@ -40,8 +40,8 @@ https://www.zocdoc.com
 - [ ] Payment History — `/patient/payments`
 
 #### Provider Portal (authenticated)
-- [ ] Provider Dashboard — `/provider/dashboard` — today's schedule, stats
-- [ ] Calendar / Schedule — `/provider/calendar`
+- [x] Provider Dashboard — `/provider/dashboard` — today's schedule, stats
+- [x] Calendar / Schedule — `/provider/calendar`
 - [ ] Appointment List — `/provider/appointments`
 - [ ] Appointment Detail — `/provider/appointments/{id}`
 - [ ] Patient Records — `/provider/patients`
