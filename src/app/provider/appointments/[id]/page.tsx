@@ -1,6 +1,6 @@
 import { User, Phone, MapPin, ClipboardList, CheckCircle } from 'lucide-react'
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return []
 }
 

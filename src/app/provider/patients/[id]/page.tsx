@@ -1,7 +1,7 @@
 import { ArrowLeft, User, Phone, MessageSquare, Clock, CheckCircle, FileText } from 'lucide-react'
 import Link from 'next/link'
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return []
 }
 
