@@ -42,14 +42,14 @@ https://www.zocdoc.com
 #### Provider Portal (authenticated)
 - [x] Provider Dashboard — `/provider/dashboard` — today's schedule, stats
 - [x] Calendar / Schedule — `/provider/calendar`
-- [ ] Appointment List — `/provider/appointments`
+- [x] Appointment List — `/provider/appointments`
 - [ ] Appointment Detail — `/provider/appointments/{id}`
-- [ ] Patient Records — `/provider/patients`
+- [x] Patient Records — `/provider/patients`
 - [ ] Patient Detail — `/provider/patients/{id}`
 - [ ] Messages — `/provider/messages`
-- [ ] Practice Profile — `/provider/profile`
-- [ ] Availability Settings — `/provider/availability`
-- [ ] Earnings / Payouts — `/provider/earnings`
+- [x] Practice Profile — `/provider/profile`
+- [x] Availability Settings — `/provider/availability`
+- [x] Earnings / Payouts — `/provider/earnings`
 - [ ] Notifications — `/provider/notifications`
 
 #### Admin Panel (authenticated)
