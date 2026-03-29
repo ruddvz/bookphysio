@@ -1,0 +1,10 @@
+<svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Premium BP Monogram -->
+  <g transform="translate(0, 0)">
+    <circle cx="24" cy="24" r="24" fill="#0F172A"/>
+    <path d="M16 14V34M16 14H24C26.2091 14 28 15.7909 28 18C28 20.2091 26.2091 22 24 22M16 22H26C28.2091 22 30 23.7909 30 26C30 28.2091 28.2091 30 26 30H16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- BookPhysio Wordmark -->
+  <text x="64" y="34" fill="#0F172A" style="font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.05em;">Book<tspan font-weight="400">Physio</tspan></text>
+</svg>

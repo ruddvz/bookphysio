@@ -38,7 +38,7 @@ const STEPS = [
   { n: 3, label: 'Done' },
 ]
 
-export default function BookingPageClient() {
+export default function BookingInner() {
   const params = useParams()
   const searchParams = useSearchParams()
   const doctorId = params.id as string

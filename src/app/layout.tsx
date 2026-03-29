@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   description:
     "Find and book physiotherapists near you. In-clinic, home visits, and online sessions available across India.",
   keywords: "physiotherapist, physiotherapy, book physio, physio near me, India",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
     title: "BookPhysio — Book Physiotherapists Online",
     description:
