@@ -1,55 +1,52 @@
+import Link from 'next/link'
+import { CalendarDays, ChevronLeft, ChevronRight, Settings } from 'lucide-react'
+
 export default function ProviderCalendar() {
   return (
-    <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '48px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', margin: 0 }}>
+    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <h1 className="text-[32px] font-bold text-[#333333] tracking-tight">
           Calendar
         </h1>
-        <button
-          style={{
-            backgroundColor: '#00766C',
-            color: '#FFFFFF',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '24px',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+        <Link
+          href="/provider/availability"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline text-[14px] font-semibold transition-colors"
         >
+          <Settings className="w-4 h-4" />
           Manage Availability
-        </button>
+        </Link>
       </div>
 
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '8px',
-          border: '1px solid #E5E5E5',
-          height: '600px',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm h-[600px] flex flex-col overflow-hidden">
         {/* Calendar Header */}
-        <div style={{ padding: '24px', borderBottom: '1px solid #E5E5E5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button style={{ border: '1px solid #E5E5E5', background: 'transparent', borderRadius: '4px', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&lsaquo;</button>
-            <span style={{ fontSize: '18px', fontWeight: 600 }}>March 2026</span>
-            <button style={{ border: '1px solid #E5E5E5', background: 'transparent', borderRadius: '4px', width: '32px', height: '32px', cursor: 'pointer', fontSize: '18px' }}>&rsaquo;</button>
+        <div className="p-6 border-b border-[#E5E5E5] flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="w-9 h-9 flex items-center justify-center border border-[#E5E5E5] rounded-lg bg-white hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
+              <ChevronLeft className="w-5 h-5 text-[#333333]" />
+            </button>
+            <span className="text-[18px] font-semibold text-[#333333]">March 2026</span>
+            <button className="w-9 h-9 flex items-center justify-center border border-[#E5E5E5] rounded-lg bg-white hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
+              <ChevronRight className="w-5 h-5 text-[#333333]" />
+            </button>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button style={{ padding: '6px 12px', border: '1px solid #333333', background: '#333333', color: '#FFFFFF', borderRadius: '4px', fontSize: '14px', cursor: 'pointer' }}>Day</button>
-            <button style={{ padding: '6px 12px', border: '1px solid #E5E5E5', background: 'transparent', color: '#666666', borderRadius: '4px', fontSize: '14px', cursor: 'pointer' }}>Week</button>
+          <div className="flex gap-1">
+            <button className="px-4 py-2 bg-[#333333] text-white rounded-lg text-[14px] font-medium cursor-pointer outline-none">
+              Day
+            </button>
+            <button className="px-4 py-2 border border-[#E5E5E5] bg-transparent text-[#666666] rounded-lg text-[14px] font-medium hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
+              Week
+            </button>
           </div>
         </div>
 
-        {/* Empty Calendar Grid Placeholder */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px', color: '#D1D5DB' }}>📅</div>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: '#374151', margin: '0 0 8px' }}>No appointments today</p>
-            <p style={{ fontSize: '14px', color: '#6B7280', margin: 0 }}>Sync your Google Calendar or add availability to get booked.</p>
+        {/* Empty Calendar Grid */}
+        <div className="flex-1 flex items-center justify-center bg-[#F9FAFB]">
+          <div className="text-center px-8">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center mb-5">
+              <CalendarDays className="w-8 h-8 text-[#9CA3AF]" />
+            </div>
+            <p className="text-[16px] font-semibold text-[#374151] mb-2">No appointments today</p>
+            <p className="text-[14px] text-[#6B7280]">Sync your Google Calendar or add availability to get booked.</p>
           </div>
         </div>
       </div>

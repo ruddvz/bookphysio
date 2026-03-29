@@ -1,18 +1,25 @@
+import { Bell, CheckCheck, ShieldCheck } from 'lucide-react'
+
 export default function ProviderNotifications() {
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', margin: 0 }}>
+    <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-[32px] font-bold text-[#333333] tracking-tight">
           Notifications
         </h1>
-        <button style={{ backgroundColor: 'transparent', border: 'none', color: '#00766C', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+        <button className="flex items-center gap-2 text-[14px] font-semibold text-[#00766C] hover:text-[#005A52] cursor-pointer bg-transparent border-none outline-none transition-colors">
+          <CheckCheck className="w-4 h-4" />
           Mark all as read
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E5E5', padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
-          You have no new notifications.
+      <div className="flex flex-col gap-4">
+        <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6 text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
+            <Bell className="w-7 h-7 text-[#9CA3AF]" />
+          </div>
+          <p className="text-[15px] font-medium text-[#333333] mb-1">No new notifications</p>
+          <p className="text-[13px] text-[#9CA3AF]">You&apos;re all caught up.</p>
         </div>
       </div>
     </div>

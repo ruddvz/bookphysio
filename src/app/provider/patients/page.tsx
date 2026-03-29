@@ -1,36 +1,52 @@
+import { Search, Users, Eye } from 'lucide-react'
+
 export default function ProviderPatients() {
   return (
-    <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '48px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', margin: 0 }}>
-          Patient Records
-        </h1>
-        <input 
-          type="search" 
-          placeholder="Search patients..." 
-          style={{ padding: '10px 16px', borderRadius: '24px', border: '1px solid #E5E5E5', fontSize: '14px', width: '280px' }}
-        />
+    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div>
+          <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-1">
+            Patient Records
+          </h1>
+          <p className="text-[15px] text-[#666666]">View and manage your patient directory.</p>
+        </div>
+        <div className="relative shrink-0">
+          <input 
+            type="search" 
+            placeholder="Search patients..." 
+            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-[#E5E5E5] bg-white text-[14px] text-[#333333] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+        </div>
       </div>
 
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E5E5', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ backgroundColor: '#F9FAFB', borderBottom: '1px solid #E5E5E5' }}>
-            <tr>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Name</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Phone (+91)</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Last Visit</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Total Visits</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={5} style={{ padding: '48px 24px', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
-                No patients in your directory.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="bg-white rounded-[12px] border border-[#E5E5E5] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
+            <thead className="bg-[#F9FAFB] border-b border-[#E5E5E5]">
+              <tr>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Patient</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Phone (+91)</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Last Visit</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Total Visits</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colSpan={5} className="py-16 text-center">
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
+                      <Users className="w-7 h-7 text-[#9CA3AF]" />
+                    </div>
+                    <p className="text-[15px] font-medium text-[#333333] mb-1">No patients in your directory</p>
+                    <p className="text-[13px] text-[#9CA3AF]">Patients will appear here after their first appointment.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

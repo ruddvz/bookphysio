@@ -1,59 +1,43 @@
+import { CalendarDays, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+
 export default function PatientAppointments() {
   return (
-    <div style={{ maxWidth: '1142px', margin: '0 auto', padding: '48px 24px' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '32px' }}>
+    <div className="max-w-[1142px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">
         Appointments
       </h1>
 
-      <div style={{ marginBottom: '24px', borderBottom: '1px solid #E5E5E5' }}>
-        <nav style={{ display: 'flex', gap: '32px' }} aria-label="Tabs">
-          <button
-            style={{
-              padding: '12px 0',
-              border: 'none',
-              background: 'transparent',
-              borderBottom: '2px solid #00766C',
-              color: '#00766C',
-              fontWeight: 600,
-              fontSize: '16px',
-              cursor: 'pointer',
-            }}
-          >
+      {/* Tabs */}
+      <div className="mb-8 border-b border-[#E5E5E5]">
+        <nav className="flex gap-8" aria-label="Tabs">
+          <button className="py-4 text-[15px] font-semibold text-[#00766C] border-b-2 border-[#00766C] outline-none cursor-pointer">
             Upcoming
           </button>
-          <button
-            style={{
-              padding: '12px 0',
-              border: 'none',
-              background: 'transparent',
-              color: '#666666',
-              fontWeight: 500,
-              fontSize: '16px',
-              cursor: 'pointer',
-              borderBottom: '2px solid transparent',
-            }}
-          >
+          <button className="py-4 text-[15px] font-medium text-[#666666] border-b-2 border-transparent hover:text-[#333333] hover:border-[#E5E5E5] transition-colors outline-none cursor-pointer">
             Past
           </button>
         </nav>
       </div>
 
-      <div
-        style={{
-          border: '1px solid #E5E5E5',
-          borderRadius: '8px',
-          padding: '48px',
-          textAlign: 'center',
-          backgroundColor: '#FFFFFF',
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📅</div>
-        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
+      {/* Empty State */}
+      <div className="bg-white border border-[#E5E5E5] rounded-[12px] shadow-sm py-16 px-8 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-5">
+          <CalendarDays className="w-8 h-8 text-[#9CA3AF]" />
+        </div>
+        <h2 className="text-[20px] font-bold text-[#333333] mb-2">
           No upcoming appointments
         </h2>
-        <p style={{ fontSize: '15px', color: '#666666' }}>
+        <p className="text-[15px] text-[#666666] mb-6">
           When you book an appointment, it will show up here.
         </p>
+        <Link
+          href="/search"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[15px] transition-colors"
+        >
+          Find a Physiotherapist
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   )

@@ -1,45 +1,31 @@
 import Link from 'next/link'
+import { Heart, Search, Calendar, Users, ArrowRight } from 'lucide-react'
 
 export default function PatientDashboardHome() {
   return (
-    <div style={{ maxWidth: '1142px', margin: '0 auto', padding: '48px 24px' }}>
+    <div className="max-w-[1142px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       
       {/* Greeting */}
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '32px' }}>
-        Good morning, John
+      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">
+        Good morning, Rahul
       </h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '32px', alignItems: 'start' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
         {/* Left Column: Well Guide / Updates */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="flex flex-col gap-6">
           
-          <section
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '8px',
-              border: '1px solid #E5E5E5',
-              padding: '24px',
-            }}
-          >
-            <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#333333', marginBottom: '16px' }}>
+          <section className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
+            <h2 className="text-[20px] font-bold text-[#333333] mb-4 flex items-center gap-2">
+              <Heart className="w-5 h-5 text-[#00766C]" />
               Your Care Home
             </h2>
-            <div
-              style={{
-                backgroundColor: '#E6F4F3',
-                padding: '20px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
-              }}
-            >
-              <div style={{ fontSize: '32px' }}>💪</div>
+            <div className="bg-gradient-to-r from-[#E6F4F3] to-[#D5EFED] p-5 rounded-[10px] flex items-center gap-4">
+              <div className="text-[32px] shrink-0">💪</div>
               <div>
-                <p style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 600, color: '#005A52' }}>
+                <p className="text-[16px] font-semibold text-[#005A52] mb-1">
                   Keep moving forward
                 </p>
-                <p style={{ margin: 0, fontSize: '14px', color: '#005A52' }}>
+                <p className="text-[14px] text-[#005A52]/80">
                   Book your next physiotherapy session to stay on track with your recovery goals.
                 </p>
               </div>
@@ -47,75 +33,50 @@ export default function PatientDashboardHome() {
           </section>
 
           {/* Past Providers Section */}
-          <section
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '8px',
-              border: '1px solid #E5E5E5',
-              padding: '24px',
-            }}
-          >
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#333333', marginBottom: '16px' }}>
+          <section className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
+            <h2 className="text-[18px] font-bold text-[#333333] mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#00766C]" />
               Your Care Team
             </h2>
-            <p style={{ fontSize: '14px', color: '#666666' }}>
+            <p className="text-[14px] text-[#666666] leading-relaxed">
               You don&apos;t have any past providers yet. Once you book a session, they will appear here for easy re-booking.
             </p>
             <Link
               href="/search"
-              style={{
-                display: 'inline-block',
-                marginTop: '16px',
-                padding: '10px 20px',
-                backgroundColor: '#00766C',
-                color: '#FFFFFF',
-                borderRadius: '24px',
-                textDecoration: 'none',
-                fontWeight: 600,
-                fontSize: '14px',
-              }}
+              className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[14px] transition-colors"
             >
+              <Search className="w-4 h-4" />
               Find a Physiotherapist
             </Link>
           </section>
         </div>
 
         {/* Right Column: Upcoming Appointments */}
-        <aside
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '8px',
-            border: '1px solid #E5E5E5',
-            padding: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#333333', margin: 0 }}>
-              Upcoming appointments
+        <aside className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
+          <div className="flex justify-between items-center mb-5">
+            <h2 className="text-[18px] font-bold text-[#333333] flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-[#00766C]" />
+              Upcoming
             </h2>
           </div>
 
           {/* Empty State */}
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📅</div>
-            <p style={{ fontSize: '15px', fontWeight: 600, color: '#333333', margin: '0 0 8px' }}>
+          <div className="text-center py-10">
+            <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
+              <Calendar className="w-8 h-8 text-[#9CA3AF]" />
+            </div>
+            <p className="text-[15px] font-semibold text-[#333333] mb-1">
               No upcoming appointments
             </p>
-            <p style={{ fontSize: '14px', color: '#666666', margin: 0 }}>
+            <p className="text-[14px] text-[#666666]">
               Need to see a physio?
             </p>
             <Link
               href="/search"
-              style={{
-                display: 'inline-block',
-                marginTop: '16px',
-                fontSize: '14px',
-                fontWeight: 600,
-                color: '#00766C',
-                textDecoration: 'none',
-              }}
+              className="inline-flex items-center gap-1.5 mt-4 text-[14px] font-semibold text-[#00766C] hover:text-[#005A52] no-underline transition-colors"
             >
               Book a session
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </aside>

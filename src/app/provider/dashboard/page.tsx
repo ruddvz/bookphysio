@@ -1,55 +1,52 @@
+import { UserCircle, Settings, ChevronUp, ChevronDown, BarChart3, Star, ArrowRight, CheckCircle } from 'lucide-react'
+
 export default function ProviderDashboardHome() {
   return (
-    <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '48px 24px' }}>
+    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       
       {/* Greeting */}
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '32px' }}>
+      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">
         Hello, lokistr
       </h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '32px', alignItems: 'start' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
         
         {/* Left Column: Setup Checklist */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
+        <div className="flex flex-col gap-6">
+          <h2 className="text-[20px] font-bold text-[#333333]">
             Your setup checklist
           </h2>
           
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '8px',
-              border: '1px solid #E5E5E5',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm overflow-hidden">
             {/* Expanded section */}
-            <div style={{ padding: '24px', borderBottom: '1px solid #E5E5E5' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '20px' }}>👤</span>
-                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#333333', margin: 0 }}>Create your profile</h3>
-                </div>
-                <span aria-hidden="true" style={{ fontSize: '12px' }}>▲</span>
-              </div>
-              
-              <div style={{ paddingLeft: '32px', paddingTop: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <div>
-                    <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#333333', margin: '0 0 4px' }}>Add your providers</h4>
-                    <p style={{ fontSize: '14px', color: '#666666', margin: 0 }}>Create provider profiles using ICPs, then add qualifications to attract patients.</p>
+            <div className="p-6 border-b border-[#E5E5E5]">
+              <button className="w-full flex justify-between items-center cursor-pointer bg-transparent border-none outline-none">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#E6F4F3] flex items-center justify-center">
+                    <UserCircle className="w-5 h-5 text-[#00766C]" />
                   </div>
-                  <button style={{ padding: '8px 16px', border: '1px solid #E5E5E5', borderRadius: '4px', backgroundColor: '#FFFFFF', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
+                  <h3 className="text-[16px] font-semibold text-[#333333]">Create your profile</h3>
+                </div>
+                <ChevronUp className="w-4 h-4 text-[#9CA3AF]" />
+              </button>
+              
+              <div className="pl-[52px] pt-5 flex flex-col gap-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="text-[15px] font-semibold text-[#333333] mb-1">Add your providers</h4>
+                    <p className="text-[14px] text-[#666666]">Create provider profiles using ICPs, then add qualifications to attract patients.</p>
+                  </div>
+                  <button className="shrink-0 ml-4 px-4 py-2 border border-[#E5E5E5] rounded-lg bg-white text-[14px] font-medium text-[#333333] hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
                     Get started
                   </button>
                 </div>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="flex justify-between items-center">
                   <div>
-                    <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#333333', margin: '0 0 4px' }}>Verify your identity</h4>
-                    <p style={{ fontSize: '14px', color: '#666666', margin: 0 }}>Upload a government-issued photo ID to verify your practice.</p>
+                    <h4 className="text-[15px] font-semibold text-[#333333] mb-1">Verify your identity</h4>
+                    <p className="text-[14px] text-[#666666]">Upload a government-issued photo ID to verify your practice.</p>
                   </div>
-                  <button style={{ padding: '8px 16px', border: '1px solid #E5E5E5', borderRadius: '4px', backgroundColor: '#FFFFFF', fontSize: '14px', fontWeight: 500, opacity: 0.5, cursor: 'not-allowed' }}>
+                  <button className="shrink-0 ml-4 px-4 py-2 border border-[#E5E5E5] rounded-lg bg-[#F9FAFB] text-[14px] font-medium text-[#9CA3AF] cursor-not-allowed opacity-60 outline-none" disabled>
                     Get started
                   </button>
                 </div>
@@ -57,49 +54,47 @@ export default function ProviderDashboardHome() {
             </div>
             
             {/* Collapsed section */}
-            <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '20px' }}>⚙️</span>
-                <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#333333', margin: 0 }}>Customize your settings</h3>
+            <button className="w-full px-6 py-4 flex justify-between items-center cursor-pointer bg-transparent border-none outline-none hover:bg-[#F9FAFB] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-[#6B7280]" />
+                </div>
+                <h3 className="text-[16px] font-semibold text-[#333333]">Customize your settings</h3>
               </div>
-              <span aria-hidden="true" style={{ fontSize: '12px' }}>▼</span>
-            </div>
+              <ChevronDown className="w-4 h-4 text-[#9CA3AF]" />
+            </button>
           </div>
         </div>
 
         {/* Right Column: Performance Overview */}
-        <aside
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '8px',
-            border: '1px solid #E5E5E5',
-            padding: '24px',
-          }}
-        >
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#333333', marginBottom: '24px', marginTop: 0 }}>
-            Performance overview
+        <aside className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
+          <h2 className="text-[18px] font-bold text-[#333333] mb-6 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-[#00766C]" />
+            Performance
           </h2>
 
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{ fontSize: '48px', fontWeight: 300, color: '#333333', lineHeight: 1 }}>
+          <div className="mb-8">
+            <div className="text-[48px] font-light text-[#333333] leading-none">
               0
             </div>
-            <p style={{ fontSize: '15px', fontWeight: 600, color: '#333333', margin: '8px 0 4px' }}>
+            <p className="text-[15px] font-semibold text-[#333333] mt-2 mb-1">
               No bookings yet
             </p>
-            <p style={{ fontSize: '13px', color: '#666666', margin: '0 0 16px' }}>
+            <p className="text-[13px] text-[#666666] mb-4">
               Compared to 0 bookings this time last month
             </p>
-            <button style={{ width: '100%', padding: '10px 0', border: '1px solid #333333', borderRadius: '4px', backgroundColor: '#FFFFFF', color: '#333333', fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
-              View more performance details
+            <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-[#333333] rounded-lg bg-white text-[#333333] text-[14px] font-medium cursor-pointer hover:bg-[#F9FAFB] transition-colors outline-none">
+              View details
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          <div style={{ borderTop: '1px solid #E5E5E5', paddingTop: '24px' }}>
-            <div style={{ fontSize: '48px', fontWeight: 300, color: '#333333', lineHeight: 1 }}>
-              0
+          <div className="border-t border-[#E5E5E5] pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="w-5 h-5 text-[#F59E0B]" />
+              <span className="text-[48px] font-light text-[#333333] leading-none">0</span>
             </div>
-            <p style={{ fontSize: '15px', color: '#666666', margin: '8px 0 0' }}>
+            <p className="text-[15px] text-[#666666]">
               No reviews yet
             </p>
           </div>

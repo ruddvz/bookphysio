@@ -1,104 +1,80 @@
+'use client';
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { LayoutDashboard, Users, FileCheck, BarChart3, LogOut, Settings } from 'lucide-react'
 import { ReactNode } from 'react'
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+
+  const navLinks = [
+    { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/listings', label: 'Provider Approvals', icon: FileCheck },
+    { href: '/admin/users', label: 'User Management', icon: Users },
+    { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  ]
+
   return (
-    <div style={{ backgroundColor: '#F7F8F9', minHeight: '100vh', display: 'flex' }}>
+    <div className="flex min-h-screen bg-[#F7F8F9] text-[#333333] font-sans">
       
       {/* Sidebar Navigation */}
-      <aside
-        style={{
-          width: '260px',
-          backgroundColor: '#FFFFFF',
-          borderRight: '1px solid #E5E5E5',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-        }}
-      >
-        <div style={{ padding: '24px', borderBottom: '1px solid #E5E5E5' }}>
-          <Link href="/admin" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: '#333333' }}>BookPhysio <span style={{ color: '#00766C' }}>Admin</span></span>
+      <aside className="sticky top-0 flex flex-col w-[260px] h-screen bg-white border-r border-[#E5E5E5] shadow-sm shrink-0">
+        
+        {/* Logo Area */}
+        <div className="px-6 py-6 border-b border-[#E5E5E5]">
+          <Link href="/admin" className="flex items-center gap-2 group outline-none">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#00766C] text-white font-bold text-center leading-none">
+              BP
+            </div>
+            <span className="text-[20px] font-bold tracking-tight text-[#333333] group-hover:text-[#00766C] transition-colors">
+              BookPhysio <span className="text-[#00766C] font-semibold">Admin</span>
+            </span>
           </Link>
         </div>
 
-        <nav style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <p style={{ fontSize: '12px', fontWeight: 600, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', paddingLeft: '8px' }}>Platform</p>
+        {/* Navigation Links */}
+        <nav className="flex flex-col flex-1 gap-1 px-4 py-6 overflow-y-auto">
+          <p className="px-2 mb-2 text-[12px] font-semibold tracking-wider text-[#999999] uppercase">
+            Platform
+          </p>
           
-          <Link
-            href="/admin"
-            style={{
-              display: 'block',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              backgroundColor: '#E6F4F3',
-              color: '#00766C',
-              fontSize: '15px',
-              fontWeight: 600,
-              textDecoration: 'none'
-            }}
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/admin/listings"
-            style={{
-              display: 'block',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              color: '#666666',
-              fontSize: '15px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'background-color 0.15s'
-            }}
-          >
-            Provider Approvals
-          </Link>
-          <Link
-            href="/admin/users"
-            style={{
-              display: 'block',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              color: '#666666',
-              fontSize: '15px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'background-color 0.15s'
-            }}
-          >
-            User Management
-          </Link>
-          <Link
-            href="#"
-            style={{
-              display: 'block',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              color: '#666666',
-              fontSize: '15px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'background-color 0.15s'
-            }}
-          >
-            Analytics
-          </Link>
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[15px] font-medium transition-all duration-200 outline-none
+                  ${isActive 
+                    ? 'bg-[#E6F4F3] text-[#00766C] shadow-sm' 
+                    : 'text-[#666666] hover:bg-[#F9FAFB] hover:text-[#333333]'
+                  }
+                `}
+              >
+                <link.icon className={`w-5 h-5 ${isActive ? 'text-[#00766C]' : 'text-[#999999]'}`} />
+                {link.label}
+              </Link>
+            )
+          })}
         </nav>
 
-        <div style={{ padding: '24px', borderTop: '1px solid #E5E5E5' }}>
-          <button style={{ width: '100%', padding: '10px', backgroundColor: '#FFFFFF', border: '1px solid #E5E5E5', borderRadius: '8px', color: '#333333', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-[#E5E5E5] space-y-2">
+          <button className="flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-[#666666] hover:bg-[#F9FAFB] hover:text-[#333333] transition-colors outline-none cursor-pointer">
+            <Settings className="w-5 h-5 text-[#999999]" />
+            Settings
+          </button>
+          <button className="flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-[#DC2626] hover:bg-[#FEF2F2] transition-colors outline-none cursor-pointer">
+            <LogOut className="w-5 h-5 text-[#DC2626]/80" />
             Log out
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '48px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <main className="flex-1 w-full min-w-0 px-8 py-10 lg:px-12">
+        <div className="max-w-[1200px] mx-auto animate-in fade-in duration-500">
           {children}
         </div>
       </main>

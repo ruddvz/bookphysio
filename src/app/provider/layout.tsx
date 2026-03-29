@@ -1,81 +1,71 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 import Footer from '@/components/Footer'
+import { Home, Calendar, Inbox, BarChart3, Users, Megaphone, ChevronDown } from 'lucide-react'
+
+const navItems = [
+  { href: '/provider/dashboard', label: 'Home', icon: Home },
+  { href: '/provider/calendar', label: 'Calendar', icon: Calendar },
+  { href: '/provider/messages', label: 'Inbox', icon: Inbox },
+  { href: '/provider/earnings', label: 'Performance', icon: BarChart3 },
+  { href: '/provider/patients', label: 'Patients', icon: Users },
+]
 
 export default function ProviderLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+
   return (
-    <div style={{ backgroundColor: '#F7F8F9', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
       {/* Provider Portal Navbar */}
-      <header
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E5E5E5',
-          height: '72px',
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: '0 24px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+      <header className="bg-white border-b border-[#E5E5E5] h-[72px] sticky top-0 z-50 shadow-sm">
+        <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
           {/* Logo */}
-          <Link href="/provider/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: '#333333' }}>BookPhysio</span>
+          <Link href="/provider/dashboard" className="flex items-center gap-2 no-underline group">
+            <span className="text-[20px] font-bold text-[#00766C] tracking-tight group-hover:text-[#005A52] transition-colors">
+              BookPhysio
+            </span>
+            <span className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-widest hidden md:inline">
+              Provider
+            </span>
           </Link>
 
           {/* Navigation */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-            <Link href="/provider/dashboard" style={{ fontSize: '15px', fontWeight: 500, color: '#333333', textDecoration: 'none' }}>
-              Home
-            </Link>
-            <Link href="/provider/calendar" style={{ fontSize: '15px', fontWeight: 500, color: '#666666', textDecoration: 'none' }}>
-              Calendar
-            </Link>
-            <Link href="/provider/inbox" style={{ fontSize: '15px', fontWeight: 500, color: '#666666', textDecoration: 'none' }}>
-              Inbox
-            </Link>
-            <Link href="/provider/performance" style={{ fontSize: '15px', fontWeight: 500, color: '#666666', textDecoration: 'none' }}>
-              Performance
-            </Link>
-            <Link href="/provider/providers-list" style={{ fontSize: '15px', fontWeight: 500, color: '#666666', textDecoration: 'none' }}>
-              Providers
-            </Link>
-            <Link href="/provider/sponsored" style={{ fontSize: '15px', fontWeight: 500, color: '#666666', textDecoration: 'none' }}>
-              Sponsored
-            </Link>
+          <nav className="flex items-center gap-1">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const isActive = pathname === href || pathname.startsWith(href + '/')
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[14px] font-medium no-underline transition-colors ${
+                    isActive
+                      ? 'text-[#00766C] bg-[#E6F4F3]'
+                      : 'text-[#666666] hover:text-[#333333] hover:bg-[#F3F4F6]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden lg:inline">{label}</span>
+                </Link>
+              )
+            })}
 
-            {/* Provider Settings Dropdown Trigger */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 16px',
-                border: '1px solid #E5E5E5',
-                borderRadius: '24px',
-                fontSize: '14px',
-                fontWeight: 500,
-                cursor: 'pointer',
-              }}
-            >
-              lokistr
-              <span aria-hidden="true" style={{ fontSize: '10px' }}>▼</span>
+            {/* Provider Settings Dropdown */}
+            <div className="ml-4 flex items-center gap-2 px-4 py-2 border border-[#E5E5E5] rounded-full text-[14px] font-medium cursor-pointer hover:bg-[#F9FAFB] transition-colors">
+              <div className="w-7 h-7 rounded-full bg-[#00766C] text-white flex items-center justify-center text-[11px] font-bold">
+                LP
+              </div>
+              <span className="hidden md:inline text-[#333333]">lokistr</span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#9CA3AF]" />
             </div>
           </nav>
         </div>
       </header>
 
       {/* Main Dashboard Content */}
-      <main style={{ flex: 1 }}>
+      <main className="flex-1">
         {children}
       </main>
 

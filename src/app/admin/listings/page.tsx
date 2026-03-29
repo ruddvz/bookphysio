@@ -1,46 +1,75 @@
+import { FileCheck, Eye, CheckCircle, XCircle, Clock } from 'lucide-react'
+
 export default function AdminListings() {
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', margin: 0 }}>
-          Provider Approval Queue
-        </h1>
-        <div style={{ padding: '8px 16px', backgroundColor: '#FFF7ED', color: '#C2410C', fontWeight: 600, borderRadius: '24px', fontSize: '14px' }}>
-          342 Pending
+    <div className="flex flex-col gap-8">
+      
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-1">
+            Provider Approval Queue
+          </h1>
+          <p className="text-[15px] text-[#666666]">Review and approve provider applications.</p>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#FFF7ED] border border-[#FED7AA] rounded-full">
+          <Clock className="w-4 h-4 text-[#C2410C]" />
+          <span className="text-[14px] font-semibold text-[#C2410C]">342 Pending</span>
         </div>
       </div>
 
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E5E5', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ backgroundColor: '#F9FAFB', borderBottom: '1px solid #E5E5E5' }}>
-            <tr>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Provider Name</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>ICP #</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>City</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Submitted</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Status</th>
-              <th style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#6B7280' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Example row */}
-            <tr>
-              <td style={{ padding: '16px 24px', fontSize: '15px', fontWeight: 600, color: '#333333', borderBottom: '1px solid #E5E5E5' }}>Dr. Arun K</td>
-              <td style={{ padding: '16px 24px', fontSize: '14px', color: '#666666', borderBottom: '1px solid #E5E5E5' }}>ICP-MH-12345</td>
-              <td style={{ padding: '16px 24px', fontSize: '14px', color: '#666666', borderBottom: '1px solid #E5E5E5' }}>Mumbai</td>
-              <td style={{ padding: '16px 24px', fontSize: '14px', color: '#666666', borderBottom: '1px solid #E5E5E5' }}>2 hours ago</td>
-              <td style={{ padding: '16px 24px', fontSize: '14px', fontWeight: 600, color: '#C2410C', borderBottom: '1px solid #E5E5E5' }}>Pending</td>
-              <td style={{ padding: '16px 24px', fontSize: '14px', borderBottom: '1px solid #E5E5E5' }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button style={{ padding: '6px 12px', border: '1px solid #00766C', backgroundColor: 'transparent', color: '#00766C', borderRadius: '4px', fontWeight: 600, cursor: 'pointer' }}>View Docs</button>
-                  <button style={{ padding: '6px 12px', border: '1px solid #059669', backgroundColor: '#059669', color: '#FFFFFF', borderRadius: '4px', fontWeight: 600, cursor: 'pointer' }}>Approve</button>
-                  <button style={{ padding: '6px 12px', border: '1px solid #DC2626', backgroundColor: '#DC2626', color: '#FFFFFF', borderRadius: '4px', fontWeight: 600, cursor: 'pointer' }}>Reject</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="bg-white rounded-[12px] border border-[#E5E5E5] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
+            <thead className="bg-[#F9FAFB] border-b border-[#E5E5E5]">
+              <tr>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Provider</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">ICP #</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">City</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Submitted</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E5E5E5]">
+              <tr className="hover:bg-[#F9FAFB] transition-colors">
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E6F4F3] flex items-center justify-center text-[#00766C] font-bold text-[13px]">
+                      AK
+                    </div>
+                    <div>
+                      <p className="text-[15px] font-semibold text-[#333333]">Dr. Arun K</p>
+                      <p className="text-[13px] text-[#9CA3AF]">Sports Physiotherapy</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-[14px] font-mono text-[#666666]">ICP-MH-12345</td>
+                <td className="px-6 py-4 text-[14px] text-[#666666]">Mumbai</td>
+                <td className="px-6 py-4 text-[14px] text-[#666666]">2 hours ago</td>
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold bg-orange-50 text-orange-700">
+                    <Clock className="w-3 h-3" />
+                    Pending
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button className="p-2 text-[#666666] hover:text-[#00766C] hover:bg-[#E6F4F3] rounded-lg transition-colors cursor-pointer outline-none" title="View Documents">
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button className="p-2 text-[#666666] hover:text-[#059669] hover:bg-[#F0FDF4] rounded-lg transition-colors cursor-pointer outline-none" title="Approve">
+                      <CheckCircle className="w-5 h-5" />
+                    </button>
+                    <button className="p-2 text-[#666666] hover:text-[#DC2626] hover:bg-[#FEF2F2] rounded-lg transition-colors cursor-pointer outline-none" title="Reject">
+                      <XCircle className="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </>
+    </div>
   )
 }

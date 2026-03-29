@@ -1,49 +1,80 @@
-export default function AdminDashboardHome() {
-  return (
-    <>
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
-        Platform Overview
-      </h1>
-      <p style={{ fontSize: '15px', color: '#666666', marginBottom: '32px' }}>
-        High-level metrics for BookPhysio.in platform performance.
-      </p>
+import { Users, UserPlus, CalendarCheck, TrendingUp, Activity, PieChart } from 'lucide-react'
 
-      {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '48px' }}>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5' }}>
-          <p style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#666666', textTransform: 'uppercase' }}>Active Providers</p>
-          <p style={{ margin: 0, fontSize: '36px', fontWeight: 700, color: '#333333' }}>1,204</p>
-        </div>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5' }}>
-          <p style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#FF6B35', textTransform: 'uppercase' }}>Pending Approvals</p>
-          <p style={{ margin: 0, fontSize: '36px', fontWeight: 700, color: '#333333' }}>342</p>
-        </div>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5' }}>
-          <p style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#666666', textTransform: 'uppercase' }}>Total Patients</p>
-          <p style={{ margin: 0, fontSize: '36px', fontWeight: 700, color: '#333333' }}>8,921</p>
-        </div>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5' }}>
-          <p style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#00766C', textTransform: 'uppercase' }}>GMV (MTD)</p>
-          <p style={{ margin: 0, fontSize: '36px', fontWeight: 700, color: '#333333' }}>₹12.4L</p>
-        </div>
+export default function AdminDashboardHome() {
+  const kpis = [
+    { title: 'Active Providers', value: '1,204', icon: Users, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
+    { title: 'Pending Approvals', value: '342', icon: UserPlus, color: 'text-[#FF6B35]', bg: 'bg-[#FFF2ED]' },
+    { title: 'Total Patients', value: '8,921', icon: CalendarCheck, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
+    { title: 'GMV (MTD)', value: '₹12.4L', icon: TrendingUp, color: 'text-[#00766C]', bg: 'bg-[#E6F4F3]' },
+  ]
+
+  return (
+    <div className="flex flex-col gap-8">
+      
+      {/* Header section */}
+      <div>
+        <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-2">
+          Platform Overview
+        </h1>
+        <p className="text-[16px] text-[#666666]">
+          High-level metrics for BookPhysio.in platform performance.
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {kpis.map((kpi, idx) => (
+          <div 
+            key={idx} 
+            className="flex flex-col p-6 bg-white border border-[#E5E5E5] rounded-[12px] shadow-sm hover:shadow-md transition-shadow duration-300"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <span className="text-[13px] font-bold tracking-wider text-[#666666] uppercase">
+                {kpi.title}
+              </span>
+              <div className={`p-2 rounded-lg ${kpi.bg}`}>
+                <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
+              </div>
+            </div>
+            <p className="text-[36px] font-bold tracking-tight text-[#333333]">
+              {kpi.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Placeholder Charts */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5', height: '360px', display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#333333', marginBottom: '24px' }}>Bookings Growth</h2>
-          <div style={{ flex: 1, backgroundColor: '#F9FAFB', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999999' }}>
-            [Chart Component]
+        <div className="flex flex-col p-8 bg-white border border-[#E5E5E5] rounded-[16px] shadow-sm min-h-[400px]">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-[18px] font-bold text-[#333333]">Bookings Growth</h2>
+            <button className="text-[14px] font-medium text-[#00766C] hover:text-[#005A52] transition-colors cursor-pointer outline-none">
+              View Report
+            </button>
+          </div>
+          <div className="flex flex-col items-center justify-center flex-1 w-full bg-[#F9FAFB] border border-[#E5E5E5] border-dashed rounded-[12px] text-[#9CA3AF]">
+            <Activity className="w-12 h-12 mb-4 text-[#D1D5DB]" />
+            <p className="font-medium">Data Visualization Component</p>
+            <p className="text-sm mt-1">Requires Recharts library</p>
           </div>
         </div>
         
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '8px', border: '1px solid #E5E5E5', height: '360px', display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#333333', marginBottom: '24px' }}>Top Specialties</h2>
-          <div style={{ flex: 1, backgroundColor: '#F9FAFB', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999999' }}>
-            [Donut Chart]
+        <div className="flex flex-col p-8 bg-white border border-[#E5E5E5] rounded-[16px] shadow-sm min-h-[400px]">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-[18px] font-bold text-[#333333]">Top Specialties</h2>
+            <button className="text-[14px] font-medium text-[#00766C] hover:text-[#005A52] transition-colors cursor-pointer outline-none">
+              View Details
+            </button>
+          </div>
+          <div className="flex flex-col items-center justify-center flex-1 w-full bg-[#F9FAFB] border border-[#E5E5E5] border-dashed rounded-[12px] text-[#9CA3AF]">
+            <PieChart className="w-12 h-12 mb-4 text-[#D1D5DB]" />
+            <p className="font-medium">Donut Chart Rendering</p>
+            <p className="text-sm mt-1">Requires Recharts library</p>
           </div>
         </div>
       </div>
-    </>
+      
+    </div>
   )
 }
+
