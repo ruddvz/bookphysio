@@ -1,9 +1,14 @@
-import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
+import BookingPageClient from './BookingPageClient'
 
-const BookingPageClient = dynamic(() => import('./BookingPageClient'))
+export function generateStaticParams() {
+  return [{ id: 'initial-setup' }]
+}
 
-export function generateStaticParams() { return [] }
-
-export default function BookPage() {
-  return <BookingPageClient />
+export default function BookPage({ params }: { params: { id: string } }) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookingPageClient />
+    </Suspense>
+  )
 }

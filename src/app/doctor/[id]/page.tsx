@@ -6,7 +6,9 @@ import MobileBookingBar from './MobileBookingBar'
 import { MapPin, ShieldCheck, GraduationCap, Languages, Star } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 
-export function generateStaticParams() { return [] }
+export function generateStaticParams() { 
+  return [{ id: '1' }] 
+}
 
 // ---------------------------------------------------------------------------
 // Types used by this page
