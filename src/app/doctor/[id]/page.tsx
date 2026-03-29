@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
@@ -6,8 +5,8 @@ import MobileBookingBar from './MobileBookingBar'
 import { MapPin, ShieldCheck, GraduationCap, Languages, Star } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 
-export function generateStaticParams() { 
-  return [{ id: '1' }] 
+export function generateStaticParams(): { id: string }[] {
+  return []
 }
 
 // ---------------------------------------------------------------------------
@@ -71,7 +70,13 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   const { id } = await params
   const provider = await fetchProvider(id)
 
-  if (!provider) notFound()
+  if (!provider) {
+    return (
+      <div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center">
+        <p className="text-[#666666] text-[15px]">Doctor not found.</p>
+      </div>
+    )
+  }
 
   // Normalise data from API shape
   const nameWithTitle = provider.full_name.startsWith('Dr.')

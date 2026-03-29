@@ -2,7 +2,7 @@ import { ArrowLeft, User, Phone, MessageSquare, Clock, CheckCircle, FileText } f
 import Link from 'next/link'
 
 export function generateStaticParams() {
-  return [{ id: '1' }]
+  return []
 }
 
 export default async function ProviderPatientDetail({ params }: { params: Promise<{ id: string }> }) {

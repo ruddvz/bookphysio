@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import BookingInner from './BookingInner'
 
-export function generateStaticParams() {
-  return [] as never[]
+export function generateStaticParams(): { id: string }[] {
+  return []
 }
 
 export default function BookPage() {
