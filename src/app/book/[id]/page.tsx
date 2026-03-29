@@ -1,3 +1,7 @@
+import BookingPageClient from './BookingPageClient'
+
 export function generateStaticParams() { return [] }
 
-export { default } from './BookingPageClient'
+export default function BookPage() {
+  return <BookingPageClient />
+}
