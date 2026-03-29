@@ -40,13 +40,14 @@ jobs:
           echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
 
       - name: Stash API routes (incompatible with static export)
-        run: mv src/app/api src/app/_api_disabled
+        run: mv src/app/api /tmp/api_routes
 
       - name: Build static export
         run: npm run build
 
       - name: Restore API routes
-        run: mv src/app/_api_disabled src/app/api
+        if: always()
+        run: mv /tmp/api_routes src/app/api
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
