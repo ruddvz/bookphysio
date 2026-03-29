@@ -1,6 +1,5 @@
 import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/HeroSection'
-import InsurancePlans from '@/components/InsurancePlans'
 import TopSpecialties from '@/components/TopSpecialties'
 import HowItWorks from '@/components/HowItWorks'
 import AppSection from '@/components/AppSection'
@@ -17,7 +16,6 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
-        <InsurancePlans />
         <TopSpecialties />
         <HowItWorks />
         <AppSection />

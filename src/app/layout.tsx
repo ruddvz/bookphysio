@@ -10,15 +10,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "bookphysio.in — Book Physiotherapists Online",
+  title: "BookPhysio — Book Physiotherapists Online",
   description:
-    "Find and book physiotherapists near you who accept your health insurance. In-clinic, home visits, and online sessions available across India.",
+    "Find and book physiotherapists near you. In-clinic, home visits, and online sessions available across India.",
   keywords: "physiotherapist, physiotherapy, book physio, physio near me, India",
   openGraph: {
-    title: "bookphysio.in — Book Physiotherapists Online",
+    title: "BookPhysio — Book Physiotherapists Online",
     description:
-      "Find and book physiotherapists near you who accept your health insurance.",
-    siteName: "bookphysio.in",
+      "Find and book physiotherapists near you.",
+    siteName: "BookPhysio",
     type: "website",
   },
 };

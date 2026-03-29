@@ -74,7 +74,7 @@ export default function HealthSystems() {
             marginBottom: "16px",
           }}
         >
-          bookphysio for health systems
+          BookPhysio for health systems
         </p>
 
         <h2
@@ -122,7 +122,7 @@ export default function HealthSystems() {
             display: "inline-block",
           }}
         >
-          Partner with bookphysio
+          Partner with BookPhysio
         </a>
       </div>
     </section>

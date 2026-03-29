@@ -67,7 +67,7 @@ The ZocDoc clone homepage is **done and building clean**:
 ### Sprint 2 — Auth Pages (MSG91 OTP)
 ### Sprint 3 — Booking Flow
 ### Sprint 4 — Patient Dashboard
-### Sprint 5 — Provider Portal
+### Sprint 5 — Doctor Portal
 ### Sprint 6 — Admin Panel
 ### Sprint 7 — Static Pages + Polish
 
@@ -284,15 +284,40 @@ Same structure as specialty page but filtered by city.
 
 Phone number input → Send OTP → Verify OTP flow (same as signup verify screen).
 
-### Step 2.4 — Provider Signup
+### Step 2.4 — Doctor Signup
 **Files to create:**
-- `src/app/(auth)/provider-signup/page.tsx`
+- `src/app/(auth)/doctor-signup/page.tsx`
 
-Multi-step form:
-- Step 1: Personal details (name, phone, email)
-- Step 2: Professional details (ICP number, BPT/MPT degree, years of experience, specialties)
-- Step 3: Practice details (clinic name, address, city, pincode, visit types offered)
-- Step 4: OTP verify
+> **Note:** "Provider" terminology is replaced with "Doctor" everywhere in auth and UI.
+
+Multi-step form (5 steps):
+- Step 1: Personal details (full name, phone +91, email)
+- Step 2: Professional details
+  - ICP registration number (mandatory, India credential)
+  - Degree: BPT / MPT / PhD (radio)
+  - Years of experience
+  - Specialties (multi-select: Sports, Ortho, Neuro, Paediatric, Women's Health, Geriatric, Cardio)
+- Step 3: Practice details
+  - Clinic name + full address, city (dropdown of 10 Indian cities), pincode (6-digit)
+  - Visit types offered (checkboxes): In-clinic | Home Visit | Online
+- Step 4: Pricing & Availability
+  - **Per-visit-type fee (₹ integer):**
+    - In-clinic consultation fee: ₹___
+    - Home visit fee: ₹___
+    - Online consultation fee: ₹___
+  - **Slot duration:** 30 min | 45 min | 60 min (radio — doctor picks one for all slots)
+  - **Weekly availability** (day + time windows):
+    - Checkbox per day (Mon–Sun)
+    - For each checked day: Start time → End time (30-min increments, 6:00 AM – 10:00 PM)
+    - UI shows a simple grid: rows = days, cols = [checkbox | day label | from | to]
+  - Slots are auto-computed from (day, start, end, slot_duration) — patients see available slots
+- Step 5: OTP verify (+91 phone via MSG91)
+
+**Data saved to (for reference when backend connects):**
+- `doctors` table: name, phone, email, icp_number, degree, experience_years, specialties[]
+- `doctor_practices` table: clinic_name, address, city, pincode, visit_types[]
+- `doctor_pricing` table: visit_type, fee_inr (per doctor)
+- `doctor_availability` table: day_of_week (0–6), start_time, end_time, slot_duration_mins
 
 ---
 
@@ -447,9 +472,9 @@ List of notifications with unread dot, timestamp, mark-all-read button.
 
 ---
 
-## Sprint 5 — Provider Portal
+## Sprint 5 — Doctor Portal
 
-### Step 5.1 — Provider Layout
+### Step 5.1 — Doctor Layout
 **Files to create:**
 - `src/app/(provider)/layout.tsx` — sidebar + header
 
@@ -631,7 +656,7 @@ Friendly 404 with teal illustration, "Go back home" CTA.
   /signup ......................... Patient Signup (phone OTP)
   /verify-otp ..................... OTP Verification
   /login .......................... Login
-  /provider-signup ................ Provider Signup (multi-step)
+  /doctor-signup .................. Doctor Signup (multi-step, 5 steps)
 
 /book/[id] ........................ Booking Flow (3-step wizard)
 
@@ -676,7 +701,7 @@ When you say "do Step X.X", I will build exactly that step and nothing else.
 → Step 2.1  Patient Signup
 → Step 2.2  OTP Verify
 → Step 2.3  Login
-→ Step 2.4  Provider Signup
+→ Step 2.4  Doctor Signup
 ── Sprint 3: Booking ──
 → Step 3.1  Booking Wizard (all 3 steps)
 ── Sprint 4: Patient Dashboard ──
@@ -686,7 +711,7 @@ When you say "do Step X.X", I will build exactly that step and nothing else.
 → Step 4.4  Profile & Settings
 → Step 4.5  Payment History
 → Step 4.6  Notifications
-── Sprint 5: Provider Portal ──
+── Sprint 5: Doctor Portal ──
 → Step 5.1  Layout
 → Step 5.2  Provider Dashboard
 → Step 5.3  Calendar

@@ -9,25 +9,25 @@ https://www.zocdoc.com
 <!-- Every page across all 4 portals -->
 
 #### Public Portal (no auth)
-- [ ] Homepage — `/` — hero search, specialty icons, how-it-works, trust signals, city links
-- [ ] Search Results — `/search` — doctor cards + map view, filters sidebar
-- [ ] Doctor Profile — `/doctor/{name}-{id}` — photo, bio, credentials, availability, reviews, book CTA
-- [ ] Specialty Landing — `/specialty/{name}` — e.g. physiotherapy, sports rehab
-- [ ] Insurance Landing — `/insurance/{name}` — filtered doctor search by insurance
-- [ ] City Landing — `/city/{name}` — e.g. New Delhi physiotherapists
-- [ ] How It Works — `/how-it-works`
-- [ ] About — `/about`
-- [ ] FAQ — `/faq`
-- [ ] Privacy Policy — `/privacy`
-- [ ] Terms of Service — `/terms`
-- [ ] 404 — not-found page
+- [x] Homepage — `/` — hero search, specialty icons, how-it-works, trust signals, city links
+- [x] Search Results — `/search` — doctor cards + map view, filters sidebar
+- [x] Doctor Profile — `/doctor/{name}-{id}` — photo, bio, credentials, availability, reviews, book CTA
+- [x] Specialty Landing — `/specialty/{name}` — e.g. physiotherapy, sports rehab
+- [x] Insurance Landing — `/insurance/{name}` — filtered doctor search by insurance
+- [x] City Landing — `/city/{name}` — e.g. New Delhi physiotherapists
+- [x] How It Works — `/how-it-works`
+- [x] About — `/about`
+- [x] FAQ — `/faq`
+- [x] Privacy Policy — `/privacy`
+- [x] Terms of Service — `/terms`
+- [x] 404 — not-found page
 
 #### Auth Pages
-- [ ] Patient Signup — `/signup`
-- [ ] Patient Login — `/login`
-- [ ] OTP Verify Screen — `/verify-otp`
-- [ ] Provider Signup — `/provider/signup`
-- [ ] Forgot Password — `/forgot-password`
+- [x] Patient Signup — `/signup`
+- [x] Patient Login — `/login`
+- [x] OTP Verify Screen — `/verify-otp`
+- [x] Provider Signup — `/provider/signup`
+- [x] Forgot Password — `/forgot-password`
 
 #### Patient Dashboard (authenticated)
 - [ ] Dashboard Home — `/patient/dashboard` — upcoming appointments, quick actions
@@ -101,8 +101,6 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 | "Patient" | "Patient" (keep) |
 
 ### Design Tokens (keep ZocDoc teal exactly)
-| Token | Value |
-|-------|-------|
 | Primary teal | `#00766C` — NEVER change |
 | Primary dark | `#005A52` |
 | Primary light | `#E6F4F3` |
@@ -111,6 +109,7 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 | Font | Inter (all weights) |
 | Card radius | 8px |
 | Button radius | 24px |
+| Specialization | Physiotherapy / Physical Therapy |
 
 ### Geography
 | ZocDoc | bookphysio.in |

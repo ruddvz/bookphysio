@@ -24,7 +24,7 @@ const JobsCTA = () => {
               marginBottom: '16px',
             }}
           >
-            bookphysio jobs
+            BookPhysio jobs
           </p>
           <h2
             style={{

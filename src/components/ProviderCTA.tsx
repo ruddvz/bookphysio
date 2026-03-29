@@ -114,7 +114,7 @@ export default function ProviderCTA() {
               marginBottom: "12px",
             }}
           >
-            bookphysio for private practices
+            BookPhysio for private practices
           </p>
 
           <h2

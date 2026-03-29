@@ -43,7 +43,7 @@ export default function AppSection() {
               marginBottom: '32px',
             }}
           >
-            The bookphysio app is the quickest, easiest way to book and keep
+            The BookPhysio app is the quickest, easiest way to book and keep
             track of your physiotherapy appointments.
           </p>
 

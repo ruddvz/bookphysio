@@ -35,7 +35,7 @@ interface FooterColumn {
 
 const COLUMNS: FooterColumn[] = [
   {
-    heading: 'bookphysio',
+    heading: 'BookPhysio',
     links: [
       { label: 'Home', href: '/' },
       { label: 'About us', href: '/about' },
@@ -57,13 +57,13 @@ const COLUMNS: FooterColumn[] = [
     ],
   },
   {
-    heading: 'Insurance Carriers',
+    heading: 'Popular Treatments',
     links: [
-      { label: 'Star Health', href: '/insurance/star-health' },
-      { label: 'Niva Bupa', href: '/insurance/niva-bupa' },
-      { label: 'HDFC ERGO', href: '/insurance/hdfc-ergo' },
-      { label: 'Medi Assist', href: '/insurance/medi-assist' },
-      { label: 'ICICI Lombard', href: '/insurance/icici-lombard' },
+      { label: 'Back Pain Relief', href: '/treatments/back-pain' },
+      { label: 'Post-Surgery Rehab', href: '/treatments/post-surgery' },
+      { label: 'Sports Injuries', href: '/treatments/sports-injuries' },
+      { label: 'Neck Pain Treatment', href: '/treatments/neck-pain' },
+      { label: 'Joint Mobility', href: '/treatments/joint-mobility' },
     ],
   },
   {
@@ -84,7 +84,7 @@ const COLUMNS: FooterColumn[] = [
       { label: 'Become an EHR partner', href: '/providers/ehr' },
       { label: 'Developers', href: '/developers' },
       { label: 'Enterprise Solutions', href: '/enterprise' },
-      { label: 'Get the bookphysio app', href: '/app' },
+      { label: 'Get the BookPhysio app', href: '/app' },
     ],
   },
 ];
@@ -105,7 +105,7 @@ const SOCIAL_LINKS = [
 ];
 
 const LEGAL_TEXT =
-  'The content provided here and elsewhere on the bookphysio.in site or mobile app is provided for general informational purposes only. It is not intended as, and bookphysio does not provide, medical advice, diagnosis or treatment. Always contact your healthcare provider directly with any questions you may have regarding your condition or specific medical advice.';
+  'The content provided here and elsewhere on the BookPhysio.in site or mobile app is provided for general informational purposes only. It is not intended as, and BookPhysio does not provide, medical advice, diagnosis or treatment. Always contact your healthcare provider directly with any questions you may have regarding your condition or specific medical advice.';
 
 function NewBadge() {
   return (
@@ -250,7 +250,7 @@ export default function Footer() {
           }}
         >
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-            <span>© 2026 bookphysio.in</span>
+            <span>© 2026 BookPhysio.in</span>
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}

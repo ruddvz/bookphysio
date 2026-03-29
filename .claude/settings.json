@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://raw.githubusercontent.com/obra/superpowers/main/skills/test-driven-development/testing-anti-patterns.md\")",
+      "Read(//c/Users/pvr66/.claude/**)",
+      "Read(//Users/pvr66/.claude/**)",
+      "Read(//tmp/**)",
+      "Read(//c/Users/pvr66/Downloads/**)",
+      "Bash(echo $HOME)",
+      "WebFetch(domain:github.com)",
+      "Edit(~/.claude/skills/vault-setup/**)",
+      "Edit(~/.claude/skills/daily/**)",
+      "Edit(~/.claude/skills/tldr/**)",
+      "Edit(~/.claude/skills/file-intel/**)"
+    ],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/tmp/superpowers/agents",
+      "C:/Users/pvr66/.claude",
+      "C:\\Users\\pvr66\\.claude\\skills",
+      "C:\\Users\\pvr66\\OneDrive\\Documents\\Obsidian Vault",
+      "C:\\Users\\pvr66\\.claude\\agents"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_PLUGIN_ROOT=/c/Users/pvr66/.claude/plugins/superpowers bash /c/Users/pvr66/.claude/plugins/superpowers/hooks/session-start",
+            "async": false
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "medium",
+  "autoUpdatesChannel": "latest"
+}

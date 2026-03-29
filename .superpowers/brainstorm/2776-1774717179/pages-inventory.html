@@ -1,0 +1,75 @@
+<h2>Zocdoc Full Platform — Page Inventory</h2>
+<p class="subtitle">30+ pages across 4 portals. Which grouping do we build first?</p>
+
+<div class="section">
+  <h3>Portal 1 — Public / Marketing</h3>
+  <ul>
+    <li>Homepage (search hero, specialties, how it works, testimonials, app CTA)</li>
+    <li>Search Results (filters, doctor cards, map view)</li>
+    <li>Doctor Profile (bio, reviews, availability, booking CTA)</li>
+    <li>Specialty pages (e.g. /dermatologist, /dentist)</li>
+    <li>Insurance pages</li>
+    <li>How it Works</li>
+    <li>About / Careers / Press</li>
+    <li>Login / Signup (patient + provider)</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Portal 2 — Patient Dashboard</h3>
+  <ul>
+    <li>Dashboard home (upcoming appointments)</li>
+    <li>Appointment history</li>
+    <li>Booking flow (date/time picker, insurance, confirm)</li>
+    <li>Telehealth video room</li>
+    <li>Profile & insurance settings</li>
+    <li>Notifications</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Portal 3 — Provider Portal</h3>
+  <ul>
+    <li>Provider dashboard (schedule, patient queue)</li>
+    <li>Availability management</li>
+    <li>Patient list</li>
+    <li>Reviews & ratings view</li>
+    <li>Practice settings & billing</li>
+    <li>Provider onboarding/join flow</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Portal 4 — Admin</h3>
+  <ul>
+    <li>Admin dashboard (metrics, charts)</li>
+    <li>User management (patients + providers)</li>
+    <li>Listings management</li>
+    <li>Insurance & billing management</li>
+    <li>Content management</li>
+  </ul>
+</div>
+
+<div class="options" style="margin-top:2rem">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Public first, then Patient, Provider, Admin</h3>
+      <p>Sequential portal-by-portal. Most logical dependency order — public site has no auth dependencies.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>All 4 portals in parallel (separate agents)</h3>
+      <p>Dispatch one agent per portal simultaneously. Faster overall delivery but needs more coordination.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Homepage + Search + Profile first (MVP core)</h3>
+      <p>Nail the most visible 3 pages perfectly, then expand outward to all portals.</p>
+    </div>
+  </div>
+</div>

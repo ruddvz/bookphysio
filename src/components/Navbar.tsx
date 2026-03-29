@@ -49,30 +49,26 @@ export default function Navbar() {
         }}
       >
         {/* Logo */}
-        <a href="/" className="flex items-center shrink-0" aria-label="bookphysio home">
-          <span
-            className="flex items-center justify-center shrink-0"
+        <a href="/" className="flex items-center shrink-0" aria-label="BookPhysio home">
+          <img
+            src="/images/logo-icon.png"
+            alt="BookPhysio Logo"
             style={{
               width: '40px',
               height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#00766C',
-              color: '#FFFFFF',
-              fontSize: '18px',
-              fontWeight: 700,
+              objectFit: 'contain',
             }}
-          >
-            B
-          </span>
+          />
           <span
             style={{
-              fontSize: '18px',
-              fontWeight: 600,
+              fontSize: '22px',
+              fontWeight: 700,
               color: '#333333',
-              marginLeft: '8px',
+              marginLeft: '10px',
+              letterSpacing: '-0.02em',
             }}
           >
-            bookphysio
+            BookPhysio
           </span>
         </a>
 
@@ -158,7 +154,7 @@ export default function Navbar() {
           <NavLink href="/help">Help</NavLink>
 
           <NavLink href="/list-practice" className="hidden lg:inline-flex">
-            List your practice on bookphysio
+            List your practice on BookPhysio
           </NavLink>
         </nav>
 
