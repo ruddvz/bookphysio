@@ -1,10 +1,10 @@
-export function generateStaticParams() { return [] }
-
 import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { Stethoscope } from 'lucide-react'
+
+export function generateStaticParams() { return [] }
 
 // ---------------------------------------------------------------------------
 // Data
