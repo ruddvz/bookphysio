@@ -1,3 +1,5 @@
+export function generateStaticParams() { return [] }
+
 import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'

@@ -1,3 +1,5 @@
+export function generateStaticParams() { return [] }
+
 import { CalendarDays, Clock, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
