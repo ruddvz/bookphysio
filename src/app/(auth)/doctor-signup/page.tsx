@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import BpLogo from '@/components/BpLogo'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -76,6 +78,7 @@ const FEE_LABELS: Record<string, string> = {
   home_visit: 'Home visit fee',
   online: 'Online consultation fee',
 }
+const OTP_LENGTH = 6
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -184,18 +187,9 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      style={{
-        width: '100%',
-        height: '48px',
-        backgroundColor: disabled ? '#A0C4C1' : '#00766C',
-        color: '#FFFFFF',
-        border: 'none',
-        borderRadius: '24px',
-        fontSize: '15px',
-        fontWeight: 600,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        marginTop: '8px',
-      }}
+      className={`w-full h-12 text-white border-none rounded-full text-[15px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
+        disabled ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+      }`}
     >
       {children}
     </button>
@@ -206,18 +200,10 @@ function BackLink({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        background: 'none',
-        border: 'none',
-        color: '#666666',
-        fontSize: '14px',
-        cursor: 'pointer',
-        padding: '8px 0 0',
-        display: 'block',
-        margin: '0 auto',
-      }}
+      className="flex items-center gap-1.5 text-[#666666] text-[14px] bg-transparent border-none cursor-pointer pt-3 mx-auto hover:text-[#333333] transition-colors outline-none"
     >
-      ← Back
+      <ArrowLeft className="w-4 h-4" />
+      Back
     </button>
   )
 }
@@ -253,40 +239,44 @@ function FocusableInput({
 
 function ProgressIndicator({ current }: { current: StepNumber }) {
   return (
-    <div style={{ marginBottom: '28px' }}>
-      <p style={{ fontSize: '13px', color: '#666666', marginBottom: '10px', textAlign: 'center' }}>
-        Step {current} of 5
-      </p>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0' }}>
+    <div className="mb-8">
+      <div className="flex items-center justify-between">
         {STEP_LABELS.map((label, i) => {
           const step = (i + 1) as StepNumber
-          const filled = step <= current
+          const done = step < current
+          const active = step === current
+
           return (
-            <div key={label} style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+            <div key={label} className="flex items-center flex-1 last:flex-none">
+              {/* Circle + label */}
+              <div className="flex flex-col items-center gap-1.5">
                 <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: filled ? '#00766C' : 'transparent',
-                    border: `2px solid ${filled ? '#00766C' : '#CCCCCC'}`,
-                  }}
-                />
-                <span style={{ fontSize: '11px', color: filled ? '#00766C' : '#999999', whiteSpace: 'nowrap' }}>
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors ${
+                    done
+                      ? 'bg-[#00766C] text-white'
+                      : active
+                      ? 'bg-white text-[#00766C] ring-2 ring-[#00766C]'
+                      : 'bg-[#F0F0F0] text-[#999999]'
+                  }`}
+                >
+                  {done ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step}
+                </div>
+                <span
+                  className={`text-[11px] whitespace-nowrap hidden sm:block ${
+                    active ? 'text-[#00766C] font-semibold' : done ? 'text-[#00766C]' : 'text-[#999999]'
+                  }`}
+                >
                   {label}
                 </span>
               </div>
+
+              {/* Connector line */}
               {i < STEP_LABELS.length - 1 && (
-                <div
-                  style={{
-                    width: '36px',
-                    height: '2px',
-                    backgroundColor: step < current ? '#00766C' : '#E5E5E5',
-                    marginBottom: '16px',
-                    flexShrink: 0,
-                  }}
-                />
+                <div className="flex-1 h-0.5 mx-1.5 mb-4">
+                  <div
+                    className={`h-full transition-colors ${step < current ? 'bg-[#00766C]' : 'bg-[#E5E5E5]'}`}
+                  />
+                </div>
               )}
             </div>
           )
@@ -329,7 +319,7 @@ function Step1({ data, onChange, onNext }: Step1Props) {
         Personal Details
       </h2>
       <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
-        Let's start with your basic information
+        Let&apos;s start with your basic information
       </p>
 
       <div style={{ marginBottom: '16px' }}>
@@ -391,7 +381,10 @@ function Step1({ data, onChange, onNext }: Step1Props) {
         <FieldError msg={errors.email} />
       </div>
 
-      <PrimaryButton onClick={handleNext}>Next: Professional Details →</PrimaryButton>
+      <PrimaryButton onClick={handleNext}>
+        Next: Professional Details
+        <ArrowRight className="w-4 h-4" />
+      </PrimaryButton>
     </div>
   )
 }
@@ -500,8 +493,13 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         <FieldError msg={errors.specialties} />
       </div>
 
-      <PrimaryButton onClick={handleNext}>Next: Practice Details →</PrimaryButton>
-      <BackLink onClick={onBack} />
+      <PrimaryButton onClick={handleNext}>
+        Next: Practice Details
+        <ArrowRight className="w-4 h-4" />
+      </PrimaryButton>
+      <div className="flex justify-center">
+        <BackLink onClick={onBack} />
+      </div>
     </div>
   )
 }
@@ -629,8 +627,13 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         <FieldError msg={errors.visitTypes} />
       </div>
 
-      <PrimaryButton onClick={handleNext}>Next: Pricing & Availability →</PrimaryButton>
-      <BackLink onClick={onBack} />
+      <PrimaryButton onClick={handleNext}>
+        Next: Pricing &amp; Availability
+        <ArrowRight className="w-4 h-4" />
+      </PrimaryButton>
+      <div className="flex justify-center">
+        <BackLink onClick={onBack} />
+      </div>
     </div>
   )
 }
@@ -679,7 +682,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
   return (
     <div>
       <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '6px' }}>
-        Pricing & Availability
+        Pricing &amp; Availability
       </h2>
       <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
         Set your fees and working hours
@@ -759,22 +762,43 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
             const av = data.availability[day]
             const dim = !av.enabled
             const timeKey = `time_${day}`
-            return (
-              <>
-                <span key={`${day}-label`} style={{ fontSize: '14px', color: '#333333', fontWeight: 500 }}>{day}</span>
-                <input
-                  key={`${day}-check`}
-                  type="checkbox"
-                  checked={av.enabled}
-                  onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
-                  style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
-                />
+            return [
+              <span key={`${day}-label`} style={{ fontSize: '14px', color: '#333333', fontWeight: 500 }}>{day}</span>,
+              <input
+                key={`${day}-check`}
+                type="checkbox"
+                aria-label={`Enable ${day}`}
+                checked={av.enabled}
+                onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
+                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+              />,
+              <select
+                key={`${day}-start`}
+                aria-label={`${day} start time`}
+                value={av.startTime}
+                disabled={dim}
+                onChange={(e) => setDayField(day, 'startTime', e.target.value)}
+                onFocus={() => setFocusedTimes(`${day}-start`)}
+                onBlur={() => setFocusedTimes(null)}
+                style={{
+                  ...inputStyle,
+                  height: '36px',
+                  fontSize: '13px',
+                  padding: '0 8px',
+                  opacity: dim ? 0.4 : 1,
+                  pointerEvents: dim ? 'none' : 'auto',
+                  borderColor: focusedTimes === `${day}-start` ? '#00766C' : '#E5E5E5',
+                }}
+              >
+                {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>,
+              <div key={`${day}-end-wrap`}>
                 <select
-                  key={`${day}-start`}
-                  value={av.startTime}
+                  aria-label={`${day} end time`}
+                  value={av.endTime}
                   disabled={dim}
-                  onChange={(e) => setDayField(day, 'startTime', e.target.value)}
-                  onFocus={() => setFocusedTimes(`${day}-start`)}
+                  onChange={(e) => setDayField(day, 'endTime', e.target.value)}
+                  onFocus={() => setFocusedTimes(`${day}-end`)}
                   onBlur={() => setFocusedTimes(null)}
                   style={{
                     ...inputStyle,
@@ -783,40 +807,25 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                     padding: '0 8px',
                     opacity: dim ? 0.4 : 1,
                     pointerEvents: dim ? 'none' : 'auto',
-                    borderColor: focusedTimes === `${day}-start` ? '#00766C' : '#E5E5E5',
+                    borderColor: focusedTimes === `${day}-end` ? '#00766C' : '#E5E5E5',
                   }}
                 >
                   {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <div key={`${day}-end-wrap`}>
-                  <select
-                    value={av.endTime}
-                    disabled={dim}
-                    onChange={(e) => setDayField(day, 'endTime', e.target.value)}
-                    onFocus={() => setFocusedTimes(`${day}-end`)}
-                    onBlur={() => setFocusedTimes(null)}
-                    style={{
-                      ...inputStyle,
-                      height: '36px',
-                      fontSize: '13px',
-                      padding: '0 8px',
-                      opacity: dim ? 0.4 : 1,
-                      pointerEvents: dim ? 'none' : 'auto',
-                      borderColor: focusedTimes === `${day}-end` ? '#00766C' : '#E5E5E5',
-                    }}
-                  >
-                    {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  {errors[timeKey] && <FieldError msg={errors[timeKey]} />}
-                </div>
-              </>
-            )
+                {errors[timeKey] && <FieldError msg={errors[timeKey]} />}
+              </div>,
+            ]
           })}
         </div>
       </div>
 
-      <PrimaryButton onClick={handleNext}>Next: Verify Phone →</PrimaryButton>
-      <BackLink onClick={onBack} />
+      <PrimaryButton onClick={handleNext}>
+        Next: Verify Phone
+        <ArrowRight className="w-4 h-4" />
+      </PrimaryButton>
+      <div className="flex justify-center">
+        <BackLink onClick={onBack} />
+      </div>
     </div>
   )
 }
@@ -835,7 +844,17 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
   const [countdown, setCountdown] = useState(45)
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  const focusInput = useCallback((index: number) => {
+    inputRefs.current[index]?.focus()
+  }, [])
+
+  // Focus first input on mount
+  useEffect(() => {
+    focusInput(0)
+  }, [focusInput])
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -849,85 +868,107 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
   function handleResend() {
     setCountdown(45)
     setCanResend(false)
-    onChange({ otp: ['', '', '', '', '', ''] })
-    inputRefs.current[0]?.focus()
+    onChange({ otp: Array(OTP_LENGTH).fill('') })
+    focusInput(0)
   }
 
   function handleDigit(index: number, val: string) {
     const digit = val.replace(/\D/g, '').slice(-1)
     const next = data.otp.map((v, i) => (i === index ? digit : v))
     onChange({ otp: next })
-    if (digit && index < 5) {
-      inputRefs.current[index + 1]?.focus()
+    setError('')
+    if (digit && index < OTP_LENGTH - 1) {
+      focusInput(index + 1)
     }
   }
 
   function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace' && !data.otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
+    if (e.key === 'Backspace') {
+      if (data.otp[index]) {
+        onChange({ otp: data.otp.map((v, i) => (i === index ? '' : v)) })
+      } else if (index > 0) {
+        onChange({ otp: data.otp.map((v, i) => (i === index - 1 ? '' : v)) })
+        focusInput(index - 1)
+      }
     }
   }
 
-  function handleSubmit() {
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault()
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
+    if (!pasted) return
+    const nextOtp = Array(OTP_LENGTH).fill('').map((_, i) => pasted[i] ?? '')
+    onChange({ otp: nextOtp })
+    focusInput(Math.min(pasted.length, OTP_LENGTH - 1))
+  }
+
+  function handleSubmitOtp() {
     if (data.otp.some((d) => !d)) {
       setError('Enter all 6 digits')
       return
     }
     setError('')
-    onSubmit()
+    setLoading(true)
+    try {
+      onSubmit()
+    } finally {
+      setLoading(false)
+    }
   }
+
+  // Auto-submit when all 6 filled
+  useEffect(() => {
+    if (data.otp.every((d) => d !== '') && !loading) {
+      handleSubmitOtp()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.otp])
 
   const setRef = useCallback((el: HTMLInputElement | null, i: number) => {
     inputRefs.current[i] = el
   }, [])
 
+  const displayPhone = phone
+    ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`
+    : ''
+
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
-        Almost there!
-      </h2>
-      <p style={{ fontSize: '15px', color: '#333333', marginBottom: '4px' }}>
-        Verify your mobile number
-      </p>
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '28px' }}>
-        Code sent to +91 {phone}
+    <div className="text-center">
+      <h2 className="text-[22px] font-bold text-[#333333] mb-2">Almost there!</h2>
+      <p className="text-[15px] text-[#333333] mb-1">Verify your mobile number</p>
+      <p className="text-[14px] text-[#666666] mb-7">
+        Code sent to <span className="font-semibold text-[#333333]">{displayPhone}</span>
       </p>
 
-      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '16px' }}>
+      <div className="flex gap-2.5 justify-center mb-4">
         {data.otp.map((digit, i) => (
           <input
             key={i}
             ref={(el) => setRef(el, i)}
-            type="text"
+            type="tel"
             inputMode="numeric"
             maxLength={1}
             value={digit}
             onChange={(e) => handleDigit(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
-            style={{
-              width: '48px',
-              height: '56px',
-              textAlign: 'center',
-              fontSize: '22px',
-              fontWeight: 700,
-              border: `2px solid ${digit ? '#00766C' : '#E5E5E5'}`,
-              borderRadius: '8px',
-              outline: 'none',
-              color: '#333333',
-            }}
-            onFocus={(e) => (e.target.style.borderColor = '#00766C')}
-            onBlur={(e) => (e.target.style.borderColor = digit ? '#00766C' : '#E5E5E5')}
+            onPaste={handlePaste}
+            aria-label={`OTP digit ${i + 1}`}
+            className={`w-12 h-14 text-center text-[22px] font-bold text-[#333333] bg-white rounded-[8px] outline-none border-2 transition-colors ${
+              digit ? 'border-[#00766C]' : 'border-[#E5E5E5] focus:border-[#00766C]'
+            }`}
           />
         ))}
       </div>
 
-      {error && <FieldError msg={error} />}
+      {error && (
+        <p className="text-[12px] text-[#DC2626] mb-3">{error}</p>
+      )}
 
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '20px' }}>
+      <p className="text-[14px] text-[#666666] mb-5">
         {canResend ? (
           <button
             onClick={handleResend}
-            style={{ background: 'none', border: 'none', color: '#00766C', cursor: 'pointer', fontSize: '14px', fontWeight: 600 }}
+            className="bg-transparent border-none text-[#00766C] cursor-pointer text-[14px] font-semibold hover:text-[#005A52] transition-colors outline-none"
           >
             Resend code
           </button>
@@ -936,8 +977,17 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
         )}
       </p>
 
-      <PrimaryButton onClick={handleSubmit}>Complete Registration →</PrimaryButton>
-      <BackLink onClick={onBack} />
+      <PrimaryButton onClick={handleSubmitOtp} disabled={loading}>
+        {loading ? 'Submitting…' : (
+          <>
+            Complete Registration
+            <ArrowRight className="w-4 h-4" />
+          </>
+        )}
+      </PrimaryButton>
+      <div className="flex justify-center">
+        <BackLink onClick={onBack} />
+      </div>
     </div>
   )
 }
@@ -960,7 +1010,7 @@ export default function DoctorSignupPage() {
     slotDuration: '',
     availability: buildInitialAvailability(),
   })
-  const [step5, setStep5] = useState<Step5Data>({ otp: ['', '', '', '', '', ''] })
+  const [step5, setStep5] = useState<Step5Data>({ otp: Array(OTP_LENGTH).fill('') })
 
   function goNext() {
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
@@ -969,20 +1019,12 @@ export default function DoctorSignupPage() {
     setCurrentStep((s) => Math.max(s - 1, 1) as StepNumber)
   }
   function handleSubmit() {
-    router.push('/')
+    router.push('/provider/dashboard')
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '8px',
-        padding: '40px',
-        maxWidth: '560px',
-        width: '100%',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-      }}
-    >
+    <div className="bg-white rounded-[12px] p-10 max-w-[560px] w-full shadow-lg animate-in fade-in duration-500">
+      <BpLogo />
       <ProgressIndicator current={currentStep} />
 
       {currentStep === 1 && (
