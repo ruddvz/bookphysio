@@ -73,7 +73,7 @@ export default function BookLayout({ children }) { return <>{children}</> }
 
 ## REVERT — src/app/city/[slug]/page.tsx
 
-Added at top of file:
+Added after imports (line 7):
 ```ts
 export function generateStaticParams() { return [] }
 ```
@@ -82,7 +82,7 @@ export function generateStaticParams() { return [] }
 
 ## REVERT — src/app/doctor/[id]/page.tsx
 
-Added at top of file:
+Added after imports (line 9):
 ```ts
 export function generateStaticParams() { return [] }
 ```
@@ -91,7 +91,7 @@ export function generateStaticParams() { return [] }
 
 ## REVERT — src/app/patient/appointments/[id]/page.tsx
 
-Added at top of file:
+Added after imports (line 4):
 ```ts
 export function generateStaticParams() { return [] }
 ```
@@ -100,7 +100,7 @@ export function generateStaticParams() { return [] }
 
 ## REVERT — src/app/provider/appointments/[id]/page.tsx
 
-Added at top of file:
+Added after imports (line 3):
 ```ts
 export function generateStaticParams() { return [] }
 ```
@@ -109,7 +109,7 @@ export function generateStaticParams() { return [] }
 
 ## REVERT — src/app/provider/patients/[id]/page.tsx
 
-Added at top of file:
+Added after imports (line 4):
 ```ts
 export function generateStaticParams() { return [] }
 ```
@@ -118,7 +118,7 @@ export function generateStaticParams() { return [] }
 
 ## REVERT — src/app/specialty/[slug]/page.tsx
 
-Added at top of file:
+Added after imports (line 7):
 ```ts
 export function generateStaticParams() { return [] }
 ```
