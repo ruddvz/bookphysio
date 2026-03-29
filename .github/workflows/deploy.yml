@@ -39,15 +39,25 @@ jobs:
           echo "NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}" >> $GITHUB_ENV
           echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
 
-      - name: Stash API routes (incompatible with static export)
-        run: mv src/app/api /tmp/api_routes
+      - name: Stash API route handlers (incompatible with static export)
+        # Keep contracts/ in place — UI pages import types from there.
+        # Only remove route.ts files so Next.js doesn't try to statically export them.
+        run: |
+          find src/app/api -name "route.ts" | while read f; do
+            mkdir -p /tmp/api_routes/$(dirname $f)
+            mv "$f" "/tmp/api_routes/$f"
+          done
 
       - name: Build static export
         run: npm run build
 
-      - name: Restore API routes
+      - name: Restore API route handlers
         if: always()
-        run: mv /tmp/api_routes src/app/api
+        run: |
+          find /tmp/api_routes/src/app/api -name "route.ts" 2>/dev/null | while read f; do
+            rel="${f#/tmp/api_routes/}"
+            mv "$f" "$rel"
+          done
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
