@@ -32,31 +32,31 @@ https://www.zocdoc.com
 #### Patient Dashboard (authenticated)
 - [x] Dashboard Home — `/patient/dashboard` — upcoming appointments, quick actions
 - [x] Appointments List — `/patient/appointments` — upcoming + past tabs
-- [ ] Appointment Detail — `/patient/appointments/{id}`
-- [ ] Find a Doctor (in-dashboard search) — `/patient/search`
-- [ ] Messages / Chat — `/patient/messages`
-- [ ] Profile & Settings — `/patient/profile`
-- [ ] Notifications — `/patient/notifications`
-- [ ] Payment History — `/patient/payments`
+- [x] Appointment Detail — `/patient/appointments/{id}`
+- [x] Find a Doctor (in-dashboard search) — `/patient/search`
+- [x] Messages / Chat — `/patient/messages`
+- [x] Profile & Settings — `/patient/profile`
+- [x] Notifications — `/patient/notifications`
+- [x] Payment History — `/patient/payments`
 
 #### Provider Portal (authenticated)
 - [x] Provider Dashboard — `/provider/dashboard` — today's schedule, stats
 - [x] Calendar / Schedule — `/provider/calendar`
 - [x] Appointment List — `/provider/appointments`
-- [ ] Appointment Detail — `/provider/appointments/{id}`
+- [x] Appointment Detail — `/provider/appointments/{id}`
 - [x] Patient Records — `/provider/patients`
-- [ ] Patient Detail — `/provider/patients/{id}`
-- [ ] Messages — `/provider/messages`
+- [x] Patient Detail — `/provider/patients/{id}`
+- [x] Messages — `/provider/messages`
 - [x] Practice Profile — `/provider/profile`
 - [x] Availability Settings — `/provider/availability`
 - [x] Earnings / Payouts — `/provider/earnings`
-- [ ] Notifications — `/provider/notifications`
+- [x] Notifications — `/provider/notifications`
 
 #### Admin Panel (authenticated)
 - [x] Admin Dashboard — `/admin` — platform stats overview
 - [x] Provider Approval Queue — `/admin/listings`
 - [x] User Management — `/admin/users`
-- [ ] Analytics — `/admin/analytics`
+- [x] Analytics — `/admin/analytics`
 
 ### Fidelity Level
 - [x] **Pixel-perfect** — exact match in colors, spacing, typography, animations
