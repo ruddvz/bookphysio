@@ -1,6 +1,8 @@
 import { User, Phone, MapPin, ClipboardList, CheckCircle } from 'lucide-react'
 
-export async function generateStaticParams() { return [] as never[] }
+export function generateStaticParams() {
+  return [{ id: '1' }]
+}
 
 export default async function ProviderAppointmentDetail({ 
   params 
