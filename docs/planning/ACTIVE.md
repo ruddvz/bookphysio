@@ -11,10 +11,9 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.3 — Doctor Profile Polish
-- [ ] **8.3** Sticky BookingCard
-- [ ] **8.3** Slot picker polish
-- [ ] **8.3** Responsive layout
+### Next up: Step 8.4 — Auth Pages Polish
+- [ ] **8.4** OTP 6-digit input auto-advance
+- [ ] **8.4** Form validation UX
 
 ---
 
@@ -46,3 +45,4 @@
 - [x] EXECUTION-PLAN.md updated to reflect true build state
 - [x] **8.1 Homepage Polish** — TopSpecialties hrefs, AppSection mobile, ProviderCTA mobile, Footer mobile padding, InsurancePlans deferred to P3
 - [x] **8.2 Search Results Polish** — filters wired to URL params, init from URL, clear all, mobile drawer, Map View "Soon" badge
+- [x] **8.3 Doctor Profile Polish** — Today label on date picker, BookingCard max-height overflow, mobile sticky booking bar, rating pill in hero

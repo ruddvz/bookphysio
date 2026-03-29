@@ -54,7 +54,7 @@ function getNext7Days(): DayEntry[] {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
     const iso = d.toISOString().split('T')[0]
-    return { label: DAY_NAMES[d.getDay()], dayNum: d.getDate(), iso }
+    return { label: i === 0 ? 'Today' : DAY_NAMES[d.getDay()], dayNum: d.getDate(), iso }
   })
 }
 
@@ -171,7 +171,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
   const canBook = selectedSlot !== null
 
   return (
-    <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-6 sticky top-24">
+    <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-6 sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto">
       {/* Fee */}
       <div className="mb-5">
         <span className="text-[24px] font-bold text-[#333333]">₹{selectedFee}</span>

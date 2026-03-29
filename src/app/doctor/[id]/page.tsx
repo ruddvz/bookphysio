@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
+import MobileBookingBar from './MobileBookingBar'
 import { MapPin, ShieldCheck, GraduationCap, Languages, Star } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 
@@ -101,7 +102,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
     <>
       <Navbar />
 
-      <main className="bg-[#F7F8F9] min-h-screen pt-10 pb-20">
+      <main className="bg-[#F7F8F9] min-h-screen pt-10 pb-28 md:pb-20">
         <div className="max-w-[1142px] mx-auto px-6 lg:px-[60px]">
           <div className="grid grid-cols-1 md:grid-cols-[65%_35%] gap-8 items-start">
 
@@ -132,10 +133,10 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
                     {/* Rating + ICP badge */}
                     <div className="flex items-center gap-3 flex-wrap mb-2.5">
-                      <div className="flex items-center gap-1">
-                        <StarRating rating={provider.rating_avg ?? 0} />
-                        <span className="text-[14px] font-semibold text-[#333333] ml-1">{(provider.rating_avg ?? 0).toFixed(1)}</span>
-                        <span className="text-[14px] text-[#666666]">({provider.rating_count ?? 0} reviews)</span>
+                      <div className="flex items-center gap-1.5 bg-[#FFF8EC] px-2.5 py-1 rounded-[6px]">
+                        <Star className="w-4 h-4 text-[#F5A623] fill-[#F5A623]" />
+                        <span className="text-[14px] font-bold text-[#333333]">{(provider.rating_avg ?? 0).toFixed(1)}</span>
+                        <span className="text-[13px] text-[#666666]">({provider.rating_count ?? 0})</span>
                       </div>
                       {provider.icp_registration_no && (
                         <span className="inline-flex items-center gap-1 bg-[#E6F4F3] text-[#005A52] text-[12px] font-semibold px-2.5 py-1 rounded-full">
@@ -236,7 +237,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
             </div>
 
             {/* RIGHT COLUMN — Booking card (sticky) */}
-            <aside aria-label="Book a session">
+            <aside aria-label="Book a session" id="booking-card-section">
               <BookingCard
                 doctorId={id}
                 fee={feeMap}
@@ -246,6 +247,12 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
           </div>
         </div>
       </main>
+
+      <MobileBookingBar
+        doctorId={id}
+        fee={feeMap.in_clinic}
+        doctorName={nameWithTitle}
+      />
 
       <Footer />
     </>
