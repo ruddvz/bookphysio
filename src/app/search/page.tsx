@@ -107,24 +107,27 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               )}
             </div>
 
-            {/* Map View — placeholder, disabled */}
-            <button
-              disabled
-              aria-label="Map view (coming soon)"
-              title="Map view coming soon"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E5E5E5] bg-[#F5F5F5] text-[#999999] text-[14px] font-medium cursor-not-allowed"
-            >
-              <Map className="w-4 h-4" />
-              Map View
-            </button>
+            {/* Map View — coming soon */}
+            <div className="relative group">
+              <button
+                type="button"
+                disabled
+                aria-label="Map view (coming soon)"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E5E5E5] bg-[#F5F5F5] text-[#AAAAAA] text-[14px] font-medium cursor-not-allowed select-none"
+              >
+                <Map className="w-4 h-4" />
+                Map View
+                <span className="text-[11px] font-semibold text-[#00766C] bg-[#E6F4F3] px-1.5 py-0.5 rounded-full">
+                  Soon
+                </span>
+              </button>
+            </div>
           </div>
 
           {/* Two-column layout */}
           <div className="flex gap-6 items-start md:flex-row flex-col">
-            {/* Sidebar */}
-            <div className="hidden md:block">
-              <SearchFilters />
-            </div>
+            {/* Sidebar / mobile trigger */}
+            <SearchFilters />
 
             {/* Results column */}
             <div className="flex-1 min-w-0 flex flex-col gap-3">

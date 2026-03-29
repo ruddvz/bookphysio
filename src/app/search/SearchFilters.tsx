@@ -1,6 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { SlidersHorizontal, X } from 'lucide-react'
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 const SPECIALTIES = [
   'Sports Physio', 'Neuro Physio', 'Ortho Physio', 'Paediatric Physio',
@@ -12,61 +18,116 @@ const CITIES = [
   'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
 ]
 
+const VISIT_TYPE_URL: Record<string, string> = {
+  'In-clinic': 'in_clinic',
+  'Home Visit': 'home_visit',
+  'Online': 'online',
+}
+const VISIT_TYPE_LABEL: Record<string, string> = Object.fromEntries(
+  Object.entries(VISIT_TYPE_URL).map(([k, v]) => [v, k])
+)
+
 type VisitType = 'Any' | 'In-clinic' | 'Home Visit' | 'Online'
 type Availability = 'Any day' | 'Today' | 'Tomorrow' | 'This week'
 
-interface FilterState {
-  specialties: string[]
+const DEFAULT_MAX_FEE = 2000
+const DEFAULT_CITY = ''
+
+// ---------------------------------------------------------------------------
+// Hook — reads current URL and builds a push helper
+// ---------------------------------------------------------------------------
+
+function useFilters() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const currentCity = searchParams.get('city') ?? DEFAULT_CITY
+  const currentVisitTypeRaw = searchParams.get('visit_type') ?? ''
+  const currentVisitType: VisitType = (VISIT_TYPE_LABEL[currentVisitTypeRaw] as VisitType) ?? 'Any'
+  const currentMaxFee = Number(searchParams.get('max_fee') ?? DEFAULT_MAX_FEE)
+  const currentSpecialty = searchParams.get('specialty') ?? ''
+
+  const hasActiveFilters =
+    currentCity !== DEFAULT_CITY ||
+    currentVisitType !== 'Any' ||
+    currentMaxFee !== DEFAULT_MAX_FEE ||
+    currentSpecialty !== ''
+
+  const pushParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const next = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === null || value === '') {
+          next.delete(key)
+        } else {
+          next.set(key, value)
+        }
+      }
+      router.push(`/search?${next.toString()}`)
+    },
+    [router, searchParams]
+  )
+
+  function clearAll() {
+    const next = new URLSearchParams(searchParams.toString())
+    next.delete('city')
+    next.delete('visit_type')
+    next.delete('max_fee')
+    next.delete('specialty')
+    router.push(`/search?${next.toString()}`)
+  }
+
+  return {
+    currentCity,
+    currentVisitType,
+    currentMaxFee,
+    currentSpecialty,
+    hasActiveFilters,
+    pushParams,
+    clearAll,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FilterPanel — the actual filter controls (shared by sidebar + drawer)
+// ---------------------------------------------------------------------------
+
+interface FilterPanelProps {
   city: string
   visitType: VisitType
   availability: Availability
   maxFee: number
+  specialty: string
+  onCity: (v: string) => void
+  onVisitType: (v: VisitType) => void
+  onAvailability: (v: Availability) => void
+  onMaxFee: (v: number) => void
+  onSpecialty: (v: string) => void
+  hasActiveFilters: boolean
+  onClear: () => void
 }
 
-const INITIAL_STATE: FilterState = {
-  specialties: [],
-  city: 'Mumbai',
-  visitType: 'Any',
-  availability: 'Any day',
-  maxFee: 2000,
-}
-
-export default function SearchFilters() {
-  const [filters, setFilters] = useState<FilterState>(INITIAL_STATE)
-
-  function toggleSpecialty(specialty: string): void {
-    setFilters((prev) => {
-      const already = prev.specialties.includes(specialty)
-      return {
-        ...prev,
-        specialties: already
-          ? prev.specialties.filter((s) => s !== specialty)
-          : [...prev.specialties, specialty],
-      }
-    })
-  }
-
-  function setCity(city: string): void {
-    setFilters((prev) => ({ ...prev, city }))
-  }
-
-  function setVisitType(visitType: VisitType): void {
-    setFilters((prev) => ({ ...prev, visitType }))
-  }
-
-  function setAvailability(availability: Availability): void {
-    setFilters((prev) => ({ ...prev, availability }))
-  }
-
-  function setMaxFee(maxFee: number): void {
-    setFilters((prev) => ({ ...prev, maxFee }))
-  }
-
+function FilterPanel({
+  city, visitType, availability, maxFee, specialty,
+  onCity, onVisitType, onAvailability, onMaxFee, onSpecialty,
+  hasActiveFilters, onClear,
+}: FilterPanelProps) {
   return (
-    <aside
-      aria-label="Search filters"
-      className="bg-white rounded-[8px] border border-[#E5E5E5] p-5 w-[280px] shrink-0 self-start sticky top-24"
-    >
+    <div>
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-[15px] font-semibold text-[#333333]">Filters</p>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="text-[13px] font-medium text-[#00766C] hover:text-[#005A52] transition-colors"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
+
       {/* Specialty */}
       <section aria-labelledby="filter-specialty">
         <p id="filter-specialty" className="text-[13px] font-semibold text-[#666666] uppercase tracking-wider mb-3">
@@ -74,15 +135,17 @@ export default function SearchFilters() {
         </p>
         <fieldset className="border-none m-0 p-0">
           <legend className="sr-only">Filter by specialty</legend>
-          {SPECIALTIES.map((specialty) => (
-            <label key={specialty} className="flex items-center gap-2 text-[14px] text-[#333333] cursor-pointer py-1">
+          {SPECIALTIES.map((s) => (
+            <label key={s} className="flex items-center gap-2 text-[14px] text-[#333333] cursor-pointer py-1">
               <input
-                type="checkbox"
-                checked={filters.specialties.includes(specialty)}
-                onChange={() => toggleSpecialty(specialty)}
+                type="radio"
+                name="specialty"
+                value={s}
+                checked={specialty === s}
+                onChange={() => onSpecialty(specialty === s ? '' : s)}
                 className="accent-[#00766C] w-4 h-4"
               />
-              {specialty}
+              {s}
             </label>
           ))}
         </fieldset>
@@ -96,13 +159,14 @@ export default function SearchFilters() {
           City
         </p>
         <select
-          value={filters.city}
-          onChange={(e) => setCity(e.target.value)}
+          value={city}
+          onChange={(e) => onCity(e.target.value)}
           aria-label="Filter by city"
           className="w-full px-2.5 py-2 rounded-[6px] border border-[#E5E5E5] text-[14px] text-[#333333] bg-white cursor-pointer outline-none focus:border-[#00766C]"
         >
-          {CITIES.map((city) => (
-            <option key={city} value={city}>{city}</option>
+          <option value="">All cities</option>
+          {CITIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </section>
@@ -122,8 +186,8 @@ export default function SearchFilters() {
                 type="radio"
                 name="visitType"
                 value={type}
-                checked={filters.visitType === type}
-                onChange={() => setVisitType(type)}
+                checked={visitType === type}
+                onChange={() => onVisitType(type)}
                 className="accent-[#00766C] w-4 h-4"
               />
               {type}
@@ -147,8 +211,8 @@ export default function SearchFilters() {
                 type="radio"
                 name="availability"
                 value={avail}
-                checked={filters.availability === avail}
-                onChange={() => setAvailability(avail)}
+                checked={availability === avail}
+                onChange={() => onAvailability(avail)}
                 className="accent-[#00766C] w-4 h-4"
               />
               {avail}
@@ -165,15 +229,15 @@ export default function SearchFilters() {
           Fee Range
         </p>
         <p className="text-[14px] text-[#333333] mb-2.5 font-medium">
-          ₹0 – ₹{filters.maxFee.toLocaleString('en-IN')}
+          ₹0 – ₹{maxFee.toLocaleString('en-IN')}
         </p>
         <input
           type="range"
           min={0}
           max={2000}
           step={100}
-          value={filters.maxFee}
-          onChange={(e) => setMaxFee(Number(e.target.value))}
+          value={maxFee}
+          onChange={(e) => onMaxFee(Number(e.target.value))}
           aria-label="Maximum fee per session"
           className="w-full accent-[#00766C] cursor-pointer"
         />
@@ -182,6 +246,136 @@ export default function SearchFilters() {
           <span>₹2,000</span>
         </div>
       </section>
-    </aside>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Main export — sidebar (desktop) + drawer trigger (mobile)
+// ---------------------------------------------------------------------------
+
+export default function SearchFilters() {
+  const {
+    currentCity, currentVisitType, currentMaxFee, currentSpecialty,
+    hasActiveFilters, pushParams, clearAll,
+  } = useFilters()
+
+  // Local availability state (UI-only, no API support yet)
+  const [availability, setAvailability] = useState<Availability>('Any day')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // Fee slider uses local state to avoid a navigation on every tick;
+  // pushes to URL only on mouseup/touchend.
+  const [localMaxFee, setLocalMaxFee] = useState(currentMaxFee)
+
+  function handleCity(city: string) {
+    pushParams({ city: city || null })
+  }
+
+  function handleVisitType(vt: VisitType) {
+    pushParams({ visit_type: vt === 'Any' ? null : VISIT_TYPE_URL[vt] })
+  }
+
+  function handleSpecialty(s: string) {
+    pushParams({ specialty: s || null })
+  }
+
+  function handleMaxFeeCommit() {
+    pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })
+  }
+
+  function handleClear() {
+    setLocalMaxFee(DEFAULT_MAX_FEE)
+    setAvailability('Any day')
+    clearAll()
+    setDrawerOpen(false)
+  }
+
+  const panelProps: FilterPanelProps = {
+    city: currentCity,
+    visitType: currentVisitType,
+    availability,
+    maxFee: localMaxFee,
+    specialty: currentSpecialty,
+    onCity: handleCity,
+    onVisitType: handleVisitType,
+    onAvailability: setAvailability,
+    onMaxFee: setLocalMaxFee,
+    onSpecialty: handleSpecialty,
+    hasActiveFilters,
+    onClear: handleClear,
+  }
+
+  return (
+    <>
+      {/* ── Desktop sidebar ── */}
+      <aside
+        aria-label="Search filters"
+        className="hidden md:block bg-white rounded-[8px] border border-[#E5E5E5] p-5 w-[280px] shrink-0 self-start sticky top-24"
+        onMouseUp={handleMaxFeeCommit}
+        onTouchEnd={handleMaxFeeCommit}
+      >
+        <FilterPanel {...panelProps} />
+      </aside>
+
+      {/* ── Mobile: Filters trigger button ── */}
+      <div className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#E5E5E5] bg-white text-[14px] font-medium text-[#333333] shadow-sm"
+        >
+          <SlidersHorizontal className="w-4 h-4 text-[#00766C]" />
+          Filters
+          {hasActiveFilters && (
+            <span className="w-5 h-5 rounded-full bg-[#00766C] text-white text-[11px] font-bold flex items-center justify-center">
+              !
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* ── Mobile: Slide-up drawer ── */}
+      {drawerOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setDrawerOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Drawer panel */}
+          <div
+            className="relative bg-white rounded-t-[16px] p-5 pb-8 max-h-[85vh] overflow-y-auto"
+            onMouseUp={handleMaxFeeCommit}
+            onTouchEnd={handleMaxFeeCommit}
+          >
+            {/* Drag handle */}
+            <div className="w-10 h-1 bg-[#E5E5E5] rounded-full mx-auto mb-4" />
+
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Close filters"
+              className="absolute top-4 right-4 p-1 text-[#666666] hover:text-[#333333]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <FilterPanel {...panelProps} />
+
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              className="mt-6 w-full py-3 rounded-[24px] bg-[#00766C] text-white text-[15px] font-semibold hover:bg-[#005A52] transition-colors"
+            >
+              Show results
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

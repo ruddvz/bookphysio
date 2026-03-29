@@ -97,7 +97,7 @@
 > Work one step at a time. Each step = one prompt = one commit.
 
 - [x] **8.1** Homepage — hero illustration, section spacing, mobile breakpoints
-- [ ] **8.2** Search Results — filter sidebar polish, DoctorCard polish, map view toggle
+- [x] **8.2** Search Results — filter sidebar polish, DoctorCard polish, map view toggle
 - [ ] **8.3** Doctor Profile — sticky BookingCard, slot picker, responsive layout
 - [ ] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX
 - [ ] **8.5** Doctor Signup — 5-step form polish, progress indicator

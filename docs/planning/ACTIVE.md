@@ -11,10 +11,10 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.2 — Search Results Polish
-- [ ] **8.2** Filter sidebar polish
-- [ ] **8.2** DoctorCard polish
-- [ ] **8.2** Map view toggle
+### Next up: Step 8.3 — Doctor Profile Polish
+- [ ] **8.3** Sticky BookingCard
+- [ ] **8.3** Slot picker polish
+- [ ] **8.3** Responsive layout
 
 ---
 
@@ -45,3 +45,4 @@
 - [x] Playwright config + ui-audit script + Supabase config added
 - [x] EXECUTION-PLAN.md updated to reflect true build state
 - [x] **8.1 Homepage Polish** — TopSpecialties hrefs, AppSection mobile, ProviderCTA mobile, Footer mobile padding, InsurancePlans deferred to P3
+- [x] **8.2 Search Results Polish** — filters wired to URL params, init from URL, clear all, mobile drawer, Map View "Soon" badge
