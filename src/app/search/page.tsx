@@ -3,43 +3,101 @@ import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import SearchFilters from './SearchFilters'
 import { Map } from 'lucide-react'
+import type { ProviderCard } from '@/app/api/contracts/provider'
+import type { SearchResponse } from '@/app/api/contracts/search'
 
 // ---------------------------------------------------------------------------
-// Search Results Page — Server Component
+// Helpers
 // ---------------------------------------------------------------------------
 
-const MOCK_DOCTORS: Doctor[] = [
-  { id: '1', name: 'Dr. Priya Sharma', credentials: 'BPT, MPT (Sports)', specialty: 'Sports Physiotherapist', rating: 4.9, reviewCount: 187, location: 'Andheri West, Mumbai', distance: '1.2 km', nextSlot: 'Today at 2:30 PM', visitTypes: ['In-clinic', 'Home Visit'], fee: 700, icpVerified: true },
-  { id: '2', name: 'Dr. Rohit Mehta', credentials: 'BPT, MPT (Ortho)', specialty: 'Orthopedic Physiotherapist', rating: 4.7, reviewCount: 132, location: 'Bandra, Mumbai', distance: '3.4 km', nextSlot: 'Today at 4:00 PM', visitTypes: ['In-clinic', 'Online'], fee: 800, icpVerified: true },
-  { id: '3', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit', 'Online'], fee: 900, icpVerified: true },
-  { id: '4', name: 'Dr. Vikram Singh', credentials: 'BPT', specialty: 'Sports Physiotherapist', rating: 4.6, reviewCount: 68, location: 'Lajpat Nagar, Delhi', distance: '4.2 km', nextSlot: 'Today at 5:30 PM', visitTypes: ['In-clinic'], fee: 600, icpVerified: false },
-  { id: '5', name: 'Dr. Sneha Patel', credentials: 'BPT, MPT (Paeds)', specialty: 'Paediatric Physiotherapist', rating: 4.9, reviewCount: 211, location: 'Powai, Mumbai', distance: '5.1 km', nextSlot: 'Today at 11:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 1000, icpVerified: true },
-  { id: '6', name: 'Dr. Arun Nair', credentials: 'BPT, MPT (Cardio)', specialty: 'Cardiopulmonary Physiotherapist', rating: 4.5, reviewCount: 45, location: 'T. Nagar, Chennai', distance: '6.8 km', nextSlot: 'Tomorrow at 9:00 AM', visitTypes: ['In-clinic', 'Online'], fee: 750, icpVerified: true },
-]
+const VISIT_TYPE_LABELS: Record<string, string> = {
+  in_clinic: 'In-clinic',
+  home_visit: 'Home Visit',
+  online: 'Online',
+}
+
+function providerToDoctor(p: ProviderCard): Doctor {
+  const nameWithTitle = p.full_name.startsWith('Dr.') ? p.full_name : `Dr. ${p.full_name}`
+  return {
+    id: p.id,
+    name: nameWithTitle,
+    credentials: p.specialties.map((s) => s.name).join(', ') || 'BPT',
+    specialty: p.specialties[0]?.name ?? 'Physiotherapist',
+    rating: p.rating_avg ?? 0,
+    reviewCount: p.rating_count ?? 0,
+    location: p.city ?? 'India',
+    distance: '',
+    nextSlot: p.next_available_slot
+      ? new Date(p.next_available_slot).toLocaleString('en-IN', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : 'Check availability',
+    visitTypes: (p.visit_types ?? []).map((v) => VISIT_TYPE_LABELS[v] ?? v),
+    fee: p.consultation_fee_inr ?? 0,
+    icpVerified: false,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Data fetching
+// ---------------------------------------------------------------------------
+
+async function fetchProviders(params: Record<string, string>): Promise<{ doctors: Doctor[]; total: number }> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const qs = new URLSearchParams({ page: '1', limit: '20', ...params }).toString()
+
+  try {
+    const res = await fetch(`${baseUrl}/api/providers?${qs}`, { cache: 'no-store' })
+    if (!res.ok) return { doctors: [], total: 0 }
+    const data = await res.json() as SearchResponse
+    return {
+      doctors: data.providers.map(providerToDoctor),
+      total: data.total,
+    }
+  } catch {
+    return { doctors: [], total: 0 }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 interface SearchPageProps {
-  searchParams: Promise<{
-    condition?: string
-    location?: string
-  }>
+  searchParams: Promise<Record<string, string>>
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const { condition, location } = await searchParams
-  const displayLocation = location ?? 'Mumbai'
+  const params = await searchParams
+  const { condition, location, city, specialty, visit_type, max_fee } = params
+
+  const apiParams: Record<string, string> = {}
+  if (city) apiParams.city = city
+  else if (location) apiParams.city = location
+  if (specialty) apiParams.specialty_id = specialty
+  if (visit_type) apiParams.visit_type = visit_type
+  if (max_fee) apiParams.max_fee_inr = max_fee
+
+  const { doctors, total } = await fetchProviders(apiParams)
+  const displayLocation = city ?? location ?? 'your area'
 
   return (
     <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1">
-        {/* Inner container */}
         <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-8">
           {/* Results header */}
           <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
             <div>
               <h1 className="text-[20px] font-bold text-[#333333] leading-7">
-                47 physios near {displayLocation}
+                {total > 0
+                  ? `${total} physio${total === 1 ? '' : 's'} near ${displayLocation}`
+                  : `No physios found near ${displayLocation}`}
               </h1>
               {condition && (
                 <p className="text-[14px] text-[#666666] mt-1">
@@ -63,16 +121,23 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
           {/* Two-column layout */}
           <div className="flex gap-6 items-start md:flex-row flex-col">
-            {/* Sidebar — hidden on mobile */}
+            {/* Sidebar */}
             <div className="hidden md:block">
               <SearchFilters />
             </div>
 
             {/* Results column */}
             <div className="flex-1 min-w-0 flex flex-col gap-3">
-              {MOCK_DOCTORS.map((doctor) => (
-                <DoctorCard key={doctor.id} doctor={doctor} />
-              ))}
+              {doctors.length === 0 ? (
+                <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-12 text-center">
+                  <p className="text-[18px] font-semibold text-[#333333] mb-2">No physiotherapists found</p>
+                  <p className="text-[14px] text-[#666666]">Try adjusting your filters or searching a different city.</p>
+                </div>
+              ) : (
+                doctors.map((doctor) => (
+                  <DoctorCard key={doctor.id} doctor={doctor} />
+                ))
+              )}
             </div>
           </div>
         </div>

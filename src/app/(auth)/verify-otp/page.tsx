@@ -1,9 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import Link from 'next/link'
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
 
 const OTP_LENGTH = 6
@@ -28,6 +26,9 @@ function VerifyOtpContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const phoneParam = searchParams.get('phone') ?? ''
+  const nameParam = searchParams.get('name') ?? ''
+  const flowParam = searchParams.get('flow') ?? 'login'
+
   const displayPhone = phoneParam
     ? `+${phoneParam.slice(0, 2)} ${phoneParam.slice(2, 7)} ${phoneParam.slice(7)}`
     : ''
@@ -36,9 +37,9 @@ function VerifyOtpContent() {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [focused, setFocused] = useState<number | null>(null)
   const [error, setError] = useState<string>('')
+  const [loading, setLoading] = useState(false)
   const inputRefs = useRef<HTMLInputElement[]>([])
 
-  // Countdown timer
   useEffect(() => {
     if (countdown <= 0) return
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
@@ -82,20 +83,55 @@ function VerifyOtpContent() {
     focusInput(nextFocus)
   }
 
-  function handleVerify() {
+  async function handleVerify() {
     const code = otp.join('')
     if (code.length < OTP_LENGTH) {
       setError('Please enter all 6 digits')
       return
     }
-    router.push('/')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: '+' + phoneParam,
+          otp: code,
+          ...(flowParam === 'signup' && nameParam ? { full_name: nameParam } : {}),
+        }),
+      })
+      const data = await res.json() as { user?: { id: string }; error?: string }
+      if (!res.ok) {
+        setError(data.error ?? 'Invalid OTP. Please try again.')
+        return
+      }
+      // Redirect based on flow
+      if (flowParam === 'signup') {
+        router.push('/patient/dashboard')
+      } else {
+        router.push('/patient/dashboard')
+      }
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function handleResend() {
+  async function handleResend() {
     setCountdown(COUNTDOWN_SECONDS)
     setOtp(Array(OTP_LENGTH).fill(''))
     setError('')
     focusInput(0)
+    try {
+      await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: '+' + phoneParam }),
+      })
+    } catch {
+      // silently ignore resend errors — user can retry countdown
+    }
   }
 
   const allFilled = otp.every((d) => d !== '')
@@ -178,13 +214,17 @@ function VerifyOtpContent() {
       <button
         type="button"
         onClick={handleVerify}
-        disabled={!allFilled}
+        disabled={!allFilled || loading}
         className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-5 transition-colors outline-none ${
-          allFilled ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer' : 'bg-[#a0cdc9] cursor-not-allowed'
+          allFilled && !loading ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer' : 'bg-[#a0cdc9] cursor-not-allowed'
         }`}
       >
-        Verify
-        <ArrowRight className="w-4 h-4" />
+        {loading ? 'Verifying…' : (
+          <>
+            Verify
+            <ArrowRight className="w-4 h-4" />
+          </>
+        )}
       </button>
 
       {/* Back link */}

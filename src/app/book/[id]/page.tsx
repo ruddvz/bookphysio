@@ -1,29 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { StepConfirm } from './StepConfirm'
 import { StepPayment } from './StepPayment'
 import { StepSuccess } from './StepSuccess'
-import { calcGst } from '@/components/PriceDisplay'
 
 type Step = 1 | 2 | 3
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
 
-// Mock doctor — replace with API fetch when backend is live
-const MOCK_DOCTORS: Record<string, { name: string; specialty: string; location: string; fee: number }> = {
-  '1': { name: 'Dr. Priya Sharma', specialty: 'Sports Physiotherapist', location: 'Andheri West, Mumbai', fee: 700 },
-  '2': { name: 'Dr. Rohit Mehta',  specialty: 'Orthopedic Physiotherapist', location: 'Bandra, Mumbai', fee: 800 },
-  '3': { name: 'Dr. Ananya Krishnan', specialty: 'Neurological Physiotherapist', location: 'Koramangala, Bangalore', fee: 900 },
+interface DoctorInfo {
+  name: string
+  specialty: string
+  location: string
+  fee: number
 }
-
-const STEPS = [
-  { n: 1, label: 'Confirm' },
-  { n: 2, label: 'Payment' },
-  { n: 3, label: 'Done'    },
-]
 
 interface PatientDetails {
   fullName: string
@@ -32,24 +25,64 @@ interface PatientDetails {
   reason: string
 }
 
+interface BookingResult {
+  appointmentId: string
+  refNumber: string
+  totalPaid: number
+  paymentMethod: PaymentMethod
+}
+
+const STEPS = [
+  { n: 1, label: 'Confirm' },
+  { n: 2, label: 'Payment' },
+  { n: 3, label: 'Done' },
+]
+
 export default function BookPage() {
   const params = useParams()
   const searchParams = useSearchParams()
-  const id = params.id as string
+  const doctorId = params.id as string
 
   const date = searchParams.get('date') ?? new Date().toISOString().split('T')[0]
-  const time = searchParams.get('time') ?? '9:00 AM'
+  const time = searchParams.get('time') ?? ''
   const visitType = searchParams.get('type') ?? 'in_clinic'
-
-  const doctor = MOCK_DOCTORS[id] ?? MOCK_DOCTORS['1']
+  const slotId = searchParams.get('slot_id') ?? ''
 
   const [step, setStep] = useState<Step>(1)
   const [patient, setPatient] = useState<PatientDetails | null>(null)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi')
+  const [bookingResult, setBookingResult] = useState<BookingResult | null>(null)
+  const [doctor, setDoctor] = useState<DoctorInfo | null>(null)
 
-  const gst = calcGst(doctor.fee)
-  const total = doctor.fee + gst
-  const refNumber = `BP-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`
+  // Fetch provider info
+  useEffect(() => {
+    fetch(`/api/providers/${doctorId}`)
+      .then((r) => r.json())
+      .then((data: { full_name?: string; specialties?: { name: string }[]; locations?: { address?: string; city?: string }[]; consultation_fee_inr?: number }) => {
+        const nameWithTitle = data.full_name?.startsWith('Dr.') ? data.full_name : `Dr. ${data.full_name ?? ''}`
+        const loc = data.locations?.[0]
+        setDoctor({
+          name: nameWithTitle,
+          specialty: data.specialties?.[0]?.name ?? 'Physiotherapist',
+          location: loc ? `${loc.address ?? ''}, ${loc.city ?? ''}`.replace(/^, /, '') : 'India',
+          fee: data.consultation_fee_inr ?? 0,
+        })
+      })
+      .catch(() => {
+        setDoctor({ name: 'Doctor', specialty: 'Physiotherapist', location: 'India', fee: 0 })
+      })
+  }, [doctorId])
+
+  if (!doctor) {
+    return (
+      <div className="min-h-screen bg-[#F7F8F9] flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-[#666666] text-[15px]">Loading…</div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F8F9] flex flex-col">
@@ -84,23 +117,27 @@ export default function BookPage() {
               onNext={(p) => { setPatient(p); setStep(2) }}
             />
           )}
-          {step === 2 && (
+          {step === 2 && patient && (
             <StepPayment
+              doctorId={doctorId}
+              slotId={slotId}
+              visitType={visitType}
               feeInr={doctor.fee}
+              patient={patient}
               onBack={() => setStep(1)}
-              onNext={(m) => { setPaymentMethod(m); setStep(3) }}
+              onSuccess={(result) => { setBookingResult(result); setStep(3) }}
             />
           )}
-          {step === 3 && (
+          {step === 3 && bookingResult && (
             <StepSuccess
               doctorName={doctor.name}
               date={date}
               time={time}
               visitType={visitType}
               location={doctor.location}
-              totalPaid={total}
-              paymentMethod={paymentMethod}
-              refNumber={refNumber}
+              totalPaid={bookingResult.totalPaid}
+              paymentMethod={bookingResult.paymentMethod}
+              refNumber={bookingResult.refNumber}
             />
           )}
         </div>

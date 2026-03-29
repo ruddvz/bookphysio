@@ -14,6 +14,7 @@ const loginSchema = z.object({
 
 interface LoginErrors {
   phone?: string
+  general?: string
 }
 
 function BpLogo() {
@@ -40,12 +41,12 @@ export default function LoginPage() {
 
   function handlePhoneChange(value: string) {
     setPhone(value.replace(/\D/g, ''))
-    if (errors.phone) {
+    if (errors.phone || errors.general) {
       setErrors({})
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const result = loginSchema.safeParse({ phone })
     if (!result.success) {
@@ -58,7 +59,24 @@ export default function LoginPage() {
       return
     }
     setLoading(true)
-    router.push('/verify-otp?phone=91' + phone)
+    try {
+      const res = await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: '+91' + phone }),
+      })
+      if (!res.ok) {
+        const data = await res.json() as { error?: string }
+        setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
+        return
+      }
+      const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
+      router.push('/verify-otp?' + params.toString())
+    } catch {
+      setErrors({ general: 'Network error. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -69,6 +87,12 @@ export default function LoginPage() {
         Log in to BookPhysio
       </h1>
       <p className="text-[14px] text-[#666666] mb-7">Welcome back</p>
+
+      {errors.general && (
+        <div className="mb-4 rounded-[8px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
+          {errors.general}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Mobile Number */}
@@ -124,7 +148,7 @@ export default function LoginPage() {
               : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
           }`}
         >
-          {loading ? 'Sending…' : (
+          {loading ? 'Sending OTP…' : (
             <>
               Send OTP
               <ArrowRight className="w-4 h-4" />

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -11,17 +11,29 @@ import { ArrowRight } from 'lucide-react'
 type VisitType = 'in_clinic' | 'home_visit' | 'online'
 
 interface FeeMap { in_clinic: number; home_visit: number; online: number }
-interface BookingCardProps { doctorId: string; fee: FeeMap; visitTypes: readonly VisitType[] }
+interface BookingCardProps {
+  doctorId: string
+  fee: FeeMap
+  visitTypes: readonly VisitType[] | string[]
+}
+
+interface SlotEntry {
+  id: string
+  starts_at: string
+  ends_at: string
+  slot_duration_mins: number
+  location_id: string | null
+}
+
+interface GroupedSlots {
+  morning: SlotEntry[]
+  afternoon: SlotEntry[]
+  evening: SlotEntry[]
+}
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-
-const TIME_SLOTS = {
-  morning: ['9:00', '9:30', '10:00', '11:00', '11:30'],
-  afternoon: ['2:00', '2:30', '3:00', '3:30', '4:00'],
-  evening: ['5:30', '6:00', '6:30', '7:00'],
-}
 
 const VISIT_TYPE_LABELS: Record<VisitType, string> = {
   in_clinic: 'In-clinic',
@@ -46,15 +58,34 @@ function getNext7Days(): DayEntry[] {
   })
 }
 
+function groupSlots(slots: SlotEntry[]): GroupedSlots {
+  const groups: GroupedSlots = { morning: [], afternoon: [], evening: [] }
+  for (const slot of slots) {
+    const hour = new Date(slot.starts_at).getHours()
+    if (hour < 12) groups.morning.push(slot)
+    else if (hour < 17) groups.afternoon.push(slot)
+    else groups.evening.push(slot)
+  }
+  return groups
+}
+
+function formatSlotTime(isoString: string): string {
+  return new Date(isoString).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+}
+
 // ---------------------------------------------------------------------------
 // Sub-component: TimeSlotGroup
 // ---------------------------------------------------------------------------
 
 interface TimeSlotGroupProps {
-  heading: string; slots: string[]; selectedTime: string | null; onSelect: (time: string) => void
+  heading: string
+  slots: SlotEntry[]
+  selectedSlotId: string | null
+  onSelect: (slot: SlotEntry) => void
 }
 
-function TimeSlotGroup({ heading, slots, selectedTime, onSelect }: TimeSlotGroupProps) {
+function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGroupProps) {
+  if (slots.length === 0) return null
   return (
     <div className="mb-4">
       <p className="text-[12px] font-semibold text-[#666666] uppercase tracking-wider mb-2">
@@ -62,10 +93,10 @@ function TimeSlotGroup({ heading, slots, selectedTime, onSelect }: TimeSlotGroup
       </p>
       <div className="flex flex-wrap gap-2">
         {slots.map((slot) => {
-          const isSelected = selectedTime === slot
+          const isSelected = selectedSlotId === slot.id
           return (
             <button
-              key={slot}
+              key={slot.id}
               onClick={() => onSelect(slot)}
               className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium cursor-pointer transition-all outline-none ${
                 isSelected
@@ -73,7 +104,7 @@ function TimeSlotGroup({ heading, slots, selectedTime, onSelect }: TimeSlotGroup
                   : 'border border-[#E5E5E5] bg-[#F5F5F5] text-[#333333] hover:border-[#00766C]'
               }`}
             >
-              {slot}
+              {formatSlotTime(slot.starts_at)}
             </button>
           )
         })}
@@ -90,18 +121,54 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
   const router = useRouter()
   const days = useMemo(() => getNext7Days(), [])
 
-  const [visitType, setVisitType] = useState<VisitType>('in_clinic')
+  const [visitType, setVisitType] = useState<VisitType>((visitTypes[0] as VisitType) ?? 'in_clinic')
   const [selectedDate, setSelectedDate] = useState<string>(days[0].iso)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<SlotEntry | null>(null)
+  const [slots, setSlots] = useState<SlotEntry[]>([])
+  const [slotsLoading, setSlotsLoading] = useState(false)
 
-  const selectedFee = fee[visitType]
-  const canBook = selectedDate && selectedTime
+  // Fetch slots whenever date changes
+  useEffect(() => {
+    let cancelled = false
+    setSlotsLoading(true)
+    setSelectedSlot(null)
+
+    const from = new Date(selectedDate + 'T00:00:00+05:30').toISOString()
+    const to = new Date(selectedDate + 'T23:59:59+05:30').toISOString()
+    const qs = new URLSearchParams({ from, to }).toString()
+
+    fetch(`/api/providers/${doctorId}/availability?${qs}`)
+      .then((r) => r.json())
+      .then((data: { slots?: SlotEntry[] }) => {
+        if (!cancelled) setSlots(data.slots ?? [])
+      })
+      .catch(() => {
+        if (!cancelled) setSlots([])
+      })
+      .finally(() => {
+        if (!cancelled) setSlotsLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [doctorId, selectedDate])
+
+  const grouped = useMemo(() => groupSlots(slots), [slots])
+
+  const feeKey = visitType as VisitType
+  const selectedFee = fee[feeKey] ?? fee.in_clinic
 
   function handleBook() {
-    if (!canBook) return
-    const params = new URLSearchParams({ date: selectedDate, time: selectedTime!, type: visitType })
+    if (!selectedSlot) return
+    const params = new URLSearchParams({
+      date: selectedDate,
+      time: formatSlotTime(selectedSlot.starts_at),
+      type: visitType,
+      slot_id: selectedSlot.id,
+    })
     router.push(`/book/${doctorId}?${params.toString()}`)
   }
+
+  const canBook = selectedSlot !== null
 
   return (
     <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-6 sticky top-24">
@@ -113,19 +180,19 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
 
       {/* Visit type tabs */}
       <div className="flex border-b border-[#E5E5E5] mb-5">
-        {visitTypes.map((type) => {
+        {(visitTypes as VisitType[]).map((type) => {
           const isActive = visitType === type
           return (
             <button
               key={type}
-              onClick={() => setVisitType(type)}
+              onClick={() => { setVisitType(type); setSelectedSlot(null) }}
               className={`flex-1 py-2.5 px-1 text-[13px] bg-transparent border-none cursor-pointer transition-all -mb-px whitespace-nowrap outline-none ${
                 isActive
                   ? 'font-semibold text-[#00766C] border-b-2 border-[#00766C]'
                   : 'font-normal text-[#666666] border-b-2 border-transparent'
               }`}
             >
-              {VISIT_TYPE_LABELS[type]}
+              {VISIT_TYPE_LABELS[type] ?? type}
             </button>
           )
         })}
@@ -139,7 +206,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
           return (
             <button
               key={day.iso}
-              onClick={() => { setSelectedDate(day.iso); setSelectedTime(null) }}
+              onClick={() => setSelectedDate(day.iso)}
               className={`flex flex-col items-center px-3 py-2 rounded-[8px] cursor-pointer transition-all min-w-[52px] shrink-0 outline-none ${
                 isSelected
                   ? 'border border-[#00766C] bg-[#00766C] text-white'
@@ -155,12 +222,25 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
 
       {/* Time slots */}
       <p className="text-[13px] font-semibold text-[#333333] mb-3">Select Time</p>
-      <TimeSlotGroup heading="Morning" slots={TIME_SLOTS.morning} selectedTime={selectedTime} onSelect={setSelectedTime} />
-      <TimeSlotGroup heading="Afternoon" slots={TIME_SLOTS.afternoon} selectedTime={selectedTime} onSelect={setSelectedTime} />
-      <TimeSlotGroup heading="Evening" slots={TIME_SLOTS.evening} selectedTime={selectedTime} onSelect={setSelectedTime} />
+
+      {slotsLoading ? (
+        <div className="flex items-center justify-center py-6 text-[#666666]">
+          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+          <span className="text-[13px]">Loading slots…</span>
+        </div>
+      ) : slots.length === 0 ? (
+        <p className="text-[13px] text-[#999999] py-4 text-center">No slots available for this date.</p>
+      ) : (
+        <>
+          <TimeSlotGroup heading="Morning" slots={grouped.morning} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+          <TimeSlotGroup heading="Afternoon" slots={grouped.afternoon} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+          <TimeSlotGroup heading="Evening" slots={grouped.evening} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+        </>
+      )}
 
       {/* CTA button */}
       <button
+        type="button"
         onClick={handleBook}
         disabled={!canBook}
         className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mt-2 mb-2 transition-colors outline-none ${
@@ -173,7 +253,6 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
         <ArrowRight className="w-4 h-4" />
       </button>
 
-      {/* No hidden charges */}
       <p className="text-[12px] text-[#666666] text-center">
         No hidden charges
       </p>

@@ -21,6 +21,7 @@ interface SignupFormState {
 interface SignupErrors {
   name?: string
   phone?: string
+  general?: string
 }
 
 function BpLogo() {
@@ -48,12 +49,12 @@ export default function SignupPage() {
 
   function handleChange(field: keyof SignupFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+    if (errors[field as keyof SignupErrors]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }))
     }
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const result = signupSchema.safeParse(form)
     if (!result.success) {
@@ -66,7 +67,28 @@ export default function SignupPage() {
       return
     }
     setLoading(true)
-    router.push('/verify-otp?phone=91' + form.phone)
+    try {
+      const res = await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: '+91' + form.phone }),
+      })
+      if (!res.ok) {
+        const data = await res.json() as { error?: string }
+        setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
+        return
+      }
+      const params = new URLSearchParams({
+        phone: '91' + form.phone,
+        name: form.name,
+        flow: 'signup',
+      })
+      router.push('/verify-otp?' + params.toString())
+    } catch {
+      setErrors({ general: 'Network error. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -77,6 +99,12 @@ export default function SignupPage() {
         Create your account
       </h1>
       <p className="text-[14px] text-[#666666] mb-7">Find and book physios near you</p>
+
+      {errors.general && (
+        <div className="mb-4 rounded-[8px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
+          {errors.general}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Full Name */}
@@ -143,7 +171,7 @@ export default function SignupPage() {
             loading ? 'bg-[#4aada6] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
           }`}
         >
-          {loading ? 'Sending…' : (
+          {loading ? 'Sending OTP…' : (
             <>
               Send OTP
               <ArrowRight className="w-4 h-4" />
