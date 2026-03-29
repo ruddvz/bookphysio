@@ -6,35 +6,50 @@ interface FeatureCardData {
   title: string;
   cta: string;
   href: string;
+  step: number;
 }
 
 const cards: FeatureCardData[] = [
-  { emoji: "🩺", title: "Browse verified physios near you", cta: "See specialties", href: "/search" },
-  { emoji: "⭐", title: "Read reviews from patients", cta: "See providers", href: "#" },
-  { emoji: "📅", title: "Book an appointment today, online", cta: "See availability", href: "#" },
+  { step: 1, emoji: "🔍", title: "Browse verified physios near you", cta: "See specialties", href: "/search" },
+  { step: 2, emoji: "⭐", title: "Read real reviews from patients", cta: "See providers", href: "/search" },
+  { step: 3, emoji: "📅", title: "Book an appointment in minutes", cta: "Book now", href: "/search" },
 ];
 
-function FeatureCard({ emoji, title, cta, href }: FeatureCardData) {
+function FeatureCard({ emoji, title, cta, href, step }: FeatureCardData) {
   return (
     <div
-      className={cn("flex flex-col flex-1 rounded-xl bg-white transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)]")}
+      className={cn("flex flex-col flex-1 rounded-xl bg-white transition-shadow duration-200 hover:shadow-[0_6px_24px_rgba(0,118,108,0.12)]")}
       style={{
         padding: "32px 24px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-        borderRadius: "12px",
+        borderRadius: "16px",
+        border: "1px solid #F0F0F0",
       }}
     >
-      <div
-        className="flex items-center justify-center rounded-lg mb-5"
-        style={{
-          height: "160px",
-          background: "#F5F5F5",
-          borderRadius: "8px",
-          marginBottom: "20px",
-          fontSize: "56px",
-        }}
-      >
-        {emoji}
+      {/* Step number + icon */}
+      <div className="flex items-center gap-3 mb-5">
+        <div
+          className="flex items-center justify-center rounded-full shrink-0"
+          style={{
+            width: "44px",
+            height: "44px",
+            background: "#E6F4F3",
+            fontSize: "22px",
+          }}
+        >
+          {emoji}
+        </div>
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#00766C",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+          }}
+        >
+          Step {step}
+        </span>
       </div>
       <p
         style={{
@@ -43,6 +58,7 @@ function FeatureCard({ emoji, title, cta, href }: FeatureCardData) {
           color: "#333333",
           marginBottom: "20px",
           lineHeight: "28px",
+          flex: 1,
         }}
       >
         {title}
@@ -50,21 +66,15 @@ function FeatureCard({ emoji, title, cta, href }: FeatureCardData) {
       <Link
         href={href}
         className={cn(
-          "inline-block text-center mt-auto transition-colors duration-150",
-          "hover:bg-[#333333] hover:text-white"
+          "inline-flex items-center gap-1.5 mt-auto transition-colors duration-150",
+          "text-[#00766C] hover:text-[#005A52] font-semibold"
         )}
         style={{
-          border: "1.5px solid #333333",
-          background: "transparent",
-          borderRadius: "8px",
-          padding: "10px 20px",
           fontSize: "15px",
-          fontWeight: 500,
-          color: "#333333",
-          cursor: "pointer",
+          textDecoration: "none",
         }}
       >
-        {cta}
+        {cta} →
       </Link>
     </div>
   );

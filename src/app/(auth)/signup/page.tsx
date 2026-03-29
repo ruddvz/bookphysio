@@ -27,11 +27,10 @@ interface SignupErrors {
 function BpLogo() {
   return (
     <div className="flex items-center gap-2.5 mb-7">
-      <img
-        src="/images/logo-icon.png"
-        alt="BookPhysio"
-        className="w-9 h-9 object-contain"
-      />
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+        <rect width="36" height="36" rx="10" fill="#00766C"/>
+        <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
+      </svg>
       <span className="text-[20px] font-bold text-[#333333]">
         BookPhysio
       </span>

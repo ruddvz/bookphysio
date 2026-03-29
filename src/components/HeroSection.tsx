@@ -106,17 +106,42 @@ function SearchBar({
 function HeroIllustration() {
   return (
     <div
-      className="
-        hidden md:flex
-        absolute top-0 right-0
-        w-[300px] h-[300px]
-        rounded-2xl bg-[#00766C] opacity-20
-        items-center justify-center
-        text-6xl select-none
-      "
+      className="hidden md:flex flex-col gap-3 ml-8 mt-2"
       aria-hidden="true"
     >
-      🤲
+      {/* Doctor card */}
+      <div className="bg-white rounded-2xl shadow-lg p-5 flex items-center gap-4 w-[280px]">
+        <div className="w-14 h-14 rounded-full bg-[#E6F4F3] flex items-center justify-center text-2xl shrink-0">
+          👨‍⚕️
+        </div>
+        <div>
+          <p className="text-[14px] font-bold text-[#333333]">Dr. Priya Sharma</p>
+          <p className="text-[12px] text-[#666666]">Sports Physiotherapist</p>
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-yellow-400 text-[12px]">★★★★★</span>
+            <span className="text-[11px] text-[#666666]">4.9 (120 reviews)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Booking confirmation card */}
+      <div className="bg-[#00766C] rounded-2xl shadow-lg p-4 w-[260px] ml-auto">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-lg">✅</div>
+          <p className="text-white text-[13px] font-semibold">Appointment Confirmed</p>
+        </div>
+        <p className="text-white/80 text-[12px]">Tomorrow, 10:30 AM · In-clinic</p>
+        <p className="text-white/80 text-[12px]">Dr. Priya Sharma · ₹800</p>
+      </div>
+
+      {/* Stats pill */}
+      <div className="bg-white rounded-full shadow-md px-5 py-2.5 flex items-center gap-3 w-fit">
+        <span className="text-xl">🏥</span>
+        <div>
+          <p className="text-[13px] font-bold text-[#333333]">2,000+ Physios</p>
+          <p className="text-[11px] text-[#666666]">Across 50+ cities in India</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -207,7 +232,7 @@ export default function HeroSection() {
           </div>
 
           {/* Illustration column — 45% (desktop only) */}
-          <div className="relative flex-[45]">
+          <div className="flex-[45] flex items-center justify-center pt-4">
             <HeroIllustration />
           </div>
         </div>
