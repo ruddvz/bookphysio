@@ -60,14 +60,24 @@ export default function BookPage() { return <BookingPageClient /> }
 
 ---
 
-## REVERT — src/app/book/[id]/layout.tsx (new file)
+## REVERT — layout.tsx files (new files in each dynamic segment)
 
-Created to hold `generateStaticParams` since `page.tsx` is a client boundary.
+Created in every dynamic segment to ensure Next.js/Turbopack detects `generateStaticParams`.
+Files created:
+- `src/app/book/[id]/layout.tsx`
+- `src/app/city/[slug]/layout.tsx`
+- `src/app/doctor/[id]/layout.tsx`
+- `src/app/patient/appointments/[id]/layout.tsx`
+- `src/app/provider/appointments/[id]/layout.tsx`
+- `src/app/provider/patients/[id]/layout.tsx`
+- `src/app/specialty/[slug]/layout.tsx`
+
+Each contains:
 ```ts
-export function generateStaticParams() { return [] }
-export default function BookLayout({ children }) { return <>{children}</> }
+export async function generateStaticParams() { return [] as never[] }
+export default function Layout({ children }) { return <>{children}</> }
 ```
-**To revert:** Delete this file.
+**To revert:** Delete all of the above layout.tsx files.
 
 ---
 
