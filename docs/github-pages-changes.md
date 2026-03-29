@@ -42,14 +42,23 @@ placeholder env vars so Supabase SDK doesn't throw during build.
 
 ## REVERT — src/app/book/[id]/page.tsx
 
-**Original:** Was the full `'use client'` booking page component with no `generateStaticParams`.
+**Original:** Was the full `'use client'` booking page component.
 
-**Changed to:** Same full `'use client'` component but with this line appended at the bottom:
+**Changed to:** Thin server wrapper using `next/dynamic` (required because Next.js forbids
+`generateStaticParams` in `'use client'` files):
 ```ts
+import dynamic from 'next/dynamic'
+const BookingPageClient = dynamic(() => import('./BookingPageClient'), { ssr: false })
 export async function generateStaticParams() { return [] as never[] }
+export default function BookPage() { return <BookingPageClient /> }
 ```
 
-**To revert:** Remove the `generateStaticParams` export at the bottom of the file.
+**Also created:** `src/app/book/[id]/BookingPageClient.tsx` — original `page.tsx` content
+(component renamed from `BookPage` to `BookingPageClient`).
+
+**To revert:**
+1. Copy `BookingPageClient.tsx` content back into `page.tsx`, rename component back to `BookPage`
+2. Delete `BookingPageClient.tsx`
 
 ---
 
