@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 const SPECIALTIES = [
@@ -49,7 +50,7 @@ export default function Navbar() {
         }}
       >
         {/* Logo */}
-        <a href="/" className="flex items-center shrink-0" aria-label="BookPhysio home">
+        <Link href="/" className="flex items-center shrink-0" aria-label="BookPhysio home">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
             <rect width="36" height="36" rx="10" fill="#00766C"/>
             <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
@@ -65,7 +66,7 @@ export default function Navbar() {
           >
             BookPhysio
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center" aria-label="Main navigation">
@@ -126,7 +127,7 @@ export default function Navbar() {
                 role="menu"
               >
                 {SPECIALTIES.map((specialty) => (
-                  <a
+                  <Link
                     key={specialty}
                     href={`/search?specialty=${encodeURIComponent(specialty)}`}
                     role="menuitem"
@@ -140,7 +141,7 @@ export default function Navbar() {
                     onClick={() => setBrowseOpen(false)}
                   >
                     {specialty}
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}
@@ -155,7 +156,7 @@ export default function Navbar() {
 
         {/* Desktop Auth buttons */}
         <div className="hidden md:flex items-center gap-2">
-          <a
+          <Link
             href="/login"
             className="flex items-center gap-1 transition-colors duration-150 hover:text-[#00766C]"
             style={{
@@ -185,9 +186,9 @@ export default function Navbar() {
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/signup"
             className="transition-colors duration-150"
             style={{
@@ -211,7 +212,7 @@ export default function Navbar() {
             }}
           >
             Sign up
-          </a>
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -265,7 +266,7 @@ interface NavLinkProps {
 
 function NavLink({ href, children, className }: NavLinkProps) {
   return (
-    <a
+    <Link
       href={href}
       className={cn(
         'transition-colors duration-150 hover:text-[#00766C] hover:underline',
@@ -282,6 +283,6 @@ function NavLink({ href, children, className }: NavLinkProps) {
       }}
     >
       {children}
-    </a>
+    </Link>
   )
 }

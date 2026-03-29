@@ -4,7 +4,18 @@ import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { Stethoscope } from 'lucide-react'
 
-export async function generateStaticParams() { return [] as never[] }
+export async function generateStaticParams() {
+  return [
+    { slug: 'sports-physio' },
+    { slug: 'neuro-physio' },
+    { slug: 'ortho-physio' },
+    { slug: 'paediatric-physio' },
+    { slug: 'womens-health' },
+    { slug: 'geriatric-physio' },
+    { slug: 'post-surgery-rehab' },
+    { slug: 'pain-management' },
+  ]
+}
 
 // ---------------------------------------------------------------------------
 // Data

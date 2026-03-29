@@ -4,7 +4,20 @@ import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { MapPin } from 'lucide-react'
 
-export async function generateStaticParams() { return [] as never[] }
+export async function generateStaticParams() {
+  return [
+    { slug: 'mumbai' },
+    { slug: 'delhi' },
+    { slug: 'bangalore' },
+    { slug: 'chennai' },
+    { slug: 'hyderabad' },
+    { slug: 'pune' },
+    { slug: 'kolkata' },
+    { slug: 'ahmedabad' },
+    { slug: 'jaipur' },
+    { slug: 'surat' },
+  ]
+}
 
 // ---------------------------------------------------------------------------
 // Data

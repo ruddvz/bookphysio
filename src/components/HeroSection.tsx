@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -151,6 +152,7 @@ function HeroIllustration() {
 // ---------------------------------------------------------------------------
 
 export default function HeroSection() {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [condition, setCondition] = useState('');
@@ -177,9 +179,8 @@ export default function HeroSection() {
   const currentSpecialty = specialties[currentIndex];
 
   const handleSubmit = () => {
-    // Navigation / search logic will be wired up by the backend agent
     const params = new URLSearchParams({ condition, location });
-    window.location.href = `/search?${params.toString()}`;
+    router.push(`/search?${params.toString()}`);
   };
 
   return (
