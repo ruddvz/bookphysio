@@ -4,26 +4,20 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
 
 function BpLogo() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        marginBottom: '28px',
-      }}
-    >
+    <div className="flex items-center gap-2.5 mb-7">
       <img
         src="/images/logo-icon.png"
         alt="BookPhysio"
-        style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+        className="w-9 h-9 object-contain"
       />
-      <span style={{ fontSize: '20px', fontWeight: 700, color: '#333333' }}>
+      <span className="text-[20px] font-bold text-[#333333]">
         BookPhysio
       </span>
     </div>
@@ -113,42 +107,19 @@ function VerifyOtpContent() {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        padding: '40px',
-        maxWidth: '440px',
-        width: '100%',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-      }}
-    >
+    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
       <BpLogo />
 
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 700,
-          color: '#333333',
-          margin: '0 0 6px',
-        }}
-      >
+      <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
         Verify your number
       </h1>
-      <p style={{ fontSize: '14px', color: '#666666', margin: '0 0 32px' }}>
+      <p className="text-[14px] text-[#666666] mb-8">
         Code sent to{' '}
-        <span style={{ fontWeight: 600, color: '#333333' }}>{displayPhone}</span>
+        <span className="font-semibold text-[#333333]">{displayPhone}</span>
       </p>
 
       {/* OTP digit inputs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'center',
-          marginBottom: '24px',
-        }}
-      >
+      <div className="flex gap-2.5 justify-center mb-6">
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -166,73 +137,38 @@ function VerifyOtpContent() {
             onFocus={() => setFocused(index)}
             onBlur={() => setFocused(null)}
             aria-label={`OTP digit ${index + 1}`}
-            style={{
-              width: '48px',
-              height: '56px',
-              textAlign: 'center',
-              fontSize: '22px',
-              fontWeight: 600,
-              color: '#333333',
-              backgroundColor: '#ffffff',
-              border: `2px solid ${focused === index || digit ? '#00766C' : '#E5E5E5'}`,
-              borderRadius: '8px',
-              outline: 'none',
-              transition: 'border-color 0.15s',
-            }}
+            className={`w-12 h-14 text-center text-[22px] font-semibold text-[#333333] bg-white rounded-[8px] outline-none border-2 transition-colors ${
+              focused === index || digit ? 'border-[#00766C]' : 'border-[#E5E5E5]'
+            }`}
           />
         ))}
       </div>
 
       {/* Error */}
       {error && (
-        <p
-          style={{
-            fontSize: '12px',
-            color: '#DC2626',
-            textAlign: 'center',
-            margin: '-12px 0 16px',
-          }}
-        >
+        <p className="text-[12px] text-[#DC2626] text-center -mt-3 mb-4">
           {error}
         </p>
       )}
 
       {/* Resend + countdown */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '28px',
-        }}
-      >
+      <div className="flex justify-between items-center mb-7">
         {countdown > 0 ? (
-          <span style={{ fontSize: '14px', color: '#666666' }}>
+          <span className="text-[14px] text-[#666666]">
             Resend OTP
           </span>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            style={{
-              fontSize: '14px',
-              color: '#00766C',
-              fontWeight: 600,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="inline-flex items-center gap-1.5 text-[14px] text-[#00766C] font-semibold bg-transparent border-none cursor-pointer p-0 outline-none hover:text-[#005A52] transition-colors"
           >
+            <RefreshCw className="w-3.5 h-3.5" />
             Resend OTP
           </button>
         )}
         <span
-          style={{
-            fontSize: '14px',
-            color: countdown > 0 ? '#666666' : 'transparent',
-            fontVariantNumeric: 'tabular-nums',
-          }}
+          className={`text-[14px] tabular-nums ${countdown > 0 ? 'text-[#666666]' : 'text-transparent'}`}
         >
           {formatCountdown(countdown)}
         </span>
@@ -243,36 +179,23 @@ function VerifyOtpContent() {
         type="button"
         onClick={handleVerify}
         disabled={!allFilled}
-        style={{
-          width: '100%',
-          padding: '13px',
-          fontSize: '16px',
-          fontWeight: 600,
-          color: '#ffffff',
-          backgroundColor: allFilled ? '#00766C' : '#a0cdc9',
-          border: 'none',
-          borderRadius: '24px',
-          cursor: allFilled ? 'pointer' : 'not-allowed',
-          transition: 'background-color 0.15s',
-          marginBottom: '20px',
-        }}
+        className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-5 transition-colors outline-none ${
+          allFilled ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer' : 'bg-[#a0cdc9] cursor-not-allowed'
+        }`}
       >
-        Verify →
+        Verify
+        <ArrowRight className="w-4 h-4" />
       </button>
 
       {/* Back link */}
-      <div style={{ textAlign: 'center' }}>
-        <Link
-          href="#"
-          onClick={(e) => { e.preventDefault(); router.back() }}
-          style={{
-            fontSize: '14px',
-            color: '#666666',
-            textDecoration: 'none',
-          }}
+      <div className="text-center">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1.5 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer no-underline outline-none transition-colors"
         >
-          ← Back
-        </Link>
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
       </div>
     </div>
   )
@@ -282,16 +205,7 @@ export default function VerifyOtpPage() {
   return (
     <Suspense
       fallback={
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '8px',
-            padding: '40px',
-            maxWidth: '440px',
-            width: '100%',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-          }}
-        />
+        <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg" />
       }
     >
       <VerifyOtpContent />

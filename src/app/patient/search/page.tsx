@@ -1,25 +1,30 @@
 import Link from 'next/link'
+import { Search, ArrowRight } from 'lucide-react'
 
 export default function PatientSearch() {
   return (
-    <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '48px 24px' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '16px' }}>
+    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-3">
         Find a Physiotherapist
       </h1>
-      <p style={{ fontSize: '15px', color: '#666666', marginBottom: '32px' }}>
+      <p className="text-[15px] text-[#666666] mb-8">
         Search for experts by condition, specialty, or clinic name down below.
       </p>
 
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E5E5', padding: '32px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#333333', marginBottom: '24px' }}>
+      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm py-16 px-8 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-5">
+          <Search className="w-8 h-8 text-[#00766C]" />
+        </div>
+        <h2 className="text-[24px] font-bold text-[#333333] mb-6">
           Ready to book your next session?
         </h2>
         
         <Link 
           href="/search"
-          style={{ display: 'inline-block', padding: '12px 32px', backgroundColor: '#00766C', color: '#FFFFFF', borderRadius: '24px', fontSize: '16px', fontWeight: 600, textDecoration: 'none' }}
+          className="inline-flex items-center gap-2 px-8 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full text-[16px] font-semibold no-underline transition-colors"
         >
-          Go to global search →
+          Go to global search
+          <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
     </div>

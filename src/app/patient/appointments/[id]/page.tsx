@@ -1,40 +1,68 @@
-export default function PatientAppointmentDetail({ params }: { params: { id: string } }) {
+import { CalendarDays, Clock, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+
+export default async function PatientAppointmentDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
+    <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <Link href="/patient/appointments" className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#666666] hover:text-[#333333] no-underline mb-6 transition-colors">
+        <ArrowLeft className="w-4 h-4" />
+        Back to Appointments
+      </Link>
+
+      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-1">
         Appointment Detail
       </h1>
-      <p style={{ fontSize: '15px', color: '#666666', marginBottom: '32px' }}>
-        Ref: BP-2026-{params.id || '0042'}
+      <p className="text-[15px] text-[#666666] mb-8">
+        Ref: <span className="font-mono">BP-2026-{id || '0042'}</span>
       </p>
 
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E5E5', padding: '32px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', marginBottom: '32px' }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '40px', backgroundColor: '#E6F4F3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>👨‍⚕️</div>
+      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-8 mb-6">
+        {/* Doctor Info */}
+        <div className="flex gap-6 items-start mb-8">
+          <div className="w-20 h-20 rounded-full bg-[#E6F4F3] flex items-center justify-center shrink-0">
+            <Stethoscope className="w-9 h-9 text-[#00766C]" />
+          </div>
           <div>
-            <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#333333', margin: '0 0 4px' }}>Dr. Priya Sharma</h2>
-            <p style={{ fontSize: '15px', color: '#666666', margin: '0 0 16px' }}>Sports Physiotherapist</p>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: '#00766C', margin: 0 }}>📅 Mon, 28 Mar 2026 · 2:30 PM</p>
-            <p style={{ fontSize: '15px', color: '#333333', margin: '8px 0 0' }}>🏥 In-clinic · Andheri West, Mumbai</p>
+            <h2 className="text-[24px] font-bold text-[#333333] mb-1">Dr. Priya Sharma</h2>
+            <p className="text-[15px] text-[#666666] mb-4">Sports Physiotherapist</p>
+            <div className="flex flex-col gap-2">
+              <p className="flex items-center gap-2 text-[16px] font-semibold text-[#00766C]">
+                <CalendarDays className="w-5 h-5" />
+                Mon, 28 Mar 2026 · 2:30 PM
+              </p>
+              <p className="flex items-center gap-2 text-[15px] text-[#333333]">
+                <MapPin className="w-4 h-4 text-[#666666]" />
+                In-clinic · Andheri West, Mumbai
+              </p>
+            </div>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid #E5E5E5', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Payment Info */}
+        <div className="border-t border-[#E5E5E5] pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <p style={{ fontSize: '14px', color: '#666666', margin: '0 0 4px' }}>Total Paid (UPI)</p>
-            <p style={{ fontSize: '20px', fontWeight: 700, color: '#333333', margin: 0 }}>₹826</p>
+            <p className="flex items-center gap-2 text-[14px] text-[#666666] mb-1">
+              <CreditCard className="w-4 h-4" />
+              Total Paid (UPI)
+            </p>
+            <p className="text-[24px] font-bold text-[#333333]">₹826</p>
           </div>
-          <button style={{ padding: '10px 20px', backgroundColor: '#FFFFFF', border: '1px solid #E5E5E5', borderRadius: '4px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', color: '#333333' }}>
+          <button className="flex items-center gap-2 px-5 py-2.5 border border-[#E5E5E5] rounded-lg bg-white text-[14px] font-semibold text-[#333333] hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
+            <Download className="w-4 h-4" />
             Download Receipt
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px' }}>
-        <button style={{ padding: '12px 24px', backgroundColor: '#00766C', color: '#FFFFFF', border: 'none', borderRadius: '24px', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+      {/* Actions */}
+      <div className="flex gap-4">
+        <button className="flex items-center gap-2 px-6 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full text-[15px] font-semibold transition-colors cursor-pointer outline-none">
+          <RefreshCw className="w-4 h-4" />
           Reschedule
         </button>
-        <button style={{ padding: '12px 24px', backgroundColor: 'transparent', color: '#DC2626', border: '1px solid #DC2626', borderRadius: '24px', fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+        <button className="flex items-center gap-2 px-6 py-3 border border-[#DC2626] text-[#DC2626] hover:bg-[#FEF2F2] rounded-full text-[15px] font-semibold transition-colors cursor-pointer outline-none">
+          <X className="w-4 h-4" />
           Cancel Appointment
         </button>
       </div>

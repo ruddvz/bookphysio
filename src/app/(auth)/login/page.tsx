@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
+import { ArrowRight, Smartphone } from 'lucide-react'
 
 const loginSchema = z.object({
   phone: z
@@ -17,20 +18,13 @@ interface LoginErrors {
 
 function BpLogo() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        marginBottom: '28px',
-      }}
-    >
+    <div className="flex items-center gap-2.5 mb-7">
       <img
         src="/images/logo-icon.png"
         alt="BookPhysio"
-        style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+        className="w-9 h-9 object-contain"
       />
-      <span style={{ fontSize: '20px', fontWeight: 700, color: '#333333' }}>
+      <span className="text-[20px] font-bold text-[#333333]">
         BookPhysio
       </span>
     </div>
@@ -68,67 +62,34 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        padding: '40px',
-        maxWidth: '440px',
-        width: '100%',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-      }}
-    >
+    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
       <BpLogo />
 
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 700,
-          color: '#333333',
-          margin: '0 0 6px',
-        }}
-      >
+      <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
         Log in to BookPhysio
       </h1>
-      <p style={{ fontSize: '14px', color: '#666666', margin: '0 0 28px' }}>
-        Welcome back
-      </p>
+      <p className="text-[14px] text-[#666666] mb-7">Welcome back</p>
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Mobile Number */}
-        <div style={{ marginBottom: '24px' }}>
+        <div className="mb-6">
           <label
             htmlFor="phone"
-            style={{
-              display: 'block',
-              fontSize: '13px',
-              color: '#666666',
-              marginBottom: '6px',
-              fontWeight: 500,
-            }}
+            className="block text-[13px] text-[#666666] mb-1.5 font-medium"
           >
             Mobile Number
           </label>
           <div
-            style={{
-              display: 'flex',
-              border: `1.5px solid ${errors.phone ? '#DC2626' : phoneFocused ? '#00766C' : '#E5E5E5'}`,
-              borderRadius: '8px',
-              overflow: 'hidden',
-              transition: 'border-color 0.15s',
-            }}
+            className={`flex border-[1.5px] rounded-[8px] overflow-hidden transition-colors ${
+              errors.phone
+                ? 'border-[#DC2626]'
+                : phoneFocused
+                ? 'border-[#00766C]'
+                : 'border-[#E5E5E5]'
+            }`}
           >
-            <span
-              style={{
-                padding: '10px 12px',
-                fontSize: '15px',
-                color: '#333333',
-                backgroundColor: '#F5F5F5',
-                borderRight: '1.5px solid #E5E5E5',
-                whiteSpace: 'nowrap',
-                lineHeight: '1.4',
-              }}
-            >
+            <span className="px-3 py-2.5 text-[15px] text-[#333333] bg-[#F5F5F5] border-r-[1.5px] border-[#E5E5E5] whitespace-nowrap leading-relaxed flex items-center gap-1.5">
+              <Smartphone className="w-4 h-4 text-[#9CA3AF]" />
               +91
             </span>
             <input
@@ -142,26 +103,12 @@ export default function LoginPage() {
               onChange={(e) => handlePhoneChange(e.target.value)}
               onFocus={() => setPhoneFocused(true)}
               onBlur={() => setPhoneFocused(false)}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                fontSize: '15px',
-                color: '#333333',
-                border: 'none',
-                outline: 'none',
-                backgroundColor: '#ffffff',
-              }}
+              className="flex-1 px-3.5 py-2.5 text-[15px] text-[#333333] border-none outline-none bg-white"
               autoComplete="tel"
             />
           </div>
           {errors.phone && (
-            <p
-              style={{
-                fontSize: '12px',
-                color: '#DC2626',
-                margin: '4px 0 0',
-              }}
-            >
+            <p className="text-[12px] text-[#DC2626] mt-1">
               {errors.phone}
             </p>
           )}
@@ -171,59 +118,33 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: '100%',
-            padding: '13px',
-            fontSize: '16px',
-            fontWeight: 600,
-            color: '#ffffff',
-            backgroundColor: loading ? '#4aada6' : '#00766C',
-            border: 'none',
-            borderRadius: '24px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.15s',
-            marginBottom: '24px',
-          }}
+          className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-6 transition-colors outline-none ${
+            loading
+              ? 'bg-[#4aada6] cursor-not-allowed'
+              : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+          }`}
         >
-          {loading ? 'Sending…' : 'Send OTP →'}
+          {loading ? 'Sending…' : (
+            <>
+              Send OTP
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </form>
 
       {/* Divider */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '16px',
-        }}
-      >
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E5E5' }} />
-        <span style={{ fontSize: '13px', color: '#666666' }}>or</span>
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E5E5' }} />
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex-1 h-px bg-[#E5E5E5]" />
+        <span className="text-[13px] text-[#666666]">or</span>
+        <div className="flex-1 h-px bg-[#E5E5E5]" />
       </div>
 
       {/* Google button */}
       <button
         type="button"
         onClick={() => alert('Google auth coming soon')}
-        style={{
-          width: '100%',
-          padding: '13px',
-          fontSize: '15px',
-          fontWeight: 500,
-          color: '#333333',
-          backgroundColor: '#ffffff',
-          border: '1.5px solid #E5E5E5',
-          borderRadius: '24px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          marginBottom: '28px',
-          transition: 'border-color 0.15s',
-        }}
+        className="w-full flex items-center justify-center gap-2.5 py-3.5 text-[15px] font-medium text-[#333333] bg-white border-[1.5px] border-[#E5E5E5] rounded-full hover:border-[#D1D5DB] transition-colors cursor-pointer mb-7 outline-none"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path
@@ -247,37 +168,17 @@ export default function LoginPage() {
       </button>
 
       {/* Signup link */}
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#666666',
-          margin: '0 0 12px',
-        }}
-      >
+      <p className="text-center text-[14px] text-[#666666] mb-3">
         New to BookPhysio?{' '}
-        <Link
-          href="/signup"
-          style={{ color: '#00766C', fontWeight: 600, textDecoration: 'none' }}
-        >
+        <Link href="/signup" className="text-[#00766C] font-semibold no-underline hover:text-[#005A52] transition-colors">
           Create an account
         </Link>
       </p>
 
       {/* Doctor link */}
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#666666',
-          margin: 0,
-        }}
-      >
+      <p className="text-center text-[14px] text-[#666666]">
         Are you a doctor?{' '}
-        <Link
-          href="/doctor-signup"
-          style={{ color: '#00766C', fontWeight: 600, textDecoration: 'none' }}
-        >
+        <Link href="/doctor-signup" className="text-[#00766C] font-semibold no-underline hover:text-[#005A52] transition-colors">
           Join as a doctor →
         </Link>
       </p>

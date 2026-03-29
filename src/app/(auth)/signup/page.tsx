@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
+import { ArrowRight, Smartphone, User } from 'lucide-react'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -24,20 +25,13 @@ interface SignupErrors {
 
 function BpLogo() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        marginBottom: '28px',
-      }}
-    >
+    <div className="flex items-center gap-2.5 mb-7">
       <img
         src="/images/logo-icon.png"
         alt="BookPhysio"
-        style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+        className="w-9 h-9 object-contain"
       />
-      <span style={{ fontSize: '20px', fontWeight: 700, color: '#333333' }}>
+      <span className="text-[20px] font-bold text-[#333333]">
         BookPhysio
       </span>
     </div>
@@ -75,122 +69,52 @@ export default function SignupPage() {
     router.push('/verify-otp?phone=91' + form.phone)
   }
 
-  const inputBase: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 14px',
-    fontSize: '15px',
-    color: '#333333',
-    backgroundColor: '#ffffff',
-    border: '1.5px solid #E5E5E5',
-    borderRadius: '8px',
-    outline: 'none',
-    boxSizing: 'border-box',
-    transition: 'border-color 0.15s',
-  }
-
   return (
-    <div
-      style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        padding: '40px',
-        maxWidth: '440px',
-        width: '100%',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-      }}
-    >
+    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
       <BpLogo />
 
-      <h1
-        style={{
-          fontSize: '24px',
-          fontWeight: 700,
-          color: '#333333',
-          margin: '0 0 6px',
-        }}
-      >
+      <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
         Create your account
       </h1>
-      <p style={{ fontSize: '14px', color: '#666666', margin: '0 0 28px' }}>
-        Find and book physios near you
-      </p>
+      <p className="text-[14px] text-[#666666] mb-7">Find and book physios near you</p>
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Full Name */}
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            htmlFor="name"
-            style={{
-              display: 'block',
-              fontSize: '13px',
-              color: '#666666',
-              marginBottom: '6px',
-              fontWeight: 500,
-            }}
-          >
+        <div className="mb-5">
+          <label htmlFor="name" className="block text-[13px] text-[#666666] mb-1.5 font-medium">
             Full Name
           </label>
-          <input
-            id="name"
-            type="text"
-            placeholder="e.g. Rahul Sharma"
-            value={form.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            onFocus={() => setNameFocused(true)}
-            onBlur={() => setNameFocused(false)}
-            style={{
-              ...inputBase,
-              borderColor: errors.name
-                ? '#DC2626'
-                : nameFocused
-                  ? '#00766C'
-                  : '#E5E5E5',
-            }}
-            autoComplete="name"
-          />
-          {errors.name && (
-            <p
-              style={{ fontSize: '12px', color: '#DC2626', margin: '4px 0 0' }}
-            >
-              {errors.name}
-            </p>
-          )}
+          <div className="relative">
+            <input
+              id="name"
+              type="text"
+              placeholder="e.g. Rahul Sharma"
+              value={form.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              onFocus={() => setNameFocused(true)}
+              onBlur={() => setNameFocused(false)}
+              className={`w-full pl-10 pr-4 py-2.5 text-[15px] text-[#333333] bg-white rounded-[8px] outline-none border-[1.5px] transition-colors ${
+                errors.name ? 'border-[#DC2626]' : nameFocused ? 'border-[#00766C]' : 'border-[#E5E5E5]'
+              }`}
+              autoComplete="name"
+            />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+          </div>
+          {errors.name && <p className="text-[12px] text-[#DC2626] mt-1">{errors.name}</p>}
         </div>
 
         {/* Mobile Number */}
-        <div style={{ marginBottom: '24px' }}>
-          <label
-            htmlFor="phone"
-            style={{
-              display: 'block',
-              fontSize: '13px',
-              color: '#666666',
-              marginBottom: '6px',
-              fontWeight: 500,
-            }}
-          >
+        <div className="mb-6">
+          <label htmlFor="phone" className="block text-[13px] text-[#666666] mb-1.5 font-medium">
             Mobile Number
           </label>
           <div
-            style={{
-              display: 'flex',
-              border: `1.5px solid ${errors.phone ? '#DC2626' : phoneFocused ? '#00766C' : '#E5E5E5'}`,
-              borderRadius: '8px',
-              overflow: 'hidden',
-              transition: 'border-color 0.15s',
-            }}
+            className={`flex border-[1.5px] rounded-[8px] overflow-hidden transition-colors ${
+              errors.phone ? 'border-[#DC2626]' : phoneFocused ? 'border-[#00766C]' : 'border-[#E5E5E5]'
+            }`}
           >
-            <span
-              style={{
-                padding: '10px 12px',
-                fontSize: '15px',
-                color: '#333333',
-                backgroundColor: '#F5F5F5',
-                borderRight: '1.5px solid #E5E5E5',
-                whiteSpace: 'nowrap',
-                lineHeight: '1.4',
-              }}
-            >
+            <span className="px-3 py-2.5 text-[15px] text-[#333333] bg-[#F5F5F5] border-r-[1.5px] border-[#E5E5E5] whitespace-nowrap leading-relaxed flex items-center gap-1.5">
+              <Smartphone className="w-4 h-4 text-[#9CA3AF]" />
               +91
             </span>
             <input
@@ -201,118 +125,59 @@ export default function SignupPage() {
               placeholder="98765 43210"
               maxLength={10}
               value={form.phone}
-              onChange={(e) =>
-                handleChange('phone', e.target.value.replace(/\D/g, ''))
-              }
+              onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
               onFocus={() => setPhoneFocused(true)}
               onBlur={() => setPhoneFocused(false)}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                fontSize: '15px',
-                color: '#333333',
-                border: 'none',
-                outline: 'none',
-                backgroundColor: '#ffffff',
-              }}
+              className="flex-1 px-3.5 py-2.5 text-[15px] text-[#333333] border-none outline-none bg-white"
               autoComplete="tel"
             />
           </div>
-          {errors.phone && (
-            <p
-              style={{ fontSize: '12px', color: '#DC2626', margin: '4px 0 0' }}
-            >
-              {errors.phone}
-            </p>
-          )}
+          {errors.phone && <p className="text-[12px] text-[#DC2626] mt-1">{errors.phone}</p>}
         </div>
 
         {/* Send OTP button */}
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: '100%',
-            padding: '13px',
-            fontSize: '16px',
-            fontWeight: 600,
-            color: '#ffffff',
-            backgroundColor: loading ? '#4aada6' : '#00766C',
-            border: 'none',
-            borderRadius: '24px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.15s',
-            marginBottom: '24px',
-          }}
+          className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-6 transition-colors outline-none ${
+            loading ? 'bg-[#4aada6] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+          }`}
         >
-          {loading ? 'Sending…' : 'Send OTP →'}
+          {loading ? 'Sending…' : (
+            <>
+              Send OTP
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </form>
 
       {/* Divider */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '16px',
-        }}
-      >
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E5E5' }} />
-        <span style={{ fontSize: '13px', color: '#666666' }}>or</span>
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E5E5' }} />
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex-1 h-px bg-[#E5E5E5]" />
+        <span className="text-[13px] text-[#666666]">or</span>
+        <div className="flex-1 h-px bg-[#E5E5E5]" />
       </div>
 
       {/* Google button */}
       <button
         type="button"
         onClick={() => alert('Google auth coming soon')}
-        style={{
-          width: '100%',
-          padding: '13px',
-          fontSize: '15px',
-          fontWeight: 500,
-          color: '#333333',
-          backgroundColor: '#ffffff',
-          border: '1.5px solid #E5E5E5',
-          borderRadius: '24px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          marginBottom: '24px',
-          transition: 'border-color 0.15s',
-        }}
+        className="w-full flex items-center justify-center gap-2.5 py-3.5 text-[15px] font-medium text-[#333333] bg-white border-[1.5px] border-[#E5E5E5] rounded-full hover:border-[#D1D5DB] transition-colors cursor-pointer mb-6 outline-none"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-          <path
-            fill="#4285F4"
-            d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-          />
-          <path
-            fill="#34A853"
-            d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-          />
-          <path
-            fill="#EA4335"
-            d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
-          />
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" />
+          <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" />
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" />
         </svg>
         Continue with Google
       </button>
 
       {/* Login link */}
-      <p style={{ textAlign: 'center', fontSize: '14px', color: '#666666', margin: 0 }}>
+      <p className="text-center text-[14px] text-[#666666]">
         Already have an account?{' '}
-        <Link
-          href="/login"
-          style={{ color: '#00766C', fontWeight: 600, textDecoration: 'none' }}
-        >
+        <Link href="/login" className="text-[#00766C] font-semibold no-underline hover:text-[#005A52] transition-colors">
           Log in
         </Link>
       </p>

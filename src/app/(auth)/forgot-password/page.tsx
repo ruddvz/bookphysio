@@ -2,10 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Mail, ArrowLeft, KeyRound, RotateCcw } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
   const [identifier, setIdentifier] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [focused, setFocused] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -14,74 +16,67 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#ffffff', borderRadius: '8px', padding: '40px', maxWidth: '440px', width: '100%', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
+    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
       {!submitted ? (
         <>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#333333', margin: '0 0 12px' }}>Forgot Password?</h1>
-          <p style={{ fontSize: '14px', color: '#666666', margin: '0 0 28px', lineHeight: 1.6 }}>
+          <h1 className="text-[24px] font-bold text-[#333333] mb-3">Forgot Password?</h1>
+          <p className="text-[14px] text-[#666666] mb-7 leading-relaxed">
             Enter your mobile number or email address and we&apos;ll send you a link to reset your password.
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '24px' }}>
-              <label htmlFor="identifier" style={{ display: 'block', fontSize: '13px', color: '#666666', marginBottom: '8px', fontWeight: 500 }}>
+            <div className="mb-6">
+              <label htmlFor="identifier" className="block text-[13px] text-[#666666] mb-2 font-medium">
                 Mobile Number or Email
               </label>
-              <input
-                id="identifier"
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="e.g. 98765 43210 or name@email.com"
-                style={{
-                  width: '100%',
-                  padding: '12px 14px',
-                  fontSize: '15px',
-                  border: '1.5px solid #E5E5E5',
-                  borderRadius: '8px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
+              <div className="relative">
+                <input
+                  id="identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setFocused(false)}
+                  placeholder="e.g. 98765 43210 or name@email.com"
+                  className={`w-full pl-10 pr-4 py-3 text-[15px] rounded-[8px] outline-none border-[1.5px] transition-colors ${
+                    focused ? 'border-[#00766C]' : 'border-[#E5E5E5]'
+                  }`}
+                />
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+              </div>
             </div>
 
             <button
               type="submit"
-              style={{
-                width: '100%',
-                padding: '13px',
-                fontSize: '16px',
-                fontWeight: 600,
-                color: '#ffffff',
-                backgroundColor: '#00766C',
-                border: 'none',
-                borderRadius: '24px',
-                cursor: 'pointer'
-              }}
+              className="w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white bg-[#00766C] hover:bg-[#005A52] rounded-full cursor-pointer transition-colors outline-none"
             >
               Reset Password
             </button>
           </form>
         </>
       ) : (
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '24px' }}>✉️</div>
-          <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#333333', marginBottom: '12px' }}>Check your inbox</h2>
-          <p style={{ fontSize: '14px', color: '#666666', marginBottom: '32px', lineHeight: 1.6 }}>
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
+            <Mail className="w-8 h-8 text-[#00766C]" />
+          </div>
+          <h2 className="text-[24px] font-bold text-[#333333] mb-3">Check your inbox</h2>
+          <p className="text-[14px] text-[#666666] mb-8 leading-relaxed">
             If an account exists for {identifier}, we have sent instructions to reset your password.
           </p>
           <button 
              onClick={() => setSubmitted(false)}
-             style={{ backgroundColor: 'transparent', border: 'none', color: '#00766C', fontWeight: 600, cursor: 'pointer' }}
+             className="inline-flex items-center gap-2 text-[#00766C] font-semibold text-[14px] bg-transparent border-none cursor-pointer hover:text-[#005A52] transition-colors outline-none"
           >
+            <RotateCcw className="w-4 h-4" />
             Try another email/number
           </button>
         </div>
       )}
 
-      <div style={{ marginTop: '32px', textAlign: 'center', borderTop: '1px solid #F5F5F5', paddingTop: '24px' }}>
-        <Link href="/login" style={{ color: '#00766C', fontWeight: 600, textDecoration: 'none', fontSize: '14px' }}>
-          ← Back to Login
+      <div className="mt-8 text-center border-t border-[#F5F5F5] pt-6">
+        <Link href="/login" className="inline-flex items-center gap-1.5 text-[#00766C] font-semibold no-underline text-[14px] hover:text-[#005A52] transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Login
         </Link>
       </div>
     </div>
