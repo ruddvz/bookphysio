@@ -44,19 +44,30 @@ placeholder env vars so Supabase SDK doesn't throw during build.
 
 **Original:** Was the full `'use client'` booking page component.
 
-**Changed to:** Thin server wrapper:
+**Changed to:** Thin server wrapper (no generateStaticParams — moved to layout.tsx):
 ```ts
-export function generateStaticParams() { return [] }
-export { default } from './BookingPageClient'
+import BookingPageClient from './BookingPageClient'
+export default function BookPage() { return <BookingPageClient /> }
 ```
 
-**Also created:** `src/app/book/[id]/BookingPageClient.tsx` — the original `page.tsx` content
-moved here (minus the `generateStaticParams` export).
+**Also created:** `src/app/book/[id]/BookingPageClient.tsx` — original `page.tsx` content.
+**Also created:** `src/app/book/[id]/layout.tsx` — holds `generateStaticParams` for this segment.
 
 **To revert:**
 1. Copy `BookingPageClient.tsx` content back into `page.tsx`
-2. Remove the `generateStaticParams` line from `page.tsx`
-3. Delete `BookingPageClient.tsx`
+2. Delete `BookingPageClient.tsx`
+3. Delete `layout.tsx` (if it didn't exist before)
+
+---
+
+## REVERT — src/app/book/[id]/layout.tsx (new file)
+
+Created to hold `generateStaticParams` since `page.tsx` is a client boundary.
+```ts
+export function generateStaticParams() { return [] }
+export default function BookLayout({ children }) { return <>{children}</> }
+```
+**To revert:** Delete this file.
 
 ---
 
