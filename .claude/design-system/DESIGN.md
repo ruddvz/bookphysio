@@ -1,6 +1,7 @@
-# Caught in 4K — Design System v3
+# BookPhysio.in — Design System
 
-> Living design document. Keep this updated after every major design change.
+> Single source of truth for all UI agents. Reference: `docs/superpowers/specs/bpdesign.md`
+> Inspired by Zocdoc, adapted for Indian physiotherapy market.
 
 ---
 
@@ -8,9 +9,10 @@
 
 | Attribute | Value |
 |---|---|
-| **Aesthetic** | Matte Slate + Soft Neumorphic — rounded cards, deep shadows, no hard edges |
-| **Layout Model** | Widget Dashboard — content broken into floating, rounded widget cards |
-| **Typography** | `Inter` or `Outfit` via Google Fonts (system sans-serif fallback) |
+| **Aesthetic** | Clean medical SaaS — white cards, teal accents, trust-forward |
+| **Layout Model** | Full-width sections (homepage), sidebar + content (dashboards) |
+| **Typography** | `Inter` via Google Fonts (all weights, system sans-serif fallback) |
+| **Inspiration** | Zocdoc.com — search-first, doctor cards, sticky booking |
 
 ---
 
@@ -20,129 +22,132 @@
 
 | Token | Value | Usage |
 |---|---|---|
-| `--bg-body` | `#1e2029` | App base background |
-| `--bg-surface-1` | `#2a2c38` | Widget cards, nav pills, carousels |
-| `--bg-surface-2` | `#3b3e4f` | Elevated elements inside cards |
-| `--accent-primary` | `#ffffff` | Primary CTAs (Watch button, active tab) |
-| `--accent-secondary` | `#ff4d4f` | Badges, warnings, remove actions |
-| `--accent-tertiary` | `#ffd043` | Ratings, stars, IMDb tags |
-| `--text-primary` | `#f8f9fa` | Headings and primary body text |
-| `--text-secondary` | `#9ca3af` | Subtitles, duration, disabled state |
+| Primary teal | `#00766C` | Buttons, links, nav accents, doctor badges |
+| Primary dark | `#005A52` | Hover states, active states |
+| Primary light | `#E6F4F3` | Chip backgrounds, light teal surfaces |
+| Accent / CTA | `#FF6B35` | Primary call-to-action buttons only |
+| Surface | `#F5F5F5` | Section backgrounds, input fields |
+| Body bg | `#F7F8F9` | Page background |
+| Body text | `#333333` | Headings and primary body text |
+| Muted text | `#666666` | Secondary text, labels, timestamps |
+| Border | `#E5E5E5` | Card borders, dividers |
+| White | `#FFFFFF` | Cards, modals, nav background |
+| Error | `#DC2626` | Form validation errors |
+| Success | `#16A34A` | Success states, verified badges |
+| Warning | `#F59E0B` | Warnings, pending states |
 
 ### Radii & Shadows
 
 | Token | Value | Usage |
 |---|---|---|
-| `--radius-card` | `32px` | All large widget panels and poster cards |
-| `--radius-pill` | `999px` | Nav bar, filter buttons, CTAs |
-| `--radius-avatar` | `16px` | Cast/crew squircle portraits |
-| `--shadow-soft` | `0 16px 32px rgba(0,0,0,0.2)` | Card depth, no neon glow |
+| Card radius | `8px` | All cards (DoctorCard, dashboard cards, form cards) |
+| Button radius | `24px` | All buttons (pill shape) |
+| Input radius | `8px` | Text inputs, selects, textareas |
+| Modal radius | `16px` | Modals, dialogs |
+| Shadow card | `0 2px 8px rgba(0,0,0,0.06)` | Default card elevation |
+| Shadow hover | `0 4px 16px rgba(0,0,0,0.12)` | Card hover state |
+| Shadow modal | `0 8px 32px rgba(0,0,0,0.16)` | Modals, dropdowns |
+
+### Layout
+
+| Token | Value |
+|---|---|
+| Max content width | `1142px` |
+| Side padding (desktop) | `60px` |
+| Side padding (mobile) | `24px` |
+| Sidebar width | `240px` (dashboards) |
+| Section gap | `64px` (homepage sections) |
 
 ---
 
 ## 3. Typography
 
-| Role | Size | Weight | Notes |
+| Role | Size | Weight | Color |
 |---|---|---|---|
-| Hero Title | `clamp(2rem, 4vw, 3.5rem)` | `800` | Tight letter-spacing `-0.04em` |
-| Section Heading | `1.6rem` | `800` | Carousel row titles |
-| Card Title | `1.1rem` | `800` | Below poster, truncated 1 line |
-| Meta Text | `0.9rem` | `600` | Rating, year. Color: `--text-secondary` |
-| Nav Label | `1rem` | `700` | Top nav tabs |
-| Bottom Nav Label | `0.65rem` | `700` | Icon label below icon on mobile |
+| Page title (h1) | `32px` | `700` | `#333333` |
+| Section heading (h2) | `28px` | `700` | `#333333` |
+| Card title | `18px` | `600` | `#333333` |
+| Body text | `15px` | `400` | `#333333` |
+| Small text / labels | `13px` | `500` | `#666666` |
+| Button text | `15px` | `600` | white (on teal) |
+| Nav links | `15px` | `500` | `#333333` |
+| Price display | `18px` | `700` | `#333333` |
 
 ---
 
-## 4. Components
+## 4. Breakpoints
 
-### 4a. Top Navigation
-- Full-width transparent bar, `z-index: 1001`.
-- **Left:** Logo (`3.5rem` icon, links to `#/`).
-- **Center:** Pill nav (`--bg-surface-1`, `border-radius: 999px`) containing 6 tabs: Board, Search, Discover, Library, Addons, Settings.
-  - Tab labels: **Title Case** (e.g. "Board", "Discover") — consistent across top and bottom nav.
-  - Active tab: white background (`--accent-primary`), dark text.
-- **Right:** Fullscreen button + Profile circle.
-- **Mobile (<640px):** Top nav center pill is hidden. A **bottom nav pill** takes over (see 4b).
+| Name | Width | Notes |
+|---|---|---|
+| Mobile | `375px` | Single column, hamburger menu, stacked cards |
+| Tablet | `768px` | 2-column grids, collapsed sidebar |
+| Desktop | `1280px` | Full layout, sidebar visible, 3-column grids |
 
-### 4b. Mobile Bottom Navigation
-- Fixed at bottom of screen, full-width, `border-radius: 2.25rem 2.25rem 0 0`.
-- Frosted glass: `background: rgba(13,17,23,0.95)`, `backdrop-filter: blur(50px)`.
-- Each tab: icon stacked above text label. Label is Title Case.
-- Safe area bottom inset applied via `calc(env(safe-area-inset-bottom) + 1.25rem)`.
-
-### 4c. Hero Banners (Board)
-- Massive floating rounded card: `border-radius: 2rem`, `height: calc(100vh - 4rem)`.
-- Background image fills the card with `object-fit: cover`, `brightness(0.7)`.
-- Two-layer gradient overlay (bottom-to-top + left-to-right) for text legibility.
-- Content: title, meta badges, two CTA pill buttons — all left-aligned at bottom of card.
-- **Mobile:** `height: calc(100vh - 9rem)`, `border-radius: 1.5rem`.
-
-### 4d. Board Carousels
-- Each section is a `MetaRow` with a horizontal scroll container (`overflow-x: auto`).
-- Fixed item widths: `180px` (poster/square), `320px` (landscape).
-- `margin-bottom: 2.5rem` between all rows for consistent spacing.
-- Placeholder items use same widths so they don't shift on load.
-
-### 4e. Discover Page
-- **Desktop:** Two-column flex row. Left = scrollable poster grid. Right = `28rem` wide MetaPreview side panel.
-- **Mobile/Tablet:** MetaPreview fully hidden. Full width grid only.
-- Grid: `repeat(auto-fill, minmax(160px, 1fr))` on desktop, `minmax(100px, 1fr)` on mobile.
-- Filter row: pill-style dropdowns visible on desktop, collapsed to a filter-button modal on mobile.
-
-### 4f. MetaPreview (Detail Sidebar)
-- Sits in a `32px`-radius glass container with soft drop shadow.
-- Top: background blur hero image with title + meta info overlay.
-- Below: description text, genre links, action buttons.
+**Rule:** Mobile-first design. All components must work at 375px.
 
 ---
 
-## 5. Animations
+## 5. Component Patterns
 
-- **Card Hover:** `translateY(-8px)` + increased shadow opacity. No 3D rotation.
-- **Row Entrance:** `opacity: 0 → 1` + `translateY(20px → 0)` with staggered delay per row (`var(--row-index) * 100ms`).
-- **Pill Transition:** `transition: background 0.3s ease` for active state toggle.
-- **Hero Image:** `transform: scale(1.05)` on slide hover over `1.2s`.
+### 5a. Navbar
+- White background, `box-shadow: 0 1px 4px rgba(0,0,0,0.08)`, sticky top, `z-index: 50`
+- Left: SVG logo + "BookPhysio" text
+- Center: nav links (Browse Specialties dropdown, Search, How It Works)
+- Right: "Log in" text link + "Sign up" teal pill button
+- Mobile (<768px): hamburger menu, slide-out drawer
 
----
+### 5b. DoctorCard
+- White card, `8px` radius, hover shadow
+- Avatar (80px circle), doctor name + credentials, specialty, star rating + review count
+- Location with distance, next available slot, visit type badges (teal pills)
+- Fee in ₹ (integer rupees), "Book Session →" teal button
+- ICP verified badge (green checkmark) if verified
 
-## 6. Known Issues & Bugs (Fix These Next)
+### 5c. Sidebar Nav (Dashboards)
+- 240px wide, white bg, border-right
+- Logo at top, user info below
+- Nav items: icon + label, active state = teal bg + white text
+- Logout at bottom
+- Mobile: slide-out drawer triggered by hamburger
 
-| # | Issue | Location | Status |
-|---|---|---|---|
-| 1 | Discover MetaPreview doesn't hide on iPad-size screens properly | `Discover/styles.less` @small breakpoint | 🔴 Needs testing |
-| 2 | `env(safe-area-inset-top)` padding is duplicated across 5+ routes | `MainNavBars.less` | 🟡 Tech debt |
-| 3 | Continue Watching items may still show incorrect poster widths on first load | `MetaRowPlaceholder` + `MetaRow` | 🟡 Monitor |
-| 4 | Bottom nav active state uses white pill but dark icon may not contrast well on all wallpaper covers | `MainNavBars.less` | 🟡 Review |
-| 5 | Hero text overflows on ultrawide monitors (>2000px) | `HeroShelf/styles.less` | 🔴 Cap `max-width` on content |
+### 5d. Form Cards (Auth, Booking)
+- Centered, max-width 480px, white card, 16px padding
+- Logo at top, heading below
+- Teal submit buttons (full width, 24px radius)
+- "or" divider with Google OAuth option
+- Error messages in red below inputs
 
----
-
-## 7. Suggested Design Improvements
-
-These are prioritized improvements that would meaningfully elevate the UI. (✅ = Completed)
-
-### 🚀 Completed Improvements
-
-- [x] **A. Load `Inter` from Google Fonts**: Standardized typeface to Inter for a premium feel.
-- [x] **B. Skeleton Loading Screens**: Implemented high-fidelity skeleton rows on Board and Discover.
-- [x] **C. Hero Banner Carousel Polish**: Added 8s autoplay and smoother slide transitions.
-- [x] **D. Category Quick-Filter Bar**: Added genre pills to the Board page.
-- [x] **E. Poster Progress Indicators**: Added 6px rounded progress bars on "Continue Watching" items.
-- [x] **F. Glassmorphism Active Tab**: Refined Top Navigation pill with 24px backdrop-blur.
-- [x] **G. Smooth Page Transitions**: Global route fade-in/up animation applied.
-- [x] **H. MetaItem Rating Chip Redesign**: IMDb scores now render as floating yellow glass pills.
-
-### 🎨 Remaining Polish
-
-- [ ] **I. Settings & Addons Widget Wrap**: Ensure Settings/Addons use dash-card container styles.
-- [ ] **J. Empty State illustrations**: Replace generic images with high-quality dashboard assets.
+### 5e. Status Badges
+- Pill shape (24px radius), small text
+- Confirmed: teal bg, white text
+- Pending: yellow bg, dark text
+- Cancelled: red bg, white text
+- Completed: green bg, white text
 
 ---
 
-## 8. Agent Instructions
+## 6. India-Specific Rules
 
-- **Always use** `var(--bg-surface-1/2)` for backgrounds. Never hardcode `#000` or `#fff`.
-- **Always use** `var(--radius-card)` or `var(--radius-pill)`. No raw `px` border-radius values.
-- **Tab labels** must be **Title Case** in the `TABS` array and rendered directly (no `.toUpperCase()` or `t()`).
-- **Mobile first:** always add a `@media (max-width: @minimum)` block for any new component.
-- Before adding any new LESS rule, open the existing file and check for conflicts with existing classes.
+| Rule | Implementation |
+|---|---|
+| Currency | `₹` prefix, integer rupees — NEVER paise, NEVER `$` |
+| GST | 18%, computed server-side: `Math.round(fee * 0.18)` |
+| Phone | `+91` prefix shown in forms, E.164 in DB, Zod: `z.string().regex(/^\+91[6-9]\d{9}$/)` |
+| Pincode | 6-digit: `z.string().regex(/^[1-9][0-9]{5}$/)` |
+| Auth primary | Phone OTP via MSG91, not email/password |
+| Provider credential | ICP registration number (Indian credential) |
+| Visit types | `in_clinic`, `home_visit` (key India differentiator), `online` |
+| Date format | DD/MM/YYYY in UI, ISO 8601 in DB |
+| Cities | Delhi, Mumbai, Bangalore, Chennai, Hyderabad, Pune, Kolkata, Ahmedabad, Jaipur, Surat |
+
+---
+
+## 7. Agent Instructions
+
+- **Always use** Tailwind classes — never inline styles, never raw CSS
+- **Always use** design tokens from this file — never hardcode hex colors
+- **Server Components by default** — `'use client'` only when hooks/interactivity needed
+- **Mobile first** — every component must work at 375px before adding tablet/desktop styles
+- **₹ for prices** — use `<PriceDisplay>` component, never raw string interpolation
+- **+91 for phones** — always show prefix in form inputs
+- Before modifying a shared component, check which pages import it via CODEMAPS
