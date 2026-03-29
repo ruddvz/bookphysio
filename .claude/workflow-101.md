@@ -4,6 +4,37 @@
 
 ---
 
+## UI Polish Mode (Phase 8 — use this instead of full workflow for polish steps)
+
+> When the user says "do Step 8.X" or "work on [page name]", follow this lighter loop:
+
+1. **Read** the step definition in `docs/planning/EXECUTION-PLAN.md` (Phase 8 section)
+2. **Read** the relevant page file(s) and their spec in `docs/superpowers/plans/2026-03-28-ui-build-plan.md`
+3. **Read** relevant component spec files in `docs/research/components/` if applicable
+4. **Read** current file(s) to understand what's already there
+5. **Edit** — make only the changes for this step, no scope creep
+6. **Build check** — `rtk next build` or `rtk tsc` to confirm zero TS errors
+7. **Mark done** — tick `[x]` for this step in `EXECUTION-PLAN.md`
+8. **Update ACTIVE.md** — move completed items to "Completed" section
+9. **Commit** — `rtk git add` + `rtk git commit` with message `feat: step 8.X — [page] polish`
+10. **Ask** — "Step 8.X done. Ready for Step 8.Y?"
+
+### Design rules (never break these)
+- Primary teal: `#00766C` — buttons, links, accents
+- Primary dark: `#005A52` — hover states
+- Primary light: `#E6F4F3` — backgrounds, chips
+- Accent/CTA: `#FF6B35` — only for primary CTAs
+- Surface: `#F5F5F5` / Body bg: `#F7F8F9`
+- Font: Inter, Body: `#333333`, Muted: `#666666`
+- Card radius: `8px`, Button radius: `24px`, Max width: `1142px`
+- Prices: `₹` integer rupees only — never `$`, never paise
+- Phone: `+91` prefix always shown in forms
+- RTK prefix on ALL commands: `rtk git status`, `rtk next build`
+
+---
+
+---
+
 ## Phase 0: Context Gathering (Before Anything Else)
 - [ ] **Read Project Memory:** Check `/memories/repo/` for any existing notes on architecture, past fixes, or known gotchas. Do not re-learn what has already been recorded.
 - [ ] **Read `claude.md`:** Load the project's `claude.md` at the repo root for the tech stack, file organization rules, and available commands.
