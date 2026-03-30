@@ -155,13 +155,13 @@
 
 **Route / Component:** `app/(admin)`
 **Phase:** 8.13
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Platform overview stats visible: total providers, total patients, total bookings, revenue (₹)
-- [ ] All stats display formatted values — not raw numbers
-- [ ] Stats cards have labels and icons
+- [x] Platform overview stats visible: total providers, total patients, total bookings, revenue (₹)
+- [x] All stats display formatted values — not raw numbers
+- [x] Stats cards have labels and icons
 
 ### Edge Cases
 - Zero stats: all cards show `0` (not blank/undefined)

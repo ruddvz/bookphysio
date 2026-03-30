@@ -11,7 +11,7 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.13 — Admin Dashboard Polish
+### Next up: Step 8.14 — Specialty/City Landing Pages Polish
 
 ### Remaining Phase 8 Steps (with test gate)
 
@@ -30,8 +30,8 @@
   - tests: [x] Vitest: toggle logic, hours validation | Playwright: provider saves availability
 - [x] **8.12** Provider Earnings Polish
   - tests: [x] Vitest: INR amount formatting | Playwright: provider views earnings summary
-- [ ] **8.13** Admin Dashboard Polish
-  - tests: [ ] Vitest: stats display formatting | Playwright: admin accesses dashboard
+- [x] **8.13** Admin Dashboard Polish
+  - tests: [x] Vitest: stats display formatting | Playwright: admin accesses dashboard
 - [ ] **8.14** Specialty/City Landing Pages
   - tests: [ ] Vitest: generateMetadata() slug → title/description | Playwright: landing page <title> correct
 - [ ] **8.15** Static Pages Polish
