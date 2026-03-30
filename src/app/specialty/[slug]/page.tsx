@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
@@ -21,15 +22,39 @@ export async function generateStaticParams() {
 // Data
 // ---------------------------------------------------------------------------
 
-const SPECIALTY_MAP: Record<string, string> = {
-  'sports-physio': 'Sports Physiotherapists',
-  'neuro-physio': 'Neurological Physiotherapists',
-  'ortho-physio': 'Orthopedic Physiotherapists',
-  'paediatric-physio': 'Paediatric Physiotherapists',
-  'womens-health': "Women's Health Physiotherapists",
-  'geriatric-physio': 'Geriatric Physiotherapists',
-  'post-surgery-rehab': 'Post-Surgery Rehabilitation',
-  'pain-management': 'Pain Management Specialists',
+const SPECIALTY_MAP: Record<string, { label: string; description: string }> = {
+  'sports-physio': { 
+    label: 'Sports Physiotherapists', 
+    description: 'Expert care for sports injuries, performance enhancement, and athletic rehabilitation.' 
+  },
+  'neuro-physio': { 
+    label: 'Neurological Physiotherapists', 
+    description: 'Specialized therapy for stroke, Parkinson\'s, multiple sclerosis, and other neurological conditions.' 
+  },
+  'ortho-physio': { 
+    label: 'Orthopedic Physiotherapists', 
+    description: 'Treatment for bone, joint, and muscle conditions including arthritis, fractures, and back pain.' 
+  },
+  'paediatric-physio': { 
+    label: 'Paediatric Physiotherapists', 
+    description: 'Compassionate physical therapy for children, supporting developmental milestones and growth.' 
+  },
+  'womens-health': { 
+    label: "Women's Health Physiotherapists", 
+    description: 'Tailored support for prenatal care, postpartum recovery, and pelvic health.' 
+  },
+  'geriatric-physio': { 
+    label: 'Geriatric Physiotherapists', 
+    description: 'Enhancing mobility and quality of life for seniors through specialized geriatric care.' 
+  },
+  'post-surgery-rehab': { 
+    label: 'Post-Surgery Rehabilitation', 
+    description: 'Structured recovery programs to regain strength and mobility after orthopedic or neuro surgery.' 
+  },
+  'pain-management': { 
+    label: 'Pain Management Specialists', 
+    description: 'Evidence-based approaches to chronic pain relief and functional restoration.' 
+  },
 }
 
 const MOCK_DOCTORS: Doctor[] = [
@@ -38,7 +63,6 @@ const MOCK_DOCTORS: Doctor[] = [
   { id: '3', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit', 'Online'], fee: 900, icpVerified: true },
   { id: '4', name: 'Dr. Vikram Singh', credentials: 'BPT', specialty: 'Sports Physiotherapist', rating: 4.6, reviewCount: 68, location: 'Lajpat Nagar, Delhi', distance: '4.2 km', nextSlot: 'Today at 5:30 PM', visitTypes: ['In-clinic'], fee: 600, icpVerified: false },
   { id: '5', name: 'Dr. Sneha Patel', credentials: 'BPT, MPT (Paeds)', specialty: 'Paediatric Physiotherapist', rating: 4.9, reviewCount: 211, location: 'Powai, Mumbai', distance: '5.1 km', nextSlot: 'Today at 11:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 1000, icpVerified: true },
-  { id: '6', name: 'Dr. Arun Nair', credentials: 'BPT, MPT (Cardio)', specialty: 'Cardiopulmonary Physiotherapist', rating: 4.5, reviewCount: 45, location: 'T. Nagar, Chennai', distance: '6.8 km', nextSlot: 'Tomorrow at 9:00 AM', visitTypes: ['In-clinic', 'Online'], fee: 750, icpVerified: true },
 ]
 
 // ---------------------------------------------------------------------------
@@ -47,10 +71,13 @@ const MOCK_DOCTORS: Doctor[] = [
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const displayName = SPECIALTY_MAP[slug] ?? 'Physiotherapists'
+  const specialty = SPECIALTY_MAP[slug]
+  
+  if (!specialty) return { title: 'Not Found | BookPhysio.in' }
+  
   return {
-    title: `Book ${displayName} in India | BookPhysio.in`,
-    description: `Find and book verified ${displayName} near you. Same-day appointments available.`,
+    title: `Best ${specialty.label} in India | BookPhysio.in`,
+    description: `Find and book verified ${specialty.label} near you. ${specialty.description} Same-day appointments available.`,
   }
 }
 
@@ -60,43 +87,79 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function SpecialtyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const displayName = SPECIALTY_MAP[slug] ?? 'Physiotherapists'
+  const specialty = SPECIALTY_MAP[slug]
+
+  if (!specialty) {
+    notFound()
+  }
+
+  // Filter doctors by specialty (simulation)
+  // In a real app, this would be an API call
+  const filteredDoctors = MOCK_DOCTORS.filter(doc => {
+    if (slug === 'sports-physio') return doc.specialty.includes('Sports')
+    if (slug === 'neuro-physio') return doc.specialty.includes('Neuro')
+    if (slug === 'ortho-physio') return doc.specialty.includes('Ortho')
+    if (slug === 'paediatric-physio') return doc.specialty.includes('Paediatric')
+    return true // Default show all for others in mock
+  })
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="bg-[#F7F8F9] min-h-screen">
+      <main className="bg-[#F7F8F9] flex-grow">
         {/* Hero banner */}
         <section className="bg-gradient-to-br from-[#00766C] to-[#005A52]">
-          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-14">
-            <h1 className="text-[36px] font-bold text-white mb-3 leading-tight tracking-tight flex items-center gap-3">
-              <Stethoscope className="w-8 h-8 text-white/80" />
-              Book {displayName}
+          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-16">
+            <div className="flex items-center gap-4 mb-4">
+               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                 <Stethoscope className="w-6 h-6 text-white" />
+               </div>
+               <span className="text-white/80 text-[14px] font-semibold uppercase tracking-wider">Verified Specialization</span>
+            </div>
+            <h1 className="text-[40px] md:text-[48px] font-bold text-white mb-4 leading-tight tracking-tight">
+              {specialty.label}
             </h1>
-            <p className="text-[16px] text-white/85">
-              Verified physios &middot; Same-day appointments &middot; In-clinic, Home Visit &amp; Online
+            <p className="text-[18px] text-white/90 max-w-[700px] leading-relaxed">
+              {specialty.description} Book verified physiotherapists for in-clinic, home visit, and online sessions.
             </p>
           </div>
         </section>
 
         {/* Content area */}
         <section>
-          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-10">
-            <h2 className="text-[22px] font-semibold text-[#333333] mb-6">
-              {MOCK_DOCTORS.length} {displayName} available
-            </h2>
-
-            <div className="flex flex-col gap-4">
-              {MOCK_DOCTORS.map((doctor) => (
-                <DoctorCard key={doctor.id} doctor={doctor} />
-              ))}
+          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-12">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E5E5]">
+              <h2 className="text-[20px] font-bold text-[#333333]">
+                {filteredDoctors.length} {specialty.label} available
+              </h2>
+              <div className="text-[14px] text-[#666666]">
+                Showing results for <span className="font-semibold text-[#00766C]">India</span>
+              </div>
             </div>
+
+            {filteredDoctors.length > 0 ? (
+              <div className="flex flex-col gap-6">
+                {filteredDoctors.map((doctor) => (
+                  <DoctorCard key={doctor.id} doctor={doctor} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-16 text-center shadow-sm">
+                <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Stethoscope className="w-8 h-8 text-[#9CA3AF]" />
+                </div>
+                <h3 className="text-[18px] font-semibold text-[#333333] mb-2">No providers found</h3>
+                <p className="text-[15px] text-[#666666] max-w-[400px] mx-auto">
+                  We couldn't find any {specialty.label.toLowerCase()} matching your criteria. Try adjusting your filters or searching in a different area.
+                </p>
+              </div>
+            )}
           </div>
         </section>
       </main>
 
       <Footer />
-    </>
+    </div>
   )
 }

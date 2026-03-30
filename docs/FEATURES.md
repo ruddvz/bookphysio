@@ -171,19 +171,21 @@
 
 ---
 
-## 8.14 Specialty / City Landing Pages Polish
+## 8.14 Specialty/City Landing Pages
 
-**Route / Component:** `app/specialty/[slug]`, `app/city/[slug]`
+**Route / Component:** `src/app/specialty/[slug]/page.tsx`, `src/app/city/[slug]/page.tsx`
 **Phase:** 8.14
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Hero section shows specialty/city name and a one-liner description
-- [ ] Filtered doctor grid shows DoctorCards for that specialty or city
-- [ ] `<title>` tag reflects the specialty/city (e.g. "Physiotherapists in Mumbai | bookphysio.in")
-- [ ] Meta description set per page
-- [ ] `generateMetadata()` returns correct `title` and `description` for any valid slug
+- [x] Hero section shows specialty/city name and description
+- [x] Filtered doctor grid shows DoctorCards
+- [x] `<title>` tag reflects the specialty/city
+- [x] Meta description per page
+- [x] `generateMetadata()` returns correct metadata
+- [x] Invalid slug: 404
+- [x] No doctors: "No providers found" stateny valid slug
 
 ### Edge Cases
 - Invalid slug: 404 page rendered

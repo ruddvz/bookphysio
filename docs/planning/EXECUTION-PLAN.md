@@ -109,7 +109,7 @@
 - [x] **8.11** Provider Availability — weekday toggles, working hours grid
 - [x] **8.12** Provider Earnings — monthly summary, chart placeholder, transactions
 - [x] **8.13** Admin Dashboard — platform overview stats
-- [ ] **8.14** Specialty/City landing pages — hero, filtered doctor grid
+- [x] **8.14** Specialty/City landing pages — hero, filtered doctor grid
 - [ ] **8.15** Static pages (About, FAQ, How It Works) — content + layout polish
 - [ ] **8.16** Global: mobile responsiveness pass (375px breakpoint)
 - [ ] **8.17** Global: dark/empty states, loading skeletons

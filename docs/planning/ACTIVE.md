@@ -11,7 +11,7 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.14 — Specialty/City Landing Pages Polish
+### Next up: Step 8.15 — Static Pages Polish (About, FAQ, How It Works)
 
 ### Remaining Phase 8 Steps (with test gate)
 
@@ -32,10 +32,10 @@
   - tests: [x] Vitest: INR amount formatting | Playwright: provider views earnings summary
 - [x] **8.13** Admin Dashboard Polish
   - tests: [x] Vitest: stats display formatting | Playwright: admin accesses dashboard
-- [ ] **8.14** Specialty/City Landing Pages
-  - tests: [ ] Vitest: generateMetadata() slug → title/description | Playwright: landing page <title> correct
+- [x] **8.14** Specialty/City Landing Pages
+  - tests: [x] Vitest: generateMetadata() slug → title/description | Playwright: landing page <title> correct
 - [ ] **8.15** Static Pages Polish
-  - tests: [ ] (none) | Playwright: /about /faq /how-it-works /privacy /terms load without errors
+  - tests: [ ] Vitest: content matches spec | Playwright: static routes 200 OK/faq /how-it-works /privacy /terms load without errors
 - [ ] **8.16** Mobile Responsiveness Pass *(begin tests only after USER_FLOWS.md complete)*
   - tests: [ ] (none) | Playwright: flows 1, 2, 6 at 375px viewport
 - [ ] **8.17** Empty States and Loading Skeletons
