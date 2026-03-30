@@ -6,7 +6,7 @@ import { MapPin, ShieldCheck, GraduationCap, Languages, Star } from 'lucide-reac
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
-  return []
+  return [{ id: 'placeholder' }]
 }
 
 // ---------------------------------------------------------------------------

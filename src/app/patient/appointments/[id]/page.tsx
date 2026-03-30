@@ -2,7 +2,7 @@ import { CalendarDays, Clock, MapPin, Download, RefreshCw, X, Stethoscope, Credi
 import Link from 'next/link'
 
 export async function generateStaticParams() {
-  return []
+  return [{ id: 'placeholder' }]
 }
 
 export default async function PatientAppointmentDetail({ params }: { params: Promise<{ id: string }> }) {

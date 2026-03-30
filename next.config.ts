@@ -7,12 +7,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
-} as any;
+} satisfies NextConfig;
 
 export default nextConfig;

@@ -1,10 +1,14 @@
-import dynamic from 'next/dynamic'
-const BookingInner = dynamic(() => import('./BookingInner'), { ssr: false })
+import { Suspense } from 'react'
+import BookingInner from './BookingInner'
 
-export async function generateStaticParams() {
-  return [] as { id: string }[]
+export function generateStaticParams() {
+  return [{ id: 'placeholder' }]
 }
 
 export default function BookPage() {
-  return <BookingInner />
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center"><div className="text-[#666666] text-[15px]">Loading…</div></div>}>
+      <BookingInner />
+    </Suspense>
+  )
 }

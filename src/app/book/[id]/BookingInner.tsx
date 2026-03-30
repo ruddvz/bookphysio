@@ -91,11 +91,10 @@ export default function BookingInner() {
           <div className="mb-8 flex items-center justify-center gap-2">
             {STEPS.map((s, i) => (
               <div key={s.n} className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
-                  step === s.n ? 'bg-[#00766C] text-white' :
-                  step > s.n  ? 'bg-[#E6F4F3] text-[#00766C]' :
-                  'bg-[#E5E5E5] text-[#666]'
-                }`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors ${step === s.n ? 'bg-[#00766C] text-white' :
+                  step > s.n ? 'bg-[#E6F4F3] text-[#00766C]' :
+                    'bg-[#E5E5E5] text-[#666]'
+                  }`}>
                   {step > s.n ? '✓' : s.n}
                 </div>
                 <span className={`text-sm font-medium ${step === s.n ? 'text-[#00766C]' : 'text-[#999]'}`}>
