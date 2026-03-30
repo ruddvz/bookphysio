@@ -13,6 +13,34 @@
 
 ### Next up: Step 8.7 — Patient Dashboard Polish
 
+### Remaining Phase 8 Steps (with test gate)
+
+> Each step is done only when Status = [x] AND Tests = [x].
+> FEATURES.md Tests field is authoritative. This list is a convenience mirror.
+
+- [ ] **8.7** Patient Dashboard Polish
+  - tests: [ ] Vitest: date formatting, mock data shape | Playwright: patient sees upcoming appointment
+- [ ] **8.8** Patient Appointments Polish
+  - tests: [ ] Vitest: tab state, filter logic | Playwright: patient views list and detail
+- [ ] **8.9** Provider Dashboard Polish
+  - tests: [ ] Vitest: stats display formatting | Playwright: provider sees today's appointments
+- [ ] **8.10** Provider Calendar Polish
+  - tests: [ ] Vitest: slot render logic | Playwright: provider views 7-day calendar
+- [ ] **8.11** Provider Availability Polish
+  - tests: [ ] Vitest: toggle logic, hours validation | Playwright: provider saves availability
+- [ ] **8.12** Provider Earnings Polish
+  - tests: [ ] Vitest: INR amount formatting | Playwright: provider views earnings summary
+- [ ] **8.13** Admin Dashboard Polish
+  - tests: [ ] Vitest: stats display formatting | Playwright: admin accesses dashboard
+- [ ] **8.14** Specialty/City Landing Pages
+  - tests: [ ] Vitest: generateMetadata() slug → title/description | Playwright: landing page <title> correct
+- [ ] **8.15** Static Pages Polish
+  - tests: [ ] (none) | Playwright: /about /faq /how-it-works /privacy /terms load without errors
+- [ ] **8.16** Mobile Responsiveness Pass *(begin tests only after USER_FLOWS.md complete)*
+  - tests: [ ] (none) | Playwright: flows 1, 2, 6 at 375px viewport
+- [ ] **8.17** Empty States and Loading Skeletons
+  - tests: [ ] Vitest: skeleton renders without data prop | Playwright: empty state shown when no appointments
+
 ---
 
 ## Known Issues / Gaps
