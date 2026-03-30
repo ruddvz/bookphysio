@@ -2,7 +2,7 @@
 
 import { CalendarDays, ArrowRight, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import {
   filterByTab,
@@ -62,7 +62,7 @@ function AppointmentsSkeleton() {
   )
 }
 
-export default function PatientAppointments() {
+function PatientAppointmentsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -194,5 +194,13 @@ export default function PatientAppointments() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function PatientAppointments() {
+  return (
+    <Suspense fallback={<div className="max-w-[1142px] mx-auto px-6 py-12"><AppointmentsSkeleton /></div>}>
+      <PatientAppointmentsContent />
+    </Suspense>
   )
 }
