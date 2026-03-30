@@ -5,50 +5,32 @@ interface Specialty {
   emoji: string;
   label: string;
   href: string;
+  bg?: string;
 }
 
 const specialties: Specialty[] = [
-  { emoji: "🏃", label: "Sports Physio", href: "/specialty/sports" },
-  { emoji: "🧠", label: "Neuro Physio", href: "/specialty/neuro" },
-  { emoji: "🦴", label: "Ortho Physio", href: "/specialty/ortho" },
-  { emoji: "👶", label: "Paediatric Physio", href: "/specialty/paediatric" },
-  { emoji: "🌸", label: "Women's Health", href: "/specialty/womens-health" },
-  { emoji: "👴", label: "Geriatric Physio", href: "/specialty/geriatric" },
+  { emoji: "🏃", label: "Sports Physio", href: "/specialty/sports-physio", bg: "#E6F4F3" },
+  { emoji: "🧠", label: "Neuro Physio", href: "/specialty/neuro-physio", bg: "#DCE9FD" },
+  { emoji: "🦴", label: "Ortho Physio", href: "/specialty/ortho-physio", bg: "#FFF1BF" },
+  { emoji: "👶", label: "Paediatric Physio", href: "/specialty/paediatric-physio", bg: "#FFC794" },
+  { emoji: "🌸", label: "Women's Health", href: "/specialty/womens-health", bg: "#F9F8F7" },
+  { emoji: "👴", label: "Geriatric Physio", href: "/specialty/geriatric-physio", bg: "#E6F4F3" },
 ];
 
-function SpecialtyCard({ emoji, label, href }: Specialty) {
+function SpecialtyCard({ emoji, label, href, bg }: Specialty) {
   return (
     <Link
       href={href}
       className={cn(
-        "flex flex-col items-center justify-center no-underline cursor-pointer",
-        "transition-all duration-150 hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:-translate-y-0.5"
+        "flex flex-col items-center justify-center p-6 rounded-[16px] transition-all duration-300",
+        "border border-transparent hover:border-[#00766C] hover:shadow-xl hover:-translate-y-1"
       )}
-      style={{
-        backgroundColor: "#FFF1BF",
-        borderRadius: "12px",
-        padding: "16px",
-        textDecoration: "none",
-      }}
+      style={{ backgroundColor: bg || "#FFF1BF" }}
     >
-      <div
-        className="flex items-center justify-center"
-        style={{
-          fontSize: "48px",
-          marginBottom: "12px",
-          height: "64px",
-        }}
-      >
+      <div className="text-[40px] md:text-[48px] mb-3 h-16 flex items-center justify-center">
         {emoji}
       </div>
-      <span
-        style={{
-          fontSize: "14px",
-          fontWeight: 500,
-          color: "#333333",
-          textAlign: "center",
-        }}
-      >
+      <span className="text-[14px] md:text-[15px] font-bold text-[#333333] text-center leading-tight">
         {label}
       </span>
     </Link>
@@ -57,21 +39,24 @@ function SpecialtyCard({ emoji, label, href }: Specialty) {
 
 export default function TopSpecialties() {
   return (
-    <section style={{ padding: "48px 0" }}>
-      <div className="max-w-[1142px] mx-auto px-[60px]">
-        <h2
-          style={{
-            fontSize: "24px",
-            fontWeight: 600,
-            color: "#333333",
-            marginBottom: "24px",
-          }}
-        >
-          Top physiotherapy specialties
-        </h2>
+    <section className="py-16 md:py-24 bg-white">
+      <div className="max-w-[1142px] mx-auto px-6 md:px-[60px]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <h2 className="text-[28px] md:text-[36px] font-bold text-[#333333] tracking-tight">
+              Top specialties
+            </h2>
+            <p className="text-[16px] text-[#666666] mt-2">
+              Book verified experts across all major clinical specializations.
+            </p>
+          </div>
+          <Link href="/search" className="text-[#00766C] font-bold hover:underline flex items-center gap-1">
+             View all specialties 
+             <span>→</span>
+          </Link>
+        </div>
 
-        {/* 2-col mobile, 3-col tablet, 6-col desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
           {specialties.map((s) => (
             <SpecialtyCard key={s.label} {...s} />
           ))}

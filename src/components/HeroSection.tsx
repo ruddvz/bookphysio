@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Search, MapPin } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,57 +49,56 @@ function SearchBar({
   onSubmit,
 }: SearchBarProps) {
   return (
-    <div
-      className="flex items-center mt-8 max-w-[800px] rounded-[8px] border border-[#E5E5E5] bg-white"
-      style={{
-        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-        height: '64px',
-      }}
-    >
+    <div className="mt-8 max-w-[800px] w-full bg-white rounded-[12px] md:rounded-[8px] border border-[#E5E5E5] shadow-lg md:flex md:items-center overflow-hidden">
       {/* Condition field */}
-      <div className="flex flex-col justify-center flex-[2] px-4 h-full border-r border-[#E5E5E5] min-w-0">
-        <label
-          htmlFor="search-condition"
-          className="block text-[12px] font-medium text-[#666666] mb-1 whitespace-nowrap"
-        >
-          Search
-        </label>
-        <input
-          id="search-condition"
-          type="text"
-          value={condition}
-          onChange={(e) => onConditionChange(e.target.value)}
-          placeholder="Condition, injury or physio name"
-          className="text-[16px] text-[#333333] bg-transparent border-none outline-none placeholder:text-[#999999] truncate"
-        />
+      <div className="flex items-center px-4 py-3 md:py-0 md:h-16 flex-[2] border-b md:border-b-0 md:border-r border-[#E5E5E5]">
+        <div className="flex flex-col justify-center w-full">
+          <label
+            htmlFor="search-condition"
+            className="flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold text-[#666666] uppercase tracking-wider mb-0.5"
+          >
+            <Search className="w-3 h-3 text-[#00766C]" />
+            Search
+          </label>
+          <input
+            id="search-condition"
+            type="text"
+            value={condition}
+            onChange={(e) => onConditionChange(e.target.value)}
+            placeholder="Injury or name"
+            className="text-[16px] text-[#333333] bg-transparent border-none outline-none placeholder:text-[#999999] w-full font-medium"
+          />
+        </div>
       </div>
 
       {/* Location field */}
-      <div className="flex flex-col justify-center flex-[1.5] px-4 h-full border-r border-[#E5E5E5] min-w-0">
-        <label
-          htmlFor="search-location"
-          className="block text-[12px] font-medium text-[#666666] mb-1"
-        >
-          Location
-        </label>
-        <input
-          id="search-location"
-          type="text"
-          value={location}
-          onChange={(e) => onLocationChange(e.target.value)}
-          placeholder="Mumbai, MH"
-          className="text-[16px] text-[#333333] bg-transparent border-none outline-none placeholder:text-[#999999]"
-        />
+      <div className="flex items-center px-4 py-3 md:py-0 md:h-16 flex-[1.5] border-b md:border-b-0 md:border-r border-[#E5E5E5]">
+        <div className="flex flex-col justify-center w-full">
+          <label
+            htmlFor="search-location"
+            className="flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold text-[#666666] uppercase tracking-wider mb-0.5"
+          >
+            <MapPin className="w-3 h-3 text-[#00766C]" />
+            Location
+          </label>
+          <input
+            id="search-location"
+            type="text"
+            value={location}
+            onChange={(e) => onLocationChange(e.target.value)}
+            placeholder="City or Area"
+            className="text-[16px] text-[#333333] bg-transparent border-none outline-none placeholder:text-[#999999] w-full font-medium"
+          />
+        </div>
       </div>
 
       {/* Submit button */}
       <button
         type="button"
         onClick={onSubmit}
-        className="flex items-center gap-2 px-6 h-full rounded-r-[8px] text-[16px] font-semibold text-white bg-[#00766C] border-none cursor-pointer transition-colors duration-150 hover:bg-[#005A52] shrink-0"
+        className="w-full md:w-auto h-14 md:h-16 px-8 bg-[#00766C] text-white text-[16px] font-bold hover:bg-[#005A52] transition-colors flex items-center justify-center shrink-0 gap-2"
         aria-label="Find Physio"
       >
-        <span aria-hidden="true">🔍</span>
         Find Physio
       </button>
     </div>
@@ -106,41 +107,38 @@ function SearchBar({
 
 function HeroIllustration() {
   return (
-    <div
-      className="hidden md:flex flex-col gap-3 ml-8 mt-2"
-      aria-hidden="true"
-    >
+    <div className="hidden lg:flex flex-col gap-6" aria-hidden="true">
       {/* Doctor card */}
-      <div className="bg-white rounded-2xl shadow-lg p-5 flex items-center gap-4 w-[280px]">
-        <div className="w-14 h-14 rounded-full bg-[#E6F4F3] flex items-center justify-center text-2xl shrink-0">
+      <div className="bg-white rounded-[24px] shadow-xl p-6 flex items-center gap-5 w-[320px] transition-transform hover:scale-105 duration-300">
+        <div className="w-16 h-16 rounded-full bg-[#E6F4F3] flex items-center justify-center text-3xl shrink-0">
           👨‍⚕️
         </div>
-        <div>
-          <p className="text-[14px] font-bold text-[#333333]">Dr. Priya Sharma</p>
-          <p className="text-[12px] text-[#666666]">Sports Physiotherapist</p>
-          <div className="flex items-center gap-1 mt-1">
-            <span className="text-yellow-400 text-[12px]">★★★★★</span>
-            <span className="text-[11px] text-[#666666]">4.9 (120 reviews)</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-[16px] font-bold text-[#333333] truncate">Dr. Priya Sharma</p>
+          <p className="text-[14px] text-[#666666]">Sports Physiotherapist</p>
+          <div className="flex items-center gap-1.5 mt-2">
+            <div className="flex text-yellow-400 text-[12px]">★★★★★</div>
+            <span className="text-[12px] font-semibold text-[#666666]">4.9 (187)</span>
           </div>
         </div>
       </div>
 
       {/* Booking confirmation card */}
-      <div className="bg-[#00766C] rounded-2xl shadow-lg p-4 w-[260px] ml-auto">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-lg">✅</div>
-          <p className="text-white text-[13px] font-semibold">Appointment Confirmed</p>
+      <div className="bg-[#00766C] rounded-[20px] shadow-2xl p-5 w-[280px] ml-auto animate-in slide-in-from-right-4 duration-500">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg">✅</div>
+          <p className="text-white text-[15px] font-bold">Confirmed!</p>
         </div>
-        <p className="text-white/80 text-[12px]">Tomorrow, 10:30 AM · In-clinic</p>
-        <p className="text-white/80 text-[12px]">Dr. Priya Sharma · ₹800</p>
+        <p className="text-white/90 text-[13px] font-medium">Tomorrow, 10:30 AM</p>
+        <p className="text-white/70 text-[12px]">In-clinic · ₹800</p>
       </div>
 
       {/* Stats pill */}
-      <div className="bg-white rounded-full shadow-md px-5 py-2.5 flex items-center gap-3 w-fit">
-        <span className="text-xl">🏥</span>
+      <div className="bg-white rounded-full shadow-lg px-6 py-4 flex items-center gap-4 w-fit -ml-10">
+        <div className="w-10 h-10 rounded-full bg-[#DCE9FD] flex items-center justify-center text-xl">🏥</div>
         <div>
-          <p className="text-[13px] font-bold text-[#333333]">2,000+ Physios</p>
-          <p className="text-[11px] text-[#666666]">Across 50+ cities in India</p>
+          <p className="text-[14px] font-bold text-[#333333]">2,000+ Physios</p>
+          <p className="text-[12px] text-[#666666]">Across 50+ Indian cities</p>
         </div>
       </div>
     </div>
@@ -161,18 +159,13 @@ export default function HeroSection() {
   // Cycle through specialties
   useEffect(() => {
     const interval = setInterval(() => {
-      // Remove the animation class to reset
       setIsAnimating(false);
-
-      // Wait one tick for the DOM to reflow, then re-apply class + update word
       const timeout = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % specialties.length);
         setIsAnimating(true);
       }, REFLOW_DELAY_MS);
-
       return () => clearTimeout(timeout);
     }, CYCLE_INTERVAL_MS);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -185,43 +178,38 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative overflow-hidden w-full"
-      style={{
-        backgroundColor: currentSpecialty.bg,
-        transition: 'background-color 0.5s ease',
-      }}
+      className="relative overflow-hidden w-full transition-colors duration-700"
+      style={{ backgroundColor: currentSpecialty.bg }}
     >
-      <div
-        className="container-bp"
-        style={{ paddingTop: '70px', paddingBottom: '120px' }}
-      >
-        <div className="flex flex-row items-start">
-          {/* Text column — 55% */}
-          <div className="flex-[55] min-w-0">
-            <h1
-              style={{
-                fontSize: '44px',
-                lineHeight: '60px',
-                fontWeight: 600,
-                color: '#333333',
-                maxWidth: '560px',
-              }}
-              className="text-[32px] md:text-[44px] leading-[44px] md:leading-[60px]"
-            >
+      {/* Background Decorative Blobs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/30 rounded-full blur-3xl -mr-64 -mt-64 translate-x-1/2"></div>
+      
+      <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] pt-12 md:pt-20 pb-20 md:pb-32 relative z-10 text-center md:text-left">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
+          
+          {/* Text content */}
+          <div className="flex-1 lg:max-w-[600px]">
+            <div className="inline-block px-4 py-1.5 bg-[#00766C]/10 text-[#00766C] rounded-full text-[13px] font-bold uppercase tracking-widest mb-6">
+               Book Verification Expert
+            </div>
+            
+            <h1 className="text-[36px] md:text-[56px] lg:text-[64px] font-bold text-[#333333] leading-[1.1] tracking-tight mb-6">
               Book local{' '}
               <span
-                className={isAnimating ? 'animate-specialty' : ''}
-                style={{
-                  color: '#00766C',
-                  fontStyle: 'italic',
-                  display: 'inline-block',
-                }}
+                className={cn(
+                  "inline-block text-[#00766C] italic transition-all duration-300",
+                  isAnimating ? "animate-specialty opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
               >
                 {currentSpecialty.word}
               </span>
-              <br />
-              near you — book in minutes
+              <br className="hidden md:block" />
+              near you — in minutes
             </h1>
+            
+            <p className="text-[18px] md:text-[20px] text-[#555555] max-w-[500px] mx-auto md:mx-0 leading-relaxed mb-4">
+              Find verified physiotherapists for in-clinic, home visits, and online sessions.
+            </p>
 
             <SearchBar
               condition={condition}
@@ -230,10 +218,25 @@ export default function HeroSection() {
               onLocationChange={setLocation}
               onSubmit={handleSubmit}
             />
+            
+            <div className="mt-8 flex flex-wrap items-center justify-center md:justify-start gap-6 text-[14px] text-[#666666]">
+               <div className="flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]"></div>
+                 Verified Credentials
+               </div>
+               <div className="flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]"></div>
+                 Transparent Pricing
+               </div>
+               <div className="flex items-center gap-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]"></div>
+                 Same-day Availability
+               </div>
+            </div>
           </div>
 
-          {/* Illustration column — 45% (desktop only) */}
-          <div className="flex-[45] flex items-center justify-center pt-4">
+          {/* Illustration Column */}
+          <div className="flex-1 flex justify-center lg:justify-end">
             <HeroIllustration />
           </div>
         </div>

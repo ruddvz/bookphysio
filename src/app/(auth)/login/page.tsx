@@ -75,13 +75,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
+    <div className="bg-white rounded-[12px] p-6 sm:p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
       <BpLogo />
 
-      <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
+      <h1 className="text-[20px] sm:text-[24px] font-bold text-[#333333] mb-1.5 mt-4">
         Log in to BookPhysio
       </h1>
-      <p className="text-[14px] text-[#666666] mb-7">Welcome back</p>
+      <p className="text-[14px] text-[#666666] mb-6 sm:mb-7">Welcome back</p>
 
       {errors.general && (
         <div className="mb-4 rounded-[8px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">

@@ -56,9 +56,7 @@ export default function SearchContent() {
   useEffect(() => {
     async function fetchProviders() {
       setLoading(true)
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
       const apiParams: Record<string, string> = { page: '1', limit: '20' }
-      
       if (city) apiParams.city = city
       else if (location) apiParams.city = location
       if (specialty) apiParams.specialty_id = specialty
@@ -68,7 +66,7 @@ export default function SearchContent() {
       const qs = new URLSearchParams(apiParams).toString()
 
       try {
-        const res = await fetch(`${baseUrl}/api/providers?${qs}`, { cache: 'no-store' })
+        const res = await fetch(`/api/providers?${qs}`, { cache: 'no-store' })
         if (!res.ok) throw new Error('Failed to fetch')
         const data = await res.json() as SearchResponse
         setDoctors(data.providers.map(providerToDoctor))

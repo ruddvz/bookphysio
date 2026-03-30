@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { ChevronDown, Menu, X, HelpCircle, LayoutGrid, UserPlus, LogIn } from 'lucide-react'
 
 const SPECIALTIES = [
   'Sports Physio',
@@ -31,113 +32,47 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Close mobile menu when clicking a link
+  const closeMobile = () => setMobileMenuOpen(false)
+
   return (
-    <header
-      className="sticky top-0 z-50 w-full"
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderBottom: '1px solid #E5E5E5',
-        height: '80px',
-      }}
-    >
-      <div
-        className="flex items-center justify-between"
-        style={{
-          maxWidth: '1142px',
-          margin: '0 auto',
-          padding: '0 60px',
-          height: '80px',
-        }}
-      >
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E5E5E5] h-20">
+      <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] h-full flex items-center justify-between">
+        
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0" aria-label="BookPhysio home">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true" className="shrink-0">
             <rect width="36" height="36" rx="10" fill="#00766C"/>
             <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
           </svg>
-          <span
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: '#333333',
-              marginLeft: '10px',
-              letterSpacing: '-0.02em',
-            }}
-          >
+          <span className="text-[22px] font-bold text-[#333333] ml-2.5 tracking-tight">
             BookPhysio
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
           {/* Browse dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setBrowseOpen((prev) => !prev)}
               aria-expanded={browseOpen}
-              aria-haspopup="true"
               className={cn(
-                'flex items-center gap-1 transition-colors duration-150',
-                browseOpen ? 'text-[#00766C] underline' : 'hover:text-[#00766C] hover:underline'
+                'flex items-center gap-1 px-3 py-2 text-[16px] font-medium transition-colors hover:text-[#00766C]',
+                browseOpen ? 'text-[#00766C] underline' : 'text-[#333333]'
               )}
-              style={{
-                fontSize: '16px',
-                fontWeight: 500,
-                color: browseOpen ? '#00766C' : '#333333',
-                padding: '8px 12px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
             >
               Browse
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 12 12"
-                fill="none"
-                aria-hidden="true"
-                style={{
-                  transform: browseOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.15s',
-                }}
-              >
-                <path
-                  d="M2 4l4 4 4-4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ChevronDown className={cn("w-4 h-4 transition-transform", browseOpen && "rotate-180")} />
             </button>
 
             {browseOpen && (
-              <div
-                className="absolute left-0 top-full"
-                style={{
-                  marginTop: '4px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E5E5E5',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                  minWidth: '200px',
-                  zIndex: 100,
-                }}
-                role="menu"
-              >
+              <div className="absolute left-0 top-full mt-1 bg-white border border-[#E5E5E5] rounded-[8px] shadow-lg min-w-[200px] z-[100] py-1">
                 {SPECIALTIES.map((specialty) => (
                   <Link
                     key={specialty}
                     href={`/search?specialty=${encodeURIComponent(specialty)}`}
-                    role="menuitem"
-                    className="block transition-colors duration-150 hover:text-[#00766C] hover:bg-[#E6F4F3]"
-                    style={{
-                      fontSize: '15px',
-                      fontWeight: 400,
-                      color: '#333333',
-                      padding: '10px 16px',
-                    }}
+                    className="block px-4 py-2.5 text-[15px] text-[#333333] hover:text-[#00766C] hover:bg-[#E6F4F3] transition-colors"
                     onClick={() => setBrowseOpen(false)}
                   >
                     {specialty}
@@ -147,142 +82,74 @@ export default function Navbar() {
             )}
           </div>
 
-          <NavLink href="/help">Help</NavLink>
-
-          <NavLink href="/list-practice" className="hidden lg:inline-flex">
-            List your practice on BookPhysio
-          </NavLink>
-        </nav>
-
-        {/* Desktop Auth buttons */}
-        <div className="hidden md:flex items-center gap-2">
-          <Link
-            href="/login"
-            className="flex items-center gap-1 transition-colors duration-150 hover:text-[#00766C]"
-            style={{
-              fontSize: '16px',
-              fontWeight: 500,
-              color: '#333333',
-              background: 'transparent',
-              border: 'none',
-              padding: '8px 12px',
-              cursor: 'pointer',
-              textDecoration: 'none',
-            }}
-          >
-            Log in
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M2 4l4 4 4-4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          <Link href="/help" className="px-3 py-2 text-[16px] font-medium text-[#333333] hover:text-[#00766C] transition-colors">
+            Help
           </Link>
 
-          <Link
-            href="/signup"
-            className="transition-colors duration-150"
-            style={{
-              backgroundColor: '#00766C',
-              color: '#FFFFFF',
-              fontSize: '16px',
-              fontWeight: 600,
-              padding: '10px 20px',
-              borderRadius: '24px',
-              border: 'none',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              display: 'inline-block',
-              lineHeight: 1.5,
-            }}
-            onMouseEnter={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#005A52'
-            }}
-            onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#00766C'
-            }}
-          >
+          <Link href="/list-practice" className="hidden lg:inline-flex px-3 py-2 text-[16px] font-medium text-[#333333] hover:text-[#00766C] transition-colors">
+            List your practice
+          </Link>
+        </nav>
+
+        {/* Desktop Auth */}
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/login" className="text-[16px] font-medium text-[#333333] hover:text-[#00766C] transition-colors flex items-center gap-1">
+            Log in
+            <ChevronDown className="w-4 h-4" />
+          </Link>
+          <Link href="/signup" className="px-6 py-2.5 bg-[#00766C] text-white text-[16px] font-semibold rounded-[24px] hover:bg-[#005A52] transition-colors">
             Sign up
           </Link>
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile menu trigger */}
         <button
-          className="md:hidden flex items-center justify-center"
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          aria-label="Toggle mobile menu"
-          aria-expanded={mobileMenuOpen}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '8px',
-            color: '#333333',
-          }}
+          className="md:hidden p-2 text-[#333333] focus:outline-none"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            {mobileMenuOpen ? (
-              <path
-                d="M6 6l12 12M6 18L18 6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            ) : (
-              <path
-                d="M4 6h16M4 12h16M4 18h16"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            )}
-          </svg>
+          {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
         </button>
       </div>
-    </header>
-  )
-}
 
-interface NavLinkProps {
-  href: string
-  children: React.ReactNode
-  className?: string
-}
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-20 bg-white z-[100] animate-in fade-in slide-in-from-top-4 duration-200">
+          <nav className="flex flex-col p-6 gap-6">
+            <div className="space-y-4">
+               <p className="text-[12px] font-bold text-[#9CA3AF] uppercase tracking-widest">Discover</p>
+               <Link onClick={closeMobile} href="/search" className="flex items-center gap-3 text-[18px] font-semibold text-[#333333]">
+                 <LayoutGrid className="w-5 h-5 text-[#00766C]" />
+                 Browse Specialties
+               </Link>
+               <Link onClick={closeMobile} href="/help" className="flex items-center gap-3 text-[18px] font-semibold text-[#333333]">
+                 <HelpCircle className="w-5 h-5 text-[#00766C]" />
+                 Help Center
+               </Link>
+            </div>
 
-function NavLink({ href, children, className }: NavLinkProps) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        'transition-colors duration-150 hover:text-[#00766C] hover:underline',
-        className
+            <div className="h-px bg-[#F3F4F6]"></div>
+
+            <div className="space-y-4">
+               <p className="text-[12px] font-bold text-[#9CA3AF] uppercase tracking-widest">Account</p>
+               <Link onClick={closeMobile} href="/login" className="flex items-center gap-3 text-[18px] font-semibold text-[#333333]">
+                 <LogIn className="w-5 h-5 text-[#00766C]" />
+                 Log In
+               </Link>
+               <Link onClick={closeMobile} href="/signup" className="flex items-center gap-3 text-[18px] font-semibold text-[#333333]">
+                 <UserPlus className="w-5 h-5 text-[#00766C]" />
+                 Create Account
+               </Link>
+            </div>
+
+            <div className="mt-auto pb-10">
+               <Link onClick={closeMobile} href="/signup?type=provider" className="block w-full text-center py-4 bg-[#E6F4F3] text-[#00766C] font-bold rounded-[12px] text-[16px]">
+                  List your practice on BookPhysio
+               </Link>
+            </div>
+          </nav>
+        </div>
       )}
-      style={{
-        fontSize: '16px',
-        fontWeight: 500,
-        color: '#333333',
-        padding: '8px 12px',
-        textDecoration: 'none',
-        display: 'inline-flex',
-        alignItems: 'center',
-      }}
-    >
-      {children}
-    </Link>
+    </header>
   )
 }

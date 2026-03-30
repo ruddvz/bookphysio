@@ -13,7 +13,7 @@ const BASE = 'http://localhost:3000'
 // Test 1: Homepage loads with BookPhysio branding
 // ---------------------------------------------------------------------------
 test('homepage: GET / returns 200 and shows BookPhysio branding', async ({ page }) => {
-  const response = await page.goto(BASE)
+  const response = await page.goto('/')
 
   expect(response?.status()).toBe(200)
 
@@ -34,7 +34,7 @@ test('search: GET /search loads without JS errors', async ({ page }) => {
   const jsErrors: string[] = []
   page.on('pageerror', (err) => jsErrors.push(err.message))
 
-  const response = await page.goto(`${BASE}/search`)
+  const response = await page.goto('/search')
 
   // Accept 200 or any non-5xx status (could redirect internally)
   expect(response?.status()).toBeLessThan(500)
@@ -52,7 +52,7 @@ test('search: GET /search loads without JS errors', async ({ page }) => {
 // Test 3: Login page — phone OTP form is present
 // ---------------------------------------------------------------------------
 test('login: GET /login shows phone OTP login form', async ({ page }) => {
-  const response = await page.goto(`${BASE}/login`)
+  const response = await page.goto('/login')
 
   expect(response?.status()).toBe(200)
 
@@ -78,7 +78,7 @@ test('login: GET /login shows phone OTP login form', async ({ page }) => {
 // Test 4: Signup page — name + phone form is present
 // ---------------------------------------------------------------------------
 test('signup: GET /signup shows name and phone signup form', async ({ page }) => {
-  const response = await page.goto(`${BASE}/signup`)
+  const response = await page.goto('/signup')
 
   expect(response?.status()).toBe(200)
 
@@ -106,7 +106,7 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
 test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /login', async ({ page }) => {
   // Disable JS to force middleware-level redirect (server-side), not client-side
   // We inspect the final URL after navigation
-  const response = await page.goto(`${BASE}/patient/dashboard`, {
+  const response = await page.goto('/patient/dashboard', {
     waitUntil: 'networkidle',
   })
 
@@ -148,7 +148,7 @@ test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /lo
 // Test 6: API /api/providers returns valid JSON
 // ---------------------------------------------------------------------------
 test('api providers: GET /api/providers returns JSON (200 or rate-limited)', async ({ request }) => {
-  const response = await request.get(`${BASE}/api/providers`)
+  const response = await request.get('/api/providers')
 
   // Accept 200 (success), 429 (rate limited by Upstash) or 500 (DB/Redis not
   // configured in this environment — empty body, no content-type header).
@@ -192,7 +192,7 @@ test('api providers: GET /api/providers returns JSON (200 or rate-limited)', asy
 // Test 7: API /api/appointments — unauthenticated GET returns 401
 // ---------------------------------------------------------------------------
 test('api appointments: unauthenticated GET /api/appointments returns 401', async ({ request }) => {
-  const response = await request.get(`${BASE}/api/appointments`)
+  const response = await request.get('/api/appointments')
 
   expect(response.status()).toBe(401)
 

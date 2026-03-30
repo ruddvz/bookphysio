@@ -184,18 +184,22 @@
 
 /* Utility: max-width container matching Zocdoc layout (1142px at 1440 viewport) */
 .container-bp {
+  width: 100%;
   max-width: 1142px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 60px;
-  padding-right: 60px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (min-width: 1024px) {
+  .container-bp {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
 }
 
 @media (max-width: 768px) {
-  .container-bp {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
   h1 {
     font-size: 32px;
     line-height: 44px;
@@ -203,12 +207,5 @@
   h2 {
     font-size: 20px;
     line-height: 28px;
-  }
-}
-
-@media (max-width: 390px) {
-  .container-bp {
-    padding-left: 16px;
-    padding-right: 16px;
   }
 }
