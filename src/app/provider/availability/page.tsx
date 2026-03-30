@@ -1,13 +1,79 @@
-'use client';
+'use client'
 
-import { Clock, Check, Settings } from 'lucide-react'
+import { useState } from 'react'
+import { Clock, Check, Settings, CheckCircle } from 'lucide-react'
+
+type DayConfig = {
+  enabled: boolean
+  start: string
+  end: string
+}
+
+type Schedule = Record<string, DayConfig>
+
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+const DEFAULT_SCHEDULE: Schedule = {
+  Monday:    { enabled: true,  start: '09:00', end: '18:00' },
+  Tuesday:   { enabled: true,  start: '09:00', end: '18:00' },
+  Wednesday: { enabled: true,  start: '09:00', end: '18:00' },
+  Thursday:  { enabled: true,  start: '09:00', end: '18:00' },
+  Friday:    { enabled: true,  start: '09:00', end: '17:00' },
+  Saturday:  { enabled: false, start: '10:00', end: '14:00' },
+  Sunday:    { enabled: false, start: '10:00', end: '14:00' },
+}
+
+const DURATIONS = ['30', '45', '60']
+
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
+function validateSchedule(schedule: Schedule): Record<string, string> {
+  const errors: Record<string, string> = {}
+  for (const day of DAYS) {
+    const { enabled, start, end } = schedule[day]
+    if (!enabled) continue
+    if (timeToMinutes(end) <= timeToMinutes(start)) {
+      errors[day] = 'End time must be after start time'
+    }
+  }
+  return errors
+}
 
 export default function ProviderAvailability() {
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+  const [schedule, setSchedule] = useState<Schedule>(DEFAULT_SCHEDULE)
+  const [duration, setDuration] = useState('30')
+  const [saved, setSaved] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  function toggleDay(day: string) {
+    setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], enabled: !prev[day].enabled } }))
+    setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
+    setSaved(false)
+  }
+
+  function updateTime(day: string, field: 'start' | 'end', value: string) {
+    setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], [field]: value } }))
+    setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
+    setSaved(false)
+  }
+
+  function handleSave() {
+    const newErrors = validateSchedule(schedule)
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    setErrors({})
+    setSaved(true)
+  }
+
+  const enabledCount = DAYS.filter((d) => schedule[d].enabled).length
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      
       <div className="mb-8">
         <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-2">
           Availability Settings
@@ -17,95 +83,142 @@ export default function ProviderAvailability() {
         </p>
       </div>
 
+      {/* Save banner */}
+      {saved && (
+        <div className="flex items-center gap-3 bg-[#E6F4F3] border border-[#00766C]/20 rounded-[12px] px-5 py-4 mb-6">
+          <CheckCircle className="w-5 h-5 text-[#00766C] shrink-0" />
+          <p className="text-[15px] font-medium text-[#00766C]">Availability saved successfully.</p>
+        </div>
+      )}
+
       <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-8">
-        
-        <div className="flex items-center gap-3 mb-4">
+
+        {/* Weekly Schedule */}
+        <div className="flex items-center gap-3 mb-2">
           <div className="p-2 bg-[#E6F4F3] text-[#00766C] rounded-lg">
             <Clock className="w-5 h-5" />
           </div>
-          <h2 className="text-[20px] font-semibold text-[#333333]">
-            Weekly Schedule
-          </h2>
+          <h2 className="text-[20px] font-semibold text-[#333333]">Weekly Schedule</h2>
         </div>
-        <p className="text-[15px] text-[#666666] mb-8">
-          Toggle the days you are available and adjust the start/end times.
+        <p className="text-[15px] text-[#666666] mb-1 ml-[52px]">
+          Toggle the days you are available and set your working hours.
+        </p>
+        <p className="text-[13px] text-[#999999] mb-8 ml-[52px]">
+          {enabledCount} of 7 days active
         </p>
 
-        <div className="flex flex-col gap-4 mb-10">
-          {days.map(day => {
-            const isSunday = day === 'Sunday'
+        <div className="flex flex-col gap-3 mb-10">
+          {DAYS.map((day) => {
+            const { enabled, start, end } = schedule[day]
+            const error = errors[day]
             return (
-              <div key={day} className={`flex items-center justify-between p-4 rounded-lg border ${isSunday ? 'bg-[#F9FAFB] border-[#F3F4F6]' : 'bg-white border-[#E5E5E5]'}`}>
-                <label className={`flex items-center gap-3 text-[15px] font-medium w-[140px] cursor-pointer ${isSunday ? 'text-[#9CA3AF]' : 'text-[#333333]'}`}>
-                  <input 
-                    type="checkbox" 
-                    defaultChecked={!isSunday} 
-                    className="w-4 h-4 text-[#00766C] rounded border-[#CCCCCC] focus:ring-[#00766C]"
-                  />
-                  {day}
-                </label>
-                
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <input 
-                      type="time" 
-                      defaultValue="09:00" 
-                      disabled={isSunday}
-                      className={`px-3 py-2 text-[15px] border rounded-md outline-none w-[110px]
-                        ${isSunday ? 'border-[#E5E5E5] text-[#9CA3AF] bg-transparent' : 'border-[#E5E5E5] text-[#333333] focus:border-[#00766C] bg-white'}
-                      `}
+              <div key={day}>
+                <div
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-lg border transition-colors ${
+                    enabled ? 'bg-white border-[#E5E5E5]' : 'bg-[#F9FAFB] border-[#F3F4F6]'
+                  }`}
+                >
+                  {/* Toggle + day name */}
+                  <label className="flex items-center gap-3 cursor-pointer select-none min-w-[140px]">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={enabled ? 'true' : 'false'}
+                      aria-label={`Toggle ${day}`}
+                      onClick={() => toggleDay(day)}
+                      className={`relative w-10 h-6 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] cursor-pointer ${
+                        enabled ? 'bg-[#00766C]' : 'bg-[#D1D5DB]'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                          enabled ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                    <span className={`text-[15px] font-medium ${enabled ? 'text-[#333333]' : 'text-[#9CA3AF]'}`}>
+                      {day}
+                    </span>
+                  </label>
+
+                  {/* Time inputs */}
+                  <div className={`flex items-center gap-3 transition-opacity ${enabled ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                    <input
+                      type="time"
+                      value={start}
+                      disabled={!enabled}
+                      aria-label={`${day} start time`}
+                      onChange={(e) => updateTime(day, 'start', e.target.value)}
+                      className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
+                        error
+                          ? 'border-[#CC3300] focus:border-[#CC3300]'
+                          : 'border-[#E5E5E5] focus:border-[#00766C]'
+                      } text-[#333333] bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
                     />
-                  </div>
-                  <span className="text-[#999999] font-medium">to</span>
-                  <div className="relative">
-                    <input 
-                      type="time" 
-                      defaultValue="18:00" 
-                      disabled={isSunday}
-                      className={`px-3 py-2 text-[15px] border rounded-md outline-none w-[110px]
-                        ${isSunday ? 'border-[#E5E5E5] text-[#9CA3AF] bg-transparent' : 'border-[#E5E5E5] text-[#333333] focus:border-[#00766C] bg-white'}
-                      `}
+                    <span className="text-[#999999] font-medium text-[14px]">to</span>
+                    <input
+                      type="time"
+                      value={end}
+                      disabled={!enabled}
+                      aria-label={`${day} end time`}
+                      onChange={(e) => updateTime(day, 'end', e.target.value)}
+                      className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
+                        error
+                          ? 'border-[#CC3300] focus:border-[#CC3300]'
+                          : 'border-[#E5E5E5] focus:border-[#00766C]'
+                      } text-[#333333] bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
                     />
                   </div>
                 </div>
+                {error && (
+                  <p className="text-[12px] text-[#CC3300] mt-1 ml-1">{error}</p>
+                )}
               </div>
             )
           })}
         </div>
 
+        {/* Slot Duration */}
         <div className="pt-8 border-t border-[#E5E5E5]">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-[#E6F4F3] text-[#00766C] rounded-lg">
               <Settings className="w-5 h-5" />
             </div>
-            <h2 className="text-[20px] font-semibold text-[#333333]">
-              Slot Duration
-            </h2>
+            <h2 className="text-[20px] font-semibold text-[#333333]">Slot Duration</h2>
           </div>
-          
-          <div className="flex gap-6 mb-8 mt-6">
-            {['30', '45', '60'].map(mins => (
-              <label key={mins} className="flex items-center gap-2 cursor-pointer group">
-                <input 
-                  type="radio" 
-                  name="duration" 
-                  value={mins} 
-                  defaultChecked={mins === '30'} 
-                  className="w-4 h-4 text-[#00766C] border-[#CCCCCC] focus:ring-[#00766C]"
-                />
-                <span className="text-[15px] font-medium text-[#333333] group-hover:text-[#00766C] transition-colors">{mins} mins</span>
-              </label>
+          <p className="text-[15px] text-[#666666] mb-6 ml-[52px]">
+            How long is each appointment slot?
+          </p>
+
+          <div className="flex gap-3 ml-[52px] mb-8">
+            {DURATIONS.map((mins) => (
+              <button
+                key={mins}
+                type="button"
+                onClick={() => { setDuration(mins); setSaved(false) }}
+                className={`px-5 py-2.5 rounded-full text-[14px] font-semibold border transition-colors cursor-pointer outline-none ${
+                  duration === mins
+                    ? 'bg-[#00766C] text-white border-[#00766C]'
+                    : 'bg-white text-[#333333] border-[#E5E5E5] hover:border-[#00766C] hover:text-[#00766C]'
+                }`}
+              >
+                {mins} mins
+              </button>
             ))}
           </div>
         </div>
 
+        {/* Save button */}
         <div className="flex justify-start">
-          <button className="flex items-center gap-2 px-8 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-[24px] text-[16px] font-semibold transition-colors duration-200 outline-none">
+          <button
+            type="button"
+            onClick={handleSave}
+            className="flex items-center gap-2 px-8 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-[24px] text-[16px] font-semibold transition-colors outline-none cursor-pointer"
+          >
             <Check className="w-5 h-5" />
             Save Availability
           </button>
         </div>
-
       </div>
     </div>
   )
