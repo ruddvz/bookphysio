@@ -128,9 +128,12 @@
 ---
 
 ## PHASE 10 — Testing & Launch
-- [ ] Unit tests (80%+ coverage with Vitest)
-- [ ] E2E tests (critical flows with Playwright)
-- [ ] GitHub Actions CI/CD pipeline
+
+> **Note (updated 2026-03-30):** Unit and E2E tests for Phases 8.7–8.17 are written incrementally alongside each step (see `docs/FEATURES.md` and `docs/superpowers/plans/2026-03-30-ai-workflow-integration.md`). By the time Phase 10 begins, a passing test suite already exists.
+> Phase 10 scope: run the full suite, fix any failures, and configure CI/CD only. "Write all tests from scratch" is NOT Phase 10 work.
+
+- [ ] Full test suite passes (Vitest + Playwright) — fix any failures found
+- [ ] GitHub Actions CI/CD pipeline — run suite on every PR and push to main
 - [ ] Supabase production environment setup
 - [ ] Domain + deployment (Vercel)
 - [ ] Smoke test all flows end-to-end
