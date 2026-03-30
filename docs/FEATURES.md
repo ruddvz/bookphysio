@@ -88,15 +88,15 @@
 
 **Route / Component:** `app/(provider)/calendar`
 **Phase:** 8.10
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] 7-day grid rendered with days as columns, time slots as rows
-- [ ] Each slot visually distinguishes: booked (teal), available (white/light), blocked (grey)
-- [ ] Booked slot shows patient name (truncated if needed)
-- [ ] Current day column is highlighted
-- [ ] Navigation to previous/next week works
+- [x] 7-day grid rendered with days as columns, time slots as rows
+- [x] Each slot visually distinguishes: booked (teal), available (white/light), blocked (grey)
+- [x] Booked slot shows patient name (truncated if needed)
+- [x] Current day column is highlighted
+- [x] Navigation to previous/next week works
 
 ### Edge Cases
 - No slots: all slots show as available
