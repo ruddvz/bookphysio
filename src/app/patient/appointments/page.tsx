@@ -1,9 +1,11 @@
 'use client'
 
-import { CalendarDays, ArrowRight, AlertCircle } from 'lucide-react'
+import { CalendarDays, ArrowRight, AlertCircle, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
 import {
   filterByTab,
   parseTab,
@@ -44,18 +46,18 @@ const VISIT_TYPE_COLORS: Record<string, string> = {
 function AppointmentsSkeleton() {
   return (
     <div className="flex flex-col gap-3">
-      {[1, 2, 3].map((i) => (
+      {[1, 2, 3, 4].map((i) => (
         <div key={i} className="bg-white rounded-[12px] border border-[#E5E5E5] p-5 flex items-center justify-between gap-4">
           <div className="flex flex-col gap-2 flex-1">
-            <div className="h-5 w-44 bg-gray-200 rounded animate-pulse" />
-            <div className="h-4 w-32 bg-gray-100 rounded animate-pulse" />
-            <div className="h-4 w-48 bg-gray-100 rounded animate-pulse" />
-            <div className="flex gap-2">
-              <div className="h-5 w-20 bg-gray-100 rounded-full animate-pulse" />
-              <div className="h-5 w-20 bg-gray-100 rounded-full animate-pulse" />
+            <Skeleton className="h-5 w-44" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-48" />
+            <div className="flex gap-2 mt-1">
+              <Skeleton className="h-5 w-20 rounded-full" />
+              <Skeleton className="h-5 w-20 rounded-full" />
             </div>
           </div>
-          <div className="h-9 w-16 bg-gray-200 rounded-full animate-pulse shrink-0" />
+          <Skeleton className="h-9 w-16 rounded-full shrink-0" />
         </div>
       ))}
     </div>
@@ -134,28 +136,26 @@ function PatientAppointmentsContent() {
           </button>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white border border-[#E5E5E5] rounded-[12px] shadow-sm py-16 px-8 text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-5">
-            <CalendarDays className="w-8 h-8 text-[#9CA3AF]" />
-          </div>
-          <h2 className="text-[20px] font-bold text-[#333333] mb-2">
-            No {tab} appointments
-          </h2>
-          <p className="text-[15px] text-[#666666] mb-6">
-            {tab === 'upcoming'
-              ? 'When you book an appointment, it will show up here.'
-              : 'Completed appointments will appear here.'}
-          </p>
-          {tab === 'upcoming' && (
-            <Link
-              href="/search"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[15px] transition-colors"
-            >
-              Find a Physiotherapist
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          )}
-        </div>
+        <EmptyState
+          title={`No ${tab} appointments`}
+          description={
+            tab === 'upcoming'
+              ? 'You have no upcoming physiotherapy sessions scheduled. Start your recovery by booking a top physio.'
+              : 'Your past sessions will appear here once they are completed.'
+          }
+          icon={Calendar}
+          action={
+            tab === 'upcoming' && (
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[15px] transition-colors"
+              >
+                Find a Physiotherapist
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            )
+          }
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((appt) => (

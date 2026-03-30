@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
 import { CalendarDays, Users, Clock, AlertCircle, UserCircle, Settings, ChevronUp, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
 import {
   filterToday,
   filterThisWeek,
@@ -29,24 +31,24 @@ const VISIT_TYPE_COLORS: Record<string, string> = {
 function DashboardSkeleton() {
   return (
     <div className="max-w-[1040px] mx-auto px-6 py-12">
-      <div className="h-9 w-56 bg-gray-200 rounded-lg animate-pulse mb-8" />
+      <Skeleton className="h-9 w-56 mb-8" />
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {[1, 2, 3].map((i) => (
           <div key={i} className="bg-white rounded-[12px] border border-[#E5E5E5] p-5">
-            <div className="h-4 w-28 bg-gray-200 rounded animate-pulse mb-3" />
-            <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
+            <Skeleton className="h-4 w-28 mb-3" />
+            <Skeleton className="h-8 w-16" />
           </div>
         ))}
       </div>
       {/* Timeline */}
       <div className="bg-white rounded-[12px] border border-[#E5E5E5] p-6">
-        <div className="h-6 w-40 bg-gray-200 rounded animate-pulse mb-5" />
+        <Skeleton className="h-6 w-40 mb-5" />
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex items-center gap-4 py-3 border-b border-[#F5F5F5] last:border-0">
-            <div className="h-4 w-14 bg-gray-200 rounded animate-pulse shrink-0" />
-            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
-            <div className="h-5 w-20 bg-gray-100 rounded-full animate-pulse" />
+            <Skeleton className="h-4 w-14 shrink-0" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-5 w-20 rounded-full" />
           </div>
         ))}
       </div>
@@ -185,13 +187,12 @@ export default function ProviderDashboardHome() {
         </h2>
 
         {timeline.length === 0 ? (
-          <div className="py-8 text-center">
-            <div className="w-12 h-12 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-3">
-              <CalendarDays className="w-6 h-6 text-[#9CA3AF]" />
-            </div>
-            <p className="text-[15px] font-semibold text-[#333333] mb-1">No appointments today</p>
-            <p className="text-[14px] text-[#666666]">Your schedule is clear for today.</p>
-          </div>
+          <EmptyState
+            title="Your schedule is clear"
+            description="You have no appointments scheduled for today. Use this time to update your profile or availability."
+            icon={CalendarDays}
+            className="py-12 border-0"
+          />
         ) : (
           <div className="flex flex-col">
             {timeline.map((appt, idx) => (

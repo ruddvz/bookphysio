@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
+import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Map } from 'lucide-react'
+import { Map, Search as SearchIcon } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import type { SearchResponse } from '@/app/api/contracts/search'
 
@@ -130,14 +132,25 @@ export default function SearchContent() {
         {/* Results column */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
           {loading ? (
-            <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-12 text-center text-[#666]">
-              Loading results...
+            <div className="flex flex-col gap-3">
+              {[...Array(5)].map((_, i) => (
+                <DoctorCardSkeleton key={i} />
+              ))}
             </div>
           ) : doctors.length === 0 ? (
-            <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-12 text-center">
-              <p className="text-[18px] font-semibold text-[#333333] mb-2">No physiotherapists found</p>
-              <p className="text-[14px] text-[#666666]">Try adjusting your filters or searching a different city.</p>
-            </div>
+            <EmptyState
+              title="No physiotherapists found"
+              description={`We couldn't find any physiotherapists matching your criteria near ${displayLocation}. Try adjusting your filters or expanding your search.`}
+              icon={SearchIcon}
+              action={
+                <button
+                  onClick={() => window.location.href = '/search'}
+                  className="px-6 py-2.5 bg-[#00766C] text-white text-[15px] font-semibold rounded-full hover:bg-[#005A52] transition-colors"
+                >
+                  Clear all filters
+                </button>
+              }
+            />
           ) : (
             doctors.map((doctor) => (
               <DoctorCard key={doctor.id} doctor={doctor} />

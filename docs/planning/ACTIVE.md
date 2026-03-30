@@ -36,10 +36,14 @@
   - tests: [x] Vitest: generateMetadata() slug → title/description | Playwright: landing page <title> correct
 - [x] **8.15** Static Pages Polish
   - tests: [x] Vitest: content matches spec | Playwright: static routes 200 OK
-- [ ] **8.16** Mobile Responsiveness Pass *(begin tests only after USER_FLOWS.md complete)*
-  - tests: [ ] (none) | Playwright: flows 1, 2, 6 at 375px viewport
-- [ ] **8.17** Empty States and Loading Skeletons
-  - tests: [ ] Vitest: skeleton renders without data prop | Playwright: empty state shown when no appointments
+- [x] **8.16** Mobile Responsiveness Pass 📱
+  - [x] Run comprehensive audit at 375px viewport. USER_FLOWS.md complete)*
+  - tests: [x] (none) | Playwright: flows 1, 2, 6 at 375px viewport
+- [x] **8.17** Empty States and Loading Skeletons
+  - [x] Create generic `Skeleton` and `EmptyState` components.
+  - [x] Apply to Search page, Patient Dashboard, and Appointments.
+  - [x] Add `loading.tsx` for Doctor Profile, Dashboard, and Admin.
+  - tests: [x] Vitest: skeleton/empty state unit tests | Playwright: empty state visibility tests
 
 ---
 
@@ -55,7 +59,6 @@
 | 6 | Provider Dashboard | All data is mock/hardcoded | P2 |
 | 7 | Admin | Analytics page is a stub | P3 |
 | 8 | Messages | Both patient + provider message pages are stubs | P3 |
-| 9 | Global | No loading skeletons or empty states | P2 |
 | 10 | Global | CI/CD (GitHub Actions) not configured | P3 |
 | 11 | Homepage | InsurancePlans section not built — post-launch only | P3 |
 

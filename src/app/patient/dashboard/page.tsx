@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Heart, Search, Calendar, Users, ArrowRight, AlertCircle, CalendarPlus } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'
 import { DashboardSkeleton } from './DashboardSkeleton'
 
@@ -218,20 +219,21 @@ export default function PatientDashboardHome() {
               </Link>
             </div>
           ) : (
-            <div className="text-center py-10">
-              <div className="w-16 h-16 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
-                <Calendar className="w-8 h-8 text-[#9CA3AF]" />
-              </div>
-              <p className="text-[15px] font-semibold text-[#333333] mb-1">No upcoming appointments</p>
-              <p className="text-[14px] text-[#666666]">Need to see a physio?</p>
-              <Link
-                href="/search"
-                className="inline-flex items-center gap-1.5 mt-4 text-[14px] font-semibold text-[#00766C] hover:text-[#005A52] no-underline transition-colors"
-              >
-                Book a session
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+            <EmptyState
+              title="No upcoming sessions"
+              description="You don't have any sessions booked. Find a top physiotherapist and start your recovery today."
+              icon={Calendar}
+              className="py-10 border-0"
+              action={
+                <Link
+                  href="/search"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[14px] transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                  Find a Physio
+                </Link>
+              }
+            />
           )}
         </aside>
       </div>
