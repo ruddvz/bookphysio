@@ -11,7 +11,7 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.10 — Provider Calendar Polish
+### Next up: Step 8.11 — Provider Availability Polish
 
 ### Remaining Phase 8 Steps (with test gate)
 
@@ -24,7 +24,7 @@
   - tests: [x] Vitest: tab state, filter logic | Playwright: patient views list and detail
 - [x] **8.9** Provider Dashboard Polish
   - tests: [x] Vitest: stats display formatting | Playwright: provider sees today's appointments
-- [ ] **8.10** Provider Calendar Polish
+- [x] **8.10** Provider Calendar Polish
   - tests: [ ] Vitest: slot render logic | Playwright: provider views 7-day calendar
 - [ ] **8.11** Provider Availability Polish
   - tests: [ ] Vitest: toggle logic, hours validation | Playwright: provider saves availability

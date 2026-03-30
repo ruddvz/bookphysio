@@ -105,7 +105,7 @@
 - [ ] **8.7** Patient Dashboard — upcoming card, quick actions, past appointments
 - [ ] **8.8** Patient Appointments — tabs (Upcoming/Past), detail page
 - [ ] **8.9** Provider Dashboard — today's summary stats, schedule timeline
-- [ ] **8.10** Provider Calendar — 7-day grid, booked/available/blocked slots
+- [x] **8.10** Provider Calendar — 7-day grid, booked/available/blocked slots
 - [ ] **8.11** Provider Availability — weekday toggles, working hours grid
 - [ ] **8.12** Provider Earnings — monthly summary, chart placeholder, transactions
 - [ ] **8.13** Admin Dashboard — platform overview stats
