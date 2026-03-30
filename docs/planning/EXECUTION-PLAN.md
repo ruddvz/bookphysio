@@ -101,7 +101,7 @@
 - [x] **8.3** Doctor Profile — sticky BookingCard, slot picker, responsive layout
 - [x] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX
 - [x] **8.5** Doctor Signup — 5-step form polish, progress indicator
-- [ ] **8.6** Booking Wizard — step progress bar, GST breakdown, Razorpay button
+- [x] **8.6** Booking Wizard — step progress bar, GST breakdown, Razorpay button
 - [ ] **8.7** Patient Dashboard — upcoming card, quick actions, past appointments
 - [ ] **8.8** Patient Appointments — tabs (Upcoming/Past), detail page
 - [ ] **8.9** Provider Dashboard — today's summary stats, schedule timeline

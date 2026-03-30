@@ -14,6 +14,50 @@ interface StepSuccessProps {
   refNumber: string
 }
 
+function buildIcs(props: {
+  title: string
+  date: string
+  time: string
+  location: string
+  description: string
+}): string {
+  const [year, month, day] = props.date.split('-').map(Number)
+  const [hourStr, minuteStr] = props.time.replace(/[ap]m/i, '').trim().split(':')
+  const isPm = /pm/i.test(props.time)
+  let hour = parseInt(hourStr, 10)
+  const minute = parseInt(minuteStr ?? '0', 10)
+  if (isPm && hour !== 12) hour += 12
+  if (!isPm && hour === 12) hour = 0
+
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const dtStart = `${year}${pad(month)}${pad(day)}T${pad(hour)}${pad(minute)}00`
+  const dtEnd = `${year}${pad(month)}${pad(day)}T${pad(hour + 1)}${pad(minute)}00`
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//BookPhysio//bookphysio.in//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${props.title}`,
+    `LOCATION:${props.location}`,
+    `DESCRIPTION:${props.description}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+}
+
+function downloadIcs(filename: string, content: string) {
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export function StepSuccess({
   doctorName, date, time, visitType, location, totalPaid, paymentMethod, refNumber,
 }: StepSuccessProps) {
@@ -25,12 +69,26 @@ export function StepSuccess({
     upi: 'UPI', card: 'Card', netbanking: 'Net Banking', pay_at_clinic: 'Pay at Clinic',
   }
 
+  function handleAddToCalendar() {
+    const ics = buildIcs({
+      title: `Physiotherapy with ${doctorName}`,
+      date,
+      time,
+      location,
+      description: `BookPhysio appointment. Ref: ${refNumber}. ${visitType === 'home_visit' ? 'Home visit.' : visitType === 'online' ? 'Online session.' : 'In-clinic visit.'}`,
+    })
+    downloadIcs('bookphysio-appointment.ics', ics)
+  }
+
   return (
     <div className="text-center space-y-6">
       {/* Success icon */}
       <div className="flex justify-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-          <span className="text-4xl">✅</span>
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#E6F4F3]">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-label="Booking confirmed">
+            <circle cx="20" cy="20" r="20" fill="#00766C" />
+            <path d="M12 20.5L17.5 26L28 15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
       </div>
 
@@ -55,7 +113,7 @@ export function StepSuccess({
       {/* Actions */}
       <div className="flex gap-3">
         <button
-          onClick={() => {/* calendar integration placeholder */}}
+          onClick={handleAddToCalendar}
           className="flex-1 rounded-[24px] border border-[#00766C] py-2.5 text-sm font-medium text-[#00766C] hover:bg-[#E6F4F3] transition-colors"
         >
           Add to Calendar

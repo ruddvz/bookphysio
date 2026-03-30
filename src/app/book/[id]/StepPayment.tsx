@@ -38,6 +38,8 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
 
   const gst = calcGst(feeInr)
   const total = feeInr + gst
+  const upiValid = method !== 'upi' || /^[\w.\-+]+@[\w]+$/.test(upiId)
+  const canPay = !loading && upiValid
 
   async function handlePay(e: React.FormEvent) {
     e.preventDefault()
@@ -177,6 +179,9 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
               placeholder="name@upi"
               className="w-full rounded-lg border border-[#E5E5E5] px-3 py-2 text-sm outline-none focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C]"
             />
+            {upiId && !/^[\w.\-+]+@[\w]+$/.test(upiId) && (
+              <p className="mt-1 text-xs text-red-500">Enter a valid UPI ID (e.g. name@upi)</p>
+            )}
           </div>
         )}
       </div>
@@ -190,9 +195,9 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
       <div className="space-y-3">
         <button
           type="submit"
-          disabled={loading}
+          disabled={!canPay}
           className={`w-full flex items-center justify-center gap-2 rounded-[24px] py-3 text-sm font-semibold text-white transition-colors ${
-            loading ? 'bg-[#FF6B35]/60 cursor-not-allowed' : 'bg-[#FF6B35] hover:bg-[#e55d2b] cursor-pointer'
+            !canPay ? 'bg-[#FF6B35]/60 cursor-not-allowed' : 'bg-[#FF6B35] hover:bg-[#e55d2b] cursor-pointer'
           }`}
         >
           {loading ? (
