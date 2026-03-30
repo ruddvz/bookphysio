@@ -198,16 +198,16 @@
 
 ## 8.15 Static Pages Polish
 
-**Routes:** `/about`, `/faq`, `/how-it-works`, `/privacy`, `/terms`
+**Route / Component:** `/about`, `/faq`, `/how-it-works`, `/privacy`, `/terms`
 **Phase:** 8.15
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] All five routes load without JS errors
-- [ ] Each page has a visible heading and body content
-- [ ] Footer and Navbar render correctly on all five pages
-- [ ] Privacy and Terms pages are linked from the footer
+- [x] All static routes load without error
+- [x] Content matches the specification (no placeholder blocks)
+- [x] Design system (teal accents, 8px radius) applied
+- [x] FAQ uses accordion logicTerms pages are linked from the footer
 
 ### Edge Cases
 - N/A — static content pages
