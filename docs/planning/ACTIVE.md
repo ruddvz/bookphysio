@@ -11,19 +11,19 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.7 — Patient Dashboard Polish
+### Next up: Step 8.10 — Provider Calendar Polish
 
 ### Remaining Phase 8 Steps (with test gate)
 
 > Each step is done only when Status = [x] AND Tests = [x].
 > FEATURES.md Tests field is authoritative. This list is a convenience mirror.
 
-- [ ] **8.7** Patient Dashboard Polish
-  - tests: [ ] Vitest: date formatting, mock data shape | Playwright: patient sees upcoming appointment
-- [ ] **8.8** Patient Appointments Polish
-  - tests: [ ] Vitest: tab state, filter logic | Playwright: patient views list and detail
-- [ ] **8.9** Provider Dashboard Polish
-  - tests: [ ] Vitest: stats display formatting | Playwright: provider sees today's appointments
+- [x] **8.7** Patient Dashboard Polish
+  - tests: [x] Vitest: date formatting, mock data shape | Playwright: patient sees upcoming appointment
+- [x] **8.8** Patient Appointments Polish
+  - tests: [x] Vitest: tab state, filter logic | Playwright: patient views list and detail
+- [x] **8.9** Provider Dashboard Polish
+  - tests: [x] Vitest: stats display formatting | Playwright: provider sees today's appointments
 - [ ] **8.10** Provider Calendar Polish
   - tests: [ ] Vitest: slot render logic | Playwright: provider views 7-day calendar
 - [ ] **8.11** Provider Availability Polish

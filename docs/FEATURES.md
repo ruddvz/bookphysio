@@ -15,17 +15,17 @@
 
 **Route / Component:** `app/(patient)/dashboard`
 **Phase:** 8.7
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Upcoming appointment card is visible at top of dashboard with doctor name, date, time, and visit type
-- [ ] Quick actions section shows at minimum: Book New Appointment, View All Appointments
-- [ ] Past appointments section shows the most recent 3 past appointments
-- [ ] All dates formatted as `DD MMM YYYY` (e.g. 15 Apr 2026) — no ISO strings visible to user
-- [ ] Currency displayed as `₹X` (INR, integer, no paise)
-- [ ] Page renders without errors when appointment list is empty (empty state shown)
-- [ ] Page renders without errors when API is slow (loading skeleton shown)
+- [x] Upcoming appointment card is visible at top of dashboard with doctor name, date, time, and visit type
+- [x] Quick actions section shows at minimum: Book New Appointment, View All Appointments
+- [x] Past appointments section shows the most recent 3 past appointments
+- [x] All dates formatted as `DD MMM YYYY` (e.g. 15 Apr 2026) — no ISO strings visible to user
+- [x] Currency displayed as `₹X` (INR, integer, no paise)
+- [x] Page renders without errors when appointment list is empty (empty state shown)
+- [x] Page renders without errors when API is slow (loading skeleton shown)
 
 ### Edge Cases
 - Empty state: "You have no upcoming appointments" prompt with Book CTA
@@ -41,16 +41,16 @@
 
 **Route / Component:** `app/(patient)/appointments`, `app/(patient)/appointments/[id]`
 **Phase:** 8.8
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Appointments page has two tabs: "Upcoming" and "Past"
-- [ ] Active tab is highlighted with teal underline
-- [ ] Switching tabs filters the list without page reload
-- [ ] Each appointment card shows: doctor name, specialty, date/time, visit type badge, status badge
-- [ ] Clicking a card navigates to the appointment detail page
-- [ ] Detail page shows: full doctor info, appointment slot, visit address (if in-clinic), join link placeholder (if online), cancellation option
+- [x] Appointments page has two tabs: "Upcoming" and "Past"
+- [x] Active tab is highlighted with teal underline
+- [x] Switching tabs filters the list without page reload
+- [x] Each appointment card shows: doctor name, specialty, date/time, visit type badge, status badge
+- [x] Clicking a card navigates to the appointment detail page
+- [x] Detail page shows: full doctor info, appointment slot, visit address (if in-clinic), join link placeholder (if online), cancellation option
 
 ### Edge Cases
 - Empty Upcoming tab: "No upcoming appointments" + Book CTA
@@ -66,14 +66,14 @@
 
 **Route / Component:** `app/(provider)/dashboard`
 **Phase:** 8.9
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Today's summary stats visible: appointments today (count), next appointment time, total patients this week
-- [ ] Schedule timeline shows today's appointments in chronological order
-- [ ] Each timeline slot shows: patient name, time, visit type badge
-- [ ] Stats display formatted values (not raw API numbers) — e.g. "3 appointments" not `3`
+- [x] Today's summary stats visible: appointments today (count), next appointment time, total patients this week
+- [x] Schedule timeline shows today's appointments in chronological order
+- [x] Each timeline slot shows: patient name, time, visit type badge
+- [x] Stats display formatted values (not raw API numbers) — e.g. "3 appointments" not `3`
 
 ### Edge Cases
 - No appointments today: "No appointments today" with empty timeline
