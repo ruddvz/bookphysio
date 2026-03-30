@@ -47,17 +47,20 @@ export default function ProviderAvailability() {
   const [duration, setDuration] = useState('30')
   const [saved, setSaved] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [hasChanges, setHasChanges] = useState(false)
 
   function toggleDay(day: string) {
     setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], enabled: !prev[day].enabled } }))
     setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
     setSaved(false)
+    setHasChanges(true)
   }
 
   function updateTime(day: string, field: 'start' | 'end', value: string) {
     setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], [field]: value } }))
     setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
     setSaved(false)
+    setHasChanges(true)
   }
 
   function handleSave() {
@@ -68,6 +71,7 @@ export default function ProviderAvailability() {
     }
     setErrors({})
     setSaved(true)
+    setHasChanges(false)
   }
 
   const enabledCount = DAYS.filter((d) => schedule[d].enabled).length
@@ -195,7 +199,7 @@ export default function ProviderAvailability() {
               <button
                 key={mins}
                 type="button"
-                onClick={() => { setDuration(mins); setSaved(false) }}
+                onClick={() => { setDuration(mins); setSaved(false); setHasChanges(true) }}
                 className={`px-5 py-2.5 rounded-full text-[14px] font-semibold border transition-colors cursor-pointer outline-none ${
                   duration === mins
                     ? 'bg-[#00766C] text-white border-[#00766C]'
@@ -213,7 +217,12 @@ export default function ProviderAvailability() {
           <button
             type="button"
             onClick={handleSave}
-            className="flex items-center gap-2 px-8 py-3 bg-[#00766C] hover:bg-[#005A52] text-white rounded-[24px] text-[16px] font-semibold transition-colors outline-none cursor-pointer"
+            disabled={!hasChanges}
+            className={`flex items-center gap-2 px-8 py-3 rounded-[24px] text-[16px] font-semibold transition-all outline-none ${
+              hasChanges 
+                ? 'bg-[#00766C] hover:bg-[#005A52] text-white cursor-pointer' 
+                : 'bg-[#F2F2F2] text-[#999999] cursor-not-allowed'
+            }`}
           >
             <Check className="w-5 h-5" />
             Save Availability

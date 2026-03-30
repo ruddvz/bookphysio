@@ -111,15 +111,15 @@
 
 **Route / Component:** `app/(provider)/availability`
 **Phase:** 8.11
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Weekday toggles (Mon–Sun) enable/disable working days
-- [ ] Working hours grid shows start/end time per enabled day
-- [ ] Start time must be before end time — inline validation error shown if not
-- [ ] Save button is disabled until a change is made
-- [ ] Success toast shown on save
+- [x] Weekday toggles (Mon–Sun) enable/disable working days
+- [x] Working hours grid shows start/end time per enabled day
+- [x] Start time must be before end time — inline validation error shown if not
+- [x] Save button is disabled until a change is made
+- [x] Success toast shown on save
 
 ### Edge Cases
 - All days disabled: valid state (provider takes a break)
@@ -134,14 +134,14 @@
 
 **Route / Component:** `app/(provider)/earnings`
 **Phase:** 8.12
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] passing
 
 ### Acceptance Criteria
-- [ ] Monthly summary shows: total earnings (₹), total sessions, average per session (₹)
-- [ ] All amounts displayed as `₹X` (INR integer, no paise, no decimals)
-- [ ] Transaction list shows individual bookings: patient, date, amount, status
-- [ ] Chart placeholder visible (no real chart in Phase 8 — placeholder with "Coming soon" label is acceptable)
+- [x] Monthly summary shows: total earnings (₹), total sessions, average per session (₹)
+- [x] All amounts displayed as `₹X` (INR integer, no paise, no decimals)
+- [x] Transaction list shows individual bookings: patient, date, amount, status
+- [x] Chart placeholder visible (no real chart in Phase 8 — placeholder with "Coming soon" label is acceptable)
 
 ### Edge Cases
 - No earnings: ₹0 summary + "No transactions yet"

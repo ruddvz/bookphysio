@@ -106,8 +106,8 @@
 - [ ] **8.8** Patient Appointments — tabs (Upcoming/Past), detail page
 - [ ] **8.9** Provider Dashboard — today's summary stats, schedule timeline
 - [x] **8.10** Provider Calendar — 7-day grid, booked/available/blocked slots
-- [ ] **8.11** Provider Availability — weekday toggles, working hours grid
-- [ ] **8.12** Provider Earnings — monthly summary, chart placeholder, transactions
+- [x] **8.11** Provider Availability — weekday toggles, working hours grid
+- [x] **8.12** Provider Earnings — monthly summary, chart placeholder, transactions
 - [ ] **8.13** Admin Dashboard — platform overview stats
 - [ ] **8.14** Specialty/City landing pages — hero, filtered doctor grid
 - [ ] **8.15** Static pages (About, FAQ, How It Works) — content + layout polish

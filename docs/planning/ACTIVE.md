@@ -11,7 +11,7 @@
 > Working through EXECUTION-PLAN.md Phase 8 steps sequentially.
 > Each step = one conversation turn = one commit.
 
-### Next up: Step 8.11 — Provider Availability Polish
+### Next up: Step 8.13 — Admin Dashboard Polish
 
 ### Remaining Phase 8 Steps (with test gate)
 
@@ -26,10 +26,10 @@
   - tests: [x] Vitest: stats display formatting | Playwright: provider sees today's appointments
 - [x] **8.10** Provider Calendar Polish
   - tests: [ ] Vitest: slot render logic | Playwright: provider views 7-day calendar
-- [ ] **8.11** Provider Availability Polish
-  - tests: [ ] Vitest: toggle logic, hours validation | Playwright: provider saves availability
-- [ ] **8.12** Provider Earnings Polish
-  - tests: [ ] Vitest: INR amount formatting | Playwright: provider views earnings summary
+- [x] **8.11** Provider Availability Polish
+  - tests: [x] Vitest: toggle logic, hours validation | Playwright: provider saves availability
+- [x] **8.12** Provider Earnings Polish
+  - tests: [x] Vitest: INR amount formatting | Playwright: provider views earnings summary
 - [ ] **8.13** Admin Dashboard Polish
   - tests: [ ] Vitest: stats display formatting | Playwright: admin accesses dashboard
 - [ ] **8.14** Specialty/City Landing Pages
