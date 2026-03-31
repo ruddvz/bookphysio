@@ -10,7 +10,7 @@
 - [x] Scaffold project structure (App Router, route groups, lib/, api/)
 - [x] Configure TypeScript, ESLint, Tailwind CSS v4
 - [x] Set up Vitest / testing infrastructure
-- [ ] Configure GitHub Actions CI/CD
+- [x] Configure GitHub Actions CI/CD
 - [x] Set up environment variables (.env.example documented)
 - [x] Supabase migrations (001_initial_schema, 002_rls_policies, 003_indexes)
 - [x] Seed data (specialties, cities, mock providers)
