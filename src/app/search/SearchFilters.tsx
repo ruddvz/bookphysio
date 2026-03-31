@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { SlidersHorizontal, X, ChevronDown, Check } from 'lucide-react'
+import { SlidersHorizontal, X, ChevronDown, Check, MapPin, Activity, Wallet, Calendar, Filter } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ const DEFAULT_MAX_FEE = 2000
 const DEFAULT_CITY = ''
 
 // ---------------------------------------------------------------------------
-// Help Component: Custom Dropdown
+// Help Component: Custom Dropdown (Premium)
 // ---------------------------------------------------------------------------
 
 function FilterDropdown({ 
@@ -43,12 +43,14 @@ function FilterDropdown({
   value, 
   options, 
   onChange,
+  icon: Icon,
   className 
 }: { 
   label: string, 
   value: string, 
   options: string[], 
   onChange: (val: string) => void,
+  icon?: any,
   className?: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -69,35 +71,41 @@ function FilterDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2 px-4 py-2.5 rounded-full border text-[14px] font-bold transition-all whitespace-nowrap",
+          "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all whitespace-nowrap active:scale-95",
           value 
-            ? "border-[#00766C] bg-[#E6F4F3] text-[#00766C]" 
-            : "border-[#E5E5E5] bg-white text-[#333333] hover:border-gray-400"
+            ? "border-[#00766C]/40 bg-[#00766C]/5 text-[#00766C] shadow-sm shadow-teal-50" 
+            : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50/50"
         )}
       >
+        {Icon && <Icon size={16} className={cn(value ? "text-[#00766C]" : "text-gray-400")} />}
         {value || label}
-        <ChevronDown className={cn("w-4 h-4 transition-transform", isOpen && "rotate-180")} />
+        <ChevronDown size={14} className={cn("transition-transform text-gray-400", isOpen && "rotate-180")} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E5E5] rounded-xl shadow-xl z-50 py-2 animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-gray-100 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-50 py-3 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+          <div className="px-4 py-2 text-[11px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-2">
+            Select {label}
+          </div>
           <button
             onClick={() => { onChange(''); setIsOpen(false); }}
-            className="w-full px-4 py-2 text-left text-[14px] font-medium text-gray-500 hover:bg-gray-50 flex items-center justify-between"
+            className="w-full px-5 py-3 text-left text-[14px] font-bold text-gray-500 hover:bg-teal-50 transition-colors flex items-center justify-between group"
           >
             Any {label}
             {!value && <Check className="w-4 h-4 text-[#00766C]" />}
           </button>
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => { onChange(opt); setIsOpen(false); }}
-              className="w-full px-4 py-2 text-left text-[14px] font-medium text-[#333333] hover:bg-gray-50 flex items-center justify-between"
-            >
-              {opt}
-              {value === opt && <Check className="w-4 h-4 text-[#00766C]" />}
-            </button>
-          ))}
+          <div className="max-h-60 overflow-y-auto custom-scrollbar">
+            {options.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => { onChange(opt); setIsOpen(false); }}
+                className="w-full px-5 py-3 text-left text-[14px] font-bold text-[#333333] hover:bg-teal-50 transition-colors flex items-center justify-between"
+              >
+                {opt}
+                {value === opt && <Check className="w-4 h-4 text-[#00766C]" />}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -156,11 +164,12 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
   return (
     <div className="w-full">
       {/* ── Desktop Horizontal Bar ── */}
-      <div className="hidden md:flex items-center gap-3 flex-wrap">
+      <div className="hidden md:flex items-center gap-4 flex-wrap">
         <FilterDropdown 
           label="Location"
           value={currentCity}
           options={CITIES}
+          icon={MapPin}
           onChange={(val) => pushParams({ city: val })}
         />
 
@@ -168,20 +177,21 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
           label="Specialty"
           value={currentSpecialty}
           options={SPECIALTIES}
+          icon={Activity}
           onChange={(val) => pushParams({ specialty: val })}
         />
 
-        {/* Visit Type Toggle */}
-        <div className="flex bg-[#F5F5F5] p-1 rounded-full border border-[#E5E5E5] ml-1">
+        {/* Visit Type Toggle (Modern Segmented Control) */}
+        <div className="flex bg-[#F8F9FA] p-1.5 rounded-2xl border border-gray-100 ml-1 shadow-inner">
           {['Any', ...VISIT_TYPES].map((type) => (
             <button
               key={type}
               onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
               className={cn(
-                "px-4 py-1.5 rounded-full text-[13px] font-bold transition-all",
+                "px-5 py-2 rounded-xl text-[13px] font-black transition-all duration-300",
                 currentVisitType === type 
-                  ? "bg-white text-[#00766C] shadow-sm" 
-                  : "text-gray-500 hover:text-gray-900"
+                  ? "bg-white text-[#00766C] shadow-[0_4px_12px_rgba(0,0,0,0.05)] translate-y-[-1px]" 
+                  : "text-gray-400 hover:text-gray-600"
               )}
             >
               {type}
@@ -189,9 +199,12 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
           ))}
         </div>
 
-        {/* Pricing Filter */}
-        <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-[#E5E5E5] bg-white ml-1">
-          <span className="text-[13px] font-extrabold text-gray-500 whitespace-nowrap">Max ₹{localMaxFee}</span>
+        {/* Pricing Filter (Premium Slider) */}
+        <div className="flex items-center gap-4 px-6 py-2.5 rounded-2xl border border-gray-200 bg-white ml-1 hover:border-gray-300 transition-colors">
+          <div className="flex flex-col">
+             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Max Fee</span>
+             <span className="text-[14px] font-black text-[#00766C] whitespace-nowrap leading-none">₹{localMaxFee}</span>
+          </div>
           <input
             type="range"
             min={0}
@@ -207,9 +220,10 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="text-[13px] font-bold text-[#FF6B35] hover:underline px-2 ml-auto"
+            className="text-[14px] font-black text-[#FF6B35] hover:text-[#E85D2A] px-4 ml-auto transition-colors flex items-center gap-2 group"
           >
-            Reset all filters
+            <X size={14} className="group-hover:rotate-90 transition-transform" />
+            Reset
           </button>
         )}
       </div>
@@ -218,43 +232,57 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
       <div className="md:hidden">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#E5E5E5] bg-white text-[14px] font-bold text-[#333333] shadow-sm active:scale-95 transition-transform"
+          className="inline-flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-gray-200 bg-white text-[15px] font-black text-[#333333] shadow-md active:scale-[0.98] transition-transform"
         >
-          <SlidersHorizontal className="w-4 h-4 text-[#00766C]" />
-          Filters
-          {hasActiveFilters && (
-            <span className="flex h-2 w-2 rounded-full bg-[#FF6B35]" />
-          )}
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-[#00766C]">
+                <Filter size={16} strokeWidth={3} />
+             </div>
+             Filters
+             {hasActiveFilters && (
+               <span className="flex h-2.5 w-2.5 rounded-full bg-[#FF6B35] ring-4 ring-[#FF6B35]/10 animate-pulse" />
+             )}
+          </div>
+          <div className="text-[13px] text-gray-400 font-bold">{total} Results</div>
         </button>
       </div>
 
-      {/* ── Mobile: Slide-up Drawer ── */}
+      {/* ── Mobile: Slide-up Drawer (Premium) ── */}
       {drawerOpen && (
         <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <div className="relative bg-white rounded-t-[32px] p-8 max-h-[90vh] overflow-y-auto shadow-2xl transition-transform">
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={() => setDrawerOpen(false)} />
+          <div className="relative bg-white rounded-t-[48px] p-8 max-h-[92vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-24 duration-700 ease-out">
+            <div className="w-16 h-1.5 bg-gray-100 rounded-full mx-auto mb-10" />
             
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-[#333333] tracking-tight">Filter Results</h2>
-              <button onClick={() => setDrawerOpen(false)} className="p-2.5 bg-gray-100 rounded-full text-gray-400">
-                <X className="w-6 h-6" />
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                 <h2 className="text-3xl font-black text-[#333333] tracking-tight mb-1">Search Filters</h2>
+                 <p className="text-[14px] font-bold text-gray-400 tracking-tight">Personalize your results</p>
+              </div>
+              <button 
+                onClick={() => setDrawerOpen(false)} 
+                className="w-12 h-12 bg-gray-50 flex items-center justify-center rounded-2xl text-gray-400 active:scale-90 transition-transform"
+              >
+                <X size={24} strokeWidth={3} />
               </button>
             </div>
 
-            <div className="space-y-10">
+            <div className="space-y-12">
               <section>
-                <label className="text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 block">Specialty</label>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center text-[#00766C]"><Activity size={20} /></div>
+                   <label className="text-[13px] font-black text-[#333333] uppercase tracking-[0.1em]">Specialty</label>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                   {SPECIALTIES.map(s => (
                     <button
                       key={s}
                       onClick={() => pushParams({ specialty: s === currentSpecialty ? null : s })}
                       className={cn(
-                        "text-[13px] font-bold py-3.5 px-4 rounded-xl border text-left transition-all",
+                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-left transition-all active:scale-[0.97]",
                         currentSpecialty === s 
-                          ? "bg-[#00766C] text-white border-[#00766C] shadow-lg shadow-teal-100" 
-                          : "bg-white text-gray-600 border-gray-200"
+                          ? "bg-[#00766C] text-white border-[#00766C] shadow-xl shadow-teal-100" 
+                          : "bg-white text-gray-500 border-gray-100"
                       )}
                     >
                       {s}
@@ -264,17 +292,20 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
               </section>
 
               <section>
-                <label className="text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 block">City</label>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600"><MapPin size={20} /></div>
+                   <label className="text-[13px] font-black text-[#333333] uppercase tracking-[0.1em]">City</label>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
                    {CITIES.slice(0, 8).map(c => (
                      <button 
                        key={c}
                        onClick={() => pushParams({ city: c === currentCity ? null : c })}
                        className={cn(
-                        "text-[13px] font-bold py-3.5 px-4 rounded-xl border text-left transition-all",
+                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-left transition-all active:scale-[0.97]",
                         currentCity === c 
-                          ? "bg-[#00766C] text-white border-[#00766C]" 
-                          : "bg-white text-gray-600 border-gray-200"
+                          ? "bg-[#333333] text-white border-[#333333]" 
+                          : "bg-white text-gray-500 border-gray-100"
                       )}
                      >
                        {c}
@@ -284,31 +315,44 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
               </section>
 
               <section>
-                <label className="text-[12px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 block">Consultation Fee</label>
-                <div className="bg-[#F9FAFB] p-6 rounded-2xl border border-gray-100">
-                  <div className="flex justify-between items-end mb-4">
-                    <div className="text-3xl font-black text-[#00766C]">₹{localMaxFee}</div>
-                    <div className="text-[13px] font-bold text-gray-400">MAX FEE</div>
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600"><Wallet size={20} /></div>
+                   <label className="text-[13px] font-black text-[#333333] uppercase tracking-[0.1em]">Consultation Fee</label>
+                </div>
+                <div className="bg-[#FCFDFD] p-8 rounded-[32px] border border-gray-50">
+                  <div className="flex justify-between items-end mb-6">
+                    <div className="text-4xl font-black text-[#00766C] tracking-tighter">₹{localMaxFee}</div>
+                    <div className="text-[12px] font-black text-gray-300 uppercase tracking-widest leading-none pb-2">Limit</div>
                   </div>
                   <input
                     type="range" min={0} max={2000} step={100} value={localMaxFee}
                     onChange={(e) => setLocalMaxFee(Number(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#00766C]"
+                    className="w-full h-2.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-[#00766C]"
                   />
+                  <div className="flex justify-between mt-3 text-[11px] font-bold text-gray-300 tracking-widest">
+                     <span>₹0</span>
+                     <span>₹2000</span>
+                  </div>
                 </div>
               </section>
             </div>
 
-            <div className="mt-12 flex gap-4 sticky bottom-0 bg-white pt-4 pb-2">
-              <button onClick={clearAll} className="flex-1 py-4 text-[15px] font-bold text-gray-400">Reset All</button>
+            <div className="mt-16 flex gap-4 sticky bottom-0 bg-white/80 backdrop-blur-xl pt-4 pb-4">
+              <button 
+                onClick={clearAll} 
+                className="flex-1 py-5 text-[15px] font-black text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Reset All
+              </button>
               <button 
                 onClick={() => {
                   pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })
                   setDrawerOpen(false)
                 }}
-                className="flex-[2] py-4 rounded-2xl bg-[#00766C] text-white text-[16px] font-black shadow-xl shadow-teal-100 active:scale-[0.98] transition-transform"
+                className="flex-[2.5] py-5 rounded-[22px] bg-[#00766C] text-white text-[17px] font-black shadow-2xl shadow-teal-100 active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
               >
-                Show {total} Results
+                Apply Filters
+                <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-sm">{total}</div>
               </button>
             </div>
           </div>
