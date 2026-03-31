@@ -136,7 +136,7 @@
 - [x] GitHub Actions CI/CD pipeline — run suite on every PR and push to main
 - [x] Supabase production environment setup (guide: docs/SUPABASE-PRODUCTION-SETUP.md)
 - [x] Domain + deployment (GitHub Pages → bookphysio.in, CNAME + deploy workflow updated)
-- [ ] Smoke test all flows end-to-end
+- [x] Smoke test all flows end-to-end
 
 ---
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import OtpInput from '@/components/OtpInput'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -845,16 +846,6 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
-
-  const focusInput = useCallback((index: number) => {
-    inputRefs.current[index]?.focus()
-  }, [])
-
-  // Focus first input on mount
-  useEffect(() => {
-    focusInput(0)
-  }, [focusInput])
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -869,54 +860,11 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     setCountdown(45)
     setCanResend(false)
     onChange({ otp: Array(OTP_LENGTH).fill('') })
-    focusInput(0)
-  }
-
-  async function handleSendOtp() {
-    setError('')
-    try {
-      const res = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: '+91' + phone }),
-      })
-      if (!res.ok) {
-        const d = await res.json()
-        setError(d.error || 'Failed to send OTP')
-      }
-    } catch {
-      setError('Network error')
-    }
-  }
-
-  function handleDigit(index: number, val: string) {
-    const digit = val.replace(/\D/g, '').slice(-1)
-    const next = data.otp.map((v, i) => (i === index ? digit : v))
-    onChange({ otp: next })
-    setError('')
-    if (digit && index < OTP_LENGTH - 1) {
-      focusInput(index + 1)
-    }
-  }
-
-  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace') {
-      if (data.otp[index]) {
-        onChange({ otp: data.otp.map((v, i) => (i === index ? '' : v)) })
-      } else if (index > 0) {
-        onChange({ otp: data.otp.map((v, i) => (i === index - 1 ? '' : v)) })
-        focusInput(index - 1)
-      }
-    }
-  }
-
-  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
-    e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
-    if (!pasted) return
-    const nextOtp = Array(OTP_LENGTH).fill('').map((_, i) => pasted[i] ?? '')
-    onChange({ otp: nextOtp })
-    focusInput(Math.min(pasted.length, OTP_LENGTH - 1))
+    fetch('/api/auth/otp/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: '+91' + phone }),
+    })
   }
 
   async function handleSubmitOtp() {
@@ -948,18 +896,6 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     }
   }
 
-  // Auto-submit when all 6 filled
-  useEffect(() => {
-    if (data.otp.every((d) => d !== '') && !loading) {
-      handleSubmitOtp()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.otp])
-
-  const setRef = useCallback((el: HTMLInputElement | null, i: number) => {
-    inputRefs.current[i] = el
-  }, [])
-
   const displayPhone = phone
     ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`
     : ''
@@ -972,24 +908,14 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
         Code sent to <span className="font-semibold text-[#333333]">{displayPhone}</span>
       </p>
 
-      <div className="flex gap-2.5 justify-center mb-4">
-        {data.otp.map((digit, i) => (
-          <input
-            key={i}
-            ref={(el) => setRef(el, i)}
-            type="tel"
-            inputMode="numeric"
-            maxLength={1}
-            value={digit}
-            onChange={(e) => handleDigit(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            onPaste={handlePaste}
-            aria-label={`OTP digit ${i + 1}`}
-            className={`w-12 h-14 text-center text-[22px] font-bold text-[#333333] bg-white rounded-[8px] outline-none border-2 transition-colors ${
-              digit ? 'border-[#00766C]' : 'border-[#E5E5E5] focus:border-[#00766C]'
-            }`}
-          />
-        ))}
+      <div className="mb-4">
+        <OtpInput
+          value={data.otp}
+          onChange={(otp) => onChange({ otp })}
+          onComplete={handleSubmitOtp}
+          disabled={loading}
+          error={!!error}
+        />
       </div>
 
       {error && (
@@ -1009,7 +935,7 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
         )}
       </p>
 
-      <PrimaryButton onClick={handleSubmitOtp} disabled={loading}>
+      <PrimaryButton onClick={() => handleSubmitOtp()} disabled={loading}>
         {loading ? 'Submitting…' : (
           <>
             Complete Registration

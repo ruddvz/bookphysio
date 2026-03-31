@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import OtpInput from '@/components/OtpInput'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
@@ -21,19 +22,8 @@ function VerifyOtpContent() {
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''))
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
-  const [focused, setFocused] = useState<number | null>(null)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  const inputRefs = useRef<HTMLInputElement[]>([])
-
-  const focusInput = useCallback((index: number) => {
-    inputRefs.current[index]?.focus()
-  }, [])
-
-  // Focus first input on mount
-  useEffect(() => {
-    focusInput(0)
-  }, [focusInput])
 
   useEffect(() => {
     if (countdown <= 0) return
@@ -41,49 +31,10 @@ function VerifyOtpContent() {
     return () => clearTimeout(timer)
   }, [countdown])
 
-  // Auto-submit when all 6 digits are filled
-  useEffect(() => {
-    if (otp.every((d) => d !== '') && !loading) {
-      handleVerify()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otp])
+  // Auto-submit logic is now inside OtpInput via onComplete
 
-  function handleInput(index: number, value: string) {
-    const digit = value.replace(/\D/g, '').slice(-1)
-    const nextOtp = otp.map((d, i) => (i === index ? digit : d))
-    setOtp(nextOtp)
-    setError('')
-    if (digit && index < OTP_LENGTH - 1) {
-      focusInput(index + 1)
-    }
-  }
-
-  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace') {
-      if (otp[index]) {
-        setOtp((prev) => prev.map((d, i) => (i === index ? '' : d)))
-      } else if (index > 0) {
-        setOtp((prev) => prev.map((d, i) => (i === index - 1 ? '' : d)))
-        focusInput(index - 1)
-      }
-    }
-  }
-
-  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
-    e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
-    if (!pasted) return
-    const nextOtp = Array(OTP_LENGTH)
-      .fill('')
-      .map((_, i) => pasted[i] ?? '')
-    setOtp(nextOtp)
-    const nextFocus = Math.min(pasted.length, OTP_LENGTH - 1)
-    focusInput(nextFocus)
-  }
-
-  async function handleVerify() {
-    const code = otp.join('')
+  async function handleVerify(codeOverride?: string) {
+    const code = codeOverride || otp.join('')
     if (code.length < OTP_LENGTH) {
       setError('Please enter all 6 digits')
       return
@@ -121,7 +72,6 @@ function VerifyOtpContent() {
     setCountdown(COUNTDOWN_SECONDS)
     setOtp(Array(OTP_LENGTH).fill(''))
     setError('')
-    focusInput(0)
     try {
       await fetch('/api/auth/otp/send', {
         method: 'POST',
@@ -154,29 +104,14 @@ function VerifyOtpContent() {
       </p>
 
       {/* OTP digit inputs */}
-      <div className="flex gap-2.5 justify-center mb-6">
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => {
-              if (el) inputRefs.current[index] = el
-            }}
-            type="tel"
-            inputMode="numeric"
-            pattern="[0-9]"
-            maxLength={1}
-            value={digit}
-            onChange={(e) => handleInput(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
-            onFocus={() => setFocused(index)}
-            onBlur={() => setFocused(null)}
-            aria-label={`OTP digit ${index + 1}`}
-            className={`w-12 h-14 text-center text-[22px] font-semibold text-[#333333] bg-white rounded-[8px] outline-none border-2 transition-colors ${
-              focused === index || digit ? 'border-[#00766C]' : 'border-[#E5E5E5]'
-            }`}
-          />
-        ))}
+      <div className="mb-6">
+        <OtpInput
+          value={otp}
+          onChange={setOtp}
+          onComplete={handleVerify}
+          disabled={loading}
+          error={!!error}
+        />
       </div>
 
       {/* Error */}
@@ -212,7 +147,7 @@ function VerifyOtpContent() {
       {/* Verify button */}
       <button
         type="button"
-        onClick={handleVerify}
+        onClick={() => handleVerify()}
         disabled={!allFilled || loading}
         className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-5 transition-colors outline-none ${
           allFilled && !loading ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer' : 'bg-[#a0cdc9] cursor-not-allowed'
