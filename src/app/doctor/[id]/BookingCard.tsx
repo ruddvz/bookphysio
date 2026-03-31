@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Loader2, Calendar, Clock, MapPin, Globe, Home, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Loader2, Calendar, Clock, MapPin, Globe, Home, ShieldCheck, Check, Sparkles, MoveRight, HelpCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -36,17 +36,17 @@ interface GroupedSlots {
 // Constants
 // ---------------------------------------------------------------------------
 
-const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any }> = {
-  in_clinic: { label: 'In-clinic', icon: MapPin },
-  home_visit: { label: 'Home Visit', icon: Home },
-  online: { label: 'Online', icon: Globe },
+const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any; iconColor: string; bgColor: string }> = {
+  in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-teal-600', bgColor: 'bg-teal-50' },
+  home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-orange-600', bgColor: 'bg-orange-50' },
+  online: { label: 'Online', icon: Globe, iconColor: 'text-blue-600', bgColor: 'bg-blue-50' },
 }
 
 // ---------------------------------------------------------------------------
-// Helper: generate 7 days starting from today
+// Helpers
 // ---------------------------------------------------------------------------
 
-interface DayEntry { label: string; dayNum: number; iso: string }
+interface DayEntry { label: string; dayNum: number; iso: string; dayName: string }
 
 function getNext7Days(): DayEntry[] {
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -55,7 +55,12 @@ function getNext7Days(): DayEntry[] {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
     const iso = d.toISOString().split('T')[0]
-    return { label: i === 0 ? 'Today' : DAY_NAMES[d.getDay()], dayNum: d.getDate(), iso }
+    return { 
+      label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : DAY_NAMES[d.getDay()], 
+      dayNum: d.getDate(), 
+      dayName: DAY_NAMES[d.getDay()],
+      iso 
+    }
   })
 }
 
@@ -75,7 +80,7 @@ function formatSlotTime(isoString: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Sub-component: TimeSlotGroup
+// Sub-component: TimeSlotGroup (Ultra Premium)
 // ---------------------------------------------------------------------------
 
 interface TimeSlotGroupProps {
@@ -88,11 +93,11 @@ interface TimeSlotGroupProps {
 function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGroupProps) {
   if (slots.length === 0) return null
   return (
-    <div className="mb-6 last:mb-0">
-      <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3">
+    <div className="mb-8 last:mb-0">
+      <p className="text-[11px] font-black text-gray-300 uppercase tracking-[0.2em] mb-4 pl-1">
         {heading}
       </p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-3">
         {slots.map((slot) => {
           const isSelected = selectedSlotId === slot.id
           return (
@@ -100,14 +105,23 @@ function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGro
               key={slot.id}
               onClick={() => onSelect(slot)}
               className={cn(
-                "py-2.5 rounded-xl text-[13px] font-bold transition-all border",
+                "relative py-3.5 rounded-2xl text-[14px] font-black transition-all duration-300 border flex flex-col items-center justify-center gap-0.5 overflow-hidden active:scale-[0.97]",
                 isSelected
-                  ? "bg-[#00766C] text-white border-[#00766C] shadow-lg shadow-teal-50"
-                  : "bg-white text-[#00766C] border-[#E5E5E5] hover:border-[#00766C] hover:bg-teal-50/30"
+                  ? "bg-[#00766C] text-white border-[#00766C] shadow-2xl shadow-teal-900/10 scale-[1.05] z-10"
+                  : "bg-white text-[#333333] border-gray-100 hover:border-teal-100 hover:bg-teal-50/10 text-gray-500"
               )}
             >
-              {formatSlotTime(slot.starts_at).split(' ')[0]}
-              <span className="text-[10px] ml-0.5 opacity-70">{formatSlotTime(slot.starts_at).split(' ')[1]}</span>
+              <div className="flex items-center gap-1">
+                 {formatSlotTime(slot.starts_at).split(' ')[0]}
+                 {isSelected && <Check size={12} strokeWidth={4} className="animate-in zoom-in-50 duration-300" />}
+              </div>
+              <span className={cn("text-[9px] font-black uppercase tracking-widest", isSelected ? "text-teal-200" : "text-gray-300")}>
+                 {formatSlotTime(slot.starts_at).split(' ')[1]}
+              </span>
+              
+              {isSelected && (
+                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shine pointer-events-none"></div>
+              )}
             </button>
           )
         })}
@@ -135,8 +149,9 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
     setSlotsLoading(true)
     setSelectedSlot(null)
 
-    const from = new Date(selectedDate + 'T00:00:00+05:30').toISOString()
-    const to = new Date(selectedDate + 'T23:59:59+05:30').toISOString()
+    // Using a more reliable ISO string construction for India timezone
+    const from = `${selectedDate}T00:00:00+05:30`
+    const to = `${selectedDate}T23:59:59+05:30`
     const qs = new URLSearchParams({ from, to }).toString()
 
     fetch(`/api/providers/${doctorId}/availability?${qs}`)
@@ -173,47 +188,69 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
   const canBook = selectedSlot !== null
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E5E5] p-6 shadow-xl sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar">
-      {/* Pricing Header */}
-      <div className="flex items-baseline justify-between mb-6">
+    <div className="bg-white rounded-[48px] border border-gray-100 p-8 shadow-[0_48px_80px_-32px_rgba(0,0,0,0.12)] sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar relative">
+      
+      {/* ── Background Glow ── */}
+      <div className="absolute -top-32 -right-32 w-64 h-64 bg-teal-50 rounded-full blur-[100px] -z-0 opacity-40"></div>
+
+      {/* ── Header ── */}
+      <div className="flex flex-col gap-6 mb-8 relative z-10">
+        <div className="flex items-center justify-between">
+           <div className="px-4 py-1.5 bg-[#E6F4F3] text-[#00766C] text-[11px] font-black uppercase tracking-[0.15em] rounded-xl border border-teal-100">
+              Direct Booking
+           </div>
+           <button className="text-gray-300 hover:text-gray-400 transition-colors">
+              <HelpCircle size={20} />
+           </button>
+        </div>
+        
         <div>
-           <span className="text-[32px] font-black text-[#333333]">₹{selectedFee}</span>
-           <span className="text-[14px] text-gray-500 font-bold ml-1.5 uppercase">Per session</span>
-        </div>
-        <div className="bg-teal-50 text-[#00766C] px-2 py-1 rounded-md">
-           <MapPin size={16} />
+           <div className="flex items-baseline gap-2">
+              <span className="text-[44px] font-black text-[#333333] tracking-tighter leading-none">₹{selectedFee}</span>
+              <span className="text-[14px] text-gray-300 font-bold uppercase tracking-widest leading-none">Consult Fee</span>
+           </div>
+           <p className="text-[13px] font-medium text-gray-400 mt-3 flex items-center gap-1.5">
+              <ShieldCheck size={14} className="text-[#059669]" />
+              Secure Payment at Clinic
+           </p>
         </div>
       </div>
 
-      {/* Visit type tabs */}
-      <div className="flex bg-gray-50 p-1 rounded-xl mb-6">
-        {(visitTypes as VisitType[]).map((type) => {
-          const isActive = visitType === type
-          const Icon = VISIT_TYPE_LABELS[type]?.icon || Globe
-          return (
-            <button
-              key={type}
-              onClick={() => { setVisitType(type); setSelectedSlot(null) }}
-              className={cn(
-                "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-lg transition-all",
-                isActive 
-                  ? "bg-white text-[#00766C] shadow-md font-bold" 
-                  : "text-gray-400 font-medium hover:text-gray-600"
-              )}
-            >
-              <Icon size={14} className={isActive ? "text-[#00766C]" : "text-gray-300"} />
-              <span className="text-[11px] uppercase tracking-tighter">{VISIT_TYPE_LABELS[type]?.label ?? type}</span>
-            </button>
-          )
-        })}
+      {/* ── Visit Type Interaction ── */}
+      <div className="space-y-4 mb-10 relative z-10">
+        {/* <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest pl-1">Consultation Mode</label> */}
+        <div className="flex bg-gray-50 p-2 rounded-[28px] border border-gray-100/50 shadow-inner">
+          {(visitTypes as VisitType[]).map((type) => {
+            const isActive = visitType === type
+            const Icon = VISIT_TYPE_LABELS[type]?.icon || Globe
+            return (
+              <button
+                key={type}
+                onClick={() => { setVisitType(type); setSelectedSlot(null) }}
+                className={cn(
+                  "flex-1 flex flex-col items-center gap-1.5 py-4 rounded-[22px] transition-all duration-500 active:scale-95",
+                  isActive 
+                    ? "bg-white text-[#00766C] shadow-2xl shadow-teal-900/5 font-black scale-[1.02]" 
+                    : "text-gray-400 font-bold hover:text-gray-600"
+                )}
+              >
+                <div className={cn("p-2 rounded-xl transition-colors", isActive ? "bg-[#E6F4F3] text-[#00766C]" : "bg-transparent text-gray-300")}>
+                   <Icon size={18} strokeWidth={isActive ? 3 : 2} />
+                </div>
+                <span className="text-[11px] uppercase tracking-widest font-black leading-none">{VISIT_TYPE_LABELS[type]?.label ?? type}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Date selector */}
-      <div className="mb-6">
-        <label className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3 block">
-          Select Date
-        </label>
-        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+      {/* ── Horizontal Date Rail ── */}
+      <div className="mb-10 relative z-10">
+        <div className="flex items-center justify-between mb-4 px-1">
+           <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest">Select Schedule</label>
+           <span className="text-[11px] font-black text-[#00766C]/40 uppercase tracking-widest">Week View</span>
+        </div>
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 px-1">
           {days.map((day) => {
             const isSelected = selectedDate === day.iso
             return (
@@ -221,68 +258,80 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                 key={day.iso}
                 onClick={() => setSelectedDate(day.iso)}
                 className={cn(
-                  "flex flex-col items-center justify-center min-w-[58px] aspect-square rounded-2xl transition-all border",
+                  "group flex flex-col items-center justify-center min-w-[72px] h-[80px] rounded-[24px] transition-all duration-500 border active:scale-95",
                   isSelected
-                    ? "bg-[#00766C] text-white border-[#00766C] shadow-lg shadow-teal-50"
-                    : "bg-white text-[#333333] border-[#E5E5E5] hover:border-[#00766C]"
+                    ? "bg-[#333333] text-white border-[#333333] shadow-2xl scale-[1.05]"
+                    : "bg-white text-[#333333] border-gray-100 hover:border-teal-100 hover:bg-teal-50/10"
                 )}
               >
-                <span className={cn("text-[10px] font-black uppercase", isSelected ? "text-teal-100" : "text-gray-400")}>
+                <span className={cn("text-[10px] font-black uppercase tracking-widest mb-1.5", isSelected ? "text-gray-400" : "text-gray-300 transition-colors group-hover:text-teal-400")}>
                   {day.label}
                 </span>
-                <span className="text-[18px] font-black">{day.dayNum}</span>
+                <span className="text-[20px] font-black tracking-tighter">{day.dayNum}</span>
               </button>
             )
           })}
         </div>
       </div>
 
-      {/* Time slots */}
-      <div className="mb-8">
-        <label className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3 block">
-          Select time
-        </label>
-
-        <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100">
+      {/* ── Interactive Time Slots ── */}
+      <div className="mb-10 relative z-10">
+        <div className="bg-[#FCFDFD] rounded-[40px] p-6 lg:p-8 border border-gray-100/50 min-h-[300px]">
           {slotsLoading ? (
-            <div className="flex flex-col items-center justify-center py-10 text-gray-400 italic">
-              <Loader2 className="w-8 h-8 animate-spin mb-2 text-[#00766C]/30" />
-              <span className="text-[13px] font-bold">Scanning availability...</span>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-4">
+              <div className="w-12 h-12 rounded-full border-4 border-gray-100 border-t-[#00766C] animate-spin" />
+              <div className="text-center">
+                 <p className="text-[14px] font-black text-[#333333] uppercase tracking-widest">Scanning</p>
+                 <p className="text-[11px] font-bold text-gray-300">Live Availability</p>
+              </div>
             </div>
           ) : slots.length === 0 ? (
-            <div className="py-10 text-center">
-              <Calendar className="w-10 h-10 text-gray-200 mx-auto mb-2" />
-              <p className="text-[13px] text-gray-400 font-bold">No slots found for this day</p>
+            <div className="py-20 text-center flex flex-col items-center">
+              <div className="w-16 h-16 bg-white rounded-3xl border border-gray-50 shadow-sm flex items-center justify-center mb-4 text-gray-200">
+                 <Calendar className="w-8 h-8" />
+              </div>
+              <p className="text-[15px] text-[#333333] font-black tracking-tight">Fully Booked</p>
+              <p className="text-[13px] text-gray-400 font-bold mt-1">Try another date for availability</p>
             </div>
           ) : (
-            <div className="space-y-6">
-              <TimeSlotGroup heading="Morning" slots={grouped.morning} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
-              <TimeSlotGroup heading="Afternoon" slots={grouped.afternoon} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
-              <TimeSlotGroup heading="Evening" slots={grouped.evening} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <TimeSlotGroup heading="Morning Insights" slots={grouped.morning} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+              <TimeSlotGroup heading="Afternoon Slots" slots={grouped.afternoon} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
+              <TimeSlotGroup heading="Evening Sessions" slots={grouped.evening} selectedSlotId={selectedSlot?.id ?? null} onSelect={setSelectedSlot} />
             </div>
           )}
         </div>
       </div>
 
-      {/* CTA button */}
-      <button
-        type="button"
-        onClick={handleBook}
-        disabled={!canBook}
-        className={cn(
-          "w-full flex items-center justify-center gap-3 py-4 text-[16px] font-black text-white rounded-2xl transition-all shadow-xl shadow-teal-50",
-          canBook
-            ? "bg-[#FF6B35] hover:bg-[#E85D2A] hover:scale-[1.02] active:scale-[0.98]"
-            : "bg-gray-200 cursor-not-allowed text-gray-400 shadow-none"
-        )}
-      >
-        {canBook ? 'Book Now' : 'Choose a time'}
-        <ArrowRight size={18} />
-      </button>
-
-      <div className="mt-4 flex items-center justify-center gap-2 text-gray-400">
-         <ShieldCheck size={14} className="text-[#059669]" />
-         <span className="text-[12px] font-bold uppercase tracking-tight">No hidden charges · Pay at clinic</span>
+      {/* ── High-Conversion CTA ── */}
+      <div className="relative z-10 pt-2">
+        <button
+          type="button"
+          onClick={handleBook}
+          disabled={!canBook}
+          className={cn(
+            "group/cta w-full h-20 rounded-[28px] text-[18px] font-black transition-all duration-500 relative overflow-hidden flex items-center justify-center gap-3 shadow-2xl active:scale-[0.98]",
+            canBook
+              ? "bg-[#FF6B35] text-white shadow-orange-900/10 hover:shadow-orange-900/20"
+              : "bg-gray-100 text-gray-300 cursor-not-allowed shadow-none"
+          )}
+        >
+          <div className="relative z-10 flex items-center gap-3">
+             {canBook ? 'Secure This Appointment' : 'Select a Time Slot'}
+             <MoveRight size={22} strokeWidth={3} className="group-hover/cta:translate-x-2 transition-transform duration-500" />
+          </div>
+          
+          {canBook && (
+             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/cta:animate-shine transition-transform duration-1000"></div>
+          )}
+        </button>
+        
+        <div className="mt-6 text-center">
+           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+              <ShieldCheck size={14} className="text-emerald-500" />
+              <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">No Prepayment Required</span>
+           </div>
+        </div>
       </div>
     </div>
   )
