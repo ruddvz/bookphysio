@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
-import { calcGst } from '@/components/PriceDisplay'
+import { Loader2, CreditCard, Smartphone, Building2, Wallet, ShieldCheck, ChevronRight, CheckCircle2, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
 
@@ -30,16 +30,20 @@ interface StepPaymentProps {
   onSuccess: (result: BookingResult) => void
 }
 
-export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBack, onSuccess }: StepPaymentProps) {
+const PAYMENT_MODES = [
+  { id: 'upi' as const, label: 'UPI (GPay, PhonePe)', icon: Smartphone, description: 'Pay via any UPI app' },
+  { id: 'card' as const, label: 'Credit / Debit Card', icon: CreditCard, description: 'Visa, Mastercard, RuPay' },
+  { id: 'netbanking' as const, label: 'Net Banking', icon: Building2, description: 'All major Indian banks' },
+  { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', icon: Wallet, description: 'Pay after consultation' },
+]
+
+export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
   const [method, setMethod] = useState<PaymentMethod>('upi')
-  const [upiId, setUpiId] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const gst = calcGst(feeInr)
-  const total = feeInr + gst
-  const upiValid = method !== 'upi' || /^[\w.\-+]+@[\w]+$/.test(upiId)
-  const canPay = !loading && upiValid
+  const total = feeInr
+  const canPay = !loading
 
   async function handlePay(e: React.FormEvent) {
     e.preventDefault()
@@ -47,7 +51,6 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
     setLoading(true)
 
     try {
-      // Step 1: Create appointment
       const apptRes = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,7 +64,6 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
 
       if (!apptRes.ok) {
         const data = await apptRes.json() as { error?: string }
-        // If unauthenticated, create a guest booking reference for pay-at-clinic
         if (apptRes.status === 401) {
           const guestRef = `BP-${Date.now().toString().slice(-6)}`
           onSuccess({ appointmentId: '', refNumber: guestRef, totalPaid: total, paymentMethod: method })
@@ -73,14 +75,12 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
 
       const appt = await apptRes.json() as { id: string }
 
-      // Step 2: For pay_at_clinic — skip Razorpay
       if (method === 'pay_at_clinic') {
         const refNumber = `BP-${appt.id.slice(0, 6).toUpperCase()}`
         onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, paymentMethod: method })
         return
       }
 
-      // Step 3: Create Razorpay order
       const orderRes = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,11 +100,11 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
         payment: { id: string }
       }
 
-      // Step 4: Load Razorpay checkout
       await openRazorpay({
         orderId: orderData.razorpay_order_id,
         amountPaise: orderData.amount_paise,
         keyId: orderData.key_id,
+        appointmentId: appt.id,
         patientName: patient.fullName,
         patientPhone: patient.phone,
         patientEmail: patient.email,
@@ -122,104 +122,100 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onBa
   }
 
   return (
-    <form onSubmit={handlePay} className="space-y-6">
-      {/* Order summary */}
-      <div className="rounded-[8px] border border-[#E5E5E5] bg-white p-4">
-        <h3 className="font-semibold text-[#1A1A1A] mb-3">Order Summary</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-[#666]">Consultation fee</span>
-            <span className="font-medium">₹{feeInr.toLocaleString('en-IN')}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#666]">GST (18%)</span>
-            <span className="font-medium">₹{gst.toLocaleString('en-IN')}</span>
-          </div>
-          <div className="border-t border-[#E5E5E5] pt-2 flex justify-between font-semibold text-[#1A1A1A]">
-            <span>Total</span>
-            <span>₹{total.toLocaleString('en-IN')}</span>
-          </div>
-        </div>
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mb-8">
+        <h2 className="text-[28px] font-black text-[#333333] tracking-tight">Payment Method</h2>
+        <p className="text-gray-500 font-medium pt-1">Select how you'd like to pay for your session.</p>
       </div>
 
-      {/* Payment method */}
-      <div className="rounded-[8px] border border-[#E5E5E5] bg-white p-4 space-y-3">
-        <h3 className="font-semibold text-[#1A1A1A]">Payment Method</h3>
+      <form onSubmit={handlePay} className="space-y-4">
+        {PAYMENT_MODES.map((mode) => {
+          const isSelected = method === mode.id
+          const Icon = mode.icon
+          return (
+            <label 
+              key={mode.id}
+              className={cn(
+                "group flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all active:scale-[0.98]",
+                isSelected 
+                  ? "bg-teal-50/30 border-[#00766C] shadow-lg shadow-teal-50" 
+                  : "bg-white border-gray-100 hover:border-gray-200"
+              )}
+            >
+              <input
+                type="radio"
+                name="payment"
+                value={mode.id}
+                checked={isSelected}
+                onChange={() => setMethod(mode.id)}
+                className="hidden"
+              />
+              <div className={cn(
+                "p-3 rounded-xl transition-colors",
+                isSelected ? "bg-[#00766C] text-white" : "bg-gray-100 text-gray-400 group-hover:text-gray-600"
+              )}>
+                <Icon size={24} />
+              </div>
+              <div className="flex-1">
+                <p className={cn("text-[16px] font-black leading-tight", isSelected ? "text-[#00766C]" : "text-[#333333]")}>
+                  {mode.label}
+                </p>
+                <p className="text-[13px] font-bold text-gray-400 mt-1">{mode.description}</p>
+              </div>
+              {isSelected && (
+                <div className="text-[#00766C] animate-in zoom-in duration-200">
+                  <CheckCircle2 size={24} fill="#F0FDFA" />
+                </div>
+              )}
+            </label>
+          )
+        })}
 
-        {([
-          { id: 'upi' as const, label: 'UPI', badge: 'Recommended' },
-          { id: 'card' as const, label: 'Credit / Debit Card', badge: undefined },
-          { id: 'netbanking' as const, label: 'Net Banking', badge: undefined },
-          { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', badge: undefined },
-        ] as const).map(({ id, label, badge }) => (
-          <label key={id} className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value={id}
-              checked={method === id}
-              onChange={() => setMethod(id)}
-              className="accent-[#00766C]"
-            />
-            <span className="text-sm text-[#333]">{label}</span>
-            {badge && (
-              <span className="ml-auto text-xs bg-[#E6F4F3] text-[#00766C] px-2 py-0.5 rounded-full font-medium">
-                {badge}
-              </span>
-            )}
-          </label>
-        ))}
-
-        {method === 'upi' && (
-          <div className="mt-2 ml-6">
-            <input
-              type="text"
-              value={upiId}
-              onChange={(e) => setUpiId(e.target.value)}
-              placeholder="name@upi"
-              className="w-full rounded-lg border border-[#E5E5E5] px-3 py-2 text-sm outline-none focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C]"
-            />
-            {upiId && !/^[\w.\-+]+@[\w]+$/.test(upiId) && (
-              <p className="mt-1 text-xs text-red-500">Enter a valid UPI ID (e.g. name@upi)</p>
-            )}
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 mt-6">
+            <div className="p-1 bg-red-100 rounded-full h-fit mt-0.5">
+               <X className="w-4 h-4 text-red-500" />
+            </div>
+            <p className="text-[13px] font-bold text-red-600 leading-tight">{error}</p>
           </div>
         )}
-      </div>
 
-      {error && (
-        <div className="rounded-[8px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
-          {error}
+        <div className="pt-8">
+          <button
+            type="submit"
+            disabled={!canPay}
+            className={cn(
+               "w-full group flex items-center justify-center gap-3 py-5 bg-[#FF6B35] text-white text-[18px] font-black rounded-2xl shadow-xl shadow-orange-100 hover:bg-[#E85D2A] hover:scale-[1.02] active:scale-[0.98] transition-all",
+               loading && "opacity-80 cursor-not-allowed"
+            )}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-6 h-6 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                {method === 'pay_at_clinic' ? 'Confirm Booking' : `Pay ₹${total.toLocaleString('en-IN')}`}
+                <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
+          </button>
+
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-4 grayscale opacity-40">
+               <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="UPI" className="h-4" />
+               <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" className="h-3" />
+               <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4" />
+            </div>
+            <p className="text-[12px] font-bold text-gray-300 uppercase tracking-widest flex items-center gap-1.5 mt-1">
+              <ShieldCheck size={14} className="text-[#059669]" />
+              Secure Payment via Razorpay
+            </p>
+          </div>
         </div>
-      )}
-
-      <div className="space-y-3">
-        <button
-          type="submit"
-          disabled={!canPay}
-          className={`w-full flex items-center justify-center gap-2 rounded-[24px] py-3 text-sm font-semibold text-white transition-colors ${
-            !canPay ? 'bg-[#FF6B35]/60 cursor-not-allowed' : 'bg-[#FF6B35] hover:bg-[#e55d2b] cursor-pointer'
-          }`}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Processing…
-            </>
-          ) : (
-            `Pay ₹${total.toLocaleString('en-IN')} →`
-          )}
-        </button>
-        <p className="text-center text-xs text-[#666]">🔒 Secured by Razorpay</p>
-        <button
-          type="button"
-          onClick={onBack}
-          disabled={loading}
-          className="w-full text-sm text-[#666] hover:text-[#333] transition-colors"
-        >
-          ← Back
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   )
 }
 
@@ -231,6 +227,7 @@ interface RazorpayOptions {
   orderId: string
   amountPaise: number
   keyId: string
+  appointmentId: string
   patientName: string
   patientPhone: string
   patientEmail: string
@@ -276,7 +273,29 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
       email: opts.patientEmail,
     },
     theme: { color: '#00766C' },
-    handler: () => opts.onSuccess(),
+    handler: async (response: any) => {
+      try {
+        const verifyRes = await fetch('/api/payments/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            appointment_id: opts.appointmentId,
+          }),
+        })
+
+        if (!verifyRes.ok) {
+          const errorData = await verifyRes.json()
+          throw new Error(errorData.error || 'Verification failed')
+        }
+
+        opts.onSuccess()
+      } catch (err: any) {
+        opts.onFailure(err.message || 'Payment verification failed. Please contact support.')
+      }
+    },
     modal: {
       ondismiss: () => opts.onFailure('Payment was cancelled.'),
     },

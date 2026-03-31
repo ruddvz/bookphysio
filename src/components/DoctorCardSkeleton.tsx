@@ -5,52 +5,63 @@ export function DoctorCardSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "bg-white rounded-[8px] border border-[#E5E5E5] p-[20px] md:p-[24px] flex gap-[20px] items-start animate-in fade-in duration-500",
+        "bg-white rounded-xl border border-[#E5E5E5] p-5 md:p-6 flex flex-col lg:flex-row gap-6 animate-pulse",
         className
       )}
     >
-      {/* Avatar Skeleton */}
-      <Skeleton className="w-[80px] h-[80px] rounded-full shrink-0" />
+      {/* Left Column: Avatar & Info */}
+      <div className="flex flex-1 gap-5">
+        {/* Avatar */}
+        <Skeleton className="w-20 h-20 md:w-24 md:h-24 rounded-full shrink-0" />
 
-      {/* Main content */}
-      <div className="flex-1 space-y-4 min-w-0">
-        <div className="flex justify-between items-start gap-4">
-          <div className="space-y-2 flex-1">
-            {/* Name */}
+        <div className="flex-1 space-y-4">
+          <div className="space-y-2">
             <Skeleton className="h-6 w-3/4 rounded-md" />
-            {/* Specialty */}
             <Skeleton className="h-4 w-1/2 rounded-md" />
           </div>
-          {/* Fee */}
-          <div className="space-y-1 items-end flex flex-col pt-1">
-            <Skeleton className="h-6 w-16 rounded-md" />
-            <Skeleton className="h-3 w-12 rounded-md" />
+
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-12 rounded-full" />
+              <Skeleton className="h-4 w-24 rounded-md" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-2/3 rounded-md" />
+              <div className="flex gap-2">
+                <Skeleton className="h-5 w-16 rounded-lg" />
+                <Skeleton className="h-5 w-16 rounded-lg" />
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-24 rounded-md" />
-        </div>
-
-        {/* Location & Time */}
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-2/3 rounded-md" />
-          <Skeleton className="h-4 w-1/2 rounded-md" />
-        </div>
-
-        {/* Badges */}
-        <div className="flex gap-2 pt-2">
-          <Skeleton className="h-6 w-16 rounded-full" />
-          <Skeleton className="h-6 w-16 rounded-full" />
-          <Skeleton className="h-6 w-24 rounded-full" />
         </div>
       </div>
 
-      {/* Button CTA */}
-      <div className="hidden sm:flex shrink-0 pt-4">
-        <Skeleton className="h-10 w-32 rounded-full" />
+      {/* Right Column: Availability Grid Shell */}
+      <div className="w-full lg:w-[320px] shrink-0">
+        <div className="bg-[#F9FAFB] rounded-xl p-4 border border-[#F3F4F6] space-y-4">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-4 w-24 rounded-md" />
+            <div className="flex gap-1">
+              <Skeleton className="h-6 w-6 rounded-full" />
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-3 w-full rounded-md" />
+                <div className="space-y-1.5">
+                  <Skeleton className="h-9 w-full rounded-lg" />
+                  <Skeleton className="h-9 w-full rounded-lg" />
+                  <Skeleton className="h-9 w-full rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Skeleton className="h-12 w-full rounded-full" />
+        </div>
       </div>
     </div>
   );

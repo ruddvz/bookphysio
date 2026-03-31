@@ -9,6 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  transpilePackages: ["react-map-gl"],
   typescript: {
     ignoreBuildErrors: true,
   },

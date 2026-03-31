@@ -1,91 +1,119 @@
+'use client'
+
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Smartphone, ChevronRight } from 'lucide-react';
+import { Smartphone, Mail, Send, ShieldCheck, Heart, MapPin, Globe, Share2, Activity, User } from 'lucide-react';
 
 const COLUMNS = [
   {
     heading: 'BookPhysio',
     links: [
-      { label: 'Home', href: '/' },
       { label: 'About us', href: '/about' },
-      { label: 'Press', href: '/press' },
+      { label: 'Our Experts', href: '/search' },
+      { label: 'Press & Media', href: '/press' },
       { label: 'Careers', href: '/careers' },
-      { label: 'Contact us', href: '/contact' },
-      { label: 'Help', href: '/help' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {
-    heading: 'Discover',
+    heading: 'Patient Care',
     links: [
-      { label: 'The Physio Journal', href: '/journal' },
-      { label: 'Resources for providers', href: '/resources' },
-      { label: 'Community Standards', href: '/community' },
-      { label: 'Data and privacy', href: '/privacy' },
-      { label: 'Verified reviews', href: '/reviews' },
+      { label: 'Physio Journal', href: '/journal' },
+      { label: 'Verified Reviews', href: '/reviews' },
+      { label: 'Help Center', href: '/help' },
+      { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Tech Blog', href: '/tech-blog', isNew: true },
-    ],
-  },
-  {
-    heading: 'Popular Treatments',
-    links: [
-      { label: 'Back Pain Relief', href: '/treatments/back-pain' },
-      { label: 'Post-Surgery Rehab', href: '/treatments/post-surgery' },
-      { label: 'Sports Injuries', href: '/treatments/sports-injuries' },
-      { label: 'Neck Pain Treatment', href: '/treatments/neck-pain' },
-      { label: 'Joint Mobility', href: '/treatments/joint-mobility' },
     ],
   },
   {
     heading: 'Top Specialties',
     links: [
-      { label: 'Sports Physio', href: '/specialties/sports' },
-      { label: 'Neuro Physio', href: '/specialties/neuro' },
-      { label: 'Ortho Physio', href: '/specialties/ortho' },
-      { label: 'Paediatric Physio', href: '/specialties/paediatric' },
-      { label: "Women's Health", href: '/specialties/womens-health' },
+      { label: 'Sports Physio', href: '/search?specialty=Sports+Physio' },
+      { label: 'Neuro Physio', href: '/search?specialty=Neuro+Physio' },
+      { label: 'Ortho Physio', href: '/search?specialty=Ortho+Physio' },
+      { label: 'Paediatric', href: '/search?specialty=Paediatric+Physio' },
+      { label: "Women's Health", href: '/search?specialty=Womens+Health' },
     ],
   },
   {
-    heading: 'For Providers',
+    heading: 'For Practice',
     links: [
-      { label: 'Try our AI scheduler', href: '/providers/ai-scheduler', isNew: true },
-      { label: 'List your practice', href: '/providers/list' },
-      { label: 'Become an EHR partner', href: '/providers/ehr' },
-      { label: 'Developers', href: '/developers' },
-      { label: 'Enterprise Solutions', href: '/enterprise' },
+      { label: 'AI Scheduler', href: '/providers/ai-scheduler', isNew: true },
+      { label: 'List Practice', href: '/providers/list' },
+      { label: 'EHR Partners', href: '/providers/ehr' },
+      { label: 'Developer Portal', href: '/developers' },
+      { label: 'Enterprise', href: '/enterprise' },
     ],
   },
 ];
 
-const LEGAL_LINKS = [
-  { label: 'Terms', href: '/terms' },
-  { label: 'Privacy', href: '/privacy' },
-  { label: 'Consumer Health', href: '/consumer-health' },
-  { label: 'Site map', href: '/sitemap' },
-  { label: 'Your privacy choices', href: '/privacy-choices' },
+const SOCIALS = [
+  { icon: Globe, href: '#' },
+  { icon: Heart, href: '#' },
+  { icon: Activity, href: '#' },
+  { icon: Share2, href: '#' },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#333333] text-white overflow-hidden">
-      {/* Main content grid */}
-      <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-12 md:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-12 gap-x-8">
+    <footer className="bg-[#111111] text-white pt-24 overflow-hidden border-t border-white/5">
+      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px]">
+        
+        {/* Top Branding & Newsletter Row */}
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-16 mb-20">
+           <div className="max-w-[400px]">
+              <div className="text-[28px] font-black tracking-tighter mb-6 flex items-center gap-2">
+                 <div className="w-8 h-8 bg-[#00766C] rounded-lg flex items-center justify-center text-sm">BP</div>
+                 BookPhysio.
+              </div>
+              <p className="text-[16px] font-bold text-gray-500 leading-relaxed mb-8">
+                Revolutionizing recovery by connecting you with India's most verified physiotherapy experts. Your journey to pain-free living starts here.
+              </p>
+              <div className="flex items-center gap-4">
+                 {SOCIALS.map((social, i) => (
+                   <a key={i} href={social.href} className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-[#00766C] hover:text-white transition-all text-gray-400 group">
+                      <social.icon size={18} strokeWidth={2.5} />
+                   </a>
+                 ))}
+              </div>
+           </div>
+
+           <div className="w-full lg:max-w-[450px]">
+              <h3 className="text-[14px] font-black text-white uppercase tracking-widest mb-6">Stay Updated</h3>
+              <p className="text-[14px] font-bold text-gray-500 mb-6">Get recovery tips and platform updates delivered to your inbox.</p>
+              <div className="relative group">
+                 <div className="absolute inset-y-0 left-5 flex items-center text-gray-500"><Mail size={18} /></div>
+                 <input 
+                  type="email" 
+                  placeholder="name@email.com" 
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-32 outline-none focus:border-[#00766C]/50 transition-all font-bold placeholder:text-gray-600"
+                 />
+                 <button className="absolute right-2 top-2 bottom-2 px-6 bg-[#00766C] text-white font-black rounded-[14px] text-[14px] hover:bg-[#005A52] active:scale-95 transition-all">
+                    Join Us
+                 </button>
+              </div>
+           </div>
+        </div>
+
+        <div className="h-px w-full bg-white/5 mb-20" />
+
+        {/* Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-y-12 gap-x-8 mb-20">
           {COLUMNS.map((col) => (
             <div key={col.heading}>
-              <h3 className="text-[14px] font-bold text-white mb-6 uppercase tracking-wider">
+              <h3 className="text-[13px] font-black text-white/40 mb-8 uppercase tracking-[0.2em]">
                 {col.heading}
               </h3>
-              <ul className="space-y-4">
+              <ul className="space-y-5">
                 {col.links.map((link) => (
-                  <li key={link.href}>
+                  <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[14px] text-[#CCCCCC] hover:text-white transition-colors flex items-center gap-2 group/link"
+                      className="text-[15px] font-black text-gray-400 hover:text-[#00766C] transition-all flex items-center gap-2 group"
                     >
                       {link.label}
                       {link.isNew && (
-                        <span className="bg-[#FEED5A] text-[#333333] text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]">
+                        <span className="bg-emerald-500/10 text-emerald-500 text-[9px] font-black px-2 py-0.5 rounded-full tracking-widest border border-emerald-500/20">
                           NEW
                         </span>
                       )}
@@ -97,61 +125,49 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Action Row: App Store + Social */}
-        <div className="mt-16 md:mt-24 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex flex-wrap justify-center md:justify-start gap-4">
-             <div className="bg-black border border-white/20 rounded-[8px] px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-colors group h-[52px]">
-                <Smartphone className="w-6 h-6 text-[#00766C]" />
-                <div className="text-[10px] uppercase font-bold leading-tight">
-                   Download on the <br/> <span className="text-[14px]">App Store</span>
-                </div>
-             </div>
-             <div className="bg-black border border-white/20 rounded-[8px] px-4 py-2 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-colors group h-[52px]">
-                <div className="w-6 h-6 bg-[#00766C] rounded-full flex items-center justify-center text-[10px]">▶</div>
-                <div className="text-[10px] uppercase font-bold leading-tight">
-                   Get it on <br/> <span className="text-[14px]">Google Play</span>
-                </div>
-             </div>
-          </div>
-
-          {/* Social icons using simple text for stability during polish */}
-          <div className="flex gap-6">
-            {['Twitter', 'Instagram', 'Facebook', 'LinkedIn'].map((label) => (
-              <a 
-                key={label}
-                href="#"
-                className="text-[14px] font-bold text-white/50 hover:text-white transition-colors uppercase tracking-widest"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
+        {/* Action Row: App Stores */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-16 border-b border-white/5">
+           <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              <button className="px-6 py-3 bg-black border border-white/10 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all group h-[64px]">
+                 <div className="w-10 h-10 bg-[#00766C] rounded-xl flex items-center justify-center text-white"><Smartphone size={24} /></div>
+                 <div className="text-left">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Download on</p>
+                    <p className="text-[16px] font-black text-white tracking-tight">App Store</p>
+                 </div>
+              </button>
+              <button className="px-6 py-3 bg-black border border-white/10 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all group h-[64px]">
+                 <div className="w-10 h-10 bg-[#00766C] rounded-xl flex items-center justify-center text-white"><Send size={24} /></div>
+                 <div className="text-left">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Get it on</p>
+                    <p className="text-[16px] font-black text-white tracking-tight">Google Play</p>
+                 </div>
+              </button>
+           </div>
+           
+           <div className="flex items-center gap-8 opacity-40 grayscale group hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
+              <ShieldCheck size={40} className="text-[#00766C]" strokeWidth={1} />
+              <div className="h-10 w-px bg-white/10" />
+              <MapPin size={40} className="text-[#00766C]" strokeWidth={1} />
+           </div>
         </div>
-      </div>
 
-      {/* Bottom Legal bar */}
-      <div className="bg-[#222222] py-8 border-t border-white/5">
-        <div className="max-w-[1142px] mx-auto px-6 md:px-[60px]">
-          <p className="text-[12px] text-[#999999] leading-relaxed mb-8 max-w-[800px]">
-            The content provided here and elsewhere on the BookPhysio.in site or mobile app is provided for general informational purposes only. 
-            It is not intended as, and BookPhysio does not provide, medical advice, diagnosis or treatment. Always contact your healthcare provider directly.
-          </p>
-          
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] text-[#999999]">
-                <span>© 2026 BookPhysio.in</span>
-                {LEGAL_LINKS.map((link) => (
-                   <Link key={link.href} href={link.href} className="hover:text-white transition-colors">
-                     {link.label}
-                   </Link>
-                ))}
-             </div>
-             
-             <div className="flex items-center gap-4 text-[12px] text-[#999999]">
-                <span>Made with care in India</span>
-                <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]"></div>
-             </div>
-          </div>
+        {/* Legal & Footer Bottom */}
+        <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+           <div className="text-center md:text-left">
+              <p className="text-[12px] font-bold text-gray-600 max-w-[700px] leading-relaxed mb-6">
+                Disclaimer: BookPhysio is an appointment booking platform. We do not provide medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for medical concerns.
+              </p>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-[12px] font-black text-gray-400">
+                 <span>© 2026 BookPhysio.in</span>
+                 <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+                 <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                 <Link href="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>
+              </div>
+           </div>
+           
+           <div className="flex items-center gap-3 text-[12px] font-black text-gray-600 whitespace-nowrap">
+              Made in India with <Heart size={14} className="text-[#E85D2A] fill-[#E85D2A]" /> for Health
+           </div>
         </div>
       </div>
     </footer>

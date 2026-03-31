@@ -37,6 +37,8 @@ export interface ProviderCard {
   next_available_slot: string | null
   visit_types: ('in_clinic' | 'home_visit' | 'online')[]
   city: string | null
+  lat: number | null
+  lng: number | null
   insurances: Insurance[]
 }
 

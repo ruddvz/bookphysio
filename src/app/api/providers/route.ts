@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       `id, slug, title, bio, experience_years, consultation_fee_inr,
       rating_avg, rating_count,
       users!inner (full_name, avatar_url),
-      locations${city || visit_type ? '!inner' : ''} (id, city, state, visit_type),
+      locations${city || visit_type ? '!inner' : ''} (id, city, state, address, lat, lng, visit_type),
       specialties (id, name, slug),
       provider_insurances (insurances (id, name, logo_url))`,
       { count: 'exact' }
@@ -52,22 +52,27 @@ export async function GET(request: NextRequest) {
   }
 
   // Map the nested response to ProviderCard[]
-  const providers: ProviderCard[] = (data || []).map((p: any) => ({
-    id: p.id,
-    slug: p.slug,
-    full_name: p.users.full_name,
-    title: p.title,
-    avatar_url: p.users.avatar_url,
-    specialties: p.specialties || [],
-    rating_avg: p.rating_avg || 0,
-    rating_count: p.rating_count || 0,
-    experience_years: p.experience_years,
-    consultation_fee_inr: p.consultation_fee_inr,
-    next_available_slot: null, // Hardcoded for now (Phase 9.3)
-    visit_types: p.locations?.[0]?.visit_type || [],
-    city: p.locations?.[0]?.city || null,
-    insurances: p.provider_insurances?.map((pi: any) => pi.insurances).filter(Boolean) || [],
-  }))
+  const providers: ProviderCard[] = (data || []).map((p) => {
+    const provider = p as any
+    return {
+      id: provider.id,
+      slug: provider.slug,
+      full_name: provider.users.full_name,
+      title: provider.title,
+      avatar_url: provider.users.avatar_url,
+      specialties: provider.specialties || [],
+      rating_avg: provider.rating_avg || 0,
+      rating_count: provider.rating_count || 0,
+      experience_years: provider.experience_years,
+      consultation_fee_inr: provider.consultation_fee_inr,
+      next_available_slot: null,
+      visit_types: provider.locations?.[0]?.visit_type || [],
+      city: provider.locations?.[0]?.city || null,
+      lat: provider.locations?.[0]?.lat || null,
+      lng: provider.locations?.[0]?.lng || null,
+      insurances: provider.provider_insurances?.map((pi: any) => pi.insurances).filter(Boolean) || [],
+    }
+  })
 
   const response: SearchResponse = {
     providers,

@@ -14,6 +14,18 @@ export async function createOrder(amountInr: number, receiptId: string) {
   })
 }
 
+export function verifyPaymentSignature(
+  orderId: string,
+  paymentId: string,
+  signature: string
+): boolean {
+  const secret = process.env.RAZORPAY_KEY_SECRET!
+  const hmac = crypto.createHmac('sha256', secret)
+  hmac.update(orderId + '|' + paymentId)
+  const expectedSignature = hmac.digest('hex')
+  return expectedSignature === signature
+}
+
 export function verifyWebhookSignature(body: string, signature: string): boolean {
   const expectedSignature = crypto
     .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET!)
