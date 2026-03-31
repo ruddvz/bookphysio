@@ -72,7 +72,7 @@
 | 1 | Search | Map view is a stub (no Mapbox integration yet) | P2 | Open |
 | 2 | Auth | OTP 6-digit inputs may not have auto-advance | P1 | ~~Done (8.4)~~ |
 | 3 | Doctor Signup | 5-step progress indicator fidelity | P2 | ~~Done (8.5)~~ |
-| 4 | Booking | Razorpay not wired — "Pay" button is UI-only | P1 | Open |
+| 4 | Booking | Razorpay not wired — "Pay" button is UI-only | P1 | ~~Done~~ |
 | 5 | Patient Dashboard | All data is mock/hardcoded | P2 | ~~Done (Phase 9)~~ |
 | 6 | Provider Dashboard | All data is mock/hardcoded | P2 | ~~Done (Phase 9)~~ |
 | 7 | Admin | Analytics page is a stub | P3 | Open |

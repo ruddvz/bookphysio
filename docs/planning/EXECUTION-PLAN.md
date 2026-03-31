@@ -42,7 +42,7 @@
 
 ## PHASE 3 — Booking Flow (Sprint 3)
 - [~] Booking Wizard (`/book/[id]`) — all 3 steps built (StepConfirm, StepPayment, StepSuccess)
-- [ ] Razorpay checkout integration (real payment flow)
+- [x] Razorpay checkout integration (real payment flow)
 - [ ] Booking confirmation email via Resend
 
 ---
