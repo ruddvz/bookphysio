@@ -63,11 +63,14 @@ export default function SignupPage() {
       return
     }
     setLoading(true)
+    const rawPhone = form.phone.replace(/\D/g, '')
+    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+
     try {
       const res = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: '+91' + form.phone }),
+        body: JSON.stringify({ phone: cleanPhone }),
       })
       if (!res.ok) {
         const data = await res.json() as { error?: string }

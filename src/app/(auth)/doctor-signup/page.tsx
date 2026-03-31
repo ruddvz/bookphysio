@@ -1046,11 +1046,15 @@ export default function DoctorSignupPage() {
 
   function goNext() {
     if (currentStep === 4) {
+      // Robust phone formatting: strip all non-digits, then add +91
+      const rawPhone = step1.phone.replace(/\D/g, '')
+      const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+      
       // Send OTP when moving TO step 5
       fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: '+91' + step1.phone }),
+        body: JSON.stringify({ phone: cleanPhone }),
       })
     }
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
