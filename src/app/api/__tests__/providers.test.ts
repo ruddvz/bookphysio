@@ -7,6 +7,8 @@ vi.mock('@/lib/supabase/server', () => ({
       eq: vi.fn().mockReturnThis(),
       gte: vi.fn().mockReturnThis(),
       lte: vi.fn().mockReturnThis(),
+      ilike: vi.fn().mockReturnThis(),
+      contains: vi.fn().mockReturnThis(),
       range: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
     })),
