@@ -872,6 +872,23 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     focusInput(0)
   }
 
+  async function handleSendOtp() {
+    setError('')
+    try {
+      const res = await fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: '+91' + phone }),
+      })
+      if (!res.ok) {
+        const d = await res.json()
+        setError(d.error || 'Failed to send OTP')
+      }
+    } catch {
+      setError('Network error')
+    }
+  }
+
   function handleDigit(index: number, val: string) {
     const digit = val.replace(/\D/g, '').slice(-1)
     const next = data.otp.map((v, i) => (i === index ? digit : v))
@@ -902,7 +919,7 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     focusInput(Math.min(pasted.length, OTP_LENGTH - 1))
   }
 
-  function handleSubmitOtp() {
+  async function handleSubmitOtp() {
     if (data.otp.some((d) => !d)) {
       setError('Enter all 6 digits')
       return
@@ -910,7 +927,22 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     setError('')
     setLoading(true)
     try {
+      const res = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          phone: '+91' + phone, 
+          otp: data.otp.join('') 
+        }),
+      })
+      if (!res.ok) {
+        const d = await res.json()
+        setError(d.error || 'Invalid OTP')
+        return
+      }
       onSubmit()
+    } catch {
+      setError('Verification failed')
     } finally {
       setLoading(false)
     }
@@ -1013,13 +1045,37 @@ export default function DoctorSignupPage() {
   const [step5, setStep5] = useState<Step5Data>({ otp: Array(OTP_LENGTH).fill('') })
 
   function goNext() {
+    if (currentStep === 4) {
+      // Send OTP when moving TO step 5
+      fetch('/api/auth/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: '+91' + step1.phone }),
+      })
+    }
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
   }
   function goBack() {
     setCurrentStep((s) => Math.max(s - 1, 1) as StepNumber)
   }
-  function handleSubmit() {
-    router.push('/provider/dashboard')
+  async function handleSubmit() {
+    // Send all data to onboarding API
+    try {
+      const res = await fetch('/api/providers/onboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          step1, step2, step3, step4
+        })
+      })
+      if (res.ok) {
+        router.push('/provider/dashboard')
+      } else {
+        alert('Onboarding failed. Please contact support.')
+      }
+    } catch {
+      alert('Network error')
+    }
   }
 
   return (
