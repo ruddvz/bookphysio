@@ -1,15 +1,43 @@
-import { Users, UserPlus, CalendarCheck, TrendingUp, Activity, PieChart } from 'lucide-react'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Users, UserPlus, CalendarCheck, TrendingUp, Activity, PieChart, Loader2 } from 'lucide-react'
 
 export default function AdminDashboardHome() {
+  const [stats, setStats] = useState({
+    activeProviders: 0,
+    pendingApprovals: 0,
+    totalPatients: 0,
+    gmvMtd: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/admin/stats')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.error) setStats(data)
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
   const kpis = [
-    { title: 'Active Providers', value: '1,204', icon: Users, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
-    { title: 'Pending Approvals', value: '342', icon: UserPlus, color: 'text-[#FF6B35]', bg: 'bg-[#FFF2ED]' },
-    { title: 'Total Patients', value: '8,921', icon: CalendarCheck, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
-    { title: 'GMV (MTD)', value: '₹12.4L', icon: TrendingUp, color: 'text-[#00766C]', bg: 'bg-[#E6F4F3]' },
+    { title: 'Active Providers', value: stats.activeProviders.toLocaleString(), icon: Users, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
+    { title: 'Pending Approvals', value: stats.pendingApprovals.toLocaleString(), icon: UserPlus, color: 'text-[#FF6B35]', bg: 'bg-[#FFF2ED]' },
+    { title: 'Total Patients', value: stats.totalPatients.toLocaleString(), icon: CalendarCheck, color: 'text-[#666666]', bg: 'bg-[#F3F4F6]' },
+    { title: 'GMV (MTD)', value: `₹${(stats.gmvMtd / 100000).toFixed(1)}L`, icon: TrendingUp, color: 'text-[#00766C]', bg: 'bg-[#E6F4F3]' },
   ]
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#00766C]" />
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-in fade-in duration-500">
       
       {/* Header section */}
       <div>
@@ -77,4 +105,5 @@ export default function AdminDashboardHome() {
     </div>
   )
 }
+
 

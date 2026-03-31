@@ -54,12 +54,35 @@ export async function GET(_request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data, error } = await supabase
+  // Check user role (patient or provider)
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const role = profile?.role ?? 'patient'
+
+  let q = supabase
     .from('appointments')
     .select('*, availabilities (*), locations (*), providers (*, users!inner (full_name, avatar_url))')
-    .eq('patient_id', user.id)
-    .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: 'Failed to fetch appointments' }, { status: 500 })
+  if (role === 'provider') {
+    // If provider, only show their appointments and include patient info
+    q = supabase
+      .from('appointments')
+      .select('*, availabilities (*), locations (*), patient:users!inner (full_name, avatar_url)')
+      .eq('provider_id', user.id)
+  } else {
+    // If patient, only show their appointments
+    q = q.eq('patient_id', user.id)
+  }
+
+  const { data, error } = await q.order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[api/appointments] Fetch error:', error)
+    return NextResponse.json({ error: 'Failed to fetch appointments' }, { status: 500 })
+  }
   return NextResponse.json({ appointments: data ?? [] })
 }

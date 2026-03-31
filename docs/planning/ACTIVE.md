@@ -25,7 +25,7 @@
 - [x] **8.9** Provider Dashboard Polish
   - tests: [x] Vitest: stats display formatting | Playwright: provider sees today's appointments
 - [x] **8.10** Provider Calendar Polish
-  - tests: [ ] Vitest: slot render logic | Playwright: provider views 7-day calendar
+  - tests: [x] Vitest: slot render logic | Playwright: provider views 7-day calendar
 - [x] **8.11** Provider Availability Polish
   - tests: [x] Vitest: toggle logic, hours validation | Playwright: provider saves availability
 - [x] **8.12** Provider Earnings Polish
@@ -44,6 +44,17 @@
   - [x] Apply to Search page, Patient Dashboard, and Appointments.
   - [x] Add `loading.tsx` for Doctor Profile, Dashboard, and Admin.
   - tests: [x] Vitest: skeleton/empty state unit tests | Playwright: empty state visibility tests
+
+---
+
+## Current Focus: Phase 9 — Real API Wiring
+- [x] **9.1** MSG91 Auth Wiring (Send/Verify)
+- [x] **9.2** Live Search Wiring (`/api/providers`)
+- [x] **9.3** Live Doctor Profile Wiring
+- [x] **9.4** Live Booking Wiring
+- [x] **9.5** Live Patient Dashboard Wiring (Appointments API)
+- [x] **9.6** Live Provider Portal Wiring
+- [x] **9.7** Live Admin Panel Wiring (Stats API)
 
 ---
 
