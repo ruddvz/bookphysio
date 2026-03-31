@@ -47,7 +47,14 @@
 
 ---
 
-## Current Focus: Phase 9 — Real API Wiring
+## Current Focus: Phase 10 — Testing & Launch
+- [x] **10.1** Full test suite passes (94 Vitest + 34 Playwright)
+- [x] **10.2** GitHub Actions CI/CD pipeline (ci.yml: Vitest + tsc on PR/push)
+- [x] **10.3** Supabase production setup guide (docs/SUPABASE-PRODUCTION-SETUP.md)
+- [x] **10.4** Domain + deployment (GitHub Pages → bookphysio.in, CNAME, deploy.yml updated)
+- [ ] **10.5** Smoke test all flows end-to-end
+
+## Completed: Phase 9 — Real API Wiring
 - [x] **9.1** MSG91 Auth Wiring (Send/Verify)
 - [x] **9.2** Live Search Wiring (`/api/providers`)
 - [x] **9.3** Live Doctor Profile Wiring

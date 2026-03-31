@@ -1,11 +1,10 @@
 import type { NextConfig } from "next";
 
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const isStaticExport = process.env.GITHUB_ACTIONS === 'true';
 
 const nextConfig = {
-  ...(isGitHubPages && {
+  ...(isStaticExport && {
     output: 'export' as const,
-    basePath: '/bookphysio',
   }),
   images: {
     unoptimized: true,

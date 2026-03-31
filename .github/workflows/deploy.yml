@@ -47,18 +47,20 @@ jobs:
           fi
 
       - name: Build static export
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-role-key' }}
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'placeholder-mapbox' }}
+          NEXT_PUBLIC_APP_URL: https://bookphysio.in
+          NEXT_TELEMETRY_DISABLED: 1
+          GITHUB_ACTIONS: true
         run: |
-          # Use placeholders for build-time env vars if secrets are missing
-          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' && secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-role-key' }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'placeholder-mapbox' }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_APP_URL=https://ruddvz.github.io/bookphysio" >> $GITHUB_ENV
-          echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
-          echo "GITHUB_ACTIONS=true" >> $GITHUB_ENV
-          
-          echo "Building with basePath: /bookphysio"
+          echo "Building for bookphysio.in (no basePath)"
           CI=false npm run build
+
+      - name: Add CNAME for custom domain
+        run: echo "bookphysio.in" > out/CNAME
 
       - name: Restore API route handlers & middleware
         if: always()
