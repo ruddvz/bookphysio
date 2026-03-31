@@ -5,6 +5,8 @@ const isStaticExport = process.env.GITHUB_ACTIONS === 'true';
 const nextConfig = {
   ...(isStaticExport && {
     output: 'export' as const,
+    basePath: '/bookphysio',
+    assetPrefix: '/bookphysio/',
   }),
   images: {
     unoptimized: true,
