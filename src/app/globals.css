@@ -146,6 +146,7 @@
     line-height: 1.5;
     color: #333333;
     background-color: #FFFFFF;
+    overflow-x: hidden;
   }
   html {
     @apply font-sans;

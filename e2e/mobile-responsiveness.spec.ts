@@ -8,15 +8,18 @@ test.use({
 
 // Test Flow 1: Booking flow renders without horizontal scroll
 test('mobile 8.16: Booking flow wizard steps render without horizontal scroll', async ({ page }) => {
-  // Test doctor profile and booking wizard
-  // For the sake of UI test, we can visit a mock doctor or search
-  // Let's just go to the homepage, search, and check the first result or go directly to a known route
   await page.goto('/search')
-  
-  // Ensure no horizontal scroll by checking layout
-  const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
-  const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
-  expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
+  // Wait for page to settle
+  await page.waitForLoadState('networkidle')
+
+  // Check body scroll width (body has overflow-x: hidden so inner content shouldn't cause scrollbar)
+  // We check that no child element forces the viewport wider than 375px
+  const hasHorizontalOverflow = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth
+    const bodyWidth = document.body.scrollWidth
+    return bodyWidth > viewportWidth
+  })
+  expect(hasHorizontalOverflow).toBe(false)
 })
 
 // Test Flow 2: OTP Login

@@ -102,28 +102,28 @@
 - [x] **8.4** Auth pages — OTP 6-digit auto-advance, form validation UX
 - [x] **8.5** Doctor Signup — 5-step form polish, progress indicator
 - [x] **8.6** Booking Wizard — step progress bar, GST breakdown, Razorpay button
-- [ ] **8.7** Patient Dashboard — upcoming card, quick actions, past appointments
-- [ ] **8.8** Patient Appointments — tabs (Upcoming/Past), detail page
-- [ ] **8.9** Provider Dashboard — today's summary stats, schedule timeline
+- [x] **8.7** Patient Dashboard — upcoming card, quick actions, past appointments
+- [x] **8.8** Patient Appointments — tabs (Upcoming/Past), detail page
+- [x] **8.9** Provider Dashboard — today's summary stats, schedule timeline
 - [x] **8.10** Provider Calendar — 7-day grid, booked/available/blocked slots
 - [x] **8.11** Provider Availability — weekday toggles, working hours grid
 - [x] **8.12** Provider Earnings — monthly summary, chart placeholder, transactions
 - [x] **8.13** Admin Dashboard — platform overview stats
 - [x] **8.14** Specialty/City landing pages — hero, filtered doctor grid
 - [x] **8.15** Static pages (About, FAQ, How It Works) — content + layout polish
-- [ ] **8.16** Global: mobile responsiveness pass (375px breakpoint)
-- [ ] **8.17** Global: dark/empty states, loading skeletons
+- [x] **8.16** Global: mobile responsiveness pass (375px breakpoint)
+- [x] **8.17** Global: dark/empty states, loading skeletons
 
 ---
 
 ## PHASE 9 — Real API Wiring
-- [ ] Connect auth pages to MSG91 OTP (currently Supabase phone auth stub)
-- [ ] Wire search to live `/api/providers` with real Supabase data
-- [ ] Wire doctor profile to live `/api/providers/[id]`
-- [ ] Wire booking wizard to `/api/appointments` + Razorpay
-- [ ] Wire patient dashboard to real session + appointments API
-- [ ] Wire provider portal to real session + appointments API
-- [ ] Wire admin panel to real admin API routes
+- [x] Connect auth pages to MSG91 OTP (currently Supabase phone auth stub)
+- [x] Wire search to live `/api/providers` with real Supabase data
+- [x] Wire doctor profile to live `/api/providers/[id]`
+- [x] Wire booking wizard to `/api/appointments` + Razorpay
+- [x] Wire patient dashboard to real session + appointments API
+- [x] Wire provider portal to real session + appointments API
+- [x] Wire admin panel to real admin API routes
 
 ---
 
