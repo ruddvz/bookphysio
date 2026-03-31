@@ -104,13 +104,13 @@ function SpecialtyCard({ icon: Icon, label, description, href, bgColor, iconColo
 
 export default function TopSpecialties() {
   return (
-    <section className="py-32 md:py-48 bg-white relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-white relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-teal-50/30 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-orange-50/30 rounded-full blur-[100px] translate-x-1/4 translate-y-1/4"></div>
 
       <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] relative z-10">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-20 gap-10">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-5 py-2 bg-[#F9F8F7] border border-gray-100 rounded-2xl text-[13px] font-black text-[#00766C] uppercase tracking-[0.15em] mb-6">
               <Sparkles size={16} className="text-[#059669]" />
@@ -145,7 +145,7 @@ export default function TopSpecialties() {
         </div>
 
         {/* Bottom Trust Signifier */}
-        <div className="mt-20 pt-16 border-t border-gray-50 flex flex-wrap items-center justify-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+        <div className="mt-12 pt-10 border-t border-gray-50 flex flex-wrap items-center justify-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
            <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-xl font-black">AI</div>
               <span className="text-[14px] font-black tracking-widest text-gray-500">SMART MATCHING</span>

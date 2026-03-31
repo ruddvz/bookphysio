@@ -12,7 +12,7 @@ const bullets = [
 
 export default function ProviderCTA() {
   return (
-    <section className="py-24 md:py-32 bg-[#004D40] relative overflow-hidden">
+    <section className="py-16 md:py-24 bg-[#004D40] relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-600/20 rounded-full blur-[120px] -mr-32 -mt-32 opacity-60"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/20 rounded-full blur-[100px] -ml-20 -mb-20 opacity-40"></div>
@@ -27,20 +27,42 @@ export default function ProviderCTA() {
                 <div className="absolute -inset-4 bg-teal-400/20 rounded-[48px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
                 <div className="relative bg-teal-900/40 p-4 rounded-[42px] border border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden scale-100 group-hover:scale-[1.02] transition-transform duration-700 ease-out">
-                   <img 
-                    src="/provider_dashboard_preview.png" 
-                    alt="BookPhysio Provider Dashboard" 
-                    className="w-full h-full object-cover rounded-[28px] shadow-inner brightness-110"
-                   />
-                   
+                   {/* CSS Dashboard Mockup — no image needed */}
+                   <div className="w-full rounded-[28px] bg-gradient-to-br from-teal-900 to-[#003830] p-6 flex flex-col gap-4">
+                      <div className="flex items-center justify-between mb-1">
+                         <div className="flex gap-2">
+                            <div className="w-3 h-3 rounded-full bg-red-400/60"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow-400/60"></div>
+                            <div className="w-3 h-3 rounded-full bg-green-400/60"></div>
+                         </div>
+                         <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black text-white/40 uppercase tracking-widest">Dashboard</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                         {[['12', 'Today'], ['4.9★', 'Rating'], ['98%', 'Attend.']].map(([val, lbl]) => (
+                            <div key={lbl} className="bg-white/10 rounded-2xl p-4">
+                               <p className="text-[18px] font-black text-white">{val}</p>
+                               <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{lbl}</p>
+                            </div>
+                         ))}
+                      </div>
+                      <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-2.5">
+                         {['9:00 AM · Rahul V. · Back Pain', '10:30 AM · Priya S. · ACL Rehab', '12:00 PM · Ananya N. · Neuro'].map((item) => (
+                            <div key={item} className="flex items-center gap-3">
+                               <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></div>
+                               <p className="text-[11px] font-bold text-white/60">{item}</p>
+                            </div>
+                         ))}
+                      </div>
+                   </div>
+
                    {/* Overlay Stats Card */}
-                   <div className="absolute top-10 right-10 p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl animate-in slide-in-from-right-8 duration-700 delay-300">
+                   <div className="absolute top-6 right-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl">
                       <div className="flex items-center gap-2 mb-1">
                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                         <p className="text-[11px] font-black text-white/60 uppercase tracking-widest">Growth</p>
+                         <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Growth</p>
                       </div>
                       <p className="text-[20px] font-black text-white">+142%</p>
-                      <p className="text-[11px] font-bold text-white/40">Patient volume increase</p>
+                      <p className="text-[10px] font-bold text-white/40">Patient volume</p>
                    </div>
                 </div>
              </div>
