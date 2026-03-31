@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -55,6 +55,7 @@ jobs:
           echo "NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'placeholder-mapbox' }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_APP_URL=https://ruddvz.github.io/bookphysio" >> $GITHUB_ENV
           echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
+          echo "GITHUB_ACTIONS=true" >> $GITHUB_ENV
           
           echo "Building with basePath: /bookphysio"
           CI=false npm run build
