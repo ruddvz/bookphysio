@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createOrderSchema } from '@/lib/validations/payment'
 import { createOrder, calculateGst } from '@/lib/razorpay'
 
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
   const parsed = createOrderSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
+  // Read with authenticated client — RLS ensures patient owns the appointment
   const { data: appointment } = await supabase
     .from('appointments')
     .select('id, fee_inr, status')
@@ -27,7 +29,8 @@ export async function POST(request: NextRequest) {
 
   const order = await createOrder(totalAmount, appointment.id as string)
 
-  const { data: payment, error } = await supabase
+  // Write with admin client — no INSERT RLS policy on payments table
+  const { data: payment, error } = await supabaseAdmin
     .from('payments')
     .insert({
       appointment_id: appointment.id,

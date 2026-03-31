@@ -11,6 +11,7 @@ interface StepSuccessProps {
   visitType: string
   location: string
   totalPaid: number
+  gstAmount: number
   paymentMethod: string
   refNumber: string
 }
@@ -64,14 +65,66 @@ function downloadIcs(filename: string, content: string) {
 }
 
 export function StepSuccess({
-  doctorName, date, time, visitType, location, totalPaid, paymentMethod, refNumber,
+  doctorName, date, time, visitType, location, totalPaid, gstAmount, paymentMethod, refNumber,
 }: StepSuccessProps) {
+  const baseFee = totalPaid - gstAmount
   const displayDate = new Date(date).toLocaleDateString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
 
   const methodLabel: Record<string, string> = {
     upi: 'UPI', card: 'Secured Card', netbanking: 'Net Banking', pay_at_clinic: 'Clinic Direct',
+  }
+
+  function handleDownloadReceipt() {
+    const receiptHtml = `
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>BookPhysio Receipt - ${refNumber}</title>
+<style>
+  body { font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #333; }
+  .header { text-align: center; border-bottom: 2px solid #00766C; padding-bottom: 20px; margin-bottom: 24px; }
+  .header h1 { color: #00766C; font-size: 24px; margin: 0 0 4px; }
+  .header p { color: #666; font-size: 13px; margin: 0; }
+  .ref { font-size: 18px; font-weight: 700; letter-spacing: 1px; margin: 12px 0; }
+  .status { display: inline-block; background: #ecfdf5; color: #059669; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+  .details { margin: 24px 0; }
+  .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .row:last-child { border-bottom: none; }
+  .label { color: #999; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .value { font-weight: 700; font-size: 14px; }
+  .total-row { background: #333; color: #fff; padding: 16px; border-radius: 12px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .total-row .label { color: #999; }
+  .total-row .value { font-size: 24px; }
+  .footer { text-align: center; margin-top: 32px; color: #999; font-size: 11px; }
+</style></head><body>
+  <div class="header">
+    <h1>BookPhysio.in</h1>
+    <p>Digital Receipt</p>
+    <div class="ref">${refNumber}</div>
+    <span class="status">Confirmed</span>
+  </div>
+  <div class="details">
+    <div class="row"><span class="label">Doctor</span><span class="value">${doctorName}</span></div>
+    <div class="row"><span class="label">Date</span><span class="value">${displayDate}</span></div>
+    <div class="row"><span class="label">Time</span><span class="value">${time}</span></div>
+    <div class="row"><span class="label">Visit Type</span><span class="value">${visitType.replace('_', ' ').toUpperCase()}</span></div>
+    <div class="row"><span class="label">Location</span><span class="value">${location}</span></div>
+    <div class="row"><span class="label">Payment</span><span class="value">${methodLabel[paymentMethod] ?? paymentMethod}</span></div>
+  </div>
+  <div class="details">
+    <div class="row"><span class="label">Consultation Fee</span><span class="value">₹${baseFee.toLocaleString('en-IN')}</span></div>
+    <div class="row"><span class="label">GST (18%)</span><span class="value">₹${gstAmount.toLocaleString('en-IN')}</span></div>
+    <div class="total-row"><span class="label">TOTAL PAID</span><span class="value">₹${totalPaid.toLocaleString('en-IN')}</span></div>
+  </div>
+  <div class="footer"><p>Thank you for choosing BookPhysio.in</p><p>For support: help@bookphysio.in</p></div>
+</body></html>`
+    const blob = new Blob([receiptHtml], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `receipt-${refNumber}.html`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   function handleAddToCalendar() {
@@ -155,15 +208,23 @@ export function StepSuccess({
                </div>
             </div>
 
-            <div className="pt-8 border-t border-dashed border-gray-200">
-               <div className="flex justify-between items-center bg-gray-50/50 p-6 rounded-[32px] border border-gray-100">
+            <div className="pt-8 border-t border-dashed border-gray-200 space-y-4">
+               <div className="flex justify-between items-center px-2">
+                  <span className="text-[13px] font-black text-gray-300 uppercase tracking-widest">Consultation</span>
+                  <span className="text-[15px] font-black text-[#333333]">₹{baseFee.toLocaleString('en-IN')}</span>
+               </div>
+               <div className="flex justify-between items-center px-2">
+                  <span className="text-[13px] font-black text-gray-300 uppercase tracking-widest">GST (18%)</span>
+                  <span className="text-[15px] font-black text-[#333333]">₹{gstAmount.toLocaleString('en-IN')}</span>
+               </div>
+               <div className="flex justify-between items-center bg-gray-50/50 p-6 rounded-[32px] border border-gray-100 mt-4">
                   <div className="flex items-center gap-4">
                      <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 border border-gray-100 shadow-sm"><CreditCard size={20} /></div>
                      <p className="text-[14px] font-black text-gray-400 tracking-widest uppercase">{methodLabel[paymentMethod] ?? paymentMethod}</p>
                   </div>
                   <div className="text-right">
-                     <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1 pr-1">Total Fee Paid</p>
-                     <p className="text-[28px] font-black text-[#333333] tracking-tighter">₹{totalPaid}</p>
+                     <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1 pr-1">Total Paid</p>
+                     <p className="text-[28px] font-black text-[#333333] tracking-tighter">₹{totalPaid.toLocaleString('en-IN')}</p>
                   </div>
                </div>
             </div>
@@ -191,7 +252,11 @@ export function StepSuccess({
            </div>
          </button>
          
-         <button className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-gray-100 text-[#333333] font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-teal-100 active:scale-95 transition-all shadow-sm group/btn">
+         <button
+          type="button"
+          onClick={handleDownloadReceipt}
+          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-gray-100 text-[#333333] font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-teal-100 active:scale-95 transition-all shadow-sm group/btn"
+         >
             <span className="text-[10px] text-gray-300 uppercase tracking-widest leading-none mb-1">Proof Of Booking</span>
             <div className="flex items-center gap-2">
                <Download size={18} className="text-[#00766C]" />

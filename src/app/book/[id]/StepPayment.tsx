@@ -17,6 +17,7 @@ interface BookingResult {
   appointmentId: string
   refNumber: string
   totalPaid: number
+  gstAmount: number
   paymentMethod: PaymentMethod
 }
 
@@ -42,7 +43,8 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const total = feeInr
+  const gstAmount = Math.round(feeInr * 0.18)
+  const total = feeInr + gstAmount
   const canPay = !loading
 
   async function handlePay(e: React.FormEvent) {
@@ -66,7 +68,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
         const data = await apptRes.json() as { error?: string }
         if (apptRes.status === 401) {
           const guestRef = `BP-${Date.now().toString().slice(-6)}`
-          onSuccess({ appointmentId: '', refNumber: guestRef, totalPaid: total, paymentMethod: method })
+          onSuccess({ appointmentId: '', refNumber: guestRef, totalPaid: total, gstAmount, paymentMethod: method })
           return
         }
         setError(data.error ?? 'Connection failed. Please retrying.')
@@ -77,7 +79,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
 
       if (method === 'pay_at_clinic') {
         const refNumber = `BP-${appt.id.slice(0, 6).toUpperCase()}`
-        onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, paymentMethod: method })
+        onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, gstAmount, paymentMethod: method })
         return
       }
 
@@ -110,7 +112,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
         patientEmail: patient.email,
         onSuccess: () => {
           const refNumber = `BP-${appt.id.slice(0, 6).toUpperCase()}`
-          onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, paymentMethod: method })
+          onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, gstAmount, paymentMethod: method })
         },
         onFailure: (msg: string) => setError(msg),
       })
@@ -286,6 +288,12 @@ interface RazorpayOptions {
   onFailure: (msg: string) => void
 }
 
+interface RazorpayResponse {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}
+
 declare global {
   interface Window {
     Razorpay?: new (options: Record<string, unknown>) => { open(): void }
@@ -324,8 +332,7 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
       email: opts.patientEmail,
     },
     theme: { color: '#00766C' },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: async (response: any) => {
+    handler: async (response: RazorpayResponse) => {
       try {
         const verifyRes = await fetch('/api/payments/verify', {
           method: 'POST',
@@ -339,14 +346,14 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
         })
 
         if (!verifyRes.ok) {
-          const errorData = await verifyRes.json()
+          const errorData = await verifyRes.json() as { error?: string }
           throw new Error(errorData.error || 'Identity Verification failed')
         }
 
         opts.onSuccess()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        opts.onFailure(err.message || 'Payment Vault Error.')
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Payment Vault Error.'
+        opts.onFailure(message)
       }
     },
     modal: {

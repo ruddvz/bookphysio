@@ -33,6 +33,7 @@ interface BookingResult {
   appointmentId: string
   refNumber: string
   totalPaid: number
+  gstAmount: number
   paymentMethod: PaymentMethod
 }
 
@@ -196,6 +197,7 @@ export default function BookingInner() {
                     visitType={visitType}
                     location={doctor.location}
                     totalPaid={bookingResult.totalPaid}
+                    gstAmount={bookingResult.gstAmount}
                     paymentMethod={bookingResult.paymentMethod}
                     refNumber={bookingResult.refNumber}
                   />
@@ -297,16 +299,20 @@ export default function BookingInner() {
                     {/* Price Matrix (High Contrast) */}
                     <div className="pt-10 mt-4 border-t border-gray-100">
                        <div className="flex justify-between items-center mb-4 px-2">
-                          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">Base Session</span>
-                          <span className="text-[16px] font-black text-[#333333]">₹{doctor.fee}</span>
+                          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">Consultation</span>
+                          <span className="text-[16px] font-black text-[#333333]">₹{doctor.fee.toLocaleString('en-IN')}</span>
+                       </div>
+                       <div className="flex justify-between items-center mb-4 px-2">
+                          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">GST (18%)</span>
+                          <span className="text-[16px] font-black text-[#333333]">₹{Math.round(doctor.fee * 0.18).toLocaleString('en-IN')}</span>
                        </div>
                        <div className="flex justify-between items-center mb-8 px-2">
-                          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">Security Fee</span>
+                          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">Platform Fee</span>
                           <span className="text-[13px] font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
                        </div>
                        <div className="flex justify-between items-center py-6 px-8 bg-[#333333] rounded-[28px] shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
                           <span className="text-[14px] font-black text-white/40 uppercase tracking-widest">Pay Amount</span>
-                          <span className="text-[26px] font-black text-white tracking-tighter">₹{doctor.fee}</span>
+                          <span className="text-[26px] font-black text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
                        </div>
                     </div>
 

@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { verifyPaymentSignature } from '@/lib/razorpay'
+import { verifyPaymentSchema } from '@/lib/validations/payment'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -8,11 +10,10 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appointment_id } = body
+  const parsed = verifyPaymentSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !appointment_id) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-  }
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appointment_id } = parsed.data
 
   // 1. Verify signature
   const isValid = verifyPaymentSignature(razorpay_order_id, razorpay_payment_id, razorpay_signature)
@@ -20,13 +21,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  // 2. Update payment status in Supabase
-  const { data: payment, error: paymentError } = await supabase
+  // 2. Verify the appointment belongs to the authenticated user
+  const { data: appointmentCheck } = await supabase
+    .from('appointments')
+    .select('id')
+    .eq('id', appointment_id)
+    .eq('patient_id', user.id)
+    .single()
+
+  if (!appointmentCheck) {
+    return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
+  }
+
+  // 3. Update payment status (admin client — no UPDATE RLS policy on payments)
+  const { data: payment, error: paymentError } = await supabaseAdmin
     .from('payments')
-    .update({ 
+    .update({
       status: 'paid',
       razorpay_payment_id,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('razorpay_order_id', razorpay_order_id)
     .eq('appointment_id', appointment_id)
@@ -38,15 +51,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to update payment record' }, { status: 500 })
   }
 
-  // 3. Update appointment status
-  const { data: appointment, error: appointmentError } = await supabase
+  // 4. Update appointment status (admin client for consistency)
+  const { data: appointment, error: appointmentError } = await supabaseAdmin
     .from('appointments')
-    .update({ 
+    .update({
       status: 'confirmed',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', appointment_id)
-    .eq('patient_id', user.id)
     .select('availability_id')
     .single()
 
@@ -55,17 +67,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to confirm appointment' }, { status: 500 })
   }
 
-  // 4. Mark availability slot as booked
+  // 5. Mark availability slot as booked (best-effort)
   if (appointment?.availability_id) {
-    const { error: slotError } = await supabase
+    const { error: slotError } = await supabaseAdmin
       .from('availabilities')
       .update({ is_booked: true })
       .eq('id', appointment.availability_id)
 
     if (slotError) {
       console.error('Availability update error:', slotError)
-      // We don't return error here because the payment was successful, 
-      // but we should log it. In a production app, this would be handled via a transaction or cron.
     }
   }
 
