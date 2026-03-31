@@ -2,7 +2,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
 import MobileBookingBar from './MobileBookingBar'
-import { MapPin, ShieldCheck, GraduationCap, Languages, Star, ChevronRight, Share2, Heart, Award, CheckCircle2, Calendar, Clock, Sparkles, Building2, UserCheck, PhoneCall, Mail } from 'lucide-react'
+import { MapPin, ShieldCheck, GraduationCap, Languages, Star, ChevronRight, Share2, Heart, Award, CheckCircle2, Calendar, Clock, Sparkles, Building2, UserCheck, PhoneCall, Mail, Activity } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -84,7 +84,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
         </div>
         <div className="text-center">
            <h1 className="text-2xl font-black text-[#333333] mb-2">Expert Not Found</h1>
-           <p className="text-gray-400 font-medium max-w-xs">We couldn't find the specialist you're looking for. Please try searching for another expert.</p>
+           <p className="text-gray-400 font-medium max-w-xs">We couldn&apos;t find the specialist you&apos;re looking for. Please try searching for another expert.</p>
         </div>
         <Link href="/search" className="px-8 py-3 bg-[#00766C] text-white font-black rounded-2xl hover:scale-105 transition-transform shadow-xl shadow-teal-100">Back to search</Link>
       </div>
@@ -339,7 +339,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                           </span>
                         </div>
                         <p className="text-[18px] text-[#4A4A4A] leading-[1.8] font-medium font-serif italic max-w-[90%]">
-                          "{review.comment}"
+                          &quot;{review.comment}&quot;
                         </p>
                       </article>
                     ))

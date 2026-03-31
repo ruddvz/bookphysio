@@ -324,6 +324,7 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
       email: opts.patientEmail,
     },
     theme: { color: '#00766C' },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: async (response: any) => {
       try {
         const verifyRes = await fetch('/api/payments/verify', {
@@ -343,6 +344,7 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
         }
 
         opts.onSuccess()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         opts.onFailure(err.message || 'Payment Vault Error.')
       }

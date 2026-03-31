@@ -36,6 +36,7 @@ interface GroupedSlots {
 // Constants
 // ---------------------------------------------------------------------------
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any; iconColor: string; bgColor: string }> = {
   in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-teal-600', bgColor: 'bg-teal-50' },
   home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-orange-600', bgColor: 'bg-orange-50' },
@@ -146,8 +147,10 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
 
   useEffect(() => {
     let cancelled = false
-    setSlotsLoading(true)
-    setSelectedSlot(null)
+    setTimeout(() => {
+      setSlotsLoading(true)
+      setSelectedSlot(null)
+    }, 0)
 
     // Using a more reliable ISO string construction for India timezone
     const from = `${selectedDate}T00:00:00+05:30`

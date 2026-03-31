@@ -60,6 +60,7 @@ export default function BookingInner() {
   useEffect(() => {
     fetch(`/api/providers/${doctorId}`)
       .then((r) => r.json())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((data: any) => {
         const nameWithTitle = data.full_name?.startsWith('Dr.') ? data.full_name : `Dr. ${data.full_name ?? ''}`
         const loc = data.locations?.[0]

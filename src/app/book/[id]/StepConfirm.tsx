@@ -12,7 +12,9 @@ interface PatientDetails {
 }
 
 interface StepConfirmProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   doctor: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   booking: any
   onNext: (patient: PatientDetails) => void
 }
