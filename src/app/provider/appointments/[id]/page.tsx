@@ -1,4 +1,4 @@
-import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Activity, Zap, ShieldCheck, Mail, Calendar, Clock, DollarSign, ArrowUpRight } from 'lucide-react'
+import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Activity, Zap, ShieldCheck, Mail, Calendar, Clock, DollarSign, ArrowUpRight, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export async function generateStaticParams() {
