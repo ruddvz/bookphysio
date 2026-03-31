@@ -1,4 +1,4 @@
-import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Activity, Zap, ShieldCheck, Mail, Calendar, Clock, DollarSign, ArrowUpRight, AlertCircle } from 'lucide-react'
+import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Activity, Zap, ShieldCheck, Mail, Calendar, Clock, DollarSign, ArrowUpRight, CircleAlert } from 'lucide-react'
 import Link from 'next/link'
 
 export async function generateStaticParams() {
@@ -170,7 +170,7 @@ export default async function ProviderAppointmentDetail({
                   Reschedule Session
                </button>
                <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl border border-orange-100 flex items-center justify-center bg-white"><AlertCircle size={18} /></div>
+                  <div className="w-10 h-10 rounded-xl border border-orange-100 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
                   Flag Issue
                </button>
             </div>

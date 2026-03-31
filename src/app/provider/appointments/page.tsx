@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Search, Filter, Clock, Video, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react'
+import { CalendarDays, Search, Filter, Clock, Video, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight } from 'lucide-react'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -177,7 +177,7 @@ function ProviderAppointmentsContent() {
          </div>
          <div className="p-8 bg-gray-50 rounded-[40px] border border-gray-100 flex items-center gap-8 group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-500">
             <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-[#FF6B35] shadow-sm transition-transform group-hover:scale-110">
-               <AlertCircle size={32} strokeWidth={3} />
+               <CircleAlert size={32} strokeWidth={3} />
             </div>
             <div>
                <p className="text-[14px] font-black text-gray-400 uppercase tracking-widest mb-1">Practice Alert</p>

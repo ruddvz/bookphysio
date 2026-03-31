@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Heart, Search, Calendar, Users, ArrowRight, AlertCircle, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
+import { Heart, Search, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'

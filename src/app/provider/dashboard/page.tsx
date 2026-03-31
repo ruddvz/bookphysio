@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
-import { CalendarDays, Users, Clock, AlertCircle, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, Users, Clock, CircleAlert, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -118,7 +118,7 @@ export default function ProviderDashboardHome() {
       {error && (
         <div className="mb-10 p-5 bg-red-50 border border-red-100 rounded-[28px] flex items-center justify-between gap-4 animate-in slide-in-from-top-4">
           <div className="flex items-center gap-3 text-red-600 text-[14px] font-bold">
-            <AlertCircle size={20} strokeWidth={3} />
+            <CircleAlert size={20} strokeWidth={3} />
             Clinical sync unavailable right now
           </div>
           <button onClick={fetchAppointments} className="px-5 py-2 bg-white text-red-600 rounded-full text-[12px] font-black uppercase tracking-widest shadow-sm">Retry</button>

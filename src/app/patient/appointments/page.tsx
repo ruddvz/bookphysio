@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, ArrowRight, AlertCircle, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
@@ -147,7 +147,7 @@ function PatientAppointmentsContent() {
           <AppointmentsSkeleton />
         ) : error ? (
           <div className="bg-white border border-gray-100 rounded-[40px] shadow-sm py-20 px-10 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-6 opacity-20" />
+            <CircleAlert className="w-12 h-12 text-red-500 mx-auto mb-6 opacity-20" />
             <h3 className="text-[20px] font-black text-[#333333] mb-2">Sync Interrupted</h3>
             <p className="text-[15px] font-bold text-gray-400 mb-8">We couldn&apos;t retrieve your clinical records right now.</p>
             <button
