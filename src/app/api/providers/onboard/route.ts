@@ -23,9 +23,9 @@ const onboardSchema = z.object({
     visitTypes: z.array(z.string()),
   }),
   step4: z.object({
-    fees: z.record(z.string()),
+    fees: z.record(z.string(), z.string()),
     slotDuration: z.string(),
-    availability: z.record(z.any()),
+    availability: z.record(z.string(), z.unknown()),
   }),
 })
 

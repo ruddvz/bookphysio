@@ -10,7 +10,8 @@ export default async function PatientAppointmentDetail({ params }: { params: Pro
 
   // Visit type determines which location info to show.
   // This is a UI stub — data will be fetched live once the API is wired.
-  const visitType: 'in_clinic' | 'home_visit' | 'online' = 'in_clinic'
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  const visitType = 'in_clinic' as 'in_clinic' | 'home_visit' | 'online'
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
