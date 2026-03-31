@@ -1,0 +1,2 @@
+src/app/api/providers/[id]/route.ts(30,9): error TS2739: Type '{ id: any; slug: any; full_name: any; title: any; avatar_url: any; specialties: any; rating_avg: any; rating_count: any; experience_years: any; consultation_fee_inr: any; next_available_slot: null; ... 8 more ...; gstin: any; }' is missing the following properties from type 'ProviderProfile': lat, lng
+src/components/ProviderMap.tsx(4,73): error TS2724: '"react-map-gl/mapbox"' has no exported member named 'MapLayerMouseEvent'. Did you mean 'MapMouseEvent'?

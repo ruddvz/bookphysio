@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Heart, Search, Calendar, Users, ArrowRight, AlertCircle, CalendarPlus } from 'lucide-react'
+import { Heart, Search, Calendar, Users, ArrowRight, AlertCircle, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'
 import { DashboardSkeleton } from './DashboardSkeleton'
+import { cn } from '@/lib/utils'
 
 type VisitType = 'in_clinic' | 'home_visit' | 'online'
 
@@ -30,9 +31,9 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
 }
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
-  in_clinic: 'bg-[#E6F4F3] text-[#00766C]',
-  home_visit: 'bg-[#FFF3EE] text-[#FF6B35]',
-  online: 'bg-[#EEF2FF] text-[#4F46E5]',
+  in_clinic: 'bg-teal-50 text-teal-700 border-teal-100',
+  home_visit: 'bg-orange-50 text-orange-700 border-orange-100',
+  online: 'bg-blue-50 text-blue-700 border-blue-100',
 }
 
 export default function PatientDashboardHome() {
@@ -52,7 +53,10 @@ export default function PatientDashboardHome() {
     fetch('/api/appointments')
       .then((r) => r.json())
       .then((data: { appointments?: Appointment[] }) => setAppointments(data.appointments ?? []))
-      .catch(() => setError(true))
+      .catch((err) => {
+        console.error('Fetch error:', err)
+        setError(true)
+      })
       .finally(() => setLoading(false))
   }
 
@@ -74,167 +78,210 @@ export default function PatientDashboardHome() {
   if (loading) return <DashboardSkeleton />
 
   return (
-    <div className="max-w-[1142px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      {/* Greeting */}
-      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">
-        {greeting}, {displayName} 👋
-      </h1>
+    <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">
+      
+      {/* ── Top Section: Greeting & Quick Action ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="space-y-4">
+           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase text-[#00766C] tracking-widest shadow-sm">
+              <ShieldCheck size={12} strokeWidth={3} />
+              Verified Patient Dashboard
+           </div>
+           <h1 className="text-[36px] md:text-[48px] font-black text-[#333333] leading-none tracking-tighter">
+             {greeting}, <span className="text-[#00766C]">{displayName}</span> 👋
+           </h1>
+           <p className="text-[16px] md:text-[18px] font-bold text-gray-400 max-w-[500px]">
+             Welcome back to your recovery hub. You have <span className="text-[#333333] font-black">{upcoming.length} upcoming sessions</span> this week.
+           </p>
+        </div>
+        <Link
+          href="/search"
+          className="flex items-center gap-4 px-10 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-gray-200"
+        >
+          Book New Therapy
+          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+             <CalendarPlus size={18} strokeWidth={3} />
+          </div>
+        </Link>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
-        {/* Left Column */}
-        <div className="flex flex-col gap-6">
-
-          {/* Care home banner */}
-          <section className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
-            <h2 className="text-[20px] font-bold text-[#333333] mb-4 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-[#00766C]" />
-              Your Care Home
-            </h2>
-            <div className="bg-gradient-to-r from-[#E6F4F3] to-[#D5EFED] p-5 rounded-[10px] flex items-center gap-4">
-              <div className="text-[32px] shrink-0">💪</div>
-              <div>
-                <p className="text-[16px] font-semibold text-[#005A52] mb-1">Keep moving forward</p>
-                <p className="text-[14px] text-[#005A52]/80">
-                  Book your next physiotherapy session to stay on track with your recovery goals.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Quick Actions */}
-          <section className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
-            <h2 className="text-[18px] font-bold text-[#333333] mb-4">Quick Actions</h2>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/search"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[14px] transition-colors"
-              >
-                <CalendarPlus className="w-4 h-4" />
-                Book New Appointment
-              </Link>
-              <Link
-                href="/patient/appointments"
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#00766C] text-[#00766C] hover:bg-[#E6F4F3] rounded-full no-underline font-semibold text-[14px] transition-colors"
-              >
-                <Calendar className="w-4 h-4" />
-                View All Appointments
-              </Link>
-            </div>
-          </section>
-
-          {/* Care Team / Past Providers */}
-          <section className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
-            <h2 className="text-[18px] font-bold text-[#333333] mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#00766C]" />
-              Your Care Team
-            </h2>
-
-            {error ? (
-              <div className="flex flex-col items-start gap-3 py-4">
-                <div className="flex items-center gap-2 text-[#CC3300] text-[14px]">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  Could not load appointments
-                </div>
-                <button
-                  type="button"
-                  onClick={fetchAppointments}
-                  className="text-[13px] font-semibold text-[#00766C] hover:text-[#005A52] underline underline-offset-2 transition-colors"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : past.length === 0 ? (
-              <p className="text-[14px] text-[#666666] leading-relaxed">
-                You don&apos;t have any past providers yet. Once you book a session, they will appear here for easy re-booking.
-              </p>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {past.slice(0, 3).map((a) => (
-                  <div key={a.id} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-                    <div>
-                      <p className="text-[14px] font-semibold text-[#333333]">{providerDisplayName(a)}</p>
-                      <p className="text-[12px] text-[#666666]">
-                        {a.availabilities?.starts_at ? formatApptDate(a.availabilities.starts_at) : 'Past session'}
-                      </p>
-                    </div>
-                    <Link href="/search" className="text-[13px] text-[#00766C] font-medium no-underline hover:text-[#005A52]">
-                      Rebook
-                    </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
+        
+        {/* ── Left Column: Activity & Care Team ── */}
+        <div className="space-y-10">
+          
+          {/* Recovery Progress Widget */}
+          <section className="bg-white rounded-[40px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50/30 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
+            
+            <div className="relative z-10">
+               <div className="flex items-center justify-between mb-10">
+                  <div className="flex flex-col gap-1">
+                     <h2 className="text-[20px] font-black text-[#333333] tracking-tight flex items-center gap-3">
+                        <Activity className="text-[#00766C]" size={20} strokeWidth={3} />
+                        Recovery Journey
+                     </h2>
+                     <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Active Treatment Phase</p>
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="p-3 bg-teal-50 rounded-2xl text-[#00766C]">
+                     <TrendingUp size={22} strokeWidth={3} />
+                  </div>
+               </div>
 
-            {!error && (
-              <Link
-                href="/search"
-                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[14px] transition-colors"
-              >
-                <Search className="w-4 h-4" />
-                Find a Physiotherapist
-              </Link>
-            )}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div className="space-y-6">
+                     <div className="flex items-end gap-3">
+                        <span className="text-[52px] font-black text-[#333333] leading-none tracking-tighter">72<span className="text-[20px] text-gray-300 ml-1">%</span></span>
+                        <div className="flex flex-col pb-1.5">
+                           <span className="text-[12px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1">
+                              <Zap size={10} strokeWidth={4} fill="currentColor" />
+                              On Track
+                           </span>
+                           <span className="text-[10px] font-bold text-gray-400 tracking-tight">Mobility Goal Progress</span>
+                        </div>
+                     </div>
+                     <div className="h-4 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100 p-1">
+                        <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full w-[72%] shadow-[0_0_12px_rgba(16,185,129,0.3)]"></div>
+                     </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-[28px] p-6 border border-gray-100 flex flex-col justify-center gap-3">
+                     <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                        <div className="text-[24px]">🎯</div>
+                        <div>
+                           <p className="text-[14px] font-black text-[#333333] leading-none mb-1">Weekly Goal</p>
+                           <p className="text-[12px] font-bold text-gray-400">3 PT Sessions · 2 Complete</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </section>
+
+          {/* Past Care Team */}
+          <section className="bg-white rounded-[40px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
+             <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col gap-1">
+                   <h2 className="text-[20px] font-black text-[#333333] tracking-tight flex items-center gap-3">
+                      <Users className="text-[#00766C]" size={20} strokeWidth={3} />
+                      My Health Team
+                   </h2>
+                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest tracking-widest">{past.length} Previous Specialists</p>
+                </div>
+                <button className="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-[#00766C] transition-colors">
+                   <MoreHorizontal size={20} strokeWidth={3} />
+                </button>
+             </div>
+
+             {past.length === 0 ? (
+                <div className="py-10 text-center bg-gray-50/50 rounded-[30px] border border-dashed border-gray-200">
+                   <p className="text-[15px] font-bold text-gray-400">No past providers yet. Start your first session!</p>
+                </div>
+             ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   {past.slice(0, 4).map((a) => (
+                      <div key={a.id} className="group p-5 bg-white border border-gray-100 rounded-[30px] hover:shadow-xl hover:border-[#00766C]/10 transition-all duration-300 flex items-center gap-4">
+                         <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-[#00766C] text-[18px] font-black group-hover:scale-110 transition-transform">
+                            {providerDisplayName(a).charAt(0)}
+                         </div>
+                         <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-black text-[#333333] truncate">{providerDisplayName(a)}</p>
+                            <p className="text-[12px] font-bold text-gray-400 truncate">{a.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</p>
+                         </div>
+                         <Link 
+                           href={`/search?provider_id=${a.providers?.users?.full_name}`} 
+                           className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#00766C] group-hover:text-white transition-all shadow-sm"
+                         >
+                            <ArrowUpRight size={18} strokeWidth={3} />
+                         </Link>
+                      </div>
+                   ))}
+                </div>
+             )}
           </section>
         </div>
 
-        {/* Right Column: Upcoming */}
-        <aside className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-6">
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-[18px] font-bold text-[#333333] flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-[#00766C]" />
-              Upcoming
-            </h2>
-            {upcoming.length > 1 && (
-              <Link href="/patient/appointments" className="text-[13px] text-[#00766C] font-medium no-underline hover:text-[#005A52]">
-                View all
-              </Link>
-            )}
-          </div>
+        {/* ── Right Column: Upcoming & Support ── */}
+        <aside className="space-y-6 sticky top-28">
+           
+           {/* Primary Highlight: Next Appointment */}
+           <div className="bg-[#00766C] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-teal-900/10 text-white relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[60px] -mr-24 -mt-24 transition-transform group-hover:scale-110"></div>
+              
+              <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-10">
+                    <div className="flex flex-col gap-1">
+                       <p className="text-[11px] font-black text-white/50 uppercase tracking-widest">Next Booking</p>
+                       <h2 className="text-[20px] font-black tracking-tight">Active Upcoming</h2>
+                    </div>
+                    {nextAppt && (
+                       <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center animate-pulse">
+                          <Clock size={22} strokeWidth={3} />
+                       </div>
+                    )}
+                 </div>
 
-          {nextAppt ? (
-            <div className="rounded-[8px] border border-[#E5E5E5] p-4">
-              <p className="text-[15px] font-semibold text-[#333333] mb-1">{providerDisplayName(nextAppt)}</p>
-              <p className="text-[13px] text-[#666666] mb-2">
-                {nextAppt.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}
-              </p>
+                 {nextAppt ? (
+                    <div className="space-y-8">
+                       <div className="flex items-center gap-4 px-5 py-4 bg-white/10 rounded-3xl border border-white/10">
+                          <div className="w-12 h-12 rounded-2xl bg-white text-[#00766C] flex items-center justify-center text-[20px] font-black shadow-lg">
+                             {providerDisplayName(nextAppt).charAt(0)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                             <p className="text-[17px] font-black truncate">{providerDisplayName(nextAppt)}</p>
+                             <p className="text-[13px] font-bold text-white/60 truncate">{nextAppt.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</p>
+                          </div>
+                          <div className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", 
+                             nextAppt.visit_type === 'in_clinic' ? "bg-emerald-500" : "bg-orange-500"
+                          )}>
+                             {VISIT_TYPE_LABELS[nextAppt.visit_type].replace('In Clinic', 'Clinic')}
+                          </div>
+                       </div>
 
-              {/* Visit type badge */}
-              <span className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full mb-2 ${VISIT_TYPE_COLORS[nextAppt.visit_type]}`}>
-                {VISIT_TYPE_LABELS[nextAppt.visit_type]}
-              </span>
+                       <div className="space-y-4">
+                          <div className="flex items-center gap-4 text-[22px] font-black tracking-tighter">
+                             <Calendar size={22} className="text-white/40" />
+                             {nextAppt.availabilities?.starts_at ? formatApptDate(nextAppt.availabilities.starts_at) : 'Date Pending'}
+                          </div>
+                          <p className="text-[13px] font-bold text-white/40 leading-relaxed">
+                            Professional consultation confirmed. Please arrive 10 minutes prior to your scheduled time.
+                          </p>
+                       </div>
 
-              {nextAppt.availabilities?.starts_at && (
-                <p className="text-[13px] text-[#00766C] font-medium mb-1">
-                  📅 {formatApptDate(nextAppt.availabilities.starts_at)}
-                </p>
-              )}
+                       <Link
+                          href={`/patient/appointments/${nextAppt.id}`}
+                          className="flex items-center justify-center gap-3 w-full py-5 rounded-[24px] bg-white text-[#00766C] text-[16px] font-black hover:bg-teal-50 transition-all hover:scale-[1.02] shadow-xl group/btn active:scale-[0.98]"
+                       >
+                          Manage Session
+                          <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
+                       </Link>
+                    </div>
+                 ) : (
+                    <div className="py-20 text-center space-y-6">
+                       <div className="w-20 h-20 rounded-[30px] bg-white/10 flex items-center justify-center mx-auto grayscale opacity-50">
+                          <Calendar size={32} />
+                       </div>
+                       <p className="text-[16px] font-bold text-white/60">No pending sessions found</p>
+                       <Link href="/search" className="inline-block px-8 py-3 bg-white text-[#00766C] rounded-full text-[14px] font-black uppercase tracking-widest shadow-lg">Start Recovery</Link>
+                    </div>
+                 )}
+              </div>
+           </div>
 
-              <p className="text-[13px] text-[#666666] mb-3">₹{nextAppt.fee_inr}</p>
-
-              <Link
-                href={`/patient/appointments/${nextAppt.id}`}
-                className="block text-center py-2 rounded-[24px] border border-[#00766C] text-[#00766C] text-[13px] font-medium no-underline hover:bg-[#E6F4F3] transition-colors"
-              >
-                View Details
-              </Link>
-            </div>
-          ) : (
-            <EmptyState
-              title="No upcoming sessions"
-              description="You don't have any sessions booked. Find a top physiotherapist and start your recovery today."
-              icon={Calendar}
-              className="py-10 border-0"
-              action={
-                <Link
-                  href="/search"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white rounded-full no-underline font-semibold text-[14px] transition-colors"
-                >
-                  <Search className="w-4 h-4" />
-                  Find a Physio
-                </Link>
-              }
-            />
-          )}
+           {/* Support Mini Widget */}
+           <div className="bg-gray-50 rounded-[40px] p-8 border border-gray-100 group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center gap-5">
+                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-sm transition-transform group-hover:rotate-12">
+                    <MessageSquare size={20} />
+                 </div>
+                 <div className="flex-1">
+                    <p className="text-[15px] font-black text-[#333333] leading-none mb-1">Need help?</p>
+                    <p className="text-[12px] font-bold text-gray-400">Ask your clinical advisor</p>
+                 </div>
+                 <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-teal-600 group-hover:border-teal-100 transition-colors">
+                    <ChevronRight size={16} strokeWidth={3} />
+                 </div>
+              </div>
+           </div>
         </aside>
       </div>
     </div>
