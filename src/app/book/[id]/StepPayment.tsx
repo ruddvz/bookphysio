@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, CreditCard, Smartphone, Building2, Wallet, ShieldCheck, ChevronRight, CheckCircle2, X } from 'lucide-react'
+import { Loader2, CreditCard, Smartphone, Building2, Wallet, ShieldCheck, ChevronRight, CheckCircle2, X, Lock, Sparkles, MoveRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -31,10 +31,10 @@ interface StepPaymentProps {
 }
 
 const PAYMENT_MODES = [
-  { id: 'upi' as const, label: 'UPI (GPay, PhonePe)', icon: Smartphone, description: 'Pay via any UPI app' },
-  { id: 'card' as const, label: 'Credit / Debit Card', icon: CreditCard, description: 'Visa, Mastercard, RuPay' },
-  { id: 'netbanking' as const, label: 'Net Banking', icon: Building2, description: 'All major Indian banks' },
-  { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', icon: Wallet, description: 'Pay after consultation' },
+  { id: 'upi' as const, label: 'Instant UPI', icon: Smartphone, description: 'GPay, PhonePe, Paytm', badge: 'Fastest' },
+  { id: 'card' as const, label: 'Secured Cards', icon: CreditCard, description: 'Visa, Mastercard, RuPay', badge: 'High Limit' },
+  { id: 'netbanking' as const, label: 'Net Banking', icon: Building2, description: 'All major Indian banks', badge: null },
+  { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', icon: Wallet, description: 'Direct settlement', badge: 'Manual' },
 ]
 
 export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
@@ -69,7 +69,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
           onSuccess({ appointmentId: '', refNumber: guestRef, totalPaid: total, paymentMethod: method })
           return
         }
-        setError(data.error ?? 'Failed to create appointment. Please try again.')
+        setError(data.error ?? 'Connection failed. Please retrying.')
         return
       }
 
@@ -89,7 +89,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
 
       if (!orderRes.ok) {
         const data = await orderRes.json() as { error?: string }
-        setError(data.error ?? 'Failed to initiate payment. Please try again.')
+        setError(data.error ?? 'Payment gateway offline. Please use Clinic Pay.')
         return
       }
 
@@ -115,103 +115,154 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
         onFailure: (msg: string) => setError(msg),
       })
     } catch {
-      setError('Network error. Please try again.')
+      setError('Unstable network connection detected.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-8">
-        <h2 className="text-[28px] font-black text-[#333333] tracking-tight">Payment Method</h2>
-        <p className="text-gray-500 font-medium pt-1">Select how you'd like to pay for your session.</p>
+    <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+           <div className="w-12 h-12 bg-emerald-50 rounded-[18px] flex items-center justify-center text-[#059669] border border-emerald-100">
+              <Lock size={24} strokeWidth={2.5} />
+           </div>
+           <div>
+              <h2 className="text-[32px] md:text-[40px] font-black text-[#333333] tracking-tighter leading-none">Global Checkout</h2>
+              <p className="text-[14px] text-gray-400 font-bold mt-1 tracking-widest uppercase">Verified Gateway Selection</p>
+           </div>
+        </div>
       </div>
 
-      <form onSubmit={handlePay} className="space-y-4">
-        {PAYMENT_MODES.map((mode) => {
-          const isSelected = method === mode.id
-          const Icon = mode.icon
-          return (
-            <label 
-              key={mode.id}
-              className={cn(
-                "group flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all active:scale-[0.98]",
-                isSelected 
-                  ? "bg-teal-50/30 border-[#00766C] shadow-lg shadow-teal-50" 
-                  : "bg-white border-gray-100 hover:border-gray-200"
-              )}
-            >
-              <input
-                type="radio"
-                name="payment"
-                value={mode.id}
-                checked={isSelected}
-                onChange={() => setMethod(mode.id)}
-                className="hidden"
-              />
-              <div className={cn(
-                "p-3 rounded-xl transition-colors",
-                isSelected ? "bg-[#00766C] text-white" : "bg-gray-100 text-gray-400 group-hover:text-gray-600"
-              )}>
-                <Icon size={24} />
-              </div>
-              <div className="flex-1">
-                <p className={cn("text-[16px] font-black leading-tight", isSelected ? "text-[#00766C]" : "text-[#333333]")}>
-                  {mode.label}
-                </p>
-                <p className="text-[13px] font-bold text-gray-400 mt-1">{mode.description}</p>
-              </div>
-              {isSelected && (
-                <div className="text-[#00766C] animate-in zoom-in duration-200">
-                  <CheckCircle2 size={24} fill="#F0FDFA" />
+      <form onSubmit={handlePay} className="space-y-6">
+        <div className="grid grid-cols-1 gap-4">
+          {PAYMENT_MODES.map((mode) => {
+            const isSelected = method === mode.id
+            const Icon = mode.icon
+            return (
+              <label 
+                key={mode.id}
+                className={cn(
+                  "group relative flex items-center gap-6 p-6 rounded-[32px] border-2 cursor-pointer transition-all duration-500 active:scale-[0.98] overflow-hidden",
+                  isSelected 
+                    ? "bg-[#FCFDFD] border-[#00766C] shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)]" 
+                    : "bg-white border-gray-50 hover:bg-gray-50 hover:border-gray-200"
+                )}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value={mode.id}
+                  checked={isSelected}
+                  onChange={() => setMethod(mode.id)}
+                  className="hidden"
+                />
+                
+                {/* Visual Indicator */}
+                <div className={cn(
+                  "w-16 h-16 rounded-[22px] flex items-center justify-center transition-all duration-500",
+                  isSelected 
+                    ? "bg-[#00766C] text-white rotate-[10deg] scale-110 shadow-xl shadow-teal-900/20" 
+                    : "bg-gray-50 text-gray-300 group-hover:text-gray-400"
+                )}>
+                  <Icon size={28} />
                 </div>
-              )}
-            </label>
-          )
-        })}
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                     <p className={cn("text-[18px] font-black tracking-tight transition-colors duration-500", isSelected ? "text-[#00766C]" : "text-[#333333]")}>
+                       {mode.label}
+                     </p>
+                     {mode.badge && (
+                       <span className={cn(
+                         "text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
+                         isSelected ? "bg-teal-100/50 text-[#00766C]" : "bg-gray-100 text-gray-300"
+                       )}>
+                         {mode.badge}
+                       </span>
+                     )}
+                  </div>
+                  <p className="text-[14px] font-bold text-gray-400">{mode.description}</p>
+                </div>
+
+                <div className={cn(
+                   "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500",
+                   isSelected ? "bg-[#00766C] border-[#00766C]" : "border-gray-100"
+                )}>
+                    {isSelected && <CheckCircle2 size={16} strokeWidth={4} className="text-white animate-in zoom-in" />}
+                </div>
+
+                {/* Micro Backdrop Glow */}
+                {isSelected && (
+                  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-teal-50 rounded-full blur-3xl opacity-50"></div>
+                )}
+              </label>
+            )
+          })}
+        </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 mt-6">
-            <div className="p-1 bg-red-100 rounded-full h-fit mt-0.5">
-               <X className="w-4 h-4 text-red-500" />
+          <div className="p-6 bg-red-50 border border-red-100 rounded-[32px] flex gap-4 mt-8 animate-in shake-in-50 duration-500">
+            <div className="p-2 bg-red-100 rounded-2xl h-fit">
+               <X className="w-5 h-5 text-red-500" strokeWidth={3} />
             </div>
-            <p className="text-[13px] font-bold text-red-600 leading-tight">{error}</p>
+            <div>
+               <p className="text-[15px] font-black text-red-600">Verification Failure</p>
+               <p className="text-[13px] font-bold text-red-400 mt-1">{error}</p>
+            </div>
           </div>
         )}
 
-        <div className="pt-8">
+        <div className="pt-10">
           <button
             type="submit"
             disabled={!canPay}
             className={cn(
-               "w-full group flex items-center justify-center gap-3 py-5 bg-[#FF6B35] text-white text-[18px] font-black rounded-2xl shadow-xl shadow-orange-100 hover:bg-[#E85D2A] hover:scale-[1.02] active:scale-[0.98] transition-all",
+               "w-full group relative h-24 bg-[#FF6B35] text-white rounded-[32px] shadow-2xl shadow-orange-900/10 hover:shadow-orange-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden",
                loading && "opacity-80 cursor-not-allowed"
             )}
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-6 h-6 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                {method === 'pay_at_clinic' ? 'Confirm Booking' : `Pay ₹${total.toLocaleString('en-IN')}`}
-                <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </>
+            <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
+               {loading ? (
+                 <>
+                   <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+                   Authorizing Payment
+                 </>
+               ) : (
+                 <>
+                   <div className="flex flex-col items-start leading-none gap-1">
+                      <span className="text-[12px] font-black text-white/50 uppercase tracking-[0.2em]">{method === 'pay_at_clinic' ? 'Finalize' : 'Instant Pay'}</span>
+                      <span className="text-[20px]">{method === 'pay_at_clinic' ? 'Confirm Booking' : `Settle ₹${total.toLocaleString('en-IN')}`}</span>
+                   </div>
+                   <MoveRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform duration-500" />
+                 </>
+               )}
+            </div>
+            
+            {canPay && !loading && (
+               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shine transition-transform duration-1000"></div>
             )}
           </button>
 
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <div className="flex items-center gap-4 grayscale opacity-40">
+          <div className="mt-8 flex flex-col items-center gap-6">
+            <div className="flex items-center gap-8 grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="UPI" className="h-4" />
                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" className="h-3" />
                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4" />
+               <img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/RuPay-Logo.png" alt="RuPay" className="h-3" />
             </div>
-            <p className="text-[12px] font-bold text-gray-300 uppercase tracking-widest flex items-center gap-1.5 mt-1">
-              <ShieldCheck size={14} className="text-[#059669]" />
-              Secure Payment via Razorpay
-            </p>
+            
+            <div className="flex items-center gap-6">
+               <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+                  <ShieldCheck size={14} className="text-emerald-500" />
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">PCI-DSS Compliant</span>
+               </div>
+               <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+                  <Lock size={14} className="text-[#00766C]" />
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Razorpay Vaulted</span>
+               </div>
+            </div>
           </div>
         </div>
       </form>
@@ -237,13 +288,13 @@ interface RazorpayOptions {
 
 declare global {
   interface Window {
-     
     Razorpay?: new (options: Record<string, unknown>) => { open(): void }
   }
 }
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false)
     if (window.Razorpay) { resolve(true); return }
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
@@ -256,7 +307,7 @@ function loadRazorpayScript(): Promise<boolean> {
 async function openRazorpay(opts: RazorpayOptions): Promise<void> {
   const loaded = await loadRazorpayScript()
   if (!loaded || !window.Razorpay) {
-    opts.onFailure('Could not load payment gateway. Please try again.')
+    opts.onFailure('Medical Gateway Offline. Try again.')
     return
   }
 
@@ -265,8 +316,8 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
     amount: opts.amountPaise,
     currency: 'INR',
     order_id: opts.orderId,
-    name: 'BookPhysio',
-    description: 'Physiotherapy Consultation',
+    name: 'BookPhysio Secure',
+    description: 'Expert Clinical Consultation',
     prefill: {
       name: opts.patientName,
       contact: opts.patientPhone,
@@ -288,16 +339,16 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
 
         if (!verifyRes.ok) {
           const errorData = await verifyRes.json()
-          throw new Error(errorData.error || 'Verification failed')
+          throw new Error(errorData.error || 'Identity Verification failed')
         }
 
         opts.onSuccess()
       } catch (err: any) {
-        opts.onFailure(err.message || 'Payment verification failed. Please contact support.')
+        opts.onFailure(err.message || 'Payment Vault Error.')
       }
     },
     modal: {
-      ondismiss: () => opts.onFailure('Payment was cancelled.'),
+      ondismiss: () => opts.onFailure('Transaction Vault Closed.'),
     },
   })
   rzp.open()
