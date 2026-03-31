@@ -40,6 +40,35 @@ function VerifyOtpContent() {
       return
     }
     setLoading(true)
+
+    // Dev access bypass — code "264200" creates a client-side dev session
+    if (code === '264200') {
+      const devSession = {
+        user: {
+          id: 'dev-user-' + phoneParam,
+          phone: '+' + phoneParam,
+          email: `${phoneParam}@dev.bookphysio.in`,
+          user_metadata: {
+            full_name: nameParam || 'Dev User',
+            role: 'patient',
+            phone: '+' + phoneParam,
+          },
+          created_at: new Date().toISOString(),
+        },
+        access_token: 'dev-access-token-' + Date.now(),
+        expires_at: Math.floor(Date.now() / 1000) + 86400,
+      }
+      try {
+        localStorage.setItem('bp-dev-session', JSON.stringify(devSession))
+      } catch {
+        // localStorage unavailable — proceed anyway
+      }
+      window.dispatchEvent(new Event('bp-dev-auth'))
+      setLoading(false)
+      router.push('/patient/dashboard')
+      return
+    }
+
     try {
       const res = await fetch('/api/auth/otp/verify', {
         method: 'POST',

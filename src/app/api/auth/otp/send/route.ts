@@ -13,8 +13,13 @@ export async function POST(request: NextRequest) {
   const { success } = await otpRatelimit.limit(phone)
   if (!success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
 
-  // Initialize Supabase OTP session (this won't send SMS if we handle delivery, 
-  // or it might send one depending on Supabase dashboard settings. 
+  // Dev access bypass — skip MSG91 + Supabase OTP when DEV_ACCESS_CODE is set
+  if (process.env.DEV_ACCESS_CODE) {
+    return NextResponse.json({ message: 'OTP sent' })
+  }
+
+  // Initialize Supabase OTP session (this won't send SMS if we handle delivery,
+  // or it might send one depending on Supabase dashboard settings.
   // But strictly, we want Supabase to know an OTP is expected for this phone)
   const supabase = await createClient()
   const { error: supabaseError } = await supabase.auth.signInWithOtp({ phone })

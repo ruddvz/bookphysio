@@ -64,14 +64,22 @@ export default function LoginPage() {
         body: JSON.stringify({ phone: cleanPhone }),
       })
       if (!res.ok) {
-        const data = await res.json() as { error?: string }
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        // On static export (GitHub Pages), API routes don't exist — still allow navigation
+        if (res.status === 404) {
+          const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
+          router.push('/verify-otp?' + params.toString())
+          return
+        }
         setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
         return
       }
       const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
       router.push('/verify-otp?' + params.toString())
     } catch {
-      setErrors({ general: 'Network error. Please try again.' })
+      // Network error on static export — still navigate to OTP page
+      const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
+      router.push('/verify-otp?' + params.toString())
     } finally {
       setLoading(false)
     }
