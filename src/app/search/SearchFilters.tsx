@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { SlidersHorizontal, X, ChevronDown, Check, MapPin, Activity, Wallet, Calendar, Filter } from 'lucide-react'
+import { X, ChevronDown, Check, MapPin, Activity, Wallet, Filter } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -50,6 +50,7 @@ function FilterDropdown({
   value: string, 
   options: string[], 
   onChange: (val: string) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon?: any,
   className?: string
 }) {

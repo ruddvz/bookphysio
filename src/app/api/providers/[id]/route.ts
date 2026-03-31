@@ -47,7 +47,9 @@ export async function GET(
     locations: data.locations || [],
     verified: data.verified || false,
     onboarding_step: data.onboarding_step || 4,
-    gstin: data.gstin
+    gstin: data.gstin,
+    lat: data.locations?.[0]?.lat || null,
+    lng: data.locations?.[0]?.lng || null
   }
 
   return NextResponse.json({

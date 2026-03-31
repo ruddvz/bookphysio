@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Map, Marker, Popup, NavigationControl, FullscreenControl, type MapLayerMouseEvent } from 'react-map-gl/mapbox'
+import { Map, Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { type Doctor } from '@/components/DoctorCard'
 import { Star, MapPin, Clock } from 'lucide-react'
@@ -64,7 +64,8 @@ export default function ProviderMap({ doctors }: ProviderMapProps) {
           latitude={doctor.lat!}
           longitude={doctor.lng!}
           anchor="bottom"
-          onClick={(e: MapLayerMouseEvent) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onClick={(e: any) => {
             e.originalEvent.stopPropagation()
             setSelectedDoctor(doctor)
           }}
