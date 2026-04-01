@@ -144,6 +144,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
   const [selectedSlot, setSelectedSlot] = useState<SlotEntry | null>(null)
   const [slots, setSlots] = useState<SlotEntry[]>([])
   const [slotsLoading, setSlotsLoading] = useState(false)
+  const [packageSessions, setPackageSessions] = useState(1)
 
   useEffect(() => {
     let cancelled = false
@@ -304,6 +305,47 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── Treatment Estimator (Suggestion #8) ── */}
+      <div className="mb-10 relative z-10 px-1">
+         <div className="flex items-center justify-between mb-4">
+            <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest">Treatment Estimator</label>
+            {packageSessions > 1 && (
+               <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-100 animate-in fade-in zoom-in duration-500">
+                  Expert Recommended - Save {packageSessions === 3 ? '12%' : '24%'}
+               </div>
+            )}
+         </div>
+         
+         <div className="bg-gray-50 rounded-2xl p-1 border border-gray-100/50 shadow-inner flex h-14">
+            {[1, 3, 5].map((n) => (
+               <button
+                  key={n}
+                  onClick={() => setPackageSessions(n)}
+                  className={cn(
+                     "flex-1 flex flex-col items-center justify-center transition-all duration-500 rounded-xl active:scale-95",
+                     packageSessions === n
+                        ? "bg-white text-[#00766C] shadow-2xl shadow-teal-900/5 scale-[1.03] font-black"
+                        : "text-gray-400 font-bold hover:text-gray-600"
+                  )}
+               >
+                  <span className="text-[13px]">{n} {n === 1 ? 'Session' : 'Sessions'}</span>
+                  {n > 1 && <span className={cn("text-[9px] uppercase tracking-widest -mt-0.5", packageSessions === n ? "text-[#00766C]/60" : "text-gray-300")}>{n === 3 ? 'Silver' : 'Gold'} Plan</span>}
+               </button>
+            ))}
+         </div>
+
+         <div className="mt-6 pt-4 border-t border-dashed border-gray-100 text-center animate-in fade-in duration-700">
+            <div className="flex items-baseline justify-center gap-1.5">
+               <span className="text-[32px] font-black text-[#333333] tracking-tighter">₹{selectedFee * packageSessions}</span>
+               {packageSessions > 1 && (
+                  <span className="text-[14px] text-gray-400 font-bold line-through opacity-40 ml-1">₹{selectedFee * packageSessions + (packageSessions === 3 ? 400 : 900)}</span>
+               )}
+               <span className="text-[13px] text-gray-400 font-bold ml-1 uppercase tracking-widest">Total Est.</span>
+            </div>
+            <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mt-1">Based on {VISIT_TYPE_LABELS[visitType]?.label ?? visitType} selection</p>
+         </div>
       </div>
 
       {/* ── High-Conversion CTA ── */}

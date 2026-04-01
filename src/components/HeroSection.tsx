@@ -217,17 +217,17 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden w-full bg-[#FCFDFD]">
+    <section className="relative overflow-hidden w-full bg-[#FCFDFD] min-h-[85vh] flex items-center">
       {/* Background Ornaments */}
       <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-teal-50/50 rounded-full blur-[120px] opacity-40"></div>
       <div className="absolute top-[60%] -right-[5%] w-[30%] h-[30%] bg-orange-50/40 rounded-full blur-[100px] opacity-30"></div>
 
-      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] pt-20 md:pt-28 pb-16 md:pb-24 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] pt-12 md:pt-16 pb-12 md:pb-20 relative z-10 w-full">
+        <div className="flex flex-col items-center text-center">
 
           {/* Text content */}
-          <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-100 shadow-sm rounded-2xl text-[13px] font-black uppercase tracking-[0.15em] text-[#00766C] mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="max-w-[900px] flex flex-col items-center">
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-100 shadow-sm rounded-2xl text-[13px] font-black uppercase tracking-[0.15em] text-[#00766C] mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
               <ShieldCheck size={16} className="text-[#059669]" strokeWidth={3} />
               Verify. Book. Recover.
               <div className="h-4 w-px bg-gray-100 ml-2"></div>
@@ -235,25 +235,24 @@ export default function HeroSection() {
               <span className="text-gray-400">Trusted in 12 Cities</span>
             </div>
 
-            {/* Heading — fixed height span prevents layout shift on word swap */}
-            <h1 className="text-[52px] md:text-[80px] lg:text-[88px] font-black text-[#333333] leading-[1] tracking-tighter mb-8 text-balance">
+            <h1 className="text-[48px] md:text-[80px] lg:text-[88px] font-black text-[#333333] leading-[0.95] tracking-tighter mb-10">
               Find the Best<br />
-              <span
-                className={cn(
-                  'inline-block bg-gradient-to-r bg-clip-text text-transparent transition-opacity duration-300',
-                  currentSpecialty.gradient,
-                  isAnimating ? 'opacity-100' : 'opacity-0'
-                )}
-                style={{ minHeight: '1.1em', display: 'inline-block' }}
-              >
-                {currentSpecialty.word}
-              </span>
-              <br />
+              <div className="h-[1.1em] overflow-hidden flex justify-center items-center">
+                <span
+                  key={currentSpecialty.word}
+                  className={cn(
+                    'bg-gradient-to-r bg-clip-text text-transparent transition-all duration-500 animate-in slide-in-from-bottom-4 fade-in',
+                    currentSpecialty.gradient
+                  )}
+                >
+                  {currentSpecialty.word}
+                </span>
+              </div>
               near you.
             </h1>
 
-            <p className="text-[18px] md:text-[22px] font-bold text-gray-500 max-w-[580px] mx-auto lg:mx-0 leading-relaxed mb-8 text-balance">
-              Skip the waiting room. Connect with India&apos;s highest-verified physiotherapy experts for in-clinic or home-visit care in minutes.
+            <p className="text-[18px] md:text-[22px] font-bold text-gray-400 max-w-[620px] leading-relaxed mb-12 text-balance">
+              Skip the waiting room. Connect with India's highest-verified physiotherapy experts for in-clinic or home-visit care in minutes.
             </p>
 
             <SearchBar
@@ -264,27 +263,22 @@ export default function HeroSection() {
               onSubmit={handleSubmit}
             />
 
-            <div className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-10">
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-10 md:gap-16">
               <div className="flex flex-col gap-1">
-                <span className="text-[24px] font-black text-[#333333] tracking-tighter">5,000+</span>
+                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">5,000+</span>
                 <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Experts</span>
               </div>
               <div className="h-10 w-px bg-gray-100 hidden sm:block"></div>
               <div className="flex flex-col gap-1">
-                <span className="text-[24px] font-black text-[#333333] tracking-tighter">1M+</span>
+                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">1M+</span>
                 <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Appointments</span>
               </div>
               <div className="h-10 w-px bg-gray-100 hidden sm:block"></div>
               <div className="flex flex-col gap-1">
-                <span className="text-[24px] font-black text-[#333333] tracking-tighter">4.9/5</span>
+                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">4.9/5</span>
                 <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">App Rating</span>
               </div>
             </div>
-          </div>
-
-          {/* Illustration Column */}
-          <div className="flex-1 w-full lg:w-auto">
-            <HeroActivity />
           </div>
         </div>
       </div>

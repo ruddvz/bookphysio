@@ -66,7 +66,7 @@ export default function Footer() {
                  <div className="w-8 h-8 bg-[#00766C] rounded-lg flex items-center justify-center text-sm">BP</div>
                  BookPhysio.
               </div>
-              <p className="text-[16px] font-bold text-gray-500 leading-relaxed mb-8">
+              <p className="text-[16px] font-bold text-gray-400 leading-relaxed mb-8">
                 Revolutionizing recovery by connecting you with India's most verified physiotherapy experts. Your journey to pain-free living starts here.
               </p>
               <div className="flex items-center gap-4">
@@ -80,9 +80,9 @@ export default function Footer() {
 
            <div className="w-full lg:max-w-[450px]">
               <h3 className="text-[14px] font-black text-white uppercase tracking-widest mb-6">Stay Updated</h3>
-              <p className="text-[14px] font-bold text-gray-500 mb-6">Get recovery tips and platform updates delivered to your inbox.</p>
+              <p className="text-[14px] font-bold text-gray-400 mb-6">Get recovery tips and platform updates delivered to your inbox.</p>
               <div className="relative group">
-                 <div className="absolute inset-y-0 left-5 flex items-center text-gray-500"><Mail size={18} /></div>
+                 <div className="absolute inset-y-0 left-5 flex items-center text-gray-400"><Mail size={18} /></div>
                  <input 
                   type="email" 
                   placeholder="name@email.com" 
@@ -109,7 +109,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[15px] font-black text-gray-400 hover:text-[#00766C] transition-all flex items-center gap-2 group"
+                      className="text-[15px] font-black text-gray-300 hover:text-white transition-all flex items-center gap-2 group"
                     >
                       {link.label}
                       {link.isNew && (
@@ -131,14 +131,14 @@ export default function Footer() {
               <button className="px-6 py-3 bg-black border border-white/10 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all group h-[64px]">
                  <div className="w-10 h-10 bg-[#00766C] rounded-xl flex items-center justify-center text-white"><Smartphone size={24} /></div>
                  <div className="text-left">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Download on</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Download on</p>
                     <p className="text-[16px] font-black text-white tracking-tight">App Store</p>
                  </div>
               </button>
               <button className="px-6 py-3 bg-black border border-white/10 rounded-2xl flex items-center gap-4 hover:border-white/20 transition-all group h-[64px]">
                  <div className="w-10 h-10 bg-[#00766C] rounded-xl flex items-center justify-center text-white"><Send size={24} /></div>
                  <div className="text-left">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Get it on</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Get it on</p>
                     <p className="text-[16px] font-black text-white tracking-tight">Google Play</p>
                  </div>
               </button>
@@ -154,10 +154,10 @@ export default function Footer() {
         {/* Legal & Footer Bottom */}
         <div className="py-12 flex flex-col md:flex-row items-center justify-between gap-8">
            <div className="text-center md:text-left">
-              <p className="text-[12px] font-bold text-gray-600 max-w-[700px] leading-relaxed mb-6">
+              <p className="text-[12px] font-bold text-gray-400 max-w-[700px] leading-relaxed mb-6">
                 Disclaimer: BookPhysio is an appointment booking platform. We do not provide medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for medical concerns.
               </p>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-[12px] font-black text-gray-400">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-[12px] font-black text-gray-300">
                  <span>© 2026 BookPhysio.in</span>
                  <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
                  <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -165,7 +165,7 @@ export default function Footer() {
               </div>
            </div>
            
-           <div className="flex items-center gap-3 text-[12px] font-black text-gray-600 whitespace-nowrap">
+           <div className="flex items-center gap-3 text-[12px] font-black text-gray-400 whitespace-nowrap">
               Made in India with <Heart size={14} className="text-[#E85D2A] fill-[#E85D2A]" /> for Health
            </div>
         </div>

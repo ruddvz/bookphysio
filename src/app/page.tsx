@@ -8,6 +8,8 @@ import HealthSystems from '@/components/HealthSystems'
 import CityLinks from '@/components/CityLinks'
 import JobsCTA from '@/components/JobsCTA'
 import CommonReasons from '@/components/CommonReasons'
+import Testimonials from '@/components/Testimonials'
+import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 
 export default function Home() {
@@ -21,8 +23,8 @@ export default function Home() {
         <AppSection />
         <ProviderCTA />
         <HealthSystems />
-        <CityLinks />
-        <JobsCTA />
+        <Testimonials />
+        <FAQ />
         <CommonReasons />
       </main>
       <Footer />

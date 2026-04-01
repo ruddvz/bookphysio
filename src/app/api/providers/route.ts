@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       rating_avg, rating_count,
       users!inner (full_name, avatar_url),
       locations${city || visit_type ? '!inner' : ''} (id, city, state, address, lat, lng, visit_type),
-      specialties (id, name, slug),
+      provider_specialties!inner (specialties (id, name, slug)),
       provider_insurances (insurances (id, name, logo_url))`,
       { count: 'exact' }
     )
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       full_name: provider.users.full_name,
       title: provider.title,
       avatar_url: provider.users.avatar_url,
-      specialties: provider.specialties || [],
+      specialties: provider.provider_specialties?.map((ps: any) => ps.specialties).filter(Boolean) || [],
       rating_avg: provider.rating_avg || 0,
       rating_count: provider.rating_count || 0,
       experience_years: provider.experience_years,

@@ -24,6 +24,9 @@ export interface Doctor {
 interface DoctorCardProps {
   doctor: Doctor
   className?: string
+  isHovered?: boolean
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
 }
 
 // Deterministic slot generation based on doctor ID — avoids hydration mismatches
@@ -68,7 +71,7 @@ function generateDeterministicSlots(id: string) {
   return days
 }
 
-export default function DoctorCard({ doctor, className }: DoctorCardProps) {
+export default function DoctorCard({ doctor, className, isHovered, onMouseEnter, onMouseLeave }: DoctorCardProps) {
   const router = useRouter()
   const [startIndex, setStartIndex] = useState(0)
   const [selectedSlot, setSelectedSlot] = useState<{ time: string; dayIso: string } | null>(null)
@@ -95,8 +98,11 @@ export default function DoctorCard({ doctor, className }: DoctorCardProps) {
 
   return (
     <article
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
-        'group bg-white rounded-[32px] border border-gray-100 p-6 md:p-8 transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] hover:border-[#00766C]/10 hover:-translate-y-1 relative overflow-hidden',
+        'group bg-white rounded-[32px] border transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] hover:border-[#00766C] hover:-translate-y-1 relative overflow-hidden',
+        isHovered ? 'border-[#00766C] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)]' : 'border-gray-100',
         className
       )}
       aria-label={`${doctor.name} - ${doctor.specialty}`}

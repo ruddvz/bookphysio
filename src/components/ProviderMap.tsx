@@ -6,14 +6,16 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { type Doctor } from '@/components/DoctorCard'
 import { Star, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
 interface ProviderMapProps {
   doctors: Doctor[]
+  hoveredDoctorId?: string | null
 }
 
-export default function ProviderMap({ doctors }: ProviderMapProps) {
+export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapProps) {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
 
   // Filter doctors with valid coordinates
@@ -71,9 +73,12 @@ export default function ProviderMap({ doctors }: ProviderMapProps) {
           }}
         >
           <button className="group relative">
-            <div className={`px-2 py-1 rounded-full shadow-lg border-2 border-white transition-all duration-200 transform group-hover:scale-110 ${
-              selectedDoctor?.id === doctor.id ? 'bg-[#005A52] scale-110' : 'bg-[#00766C]'
-            }`}>
+            <div className={cn(
+              "px-2 py-1 rounded-full shadow-lg border-2 border-white transition-all duration-300 transform group-hover:scale-110",
+              (selectedDoctor?.id === doctor.id || hoveredDoctorId === doctor.id)
+                ? 'bg-[#005A52] scale-110 ring-4 ring-[#00766C]/20' 
+                : 'bg-[#00766C] scale-100'
+            )}>
               <span className="text-[12px] font-extrabold text-white">₹{doctor.fee}</span>
             </div>
           </button>

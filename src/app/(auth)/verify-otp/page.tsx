@@ -24,6 +24,7 @@ function VerifyOtpContent() {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [devRolePicker, setDevRolePicker] = useState(false)
 
   useEffect(() => {
     if (countdown <= 0) return
@@ -41,31 +42,10 @@ function VerifyOtpContent() {
     }
     setLoading(true)
 
-    // Dev access bypass — code "264200" creates a client-side dev session
+    // Dev access bypass — code "264200" shows role picker then creates a client-side dev session
     if (code === '264200') {
-      const devSession = {
-        user: {
-          id: 'dev-user-' + phoneParam,
-          phone: '+' + phoneParam,
-          email: `${phoneParam}@dev.bookphysio.in`,
-          user_metadata: {
-            full_name: nameParam || 'Dev User',
-            role: 'patient',
-            phone: '+' + phoneParam,
-          },
-          created_at: new Date().toISOString(),
-        },
-        access_token: 'dev-access-token-' + Date.now(),
-        expires_at: Math.floor(Date.now() / 1000) + 86400,
-      }
-      try {
-        localStorage.setItem('bp-dev-session', JSON.stringify(devSession))
-      } catch {
-        // localStorage unavailable — proceed anyway
-      }
-      window.dispatchEvent(new Event('bp-dev-auth'))
       setLoading(false)
-      router.push('/patient/dashboard')
+      setDevRolePicker(true)
       return
     }
 
@@ -95,6 +75,31 @@ function VerifyOtpContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  function handleDevSignIn(role: 'patient' | 'provider') {
+    const devSession = {
+      user: {
+        id: 'dev-user-' + phoneParam,
+        phone: '+' + phoneParam,
+        email: `${phoneParam}@dev.bookphysio.in`,
+        user_metadata: {
+          full_name: nameParam || 'Dev User',
+          role,
+          phone: '+' + phoneParam,
+        },
+        created_at: new Date().toISOString(),
+      },
+      access_token: 'dev-access-token-' + Date.now(),
+      expires_at: Math.floor(Date.now() / 1000) + 86400,
+    }
+    try {
+      localStorage.setItem('bp-dev-session', JSON.stringify(devSession))
+    } catch {
+      // localStorage unavailable — proceed anyway
+    }
+    window.dispatchEvent(new Event('bp-dev-auth'))
+    router.push(role === 'provider' ? '/provider/dashboard' : '/patient/dashboard')
   }
 
   async function handleResend() {
@@ -193,6 +198,7 @@ function VerifyOtpContent() {
       {/* Back link */}
       <div className="text-center">
         <button
+          type="button"
           onClick={() => router.back()}
           className="inline-flex items-center gap-1.5 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer no-underline outline-none transition-colors"
         >
@@ -200,6 +206,39 @@ function VerifyOtpContent() {
           Back
         </button>
       </div>
+
+      {/* Dev role picker overlay */}
+      {devRolePicker && (
+        <div className="absolute inset-0 bg-white rounded-[12px] flex flex-col items-center justify-center gap-6 p-10 animate-in fade-in duration-200">
+          <div className="text-center">
+            <p className="text-[11px] font-semibold text-[#00766C] uppercase tracking-widest mb-2">Dev Access</p>
+            <h2 className="text-[22px] font-bold text-[#333333]">Sign in as…</h2>
+          </div>
+          <div className="w-full flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => handleDevSignIn('patient')}
+              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#00766C] hover:bg-[#005A52] rounded-full transition-colors cursor-pointer"
+            >
+              Patient
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDevSignIn('provider')}
+              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#333333] hover:bg-[#111] rounded-full transition-colors cursor-pointer"
+            >
+              Doctor / Provider
+            </button>
+            <button
+              type="button"
+              onClick={() => setDevRolePicker(false)}
+              className="w-full py-2 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer outline-none transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

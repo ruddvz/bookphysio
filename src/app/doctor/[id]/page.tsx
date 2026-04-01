@@ -1,6 +1,8 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
+import ClinicGallery from './ClinicGallery'
+import RecoveryBundles from './RecoveryBundles'
 import MobileBookingBar from './MobileBookingBar'
 import { MapPin, ShieldCheck, GraduationCap, Languages, Star, ChevronRight, Share2, Heart, Award, CheckCircle2, Calendar, Clock, Sparkles, Building2, UserCheck, PhoneCall, Mail, Activity } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
@@ -250,6 +252,12 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   <p className="text-[17px] text-gray-600 leading-[1.8] font-medium whitespace-pre-wrap relative z-10 max-w-[90%]">{provider.bio}</p>
                 </section>
               )}
+
+              {/* 2.5 Clinic Gallery */}
+              <ClinicGallery images={(provider as any).gallery_images ?? []} />
+
+              {/* 2.6 Recovery Bundles */}
+              <RecoveryBundles />
 
               {/* 3. Specializations & Clinical Focus */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">

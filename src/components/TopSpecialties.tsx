@@ -145,20 +145,20 @@ export default function TopSpecialties() {
         </div>
 
         {/* Bottom Trust Signifier */}
-        <div className="mt-12 pt-10 border-t border-gray-50 flex flex-wrap items-center justify-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+        <div className="mt-12 pt-10 border-t border-gray-50 flex flex-wrap items-center justify-center gap-12 group/trust">
            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-xl font-black">AI</div>
-              <span className="text-[14px] font-black tracking-widest text-gray-500">SMART MATCHING</span>
+              <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl font-black text-[#00766C] shadow-sm">AI</div>
+              <span className="text-[14px] font-black tracking-widest text-[#333333]">SMART MATCHING</span>
            </div>
            <div className="h-6 w-px bg-gray-100 hidden md:block"></div>
            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-xl font-black">✓</div>
-              <span className="text-[14px] font-black tracking-widest text-gray-500">IAP CERTIFIED</span>
+              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-xl font-black text-[#FF6B35] shadow-sm">✓</div>
+              <span className="text-[14px] font-black tracking-widest text-[#333333]">IAP CERTIFIED</span>
            </div>
            <div className="h-6 w-px bg-gray-100 hidden md:block"></div>
            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-xl font-black">24/7</div>
-              <span className="text-[14px] font-black tracking-widest text-gray-500">INSTANT BOOKING</span>
+              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-xl font-black text-blue-600 shadow-sm">24/7</div>
+              <span className="text-[14px] font-black tracking-widest text-[#333333]">INSTANT BOOKING</span>
            </div>
         </div>
       </div>

@@ -72,6 +72,7 @@ export default function SearchContent() {
   const [loading, setLoading] = useState(true)
   const [showMap, setShowMap] = useState(true) 
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
+  const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
 
   const condition = searchParams.get('condition')
   const location = searchParams.get('location')
@@ -227,7 +228,13 @@ export default function SearchContent() {
                     </div>
                   </div>
                   {doctors.map((doctor) => (
-                    <DoctorCard key={doctor.id} doctor={doctor} />
+                    <DoctorCard
+                      key={doctor.id}
+                      doctor={doctor}
+                      isHovered={hoveredDoctorId === doctor.id}
+                      onMouseEnter={() => setHoveredDoctorId(doctor.id)}
+                      onMouseLeave={() => setHoveredDoctorId(null)}
+                    />
                   ))}
                   
                   {/* Strategic End of List Content */}
@@ -251,7 +258,7 @@ export default function SearchContent() {
             mobileView === 'map' ? "fixed inset-0 z-40 md:relative" : "hidden md:block"
           )}>
             <div className="h-full w-full relative bg-[#F8FAFC]">
-              <ProviderMap doctors={doctors} />
+              <ProviderMap doctors={doctors} hoveredDoctorId={hoveredDoctorId} />
               
               {/* Desktop Zoom Overlay Hint */}
               {showMap && (

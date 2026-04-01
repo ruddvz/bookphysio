@@ -27,10 +27,15 @@ export default function AppSection() {
 
              {/* QR Code - Hidden on Mobile */}
              <div className="hidden md:flex items-center gap-6 mb-10">
-                <div className="p-2 bg-white rounded-[12px] border-2 border-white shadow-xl">
-                   <div className="w-24 h-24 bg-[#F3F4F6] flex items-center justify-center text-[11px] text-[#9CA3AF] text-center font-bold">
-                      QR <br/> CODE
-                   </div>
+                <div className="p-2 bg-white rounded-[16px] border border-gray-100 shadow-xl">
+                   <svg width="96" height="96" viewBox="0 0 100 100" className="opacity-90">
+                      {/* Positional Squares */}
+                      <path d="M10 10h30v30H10zM15 15h20v20H15zM20 20h10v10H20z" fill="#111" />
+                      <path d="M60 10h30v30H60zM65 15h20v20H65zM70 20h10v10H70z" fill="#111" />
+                      <path d="M10 60h30v30H10zM15 65h20v20H15zM20 70h10v10H20z" fill="#111" />
+                      {/* Data Blocks */}
+                      <path d="M50 10h5v10h-5zM45 25h10v5h-10zM50 40h15v5H50zM10 45h20v10H10zM35 45h10v5H35zM70 50h20v5H70zM10 55h5v5h-5zM60 65h15v10H60zM80 65h10v5H80zM60 80h5v10h-5zM70 85h20v5H70zM85 75h5v5h-5zM50 60h5v20h-5zM35 60h10v10H35z" fill="#111" />
+                   </svg>
                 </div>
                 <div className="text-left">
                    <p className="text-[14px] font-bold text-[#333333]">Scan to download</p>

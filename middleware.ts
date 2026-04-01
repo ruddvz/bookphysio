@@ -26,6 +26,21 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
+  const hostname = request.headers.get('host') || ''
+
+  // 1. ai.bookphysio.in -> Patient Companion (Motio)
+  if (hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/patient/motio'
+    return NextResponse.rewrite(url)
+  }
+
+  // 2. motio.bookphysio.in -> Doctor Assistant (Motio Assistant)
+  if (hostname.includes('motio.bookphysio.in') && (pathname === '/' || pathname === '/index')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/provider/ai-assistant'
+    return NextResponse.rewrite(url)
+  }
 
   const isProtected = PROTECTED_PREFIXES.some(p => pathname.startsWith(p))
   const isAdmin = pathname.startsWith(ADMIN_PREFIX)

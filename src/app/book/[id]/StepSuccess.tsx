@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
+import confetti from 'canvas-confetti'
 import { CheckCircle2, Calendar, MapPin, Clock, CreditCard, Download, ExternalLink, ArrowRight, Share2, Sparkles, Building2, Check, LayoutDashboard, Fingerprint } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -67,6 +69,33 @@ function downloadIcs(filename: string, content: string) {
 export function StepSuccess({
   doctorName, date, time, visitType, location, totalPaid, gstAmount, paymentMethod, refNumber,
 }: StepSuccessProps) {
+  useEffect(() => {
+    const duration = 2.5 * 1000
+    const end = Date.now() + duration
+
+    const frame = () => {
+      confetti({
+        particleCount: 6,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#00766C', '#059669', '#FEED5A', '#FFC794']
+      })
+      confetti({
+        particleCount: 6,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#00766C', '#059669', '#FEED5A', '#FFC794']
+      })
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame)
+      }
+    }
+    frame()
+  }, [])
+
   const baseFee = totalPaid - gstAmount
   const displayDate = new Date(date).toLocaleDateString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
