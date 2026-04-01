@@ -1,168 +1,147 @@
 'use client'
 
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Activity, Brain, Bone, Baby, UserRound, Heart, ChevronRight, Sparkles, MoveRight } from "lucide-react";
+import Link from 'next/link'
+import { Activity, Brain, Bone, Baby, Heart, UserRound, ChevronRight, Sparkles, ArrowRight, ShieldCheck, Home, Clock3 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-interface Specialty {
-  icon: any;
-  label: string;
-  href: string;
-  bgColor: string;
-  iconColor: string;
-  description: string;
+type Specialty = {
+  icon: typeof Activity
+  label: string
+  href: string
+  tone: string
+  iconTone: string
+  description: string
 }
 
 const specialties: Specialty[] = [
-  { 
-    icon: Activity, 
-    label: "Sports Physio", 
-    description: "Athletic injuries & performance", 
-    href: "/search?specialty=Sports+Physio", 
-    bgColor: "bg-blue-50", 
-    iconColor: "text-blue-600"
+  {
+    icon: Activity,
+    label: 'Sports Physio',
+    description: 'Athletic injuries and performance recovery.',
+    href: '/search?specialty=Sports+Physio',
+    tone: 'bg-blue-50',
+    iconTone: 'text-blue-600',
   },
-  { 
-    icon: Brain, 
-    label: "Neuro Physio", 
-    description: "Brain, spine & nerve recovery", 
-    href: "/search?specialty=Neuro+Physio", 
-    bgColor: "bg-teal-50", 
-    iconColor: "text-[#00766C]"
+  {
+    icon: Brain,
+    label: 'Neuro Physio',
+    description: 'Stroke rehab, nerve recovery, and balance.',
+    href: '/search?specialty=Neuro+Physio',
+    tone: 'bg-teal-50',
+    iconTone: 'text-[#00766C]',
   },
-  { 
-    icon: Bone, 
-    label: "Ortho Physio", 
-    description: "Joint pain & bone health", 
-    href: "/search?specialty=Ortho+Physio", 
-    bgColor: "bg-emerald-50", 
-    iconColor: "text-emerald-600" 
+  {
+    icon: Bone,
+    label: 'Ortho Physio',
+    description: 'Joint pain, posture, and mobility support.',
+    href: '/search?specialty=Ortho+Physio',
+    tone: 'bg-emerald-50',
+    iconTone: 'text-emerald-600',
   },
-  { 
-    icon: Baby, 
-    label: "Paediatric", 
-    description: "Child growth & motor skills", 
-    href: "/search?specialty=Paediatric+Physio", 
-    bgColor: "bg-cyan-50", 
-    iconColor: "text-cyan-6200"
+  {
+    icon: Baby,
+    label: 'Paediatric Physio',
+    description: 'Growth, motor skills, and early intervention.',
+    href: '/search?specialty=Paediatric+Physio',
+    tone: 'bg-cyan-50',
+    iconTone: 'text-cyan-700',
   },
-  { 
-    icon: Heart, 
-    label: "Women's Health", 
-    description: "Pre-natal & pelvic wellness", 
-    href: "/search?specialty=Womens+Health", 
-    bgColor: "bg-[#F0FAF9]", 
-    iconColor: "text-[#005A52]"
+  {
+    icon: Heart,
+    label: "Women's Health",
+    description: 'Pre- and post-natal recovery and pelvic care.',
+    href: '/search?specialty=Womens+Health',
+    tone: 'bg-[#F0FAF9]',
+    iconTone: 'text-[#005A52]',
   },
-  { 
-    icon: UserRound, 
-    label: "Geriatric", 
-    description: "Senior mobility & strength", 
-    href: "/search?specialty=Geriatric+Physio", 
-    bgColor: "bg-blue-50", 
-    iconColor: "text-blue-700"
+  {
+    icon: UserRound,
+    label: 'Geriatric Physio',
+    description: 'Strength, mobility, and independence at home.',
+    href: '/search?specialty=Geriatric+Physio',
+    tone: 'bg-violet-50',
+    iconTone: 'text-violet-600',
   },
-];
+]
 
-
-function SpecialtyCard({ icon: Icon, label, description, href, bgColor, iconColor }: Specialty) {
+function SpecialtyCard({ icon: Icon, label, description, href, tone, iconTone }: Specialty) {
   return (
     <Link
       href={href}
       className={cn(
-        "group relative flex flex-col p-8 rounded-[40px] transition-all duration-500 h-full",
-        "bg-white border-2 border-transparent hover:border-[#00766C]/10 hover:shadow-[0_32px_64px_-16px_rgba(0,118,108,0.12)] hover:-translate-y-3 overflow-hidden"
+        'bp-card group flex h-full flex-col p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#00766C]/20 hover:shadow-[0_22px_50px_-30px_rgba(15,23,42,0.22)] md:p-7',
       )}
     >
-      {/* Background Decorative Element */}
-      <div className={cn(
-        "absolute top-0 right-0 w-32 h-32 rounded-bl-[100px] opacity-20 transition-all duration-500 group-hover:scale-150 group-hover:opacity-40",
-        bgColor
-      )}></div>
-      
-      <div className={cn(
-        "w-20 h-20 rounded-[30px] mb-8 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 relative z-10 shadow-sm",
-        bgColor
-      )}>
-        <Icon size={36} strokeWidth={2.5} className={iconColor} />
+      <div className="flex items-start justify-between gap-4">
+        <div className={cn('flex h-14 w-14 items-center justify-center rounded-[18px]', tone)}>
+          <Icon size={28} strokeWidth={2.2} className={iconTone} />
+        </div>
+        <ArrowRight size={18} className="mt-1 text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#00766C]" />
       </div>
-      
-      <div className="relative z-10 flex flex-col flex-1">
-        <h3 className="text-[22px] font-black text-[#333333] leading-tight mb-2 tracking-tight">
+
+      <div className="mt-6 flex flex-1 flex-col">
+        <h3 className="text-[20px] font-semibold tracking-[-0.03em] text-slate-900 transition-colors group-hover:text-[#00766C]">
           {label}
         </h3>
-        <p className="text-[15px] font-bold text-gray-400 group-hover:text-gray-500 transition-colors leading-snug">
-          {description}
-        </p>
+        <p className="mt-2 text-[14px] leading-6 text-slate-500">{description}</p>
 
-        <div className="mt-auto pt-8 flex items-center gap-2 text-[14px] font-black text-[#00766C] opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300">
-           Find Specialist <MoveRight size={16} strokeWidth={3} />
+        <div className="mt-auto pt-6 text-[13px] font-semibold text-[#00766C]">
+          Explore specialists
         </div>
       </div>
     </Link>
-  );
+  )
 }
 
 export default function TopSpecialties() {
   return (
-    <section className="py-20 md:py-28 bg-white relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-teal-50/30 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-orange-50/30 rounded-full blur-[100px] translate-x-1/4 translate-y-1/4"></div>
-
-      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] relative z-10">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-8">
+    <section className="bp-section border-y border-[#E6E8EC] bg-white">
+      <div className="bp-shell">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-5 py-2 bg-[#F9F8F7] border border-gray-100 rounded-2xl text-[13px] font-black text-[#00766C] uppercase tracking-[0.15em] mb-6">
-              <Sparkles size={16} className="text-[#059669]" />
-              EXPERT CARE DIRECTORY
+            <div className="bp-kicker mb-5">
+              <Sparkles size={13} />
+              Browse by specialty
             </div>
-            <h2 className="text-[48px] md:text-[64px] font-black text-[#333333] tracking-tighter leading-[0.95] mb-6">
-              Search by clinical <br />
-              <span className="text-[#00766C] italic relative">
-                specialty.
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-orange-200/50" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 25 0, 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
-                </svg>
-              </span>
-            </h2>
-            <p className="text-[20px] md:text-[22px] font-bold text-gray-400 leading-relaxed">
-              From athletic recovery to neuro-rehabilitation, connect with India's highest-rated physiotherapy practitioners.
+            <h2 className="bp-title">Search by clinical specialty.</h2>
+            <p className="bp-copy mt-4 max-w-xl">
+              Start with the care type, then narrow by location and visit mode. The layout stays simple so the decision feels obvious.
             </p>
           </div>
-          
-          <Link href="/search" className="group shrink-0 h-16 px-10 bg-[#333333] text-white rounded-[24px] flex items-center gap-4 text-[17px] font-black hover:bg-[#00766C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-gray-200">
-             Explore All 24+ Categories 
-             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" strokeWidth={3} />
-             </div>
+
+          <Link
+            href="/search"
+            className="inline-flex items-center gap-2 rounded-full border border-[#DDE3E8] bg-[#FCFDFD] px-5 py-3 text-[14px] font-semibold text-slate-700 transition-all hover:border-[#00766C] hover:text-[#005A52]"
+          >
+            View all specialties
+            <ChevronRight size={16} />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {specialties.map((s) => (
-            <SpecialtyCard key={s.label} {...s} />
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {specialties.map((specialty) => (
+            <SpecialtyCard key={specialty.label} {...specialty} />
           ))}
         </div>
 
-        {/* Bottom Trust Signifier */}
-        <div className="mt-12 pt-10 border-t border-gray-50 flex flex-wrap items-center justify-center gap-12 group/trust">
-           <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl font-black text-[#00766C] shadow-sm">AI</div>
-              <span className="text-[14px] font-black tracking-widest text-[#333333]">SMART MATCHING</span>
-           </div>
-           <div className="h-6 w-px bg-gray-100 hidden md:block"></div>
-           <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-xl font-black text-[#FF6B35] shadow-sm">✓</div>
-              <span className="text-[14px] font-black tracking-widest text-[#333333]">IAP CERTIFIED</span>
-           </div>
-           <div className="h-6 w-px bg-gray-100 hidden md:block"></div>
-           <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-xl font-black text-blue-600 shadow-sm">24/7</div>
-              <span className="text-[14px] font-black tracking-widest text-[#333333]">INSTANT BOOKING</span>
-           </div>
+        <div className="mt-8 flex flex-wrap items-center gap-3 rounded-[24px] border border-[#E6E8EC] bg-[#FCFDFD] px-4 py-4 text-[13px] text-slate-600">
+          <span className="bp-chip-active inline-flex items-center gap-2">
+            <ShieldCheck size={14} className="text-[#00766C]" />
+            Verified care
+          </span>
+          <span className="bp-chip inline-flex items-center gap-2">
+            <Home size={14} className="text-[#00766C]" />
+            Home visits
+          </span>
+          <span className="bp-chip inline-flex items-center gap-2">
+            <Clock3 size={14} className="text-[#00766C]" />
+            Same-day booking
+          </span>
+          <p className="ml-auto text-slate-500">
+            Matching is tuned for clarity first, not noise.
+          </p>
         </div>
       </div>
     </section>
-  );
+  )
 }

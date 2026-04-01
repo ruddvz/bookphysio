@@ -10,7 +10,7 @@ export async function sendOtp(phone: string): Promise<{ success: boolean; error?
       console.log('------------------')
       return { success: true }
     }
-    return { success: false, error: 'MSG91 keys missing' }
+    return { success: false, error: 'OTP delivery failed' }
   }
 
   const mobile = phone.replace('+', '')
@@ -18,7 +18,7 @@ export async function sendOtp(phone: string): Promise<{ success: boolean; error?
     method: 'POST',
   })
   const data = await res.json() as { type: string; message: string }
-  return { success: data.type === 'success', error: data.type !== 'success' ? data.message : undefined }
+  return { success: data.type === 'success', error: data.type !== 'success' ? 'OTP delivery failed' : undefined }
 }
 
 export async function verifyOtp(phone: string, otp: string): Promise<{ success: boolean; error?: string }> {
@@ -28,7 +28,7 @@ export async function verifyOtp(phone: string, otp: string): Promise<{ success: 
       const isSuccess = otp === '123456'
       return { success: isSuccess, error: isSuccess ? undefined : 'Invalid mock OTP' }
     }
-    return { success: false, error: 'MSG91 auth key missing' }
+    return { success: false, error: 'OTP verification failed' }
   }
 
   const mobile = phone.replace('+', '')
@@ -36,7 +36,7 @@ export async function verifyOtp(phone: string, otp: string): Promise<{ success: 
     method: 'GET',
   })
   const data = await res.json() as { type: string; message: string }
-  return { success: data.type === 'success', error: data.type !== 'success' ? data.message : undefined }
+  return { success: data.type === 'success', error: data.type !== 'success' ? 'OTP verification failed' : undefined }
 }
 
 export async function sendSms(phone: string, message: string): Promise<void> {

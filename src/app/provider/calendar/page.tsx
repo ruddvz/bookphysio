@@ -19,7 +19,6 @@ import {
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In Clinic',
   home_visit: 'Home Visit',
-  online: 'Online',
 }
 
 const SLOT_STYLES: Record<SlotStatus, string> = {

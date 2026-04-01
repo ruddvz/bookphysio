@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
+import { ChevronDown, HelpCircle, LayoutGrid, LogIn, Menu, Sparkles, UserPlus, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ChevronDown, Menu, X, HelpCircle, LayoutGrid, UserPlus, LogIn, Sparkles } from 'lucide-react'
 
 const SPECIALTIES = [
   'Sports Physio',
@@ -20,14 +20,12 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setBrowseOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
@@ -35,122 +33,99 @@ export default function Navbar() {
   const closeMobile = () => setMobileMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-white/80 backdrop-blur-md border-b border-[#E5E5E5]/60 h-20">
-      <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] h-full flex items-center justify-between">
-        
-        {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0 group" aria-label="BookPhysio home">
-          <div className="relative">
-            <svg width="40" height="40" viewBox="0 0 36 36" fill="none" aria-hidden="true" className="shrink-0 transition-transform group-hover:scale-110 duration-500">
-               <rect width="36" height="36" rx="14" fill="#00766C" className="fill-[#00766C] group-hover:fill-[#005A52] transition-colors shadow-lg"/>
-               {/* Medical Pulse Heartbeat Path */}
-               <path d="M9 18H13L15 12L19 24L21 18H27" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    <header className="sticky top-0 z-[100] w-full border-b border-[#E6E8EC] bg-white/90 backdrop-blur-md">
+      <div className="bp-shell flex h-20 items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-3 text-[#111827]" aria-label="BookPhysio home">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#00766C] text-white shadow-[0_14px_24px_-18px_rgba(0,118,108,0.8)]">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+              <path d="M6 11H9L10.5 7L13.5 15L15 11H18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <span className="text-[26px] font-black text-[#333333] ml-3.5 tracking-tighter group-hover:text-[#00766C] transition-colors font-black">
-            BookPhysio
-          </span>
+          <span className="text-[18px] font-semibold tracking-[-0.03em] md:text-[20px]">BookPhysio</span>
         </Link>
 
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-2" aria-label="Main navigation">
-          {/* Browse dropdown */}
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
           <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setBrowseOpen((prev) => !prev)}
-              aria-expanded={browseOpen}
+              onClick={() => setBrowseOpen((previous) => !previous)}
               className={cn(
-                'flex items-center gap-1.5 px-4 py-2.5 text-[15px] font-black transition-all rounded-full hover:bg-gray-50',
-                browseOpen ? 'text-[#00766C] bg-teal-50/50' : 'text-[#333333]'
+                'inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium transition-colors hover:bg-[#F4F7F7]',
+                browseOpen ? 'bg-[#E6F4F3] text-[#005A52]' : 'text-slate-700'
               )}
             >
               Browse
-              <ChevronDown className={cn("w-4 h-4 transition-transform duration-300", browseOpen && "rotate-180")} />
+              <ChevronDown className={cn('h-4 w-4 transition-transform', browseOpen && 'rotate-180')} />
             </button>
 
             {browseOpen && (
-              <div className="absolute left-0 top-full mt-2 bg-white border border-[#E5E5E5]/60 rounded-2xl shadow-2xl min-w-[240px] z-[110] p-2 animate-in fade-in zoom-in-95 duration-200">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-4 py-2">Specialties</p>
+              <div className="absolute left-0 top-full mt-3 w-[280px] overflow-hidden rounded-[24px] border border-[#E6E8EC] bg-white p-2 shadow-[0_24px_50px_-30px_rgba(15,23,42,0.24)]">
+                <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Specialties</p>
                 {SPECIALTIES.map((specialty) => (
                   <Link
                     key={specialty}
                     href={`/search?specialty=${encodeURIComponent(specialty)}`}
-                    className="flex items-center justify-between px-4 py-3 text-[14px] font-bold text-[#333333] rounded-xl hover:text-[#00766C] hover:bg-teal-50/50 transition-all group"
+                    className="flex items-center justify-between rounded-[16px] px-3 py-3 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F6FAF9] hover:text-[#005A52]"
                     onClick={() => setBrowseOpen(false)}
                   >
                     {specialty}
-                    <Sparkles className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Sparkles className="h-3.5 w-3.5 text-slate-300" />
                   </Link>
                 ))}
               </div>
             )}
           </div>
 
-          <Link href="/help" className="px-4 py-2.5 text-[15px] font-black text-[#333333] hover:text-[#00766C] hover:bg-gray-50 rounded-full transition-all">
-            Help
+          <Link href="/how-it-works" className="rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+            How it works
           </Link>
-
-          <Link href="/list-practice" className="hidden lg:inline-flex px-4 py-2.5 text-[15px] font-black text-[#333333] hover:text-[#00766C] hover:bg-gray-50 rounded-full transition-all">
-            List your practice
+          <Link href="/doctor-signup" className="rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+            For providers
           </Link>
         </nav>
 
-        {/* Desktop Auth */}
-        <div className="hidden md:flex items-center gap-4 pl-4 border-l border-gray-100">
-          <Link href="/login" className="text-[15px] font-black text-[#333333] hover:text-[#00766C] transition-colors flex items-center gap-1 group">
+        <div className="hidden items-center gap-3 lg:flex">
+          <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
             Log in
-            <ChevronDown className="w-4 h-4 text-gray-300 group-hover:text-[#00766C] transition-colors" />
           </Link>
-          <Link href="/signup" className="px-7 py-3 bg-[#00766C] text-white text-[15px] font-black rounded-full hover:bg-[#005A52] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-teal-100/50">
+          <Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-5 py-2.5 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52]">
             Sign up
           </Link>
         </div>
 
-        {/* Mobile menu trigger */}
         <button
-          className="md:hidden p-2.5 text-[#333333] bg-gray-50 rounded-xl active:scale-90 transition-transform"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-[#E6E8EC] bg-white text-slate-700 transition-all hover:border-[#00766C]/30 hover:text-[#005A52] lg:hidden"
+          onClick={() => setMobileMenuOpen((previous) => !previous)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-20 bg-white z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
-          <nav className="flex flex-col p-8 gap-8 overflow-y-auto max-h-[calc(100vh-80px)]">
-            <div className="space-y-6">
-               <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Discover</p>
-               <Link onClick={closeMobile} href="/search" className="flex items-center gap-4 text-[20px] font-black text-[#333333]">
-                 <div className="p-2.5 bg-teal-50 rounded-xl"><LayoutGrid className="w-6 h-6 text-[#00766C]" /></div>
-                 Browse Specialties
-               </Link>
-               <Link onClick={closeMobile} href="/help" className="flex items-center gap-4 text-[20px] font-black text-[#333333]">
-                 <div className="p-2.5 bg-teal-50 rounded-xl"><HelpCircle className="w-6 h-6 text-[#00766C]" /></div>
-                 Help Center
-               </Link>
+        <div className="border-t border-[#E6E8EC] bg-white lg:hidden">
+          <nav className="bp-shell flex flex-col gap-4 py-5">
+            <div className="space-y-2">
+              <Link onClick={closeMobile} href="/search" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+                <LayoutGrid className="h-5 w-5 text-[#00766C]" />
+                Browse Specialties
+              </Link>
+              <Link onClick={closeMobile} href="/how-it-works" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+                <HelpCircle className="h-5 w-5 text-[#00766C]" />
+                How it works
+              </Link>
             </div>
 
-            <div className="h-px bg-gray-100"></div>
+            <div className="h-px bg-[#E6E8EC]" />
 
-            <div className="space-y-6">
-               <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Account</p>
-               <Link onClick={closeMobile} href="/login" className="flex items-center gap-4 text-[20px] font-black text-[#333333]">
-                 <div className="p-2.5 bg-gray-50 rounded-xl"><LogIn className="w-6 h-6 text-gray-400" /></div>
-                 Log In
-               </Link>
-               <Link onClick={closeMobile} href="/signup" className="flex items-center gap-4 text-[20px] font-black text-[#333333]">
-                 <div className="p-2.5 bg-[#00766C] rounded-xl"><UserPlus className="w-6 h-6 text-white" /></div>
-                 Create Account
-               </Link>
-            </div>
-
-            <div className="mt-auto pt-8">
-               <Link onClick={closeMobile} href="/signup?type=provider" className="block w-full text-center py-5 bg-[#F9FAFB] border border-gray-100 text-[#333333] font-black rounded-2xl text-[16px] active:scale-95 transition-transform">
-                  List your practice on <span className="text-[#00766C]">BookPhysio</span>
-               </Link>
+            <div className="space-y-2">
+              <Link onClick={closeMobile} href="/login" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+                <LogIn className="h-5 w-5 text-slate-400" />
+                Log in
+              </Link>
+              <Link onClick={closeMobile} href="/signup" className="flex items-center gap-3 rounded-[18px] bg-[#00766C] px-4 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#005A52]">
+                <UserPlus className="h-5 w-5" />
+                Sign up
+              </Link>
             </div>
           </nav>
         </div>

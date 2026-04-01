@@ -708,28 +708,25 @@ Create the file with the following content:
 
 ---
 
-## Flow 11: Online Session Join — 100ms Room (Provider)
+## Flow 11: Provider Appointment Review (Provider)
 
-**Entry point:** `/provider/appointments/[id]` (appointment with visit_type = `online`)
+**Entry point:** `/provider/appointments/[id]` (appointment with visit_type = `in_clinic` or `home_visit`)
 
 **Happy path:**
-1. Provider opens appointment detail for an `online` session
-2. "Join Session" button visible (active 10 min before slot time)
-3. Provider clicks "Join Session" → `POST /api/telehealth/room` creates 100ms room
-4. Room URL returned → provider redirected into video room
-5. Patient joins from their appointment detail page (same room URL)
-6. Session ends → provider or patient clicks "End Session" → room closed via 100ms API
+1. Provider opens appointment detail for an `in_clinic` or `home_visit` appointment
+2. Appointment summary, patient notes, and booking details are visible
+3. Provider confirms arrival or readiness for the visit
+4. Provider marks the appointment complete after the consultation
+5. Follow-up notes are saved to the appointment record
 
 **Error paths:**
-- Room init failure (100ms API error): "Could not start video session. Please try again or contact the patient via phone."
-- Camera permission denied by browser: browser native permission prompt shown → if denied, show "Camera access required for video sessions. Please allow camera in browser settings."
-- Microphone permission denied by browser: same pattern as camera
-- Provider disconnects mid-session: patient sees "Provider disconnected" message; room remains open for 5 minutes for reconnection
-- Room auto-closes: room lifecycle managed by 100ms — closes when both participants leave or after session end time + 15 min buffer
+- Appointment lookup fails: show retry state
+- Provider not authorized: block access with a permission error
+- Appointment already closed: show read-only state
 
 **Edge cases:**
-- In-clinic or home-visit appointment: "Join Session" button not shown — not applicable
-- Provider joins before patient: waiting screen shown until patient joins
+- Patient cancels before arrival: provider sees cancellation banner
+- Provider marks no-show: appointment status updates accordingly
 
 ---
 

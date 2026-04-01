@@ -20,7 +20,7 @@ export interface ProviderLocation {
   pincode: string
   lat: number | null
   lng: number | null
-  visit_type: ('in_clinic' | 'home_visit' | 'online')[]
+  visit_type: ('in_clinic' | 'home_visit')[]
 }
 
 export interface ProviderCard {
@@ -35,7 +35,7 @@ export interface ProviderCard {
   experience_years: number | null
   consultation_fee_inr: number | null
   next_available_slot: string | null
-  visit_types: ('in_clinic' | 'home_visit' | 'online')[]
+  visit_types: ('in_clinic' | 'home_visit')[]
   city: string | null
   lat: number | null
   lng: number | null

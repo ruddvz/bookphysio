@@ -67,37 +67,37 @@
 
 :root {
   /* bookphysio.in design system — mapped to shadcn tokens */
-  --background: oklch(1 0 0);           /* #FFFFFF */
-  --foreground: oklch(0.22 0 0);        /* #333333 */
+  --background: oklch(0.985 0.002 240);
+  --foreground: oklch(0.22 0.01 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0 0);
+  --card-foreground: oklch(0.22 0.01 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0 0);
+  --popover-foreground: oklch(0.22 0.01 240);
   --primary: oklch(0.44 0.09 174);      /* #00766C teal */
   --primary-foreground: oklch(1 0 0);   /* white */
   --secondary: oklch(0.96 0.01 174);    /* #E6F4F3 teal-light */
   --secondary-foreground: oklch(0.44 0.09 174);
-  --muted: oklch(0.96 0 0);             /* #F5F5F5 */
-  --muted-foreground: oklch(0.46 0 0);  /* #6B6B6B */
+  --muted: oklch(0.97 0.005 240);       /* #F7F8F9 */
+  --muted-foreground: oklch(0.48 0.01 240);
   --accent: oklch(0.65 0.17 37);        /* #FF6B35 orange */
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.90 0 0);            /* #E5E5E5 */
-  --input: oklch(0.90 0 0);
+  --border: oklch(0.92 0.006 240);      /* #E6E8EC */
+  --input: oklch(0.92 0.006 240);
   --ring: oklch(0.44 0.09 174);
   --chart-1: oklch(0.44 0.09 174);
   --chart-2: oklch(0.65 0.17 37);
   --chart-3: oklch(0.60 0.09 174);
   --chart-4: oklch(0.80 0.06 174);
   --chart-5: oklch(0.35 0.09 174);
-  --radius: 0.5rem;                     /* 8px card radius */
-  --sidebar: oklch(0.96 0.01 174);
-  --sidebar-foreground: oklch(0.22 0 0);
+  --radius: 0.75rem;                    /* 12px base radius */
+  --sidebar: oklch(0.97 0.006 240);
+  --sidebar-foreground: oklch(0.22 0.01 240);
   --sidebar-primary: oklch(0.44 0.09 174);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.96 0.01 174);
+  --sidebar-accent: oklch(0.97 0.006 240);
   --sidebar-accent-foreground: oklch(0.44 0.09 174);
-  --sidebar-border: oklch(0.90 0 0);
+  --sidebar-border: oklch(0.92 0.006 240);
   --sidebar-ring: oklch(0.44 0.09 174);
 }
 
@@ -144,30 +144,85 @@
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    color: #333333;
-    background-color: #FFFFFF;
+    color: #1F2937;
+    background-color: #F7F8F9;
+    background-image: radial-gradient(circle at top left, rgba(0, 118, 108, 0.06), transparent 28%), linear-gradient(180deg, #FFFFFF 0%, #F7F8F9 100%);
     overflow-x: hidden;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   h1 {
-    font-size: 44px;
-    line-height: 60px;
-    font-weight: 600;
-    color: #333333;
+    font-size: 48px;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: #111827;
   }
   h2 {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 600;
-    color: #333333;
+    font-size: 32px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #111827;
   }
   h3 {
     font-size: 20px;
-    line-height: 28px;
+    line-height: 1.2;
     font-weight: 600;
-    color: #333333;
+    color: #111827;
+  }
+}
+
+@layer components {
+  .bp-shell {
+    width: 100%;
+    max-width: 1142px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .bp-section {
+    @apply py-20 md:py-28;
+  }
+
+  .bp-section-tight {
+    @apply py-16 md:py-20;
+  }
+
+  .bp-kicker {
+    @apply inline-flex items-center gap-2 rounded-full border border-[#DCE3E7] bg-white px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C];
+  }
+
+  .bp-title {
+    @apply text-[32px] font-semibold tracking-[-0.04em] text-slate-900 md:text-[44px];
+  }
+
+  .bp-copy {
+    @apply text-[16px] leading-7 text-slate-600 md:text-[18px];
+  }
+
+  .bp-card {
+    @apply rounded-[24px] border border-[#E6E8EC] bg-white shadow-[0_20px_45px_-30px_rgba(15,23,42,0.22)];
+  }
+
+  .bp-card-soft {
+    @apply rounded-[24px] border border-[#E8ECEF] bg-[#FCFDFD];
+  }
+
+  .bp-chip {
+    @apply inline-flex items-center rounded-full border border-[#DDE3E8] bg-white px-4 py-2 text-[13px] font-semibold text-slate-600 transition-all duration-200;
+  }
+
+  .bp-chip-active {
+    @apply border-[#00766C] bg-[#E6F4F3] text-[#005A52];
+  }
+
+  .bp-stat-card {
+    @apply rounded-[20px] border border-[#E6E8EC] bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.2)];
   }
 }
 
@@ -194,6 +249,11 @@
 }
 
 @media (min-width: 1024px) {
+  .bp-shell {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+
   .container-bp {
     padding-left: 60px;
     padding-right: 60px;
@@ -202,11 +262,11 @@
 
 @media (max-width: 768px) {
   h1 {
-    font-size: 32px;
-    line-height: 44px;
+    font-size: 36px;
+    line-height: 1.08;
   }
   h2 {
-    font-size: 20px;
-    line-height: 28px;
+    font-size: 24px;
+    line-height: 1.15;
   }
 }

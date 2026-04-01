@@ -23,7 +23,7 @@ import { DashboardSkeleton } from './DashboardSkeleton'
 interface MockAppointment {
   id: string
   status: string
-  visit_type: 'in_clinic' | 'home_visit' | 'online'
+  visit_type: 'in_clinic' | 'home_visit'
   fee_inr: number
   availabilities: { starts_at: string } | null
   providers: {
@@ -105,7 +105,7 @@ describe('mock appointment shape', () => {
   })
 
   it('visit_type is one of the valid enum values', () => {
-    const valid = ['in_clinic', 'home_visit', 'online']
+    const valid = ['in_clinic', 'home_visit']
     expect(valid).toContain(mockAppointment.visit_type)
   })
 

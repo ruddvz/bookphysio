@@ -26,9 +26,11 @@ RETURNS TABLE (
   rating_count int,
   experience_years int,
   consultation_fee_inr int,
+  location_id uuid,
   city text,
   lat numeric(10,7),
   lng numeric(10,7),
+  visit_types text[],
   distance_km numeric,
   total_count bigint
 ) AS $$
@@ -69,7 +71,8 @@ BEGIN
   SELECT 
     f.id, f.slug, f.full_name, f.title, f.avatar_url,
     f.rating_avg, f.rating_count, f.experience_years,
-    f.consultation_fee_inr, f.city, f.lat, f.lng,
+    f.consultation_fee_inr, l.id AS location_id, f.city, f.lat, f.lng,
+    l.visit_type AS visit_types,
     f.dist::numeric AS distance_km,
     c.total AS total_count
   FROM filtered_providers f, count_table c

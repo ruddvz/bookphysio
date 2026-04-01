@@ -12,7 +12,6 @@
 | `razorpay.ts` | Razorpay payment gateway | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | `/api/payments/*` routes |
 | `msg91.ts` | MSG91 SMS/OTP (India) | `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID` | `/api/auth/otp/*` routes |
 | `resend.ts` | Resend transactional email | `RESEND_API_KEY` | Booking confirmation, notifications |
-| `hundredms.ts` | 100ms telehealth video | `HMS_ACCESS_KEY`, `HMS_SECRET` | `/api/telehealth/room` |
 | `mapbox.ts` | Mapbox geocoding | `MAPBOX_ACCESS_TOKEN` | Provider onboarding (address → lat/lng) |
 | `upstash.ts` | Upstash Redis rate limiting | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | `middleware.ts` |
 | `utils.ts` | Utility: `cn()` classname merge | — | All UI components |
@@ -56,10 +55,6 @@ MSG91_SENDER_ID=
 
 # Resend (email)
 RESEND_API_KEY=
-
-# 100ms (telehealth)
-HMS_ACCESS_KEY=
-HMS_SECRET=
 
 # Mapbox (geocoding)
 MAPBOX_ACCESS_TOKEN=

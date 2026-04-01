@@ -3,7 +3,7 @@ export type SlotStatus = 'booked' | 'available' | 'blocked' | 'empty'
 export interface Slot {
   status: SlotStatus
   patientName?: string
-  visitType?: 'in_clinic' | 'home_visit' | 'online'
+  visitType?: 'in_clinic' | 'home_visit'
 }
 
 export type WeekGrid = Record<string, Record<number, Slot>>
@@ -75,7 +75,7 @@ export function buildMockGrid(days: Date[]): WeekGrid {
       if (isToday) {
         if (h === 9) grid[key][h] = { status: 'booked', patientName: 'Anil Kumar', visitType: 'in_clinic' }
         else if (h === 11) grid[key][h] = { status: 'booked', patientName: 'Priya Nair', visitType: 'home_visit' }
-        else if (h === 14) grid[key][h] = { status: 'booked', patientName: 'Suresh Pillai', visitType: 'online' }
+        else if (h === 14) grid[key][h] = { status: 'booked', patientName: 'Suresh Pillai', visitType: 'home_visit' }
         else if (h === 13) grid[key][h] = { status: 'blocked' }
         else grid[key][h] = { status: 'available' }
         return

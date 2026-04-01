@@ -40,7 +40,6 @@ interface Step4Data {
   fees: {
     in_clinic: string
     home_visit: string
-    online: string
   }
   slotDuration: '30' | '45' | '60' | ''
   availability: Record<string, DayAvailability>
@@ -72,12 +71,10 @@ const CITIES = [
 const VISIT_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
   home_visit: 'Home Visit',
-  online: 'Online',
 }
 const FEE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic consultation fee',
   home_visit: 'Home visit fee',
-  online: 'Online consultation fee',
 }
 const OTP_LENGTH = 6
 
@@ -678,7 +675,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
     })
   }
 
-  const allVisitTypes = ['in_clinic', 'home_visit', 'online']
+  const allVisitTypes = ['in_clinic', 'home_visit']
 
   return (
     <div>
@@ -964,7 +961,7 @@ export default function DoctorSignupPage() {
     clinicName: '', address: '', city: '', pincode: '', visitTypes: [],
   })
   const [step4, setStep4] = useState<Step4Data>({
-    fees: { in_clinic: '', home_visit: '', online: '' },
+    fees: { in_clinic: '', home_visit: '' },
     slotDuration: '',
     availability: buildInitialAvailability(),
   })

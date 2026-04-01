@@ -26,7 +26,7 @@ describe('CityPage', () => {
     render(Result)
     
     expect(screen.getByText('No providers currently in Surat')).toBeInTheDocument()
-    expect(screen.getByText(/Explore Online Physiotherapists/i)).toBeInTheDocument()
+    expect(screen.getByText(/Explore Other Cities/i)).toBeInTheDocument()
   })
 
   it('generates correct metadata for a city', async () => {

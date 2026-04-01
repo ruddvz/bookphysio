@@ -2,12 +2,12 @@
 
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft, Video, Loader2 } from 'lucide-react'
+import { CalendarDays, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 interface AppointmentDetail {
@@ -15,7 +15,6 @@ interface AppointmentDetail {
   visit_type: VisitType
   status: AppointmentStatus
   fee_inr: number
-  telehealth_room_id: string | null
   notes: string | null
   created_at: string
   availabilities: { starts_at: string; ends_at: string; slot_duration_mins: number }
@@ -29,11 +28,6 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> =
   cancelled: { label: 'Cancelled', cls: 'bg-red-100 text-red-700'      },
   completed: { label: 'Completed', cls: 'bg-green-100 text-green-700'  },
   no_show:   { label: 'No Show',   cls: 'bg-gray-100 text-gray-600'    },
-}
-
-function canJoinNow(startsAt: string): boolean {
-  const diff = new Date(startsAt).getTime() - Date.now()
-  return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000
 }
 
 export default function PatientAppointmentDetail() {
@@ -96,7 +90,6 @@ export default function PatientAppointmentDetail() {
   })
   const refCode = `BP-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const status = STATUS_CONFIG[appt.status]
-  const joinEnabled = appt.visit_type === 'online' && appt.status === 'confirmed' && canJoinNow(appt.availabilities.starts_at)
   const canCancel = ['pending', 'confirmed'].includes(appt.status)
   const gst = appt.fee_inr - Math.round(appt.fee_inr / 1.18)
 
@@ -145,31 +138,6 @@ export default function PatientAppointmentDetail() {
                 </p>
               )}
 
-              {appt.visit_type === 'online' && (
-                <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  <span className="flex items-center gap-2 text-[15px] text-[#333333]">
-                    <Video className="w-4 h-4 text-[#4F46E5] shrink-0" />
-                    Online Session
-                  </span>
-                  {joinEnabled ? (
-                    <Link
-                      href={`/patient/telehealth/${appt.id}`}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-full text-[13px] font-semibold transition-colors"
-                    >
-                      <Video className="w-3.5 h-3.5" />
-                      Join Session
-                    </Link>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#4F46E5]/30 text-white rounded-full text-[13px] font-semibold cursor-not-allowed">
-                      <Video className="w-3.5 h-3.5" />
-                      Join Session
-                    </span>
-                  )}
-                  {!joinEnabled && (
-                    <span className="text-[12px] text-[#999999]">Available 15 min before</span>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>

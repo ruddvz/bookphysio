@@ -4,7 +4,7 @@ import { ShieldCheck, Home, IndianRupee, Zap, Globe, Heart } from 'lucide-react'
 
 const benefits = [
   { title: 'Verified Experts', text: 'Every therapist on our platform is verified for credentials and clinical experience.', icon: ShieldCheck },
-  { title: 'Convenience First', text: 'Choose between visiting a clinic, having a therapist come to your home, or connecting online.', icon: Home },
+  { title: 'Convenience First', text: 'Choose between visiting a clinic or having a therapist come to your home.', icon: Home },
   { title: 'Transparent Pricing', text: 'Know exactly what you pay before you book. No hidden charges or registration fees.', icon: IndianRupee },
   { title: 'Seamless Booking', text: 'Book your session in under a minute with our intuitive interface.', icon: Zap },
 ]
@@ -44,7 +44,7 @@ export default function AboutPage() {
                 </p>
                 <p className="text-[18px] leading-[1.8] text-[#555555]">
                   Our platform connects patients with verified, ICP-registered physiotherapists
-                  for in-clinic, home-visit, and online sessions, ensuring you get the care
+                  for in-clinic and home-visit sessions, ensuring you get the care
                   you need, wherever you are.
                 </p>
               </div>

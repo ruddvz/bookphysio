@@ -2,12 +2,12 @@
 
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Video, Loader2 } from 'lucide-react'
+import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 interface AppointmentDetail {
@@ -29,11 +29,6 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> =
   cancelled: { label: 'Cancelled', cls: 'bg-red-50 border-red-100 text-red-700' },
   completed: { label: 'Completed', cls: 'bg-blue-50 border-blue-100 text-blue-700' },
   no_show:   { label: 'No Show',   cls: 'bg-gray-50 border-gray-100 text-gray-600' },
-}
-
-function canJoinNow(startsAt: string): boolean {
-  const diff = new Date(startsAt).getTime() - Date.now()
-  return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000
 }
 
 export default function ProviderAppointmentDetail() {
@@ -103,10 +98,7 @@ export default function ProviderAppointmentDetail() {
   const endTime = new Date(appt.availabilities.ends_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
   const refCode = `BP-RECA-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const statusCfg = STATUS_CONFIG[appt.status]
-  const joinEnabled = appt.visit_type === 'online' && appt.status === 'confirmed' && canJoinNow(appt.availabilities.starts_at)
-  const locationLabel = appt.visit_type === 'online'
-    ? 'Online Session'
-    : appt.visit_type === 'home_visit'
+  const locationLabel = appt.visit_type === 'home_visit'
     ? 'Home Visit'
     : appt.locations ? `${appt.locations.name}, ${appt.locations.city}` : 'Clinic'
 
@@ -138,15 +130,6 @@ export default function ProviderAppointmentDetail() {
             <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
             {statusCfg.label}
           </div>
-          {joinEnabled && (
-            <Link
-              href={`/provider/telehealth/${appt.id}`}
-              className="flex items-center gap-2 px-5 py-3 bg-[#4F46E5] text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-[#4338CA] transition-colors no-underline"
-            >
-              <Video size={16} />
-              Join Call
-            </Link>
-          )}
           <button className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
             <MoreHorizontal size={20} />
           </button>

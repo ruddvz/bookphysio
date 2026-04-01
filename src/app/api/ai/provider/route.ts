@@ -1,6 +1,24 @@
 import { providerModels } from '@/lib/ai-config'
 import { streamText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+import { createClient } from '@/lib/supabase/server'
+import { aiChatRequestSchema } from '@/lib/validations/ai'
+
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null
+
+const ratelimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, '1 h'),
+    })
+  : null
 
 // MOCK KNOWLEDGE BASE (In production, replace with Supabase pgvector)
 const CLINICAL_KNOWLEDGE = `
@@ -13,10 +31,38 @@ const CLINICAL_KNOWLEDGE = `
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
+
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'provider') {
+      return new NextResponse('Forbidden', { status: 403 })
+    }
+
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(user.id)
+      if (!success) {
+        return new NextResponse('Rate limit exceeded. Please wait a bit before asking BookPhysio AI again.', { status: 429 })
+      }
+    }
+
+    const parsed = aiChatRequestSchema.safeParse(await req.json())
+    if (!parsed.success) {
+      return new NextResponse('Invalid chat request.', { status: 400 })
+    }
+
+    const { messages } = parsed.data
 
     const systemPrompt = `
-      You are Motio Research AI, built for BookPhysio.in's registered physiotherapists.
+      You are BookPhysio AI, the clinical copilot for registered physiotherapists on BookPhysio.in.
       You are a clinical decision support tool designed to provide peer-reviewed, evidence-based physical therapy protocols.
       
       YOUR ROLE:
@@ -29,9 +75,9 @@ export async function POST(req: NextRequest) {
       Tone: Academic, concise, medical professional. Do not use empathetic fluff. Use anatomical and biomechanical terminology.
       
       STRICT GUARDRAILS:
-      - Motio Research AI is exclusively a strict clinical decision support engine for Physiotherapists.
+      - BookPhysio AI is exclusively a strict clinical decision support engine for physiotherapists.
       - If the prompt is outside the scope of physical therapy, biomechanics, injury protocols, or clinical research (e.g., asking for a cookie recipe, Python code, history facts, or legal advice), you MUST outright decline.
-      - Never break character. Never answer off-topic queries. Reply: "I am a clinical decision support tool for BookPhysio.in. I cannot process inquiries outside the scope of musculoskeletal rehabilitation and physiotherapy research."
+      - Never break character. Never answer off-topic queries. Reply: "I am BookPhysio AI, a clinical decision support tool for BookPhysio.in. I cannot process inquiries outside the scope of musculoskeletal rehabilitation and physiotherapy research."
     `
 
     const result = streamText({
@@ -45,6 +91,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Provider AI Error:', error)
-    return new NextResponse('An error occurred. Motio is currently syncing with the database.', { status: 500 })
+    return new NextResponse('An error occurred. BookPhysio AI is currently syncing with the database.', { status: 500 })
   }
 }

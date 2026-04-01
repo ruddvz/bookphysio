@@ -6,7 +6,6 @@
 
 **Architecture:** Clone the ai-website-cloner-template (Next.js 15 + shadcn/ui pre-wired) into the bookphysio repo, layer in the full Supabase schema (14 tables + RLS), implement API routes under `src/app/api/`, and export TypeScript types to `src/app/api/contracts/` as the source of truth for all UI agents.
 
-**Tech Stack:** Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, Supabase (PostgreSQL + Auth + Storage), Zod, Razorpay, 100ms, Resend, MSG91, Upstash Redis, Vitest
 
 ---
 
@@ -15,7 +14,6 @@
 ### Scaffold / Config
 | File | Responsibility |
 |------|---------------|
-| `package.json` | Dependencies: next, react, supabase, zod, razorpay, @100mslive/server-sdk, resend, vitest |
 | `tsconfig.json` | Strict TypeScript config with path aliases |
 | `tailwind.config.ts` | Tailwind v4 config + Zocdoc design tokens |
 | `.env.example` | All required env vars documented |
@@ -40,7 +38,6 @@
 | `src/lib/resend.ts` | Resend email client + booking confirmation template |
 | `src/lib/msg91.ts` | MSG91 SMS client + OTP send/verify |
 | `src/lib/mapbox.ts` | Mapbox geocoding helper (address → lat/lng) |
-| `src/lib/hundredms.ts` | 100ms management token + room creation |
 | `src/lib/upstash.ts` | Upstash Redis client for rate limiting |
 
 ### Zod Validation Schemas
@@ -68,7 +65,6 @@
 | `src/app/api/payments/create-order/route.ts` | POST — create Razorpay order |
 | `src/app/api/payments/webhook/route.ts` | POST — Razorpay webhook (confirms appointment) |
 | `src/app/api/payments/refund/route.ts` | POST — initiate refund for cancelled appointment |
-| `src/app/api/telehealth/room/route.ts` | POST — create 100ms room for appointment |
 | `src/app/api/reviews/route.ts` | POST — create review (after completed appointment) |
 | `src/app/api/notifications/route.ts` | GET — list notifications for current user |
 | `src/app/api/notifications/[id]/read/route.ts` | PATCH — mark notification read |
@@ -127,7 +123,6 @@ npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-al
 - [ ] **Step 1.2: Install all project dependencies**
 
 ```bash
-npm install @supabase/supabase-js @supabase/ssr zod razorpay @100mslive/server-sdk resend zustand @tanstack/react-query mapbox-gl lucide-react
 npm install -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/jest-dom @types/node
 npx shadcn@latest init
 ```
@@ -204,9 +199,6 @@ RAZORPAY_KEY_ID=rzp_test_xxxx
 RAZORPAY_KEY_SECRET=your-secret
 RAZORPAY_WEBHOOK_SECRET=your-webhook-secret
 
-# 100ms (telehealth)
-HMS_APP_ACCESS_KEY=your-access-key
-HMS_APP_SECRET=your-app-secret
 HMS_TEMPLATE_ID=your-template-id
 
 # Mapbox
@@ -456,7 +448,6 @@ export const supabaseAdmin = createClient(
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED_PREFIXES = ['/dashboard', '/appointments', '/book', '/telehealth', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
 
 export async function middleware(request: NextRequest) {
@@ -604,7 +595,6 @@ CREATE TABLE locations (
   lat numeric(10,7),
   lng numeric(10,7),
   visit_type text[] NOT NULL DEFAULT '{in_clinic}'
-    CHECK (visit_type <@ ARRAY['in_clinic','home_visit','online']::text[])
 );
 
 -- Provider availability slots
@@ -630,12 +620,10 @@ CREATE TABLE appointments (
   provider_id uuid NOT NULL REFERENCES providers(id) ON DELETE RESTRICT,
   availability_id uuid NOT NULL REFERENCES availabilities(id) ON DELETE RESTRICT,
   location_id uuid REFERENCES locations(id) ON DELETE SET NULL,
-  visit_type text NOT NULL CHECK (visit_type IN ('in_clinic','home_visit','online')),
   status text NOT NULL DEFAULT 'pending'
     CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
   insurance_id uuid REFERENCES insurances(id) ON DELETE SET NULL,
   fee_inr int NOT NULL CHECK (fee_inr >= 0),
-  telehealth_room_id text,
   notes text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
@@ -1049,7 +1037,6 @@ export const searchFiltersSchema = z.object({
   city: z.string().optional(),
   specialty_id: z.string().uuid().optional(),
   insurance_id: z.string().uuid().optional(),
-  visit_type: z.enum(['in_clinic', 'home_visit', 'online']).optional(),
   available_date: z.string().date().optional(), // YYYY-MM-DD
   min_rating: z.coerce.number().min(1).max(5).optional(),
   max_fee_inr: z.coerce.number().min(0).optional(),
@@ -1068,7 +1055,6 @@ export const createAppointmentSchema = z.object({
   provider_id: z.string().uuid(),
   availability_id: z.string().uuid(),
   location_id: z.string().uuid().optional(),
-  visit_type: z.enum(['in_clinic', 'home_visit', 'online']),
   insurance_id: z.string().uuid().optional(),
   notes: z.string().max(500).optional(),
 })
@@ -1145,7 +1131,6 @@ export const locationSchema = z.object({
   city: z.string().min(1).max(100),
   state: z.string().min(1).max(100),
   pincode: pincodeSchema,
-  visit_type: z.array(z.enum(['in_clinic', 'home_visit', 'online'])).min(1),
 })
 
 export type ProviderProfileInput = z.infer<typeof providerProfileSchema>
@@ -1344,18 +1329,14 @@ import jwt from 'jsonwebtoken'
 
 function createManagementToken(): string {
   const payload = {
-    access_key: process.env.HMS_APP_ACCESS_KEY!,
     type: 'management',
     version: 2,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 86400, // 24h
   }
-  return jwt.sign(payload, process.env.HMS_APP_SECRET!, { algorithm: 'HS256' })
 }
 
-export async function createTelehealthRoom(appointmentId: string): Promise<string> {
   const token = createManagementToken()
-  const res = await fetch('https://api.100ms.live/v2/rooms', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -1363,7 +1344,6 @@ export async function createTelehealthRoom(appointmentId: string): Promise<strin
     },
     body: JSON.stringify({
       name: `appointment-${appointmentId}`,
-      description: `bookphysio telehealth session`,
       template_id: process.env.HMS_TEMPLATE_ID,
     }),
   })
@@ -1413,7 +1393,6 @@ npm install @upstash/redis @upstash/ratelimit
 
 ```bash
 rtk git add src/lib/razorpay.ts src/lib/resend.ts src/lib/msg91.ts src/lib/mapbox.ts src/lib/hundredms.ts src/lib/upstash.ts
-rtk git commit -m "feat: add external service clients (Razorpay, Resend, MSG91, Mapbox, 100ms, Upstash)"
 ```
 
 ---
@@ -1472,7 +1451,6 @@ export interface ProviderLocation {
   pincode: string
   lat: number | null
   lng: number | null
-  visit_type: ('in_clinic' | 'home_visit' | 'online')[]
 }
 
 export interface ProviderCard {
@@ -1487,7 +1465,6 @@ export interface ProviderCard {
   experience_years: number | null
   consultation_fee_inr: number | null
   next_available_slot: string | null // ISO datetime
-  visit_types: ('in_clinic' | 'home_visit' | 'online')[]
   city: string | null
   insurances: Insurance[]
 }
@@ -1508,7 +1485,6 @@ export interface ProviderProfile extends ProviderCard {
 import type { ProviderCard, ProviderLocation } from './provider'
 import type { UserProfile } from './user'
 
-export type VisitType = 'in_clinic' | 'home_visit' | 'online'
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 export interface AppointmentSlot {
@@ -1529,7 +1505,6 @@ export interface Appointment {
   status: AppointmentStatus
   fee_inr: number
   insurance_id: string | null
-  telehealth_room_id: string | null
   notes: string | null
   created_at: string
 }
@@ -1620,7 +1595,6 @@ export interface SearchFilters {
   city?: string
   specialty_id?: string
   insurance_id?: string
-  visit_type?: 'in_clinic' | 'home_visit' | 'online'
   available_date?: string
   min_rating?: number
   max_fee_inr?: number
@@ -2356,10 +2330,8 @@ rtk git commit -m "feat: add auth API routes — signup, OTP send/verify with ra
 
 ---
 
-## Task 10: Additional API Routes (Telehealth, Reviews, Notifications, Upload, Admin)
 
 **Files:**
-- Create: `src/app/api/telehealth/room/route.ts`
 - Create: `src/app/api/reviews/route.ts`
 - Create: `src/app/api/notifications/route.ts`
 - Create: `src/app/api/notifications/[id]/read/route.ts`
@@ -2367,13 +2339,10 @@ rtk git commit -m "feat: add auth API routes — signup, OTP send/verify with ra
 - Create: `src/app/api/admin/users/route.ts`
 - Create: `src/app/api/admin/listings/route.ts`
 
-- [ ] **Step 10.1: Create telehealth room route**
 
-Create `src/app/api/telehealth/room/route.ts`:
 ```typescript
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createTelehealthRoom } from '@/lib/hundredms'
 import { z } from 'zod'
 
 const schema = z.object({ appointment_id: z.string().uuid() })
@@ -2390,24 +2359,18 @@ export async function POST(request: NextRequest) {
 
   const { data: appt } = await supabase
     .from('appointments')
-    .select('id, visit_type, status, patient_id, provider_id, telehealth_room_id')
     .eq('id', appointment_id)
     .single()
 
   if (!appt) return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
-  if (appt.visit_type !== 'online') return NextResponse.json({ error: 'Not a telehealth appointment' }, { status: 400 })
   if (appt.status !== 'confirmed') return NextResponse.json({ error: 'Appointment not confirmed' }, { status: 409 })
   if (appt.patient_id !== user.id && appt.provider_id !== user.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   // Reuse existing room if already created
-  if (appt.telehealth_room_id) {
-    return NextResponse.json({ room_id: appt.telehealth_room_id })
   }
 
-  const roomId = await createTelehealthRoom(appointment_id)
-  await supabase.from('appointments').update({ telehealth_room_id: roomId }).eq('id', appointment_id)
 
   return NextResponse.json({ room_id: roomId })
 }
@@ -2638,8 +2601,6 @@ export async function PATCH(request: NextRequest) {
 - [ ] **Step 10.6: Commit**
 
 ```bash
-rtk git add src/app/api/telehealth/ src/app/api/reviews/ src/app/api/notifications/ src/app/api/upload/ src/app/api/admin/
-rtk git commit -m "feat: add telehealth, reviews, notifications, upload, and admin API routes"
 ```
 
 ---
@@ -2695,10 +2656,8 @@ After completing this plan, the project will have:
 
 1. **Scaffolded Next.js 15 project** with full tooling (TypeScript strict, Tailwind v4 + Zocdoc tokens, Vitest)
 2. **Supabase database** — 14 tables, RLS policies, performance indexes, seed data
-3. **All external service clients** — Razorpay, Resend, MSG91, Mapbox, 100ms, Upstash
 4. **Zod validation schemas** for every API input boundary
 5. **API contracts** published to `src/app/api/contracts/` — UI agents can start building immediately
-6. **20 API routes** covering providers, appointments, payments, auth, telehealth, reviews, notifications, uploads, admin
 7. **Auth middleware** protecting all portal routes
 
 **Next plans (after this):**

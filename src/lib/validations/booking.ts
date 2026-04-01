@@ -4,7 +4,7 @@ export const createAppointmentSchema = z.object({
   provider_id: z.string().uuid(),
   availability_id: z.string().uuid(),
   location_id: z.string().uuid().optional(),
-  visit_type: z.enum(['in_clinic', 'home_visit', 'online']),
+  visit_type: z.enum(['in_clinic', 'home_visit']),
   insurance_id: z.string().uuid().optional(),
   notes: z.string().max(500).optional(),
 })

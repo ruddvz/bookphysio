@@ -8,6 +8,19 @@
 
 ## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.5 Done ✓
 
+## ✨ Current UI Refresh — BookPhysio AI + Premium Ops Pass
+- [x] Unified patient and provider chat into BookPhysio AI
+- [x] Search empty states upgraded with demo result cards
+- [x] Admin overview, users, and approval queue refreshed
+- [x] Dashboard AI shortcuts added for patient + provider flows
+- [x] Build verification and review
+
+## 🎨 Current UI Refresh — 21st.dev-Inspired Pass
+- [x] Global tokens and chrome refresh
+- [x] Homepage hero, specialties, how-it-works, and trust sections
+- [x] Shared doctor cards and loading states
+- [x] Build verification and review
+
 Latest Session Work (2026-04-01):
 - [x] Fixed Vitest configuration (excluded Server Component tests, added rpc mock)
 - [x] All 68 tests passing ✓
@@ -23,7 +36,7 @@ Latest Session Work (2026-04-01):
   - UI: KPI cards + Revenue Pulse SVG chart wired to real data (React Query)
   - Build green ✓ | Tests green (68/68) ✓ | Commit done ✓
 - [x] **11.4 — Core Page Wiring (Launch Readiness)** ✓
-  - Patient appointment detail: real API, cancel confirmation, online join logic
+  - Patient appointment detail: real API, cancel confirmation, booking flow polish
   - Provider appointment detail: real API, patient profile, clinical notes save
   - API: /api/appointments/[id] now includes patient_profile in response
   - API: /api/profile — GET + PATCH user profile
@@ -45,9 +58,6 @@ Latest Session Work (2026-04-01):
 
 ### Medium Priority (P2)
 - None at this time
-
-### Low Priority / Deferred (P3)
-- Telehealth video rooms (11.4 from original queue) — deferred, do last
 
 ### Low Priority (P3)
 - [ ] **11.5** Mobile app (React Native / Expo)

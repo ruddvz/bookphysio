@@ -9,7 +9,7 @@ import { formatApptDate, providerDisplayName } from './dashboard-utils'
 import { DashboardSkeleton } from './DashboardSkeleton'
 import { cn } from '@/lib/utils'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 
 interface Appointment {
   id: string
@@ -27,13 +27,11 @@ interface Appointment {
 const VISIT_TYPE_LABELS: Record<VisitType, string> = {
   in_clinic: 'In Clinic',
   home_visit: 'Home Visit',
-  online: 'Online',
 }
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
   in_clinic: 'bg-teal-50 text-teal-700 border-teal-100',
   home_visit: 'bg-orange-50 text-orange-700 border-orange-100',
-  online: 'bg-blue-50 text-blue-700 border-blue-100',
 }
 
 export default function PatientDashboardHome() {
@@ -74,6 +72,36 @@ export default function PatientDashboardHome() {
     return a.status === 'completed' || (start && new Date(start) < now)
   })
   const nextAppt = upcoming[0] ?? null
+   const snapshotCards = [
+      {
+         title: 'Next session',
+         value: nextAppt?.availabilities?.starts_at ? formatApptDate(nextAppt.availabilities.starts_at) : 'No booking yet',
+         detail: nextAppt ? providerDisplayName(nextAppt) : 'Use BookPhysio AI to find your next match',
+         icon: Calendar,
+         href: '/patient/appointments',
+      },
+      {
+         title: 'Recovery pace',
+         value: '72%',
+         detail: 'On track with your mobility goal',
+         icon: Activity,
+         href: '/patient/motio',
+      },
+      {
+         title: 'Care team',
+         value: `${past.length}`,
+         detail: 'Previous specialists in your record',
+         icon: Users,
+         href: '/search',
+      },
+      {
+         title: 'AI guidance',
+         value: 'BookPhysio AI',
+         detail: 'Triage symptoms in one focused chat',
+         icon: MessageSquare,
+         href: '/patient/motio',
+      },
+   ]
 
   if (loading) return <DashboardSkeleton />
 
@@ -94,16 +122,51 @@ export default function PatientDashboardHome() {
              Welcome back to your recovery hub. You have <span className="text-[#333333] font-black">{upcoming.length} upcoming sessions</span> this week.
            </p>
         </div>
-        <Link
-          href="/search"
-          className="flex items-center gap-4 px-10 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-gray-200"
-        >
-          Book New Therapy
-          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-             <CalendarPlus size={18} strokeWidth={3} />
-          </div>
-        </Link>
+            <div className="flex flex-wrap gap-3">
+               <Link
+                  href="/search"
+                  className="flex items-center gap-4 px-10 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-gray-200"
+               >
+                  Book New Therapy
+                  <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+                      <CalendarPlus size={18} strokeWidth={3} />
+                  </div>
+               </Link>
+               <Link
+                  href="/patient/motio"
+                  className="flex items-center gap-4 px-8 py-5 bg-white border border-gray-100 text-[#333333] text-[16px] font-black rounded-[24px] hover:border-teal-100 hover:text-[#00766C] transition-all hover:scale-[1.02] active:scale-[0.97] shadow-sm"
+               >
+                  Ask BookPhysio AI
+                  <div className="w-8 h-8 rounded-xl bg-[#E6F4F3] flex items-center justify-center text-[#00766C]">
+                      <MessageSquare size={18} strokeWidth={3} />
+                  </div>
+               </Link>
+            </div>
       </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
+            {snapshotCards.map((card) => {
+               const SnapshotIcon = card.icon
+
+               return (
+                  <Link
+                     key={card.title}
+                     href={card.href}
+                     className="group rounded-[28px] border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-teal-100 hover:shadow-xl"
+                  >
+                     <div className="flex items-center justify-between gap-4">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E6F4F3] text-[#00766C] transition-transform group-hover:scale-105">
+                           <SnapshotIcon size={20} strokeWidth={2.5} />
+                        </div>
+                        <ArrowUpRight size={18} className="text-gray-300 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                     </div>
+                     <p className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">{card.title}</p>
+                     <p className="mt-1 text-[18px] font-black tracking-tight text-[#333333]">{card.value}</p>
+                     <p className="mt-2 text-[12px] font-medium leading-relaxed text-[#888888]">{card.detail}</p>
+                  </Link>
+               )
+            })}
+         </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
         
@@ -187,10 +250,10 @@ export default function PatientDashboardHome() {
                             <p className="text-[15px] font-black text-[#333333] truncate">{providerDisplayName(a)}</p>
                             <p className="text-[12px] font-bold text-gray-400 truncate">{a.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</p>
                          </div>
-                         <Link 
-                           href={`/search?provider_id=${a.providers?.users?.full_name}`} 
-                           className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#00766C] group-hover:text-white transition-all shadow-sm"
-                         >
+                                     <Link 
+                                        href={`/patient/appointments/${a.id}`} 
+                                        className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#00766C] group-hover:text-white transition-all shadow-sm"
+                                     >
                             <ArrowUpRight size={18} strokeWidth={3} />
                          </Link>
                       </div>
@@ -304,20 +367,20 @@ export default function PatientDashboardHome() {
            </div>
 
            {/* Support Mini Widget */}
-           <div className="bg-gray-50 rounded-[40px] p-8 border border-gray-100 group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300">
+           <Link href="/patient/motio" className="bg-gray-50 rounded-[40px] p-8 border border-gray-100 group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300 block">
               <div className="flex items-center gap-5">
                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-sm transition-transform group-hover:rotate-12">
                     <MessageSquare size={20} />
                  </div>
                  <div className="flex-1">
                     <p className="text-[15px] font-black text-[#333333] leading-none mb-1">Need help?</p>
-                    <p className="text-[12px] font-bold text-gray-400">Ask your clinical advisor</p>
+                    <p className="text-[12px] font-bold text-gray-400">Ask BookPhysio AI</p>
                  </div>
                  <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 group-hover:text-teal-600 group-hover:border-teal-100 transition-colors">
                     <ChevronRight size={16} strokeWidth={3} />
                  </div>
               </div>
-           </div>
+           </Link>
         </aside>
       </div>
     </div>

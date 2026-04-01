@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-bookphysio.in is a full-stack Zocdoc clone targeting Indian physiotherapy patients and providers. The platform connects patients with physiotherapists for in-clinic, home-visit, and online sessions.
+bookphysio.in is a full-stack Zocdoc clone targeting Indian physiotherapy patients and providers. The platform connects patients with physiotherapists for in-clinic and home-visit sessions.
 
 Build strategy: Use the [ai-website-cloner-template](https://github.com/JCodesMore/ai-website-cloner-template) as the project skeleton (Next.js 15 + shadcn/ui pre-wired), skip the automated recon phase (Zocdoc blocks bots), and hand-craft each page from Zocdoc design knowledge. Screenshots provided by the user will be used to correct discrepancies.
 
@@ -27,7 +27,6 @@ Build strategy: Use the [ai-website-cloner-template](https://github.com/JCodesMo
 | Auth | Supabase Auth (email + Google OAuth + phone/OTP) |
 | Storage | Supabase Storage (doctor photos, credential documents) |
 | Payments | Razorpay (UPI, cards, netbanking, wallets — India-first) |
-| Video/Telehealth | 100ms (Indian CDN, HIPAA-ready, free tier available) |
 | Maps | Mapbox GL JS (doctor search map view + geocoding) |
 | Email | Resend (transactional — booking confirmations, password reset) |
 | SMS/OTP | MSG91 (Indian SMS gateway — OTP + appointment reminders) |
@@ -77,7 +76,6 @@ src/lib/
   resend.ts       ← Resend email client
   msg91.ts        ← MSG91 SMS client
   mapbox.ts       ← Mapbox geocoding helpers
-  hundredms.ts    ← 100ms room management
 src/app/api/
   contracts/      ← TypeScript types exported for UI agent consumption
                     (source of truth for API response shapes)
@@ -186,10 +184,10 @@ appointments (
   availability_id uuid REFERENCES availabilities(id),
   location_id uuid REFERENCES locations(id),
   visit_type text CHECK (visit_type IN ('in_clinic','home_visit','online')),
+    visit_type text CHECK (visit_type IN ('in_clinic','home_visit')),
   status text CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
   insurance_id uuid REFERENCES insurances(id),
   fee_inr int NOT NULL,
-  telehealth_room_id text,       -- 100ms room ID for online appointments
   notes text,
   created_at timestamptz DEFAULT now()
 )
@@ -298,7 +296,6 @@ notifications (
 | `/appointments` | History, upcoming, cancelled tabs |
 | `/book/[doctorId]` | 3-step booking wizard: slot picker → insurance → confirm |
 | `/book/[doctorId]/success` | Booking confirmation page |
-| `/telehealth/[appointmentId]` | 100ms video room embed |
 | `/profile` | Personal info, insurance cards, notification preferences |
 | `/notifications` | Notification centre |
 
@@ -388,7 +385,7 @@ Backend runs first (sprint 0) to publish API contracts. Then 4 UI agents build i
 
 | Agent ID | Owns | Branch |
 |----------|------|--------|
-| `bp-backend` | Schema, migrations, API routes, auth, Razorpay, 100ms | `feat/backend` |
+| `bp-backend` | Schema, migrations, API routes, auth, Razorpay | `feat/backend` |
 | `bp-ui-public` | Public portal + Auth pages + `src/components/shared/` | `feat/public-portal` |
 | `bp-ui-patient` | Patient dashboard | `feat/patient-portal` |
 | `bp-ui-provider` | Provider portal | `feat/provider-portal` |
@@ -425,7 +422,7 @@ Backend runs first (sprint 0) to publish API contracts. Then 4 UI agents build i
 | `bp-ui-patient` | Builds patient dashboard | HANDOFF: from=UI-Patient |
 | `bp-ui-provider` | Builds provider portal | HANDOFF: from=UI-Provider |
 | `bp-ui-admin` | Builds admin panel | HANDOFF: from=UI-Admin |
-| `bp-backend` | Supabase schema/migrations, API routes, auth, Razorpay, 100ms | HANDOFF: from=Backend |
+| `bp-backend` | Supabase schema/migrations, API routes, auth, Razorpay | HANDOFF: from=Backend |
 | `bp-guardian` | QA gate — verifies every HANDOFF, runs build, spawns reviewers, has veto power | VERDICT: pass=true/false |
 
 **Guardian verification criteria (summary):**
@@ -452,10 +449,6 @@ SUPABASE_SERVICE_ROLE_KEY=       # server-side only
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
-
-# 100ms (telehealth)
-HMS_APP_ACCESS_KEY=
-HMS_APP_SECRET=
 
 # Mapbox
 NEXT_PUBLIC_MAPBOX_TOKEN=

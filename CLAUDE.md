@@ -4,7 +4,7 @@
 
 ## Project Description
 
-bookphysio.in is a physiotherapy booking platform for India. Connects patients with physiotherapists for in-clinic, home-visit, and online sessions.
+bookphysio.in is a physiotherapy booking platform for India. Connects patients with physiotherapists for in-clinic and home-visit sessions.
 
 ---
 

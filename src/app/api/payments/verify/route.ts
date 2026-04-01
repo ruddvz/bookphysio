@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
         appointmentTime: startsAt
           ? startsAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
           : '',
-        visitType: fullAppt.visit_type === 'in_clinic' ? 'In Clinic' : fullAppt.visit_type === 'home_visit' ? 'Home Visit' : 'Online',
+        visitType: fullAppt.visit_type === 'in_clinic' ? 'In Clinic' : 'Home Visit',
         amountInr: fullAppt.fee_inr,
       })
     }

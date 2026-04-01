@@ -11,6 +11,7 @@
 | `/api/auth/signup` | POST | `auth/signup/route.ts` | `auth.ts` signupSchema | `user.ts` UserProfile | Patient + provider signup |
 | `/api/auth/otp/send` | POST | `auth/otp/send/route.ts` | `auth.ts` otpSendSchema | — | Send OTP via MSG91 |
 | `/api/auth/otp/verify` | POST | `auth/otp/verify/route.ts` | `auth.ts` otpVerifySchema | — | Verify 6-digit OTP |
+| `/api/auth/magic-link` | POST | `auth/magic-link/route.ts` | — | — | Email magic-link login |
 
 ### Providers
 
@@ -44,11 +45,27 @@
 |-------|--------|------|-------------------|---------------|
 | `/api/reviews` | POST | `reviews/route.ts` | `review.ts` createReviewSchema | `review.ts` |
 
-### Telehealth
+### Messages
 
-| Route | Method | File | Notes |
-|-------|--------|------|-------|
-| `/api/telehealth/room` | POST | `telehealth/room/route.ts` | Create 100ms room for appointment |
+| Route | Method | File | Validation Schema | Contract Type | Notes |
+|-------|--------|------|-------------------|---------------|-------|
+| `/api/conversations` | GET | `conversations/route.ts` | `message.ts` getConversationsSchema | `message.ts` ConversationsResponse | Conversation list |
+| `/api/messages` | POST | `messages/route.ts` | `message.ts` messageRequestSchema | `message.ts` MessageResponse | Send message / create thread |
+| `/api/conversations/[user_id]/messages` | GET | `conversations/[user_id]/messages/route.ts` | `message.ts` getMessagesSchema | `message.ts` MessagesResponse | Thread messages |
+| `/api/conversations/[user_id]/read` | POST | `conversations/[user_id]/read/route.ts` | — | — | Mark thread as read |
+
+### Profile
+
+| Route | Method | File | Validation Schema | Contract Type | Notes |
+|-------|--------|------|-------------------|---------------|-------|
+| `/api/profile` | GET/PATCH | `profile/route.ts` | `user.ts` updateSchema | `user.ts` UserProfile | Current user profile |
+
+### AI
+
+| Route | Method | File | Validation Schema | Contract Type | Notes |
+|-------|--------|------|-------------------|---------------|-------|
+| `/api/ai/motio` | POST | `ai/motio/route.ts` | — | — | Patient AI triage assistant |
+| `/api/ai/provider` | POST | `ai/provider/route.ts` | — | — | Provider clinical research assistant |
 
 ### Notifications
 
@@ -63,6 +80,7 @@
 |-------|--------|------|-------|
 | `/api/admin/users` | GET | `admin/users/route.ts` | List users (admin only) |
 | `/api/admin/listings` | GET/PATCH | `admin/listings/route.ts` | Provider approval queue |
+| `/api/admin/stats` | GET | `admin/stats/route.ts` | Platform stats summary |
 
 ### Upload
 

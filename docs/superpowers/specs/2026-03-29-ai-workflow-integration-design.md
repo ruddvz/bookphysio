@@ -100,7 +100,6 @@ USER_FLOWS.md fills this gap. It is the primary reference for Phase 9 API wiring
 8. Provider login
 9. Availability setup
 10. Appointment accept / reject
-11. Online session join (100ms room) — error paths required: room init failure, camera/mic permission denied by browser, provider disconnects mid-session
 
 **Admin flows:**
 12. Admin login

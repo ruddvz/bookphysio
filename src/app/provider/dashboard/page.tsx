@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
-import { CalendarDays, Users, Clock, CircleAlert, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, Users, Clock, CircleAlert, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -20,13 +20,11 @@ import {
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'Clinic Visit',
   home_visit: 'Home Session',
-  online: 'Online Consult',
 }
 
 const VISIT_TYPE_COLORS: Record<string, string> = {
   in_clinic: 'bg-teal-50 text-teal-700 border-teal-100',
   home_visit: 'bg-orange-50 text-orange-700 border-orange-100',
-  online: 'bg-blue-50 text-blue-700 border-blue-100',
 }
 
 function DashboardSkeleton() {
@@ -59,7 +57,10 @@ export default function ProviderDashboardHome() {
     setLoading(true)
     setError(false)
     fetch('/api/appointments')
-      .then((r) => r.json())
+         .then((r) => {
+            if (!r.ok) throw new Error('Failed to fetch appointments')
+            return r.json()
+         })
       .then((data: { appointments?: ProviderAppointment[] }) =>
         setAppointments(data.appointments ?? [])
       )
@@ -107,10 +108,14 @@ export default function ProviderDashboardHome() {
              Manage your session flow, track performance insights, and stay connected with your patients in 12 verified practice cities.
            </p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-3">
            <Link href="/provider/calendar" className="flex items-center justify-center gap-3 h-16 px-10 bg-[#333333] text-white text-[15px] font-black rounded-[24px] hover:bg-[#00766C] transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl">
               <Calendar size={18} strokeWidth={3} />
               Open Calendar
+           </Link>
+           <Link href="/provider/ai-assistant" className="flex items-center justify-center gap-3 h-16 px-8 bg-white border border-gray-100 text-[#333333] text-[15px] font-black rounded-[24px] hover:border-teal-100 hover:text-[#00766C] transition-all hover:scale-[1.02] active:scale-[0.97] shadow-sm">
+              <MessageSquare size={18} strokeWidth={3} />
+              Ask BookPhysio AI
            </Link>
         </div>
       </div>

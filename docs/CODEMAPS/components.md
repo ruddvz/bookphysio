@@ -22,7 +22,7 @@
 | `PageHeader.tsx` | Dashboard page header: title + optional action button | `title`, `action?` | dashboard pages |
 | `StatusBadge.tsx` | Appointment status pill: confirmed/pending/cancelled/completed | `status` | appointment list pages |
 | `StarRating.tsx` | Star display with count | `rating`, `count` | DoctorCard, review sections |
-| `VisitTypeBadge.tsx` | Visit type pill: in_clinic/home_visit/online | `type` | DoctorCard, booking steps |
+| `VisitTypeBadge.tsx` | Visit type pill: in_clinic/home_visit | `type` | DoctorCard, booking steps |
 | `PriceDisplay.tsx` | ₹ price formatter (integer rupees) | `fee` | DoctorCard, booking steps, payment pages |
 | `Avatar.tsx` | Doctor/user avatar circle | `src?`, `name`, `size` | DoctorCard, booking steps, dashboard cards |
 | `ui/button.tsx` | shadcn/ui Button primitive | standard shadcn props | various |

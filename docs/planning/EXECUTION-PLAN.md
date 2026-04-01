@@ -10,7 +10,7 @@
 ---
 
 ## PHASE 0 — Project Setup
-- [x] Define tech stack (Next.js 15, Supabase, Razorpay, 100ms, MSG91, Resend, Mapbox)
+- [x] Define tech stack (Next.js 15, Supabase, Razorpay, MSG91, Resend, Mapbox, Upstash)
 - [x] Scaffold project structure (App Router, route groups, lib/, api/)
 - [x] Configure TypeScript, ESLint, Tailwind CSS v4
 - [x] Set up Vitest / testing infrastructure
@@ -18,9 +18,9 @@
 - [x] Set up environment variables (.env.example documented)
 - [x] Supabase migrations (001_initial_schema, 002_rls_policies, 003_indexes)
 - [x] Seed data (specialties, cities, mock providers)
-- [x] All API routes scaffolded (auth, providers, appointments, payments, reviews, telehealth, notifications, admin, upload)
+- [x] All API routes scaffolded (auth, providers, appointments, payments, reviews, notifications, admin, upload)
 - [x] TypeScript contracts published (src/app/api/contracts/)
-- [x] External service clients (Razorpay, MSG91, Resend, Mapbox, 100ms, Upstash)
+- [x] External service clients (Razorpay, MSG91, Resend, Mapbox, Upstash)
 - [x] Zod validation schemas (auth, provider, booking, payment, review, search)
 - [x] Middleware (auth route protection + Upstash rate limiting)
 
@@ -158,10 +158,31 @@
   - DB: Aggregate queries via /api/admin/analytics (users, appointments, revenue, GMV)
   - UI: KPI cards + Revenue Pulse SVG chart wired to real API (React Query)
   - Monthly revenue data for last 7 months, completion rate, active patients, provider count
-- [ ] **11.4** Telehealth (100ms video rooms integration) — DEFERRED to P3
 - [ ] **11.5** Mobile app (React Native / Expo) — P3
 - [ ] **11.6** Multi-language support — P3
 - [ ] **11.7** Insurance partnerships — P3
+
+## PHASE 12 — UI Refresh (21st.dev-Inspired)
+
+> Visual system update in progress. The goal is a calmer, editorial homepage and shared card language that feels more curated and less glossy.
+
+- [x] Global tokens and typography refresh
+- [x] Homepage hero, specialties, and how-it-works redesign
+- [x] Trust/proof section retuned for clearer product value
+- [x] Shared doctor card and loading state refresh
+- [x] Navbar, FAQ, testimonials, and footer cleanup
+- [x] Build verification and review
+
+## PHASE 13 — AI + Operations Polish
+
+> Extend the editorial treatment into the remaining demo-heavy surfaces so the product feels premium end-to-end.
+
+- [x] Unified BookPhysio AI shell for patient and provider chat
+- [x] Search empty state demo result cards
+- [x] Admin overview, user registry, and approval queue refresh
+- [x] Patient dashboard insight strip + AI shortcut
+- [x] Provider dashboard AI shortcut
+- [x] Build verification
 
 ---
 
@@ -169,5 +190,4 @@
 - Mobile app (React Native / Expo)
 - Multi-language support (Hindi, regional languages)
 - Insurance / corporate tie-ups
-- Telehealth video (100ms rooms)
 - AI-powered physio matching

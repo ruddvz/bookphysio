@@ -120,7 +120,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 text-emerald-600">
                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-               <span className="text-[11px] font-black uppercase tracking-widest leading-none">Practice Online</span>
+               <span className="text-[11px] font-black uppercase tracking-widest leading-none">Practice In-Person</span>
             </div>
             <div className="h-8 w-px bg-gray-100 ml-2"></div>
             <button className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-colors relative">

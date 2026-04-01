@@ -1,11 +1,10 @@
 import { cn } from '@/lib/utils'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 
 const VISIT_CONFIG: Record<VisitType, { label: string; className: string }> = {
   in_clinic:  { label: 'In-clinic',   className: 'bg-blue-50 text-blue-700' },
   home_visit: { label: 'Home Visit',  className: 'bg-purple-50 text-purple-700' },
-  online:     { label: 'Online',      className: 'bg-[#E6F4F3] text-[#00766C]' },
 }
 
 interface VisitTypeBadgeProps {

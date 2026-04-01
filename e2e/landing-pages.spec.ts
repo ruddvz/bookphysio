@@ -20,7 +20,7 @@ test.describe('Specialty & City Landing Pages', () => {
   test('city with no doctors shows empty state', async ({ page }) => {
     await page.goto('/city/surat')
     await expect(page.locator('text=No providers currently in Surat')).toBeVisible()
-    await expect(page.locator('text=Explore Online Physiotherapists')).toBeVisible()
+    await expect(page.locator('text=Explore Other Cities')).toBeVisible()
   })
 
   test('invalid slug returns 404', async ({ page }) => {

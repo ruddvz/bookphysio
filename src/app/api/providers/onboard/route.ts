@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
         icp_registration_no: step2.icpNumber,
-        consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.online || '0'),
+        consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
         verified: false,
         active: true,
         onboarding_step: 4

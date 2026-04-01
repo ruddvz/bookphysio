@@ -147,7 +147,7 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 | ZocDoc | bookphysio.in |
 |--------|--------------|
 | In-person | In-clinic |
-| Video visit | Online (telehealth via 100ms) |
+| Video visit | Not included in MVP |
 | — | Home visit (very popular in India — highlight prominently) |
 
 ### Provider Credentials

@@ -83,4 +83,4 @@
 
 | File | What It Does |
 |------|-------------|
-| `middleware.ts` | Protects `/patient/*`, `/provider/*`, `/admin/*`, `/dashboard/*`, `/appointments/*`, `/book/*`, `/telehealth/*`, `/profile/*`, `/notifications/*`, `/schedule/*`, `/patients/*`, `/reviews/*`, `/settings/*`, `/onboarding/*` |
+| `middleware.ts` | Protects `/patient/*`, `/provider/*`, `/admin/*`, `/dashboard/*`, `/appointments/*`, `/book/*`, `/profile/*`, `/notifications/*`, `/schedule/*`, `/patients/*`, `/reviews/*`, `/settings/*`, `/onboarding/*` |

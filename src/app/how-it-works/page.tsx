@@ -37,7 +37,7 @@ const PROVIDER_STEPS = [
   {
     icon: CalendarRange,
     title: 'Set Availability',
-    text: 'Configure your working hours, slot duration, and visit types (In-clinic, Home, Online).',
+    text: 'Configure your working hours, slot duration, and visit types (In-clinic, Home).',
   },
   {
     icon: CalendarDays,
@@ -117,7 +117,7 @@ export default function HowItWorksPage() {
                      {activeTab === 'patient' ? 'Get back to feeling your best.' : 'Grow your practice with India\'s best physio network.'}
                    </h2>
                    <p className="text-[18px] text-[#666666] mb-8 max-w-[500px]">
-                     {activeTab === 'patient' ? 'Verified experts for in-clinic, home visit, and online consultations across major Indian cities.' : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
+                     {activeTab === 'patient' ? 'Verified experts for in-clinic and home visit consultations across major Indian cities.' : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
                    </p>
                    <button className="px-10 py-4 bg-[#00766C] text-white font-bold rounded-[32px] text-[18px] hover:bg-[#005A52] transition-colors shadow-lg">
                       {activeTab === 'patient' ? 'Find a Physiotherapist' : 'List your practice now'}

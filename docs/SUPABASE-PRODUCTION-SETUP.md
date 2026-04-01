@@ -114,8 +114,6 @@ Go to **GitHub repo > Settings > Secrets and variables > Actions** and add:
 | `RAZORPAY_KEY_ID` | Payment processing |
 | `RAZORPAY_KEY_SECRET` | Payment processing |
 | `RAZORPAY_WEBHOOK_SECRET` | Payment webhooks |
-| `HMS_APP_ACCESS_KEY` | 100ms telehealth |
-| `HMS_APP_SECRET` | 100ms telehealth |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Map view on search |
 | `RESEND_API_KEY` | Transactional email |
 | `UPSTASH_REDIS_REST_URL` | Rate limiting |

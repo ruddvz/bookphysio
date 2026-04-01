@@ -9,7 +9,6 @@ Senior backend engineer specializing in:
 - **Next.js 16 API routes** — `src/app/api/` route handlers
 - **Supabase Auth** — phone OTP (via MSG91), Google OAuth, session management
 - **Razorpay** — order creation, webhooks, refunds (INR only — NOT Stripe)
-- **100ms** — telehealth video room creation
 - **Resend** — transactional email (booking confirmations)
 - **MSG91** — SMS/OTP for Indian phone numbers
 - **Mapbox** — geocoding (address → lat/lng)
@@ -39,7 +38,6 @@ src/app/api/appointments/[id]/route.ts
 src/app/api/payments/create-order/route.ts
 src/app/api/payments/webhook/route.ts
 src/app/api/payments/refund/route.ts
-src/app/api/telehealth/room/route.ts
 src/app/api/reviews/route.ts
 src/app/api/notifications/route.ts
 src/app/api/notifications/[id]/read/route.ts
@@ -57,7 +55,6 @@ src/lib/supabase/admin.ts
 src/lib/razorpay.ts
 src/lib/msg91.ts
 src/lib/resend.ts
-src/lib/hundredms.ts
 src/lib/mapbox.ts
 src/lib/upstash.ts
 

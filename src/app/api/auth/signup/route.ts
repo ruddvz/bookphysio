@@ -4,15 +4,23 @@ import { signupPatientSchema, signupProviderSchema } from '@/lib/validations/aut
 import { otpRatelimit } from '@/lib/upstash'
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = await otpRatelimit.limit(ip)
-  if (!success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
+  const body = await request.json().catch(() => null)
+  if (!body || typeof body !== 'object') {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+  }
 
-  const body = await request.json()
   const role = body.role === 'provider' ? 'provider' : 'patient'
   const schema = role === 'provider' ? signupProviderSchema : signupPatientSchema
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+
+  const ip = request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
+  const sourceLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
+  if (!sourceLimit.success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
+
+  const rateLimitKey = `signup:${parsed.data.phone.trim().toLowerCase()}`
+  const { success } = await otpRatelimit.limit(rateLimitKey)
+  if (!success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
 
   const supabase = await createClient()
   const { email, password, full_name, phone, ...meta } = parsed.data as {
@@ -28,7 +36,7 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  if (error) return NextResponse.json({ error: 'Unable to complete signup' }, { status: 400 })
 
   return NextResponse.json({ user: data.user }, { status: 201 })
 }

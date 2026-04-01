@@ -3,16 +3,23 @@ import { createClient } from '@/lib/supabase/server'
 import { otpRatelimit } from '@/lib/upstash'
 
 export async function POST(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = await otpRatelimit.limit(ip)
-  if (!success) {
-    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
-  }
-
-  const { email } = await request.json()
+  const body = await request.json().catch(() => null)
+  const email = typeof body === 'object' && body ? (body as { email?: unknown }).email : null
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
+  }
+
+  const ip = request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
+  const sourceLimit = await otpRatelimit.limit(`magic-link:ip:${ip}`)
+  if (!sourceLimit.success) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
+  const rateLimitKey = `magic-link:${email.trim().toLowerCase()}`
+  const { success } = await otpRatelimit.limit(rateLimitKey)
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
   }
 
   const supabase = await createClient()
@@ -28,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error('Magic link error:', error)
-    return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ error: 'Unable to send magic link' }, { status: 400 })
   }
 
   return NextResponse.json({ message: 'Magic link sent' })

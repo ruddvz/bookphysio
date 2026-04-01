@@ -1,99 +1,97 @@
 'use client'
 
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Search, Star, CalendarCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import Link from 'next/link'
+import { ArrowRight, CalendarCheck, Search, ShieldCheck, Sparkles, Star } from 'lucide-react'
 
-interface StepData {
-  icon: any;
-  title: string;
-  description: string;
-  cta: string;
-  href: string;
-  step: number;
-}
+const steps = [
+  {
+    step: '01',
+    icon: Search,
+    title: 'Search with context',
+    description: 'Start with the condition, then narrow by city, visit type, or fee range without leaving the page.',
+  },
+  {
+    step: '02',
+    icon: Star,
+    title: 'Compare verified options',
+    description: 'Read credentials, reviews, and availability together so the shortlist stays easy to compare.',
+  },
+  {
+    step: '03',
+    icon: CalendarCheck,
+    title: 'Book in a few taps',
+    description: 'Pick a slot, confirm the session, and keep the handoff focused on care instead of friction.',
+  },
+]
 
-const steps: StepData[] = [
-  { step: 1, icon: Search, title: "Find Your Match", description: "Search by injury, name, or specialty. Filter by verified credentials and availability.", cta: "Start Searching", href: "/search" },
-  { step: 2, icon: Star, title: "Choose with Confidence", description: "Read detailed profiles, verified patient reviews, and experience history for every expert.", cta: "Meet Experts", href: "/search" },
-  { step: 3, icon: CalendarCheck, title: "Book Instantly", description: "Select a time that works for you. Book in-clinic, home, or online sessions in just 2 minutes.", cta: "Schedule Session", href: "/search" },
-];
-
-function StepItem({ icon: Icon, title, description, cta, href, step }: StepData) {
+function StepCard({ step, icon: Icon, title, description }: (typeof steps)[number]) {
   return (
-    <div className="relative group flex flex-col items-center text-center px-4">
-      {/* Connector Line (Desktop Only) */}
-      {step < 3 && (
-        <div className="hidden lg:block absolute top-12 left-[60%] w-[80%] h-px border-t-2 border-dashed border-gray-100 -z-10" />
-      )}
-      
-      <div className="relative mb-10">
-        {/* Step Pulse Background */}
-        <div className="absolute inset-0 bg-teal-50 rounded-[40px] scale-150 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out -rotate-12 group-hover:rotate-0"></div>
-        
-        {/* Icon Container */}
-        <div className="relative w-24 h-24 bg-white rounded-[32px] shadow-2xl flex items-center justify-center border border-gray-50 transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-2">
-           <Icon size={40} className="text-[#00766C]" strokeWidth={2.5} />
-           
-           {/* Step Badge */}
-           <div className="absolute -top-3 -right-3 w-10 h-10 bg-[#FF6B35] text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-lg shadow-orange-100">
-              0{step}
-           </div>
+    <div className="bp-card group flex h-full flex-col p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#00766C]/20 md:p-7">
+      <div className="flex items-start justify-between gap-4">
+        <div className="inline-flex h-11 items-center rounded-full border border-[#E6E8EC] bg-[#FCFDFD] px-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+          {step}
+        </div>
+        <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#E6F4F3] text-[#00766C] transition-transform duration-300 group-hover:scale-105">
+          <Icon size={20} />
         </div>
       </div>
 
-      <div className="max-w-[280px]">
-        <h3 className="text-[22px] font-black text-[#333333] tracking-tight leading-tight mb-3 group-hover:text-[#00766C] transition-colors">
-          {title}
-        </h3>
-        <p className="text-[15px] font-bold text-gray-400 mb-6 leading-relaxed">
-          {description}
-        </p>
-        <Link
-          href={href}
-          className="inline-flex items-center gap-2 text-[14px] font-black text-[#00766C] uppercase tracking-widest hover:gap-3 transition-all"
-        >
-          {cta} <ArrowRight size={16} strokeWidth={3} />
-        </Link>
-      </div>
+      <h3 className="mt-6 text-[22px] font-semibold tracking-[-0.03em] text-slate-900 group-hover:text-[#00766C]">
+        {title}
+      </h3>
+      <p className="mt-3 text-[15px] leading-7 text-slate-500">{description}</p>
     </div>
-  );
+  )
 }
 
 export default function HowItWorks() {
   return (
-    <section className="py-24 md:py-40 bg-white border-y border-gray-50">
-      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px]">
-        <div className="flex flex-col items-center mb-20 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-50 rounded-full text-[12px] font-black text-[#00766C] uppercase tracking-widest mb-6">
-              <CheckCircle2 size={14} />
-              Simple Process
+    <section className="bp-section border-y border-[#E6E8EC] bg-[#F7F8F9]">
+      <div className="bp-shell">
+        <div className="flex flex-col items-start gap-6 text-left lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="bp-kicker mb-5">
+              <Sparkles size={13} />
+              Simple workflow
             </div>
-            <h2 className="text-[36px] md:text-[52px] font-black text-[#333333] tracking-tight leading-[1.1] mb-6">
-              Physiotherapy that <span className="text-[#00766C]">works for you</span>
-            </h2>
-            <p className="text-[18px] md:text-[21px] font-bold text-gray-400 max-w-[650px] leading-relaxed">
-              We've redesigned the booking experience to be transparent, fast, and completely stress-free.
+            <h2 className="bp-title">Physiotherapy that feels easy to book.</h2>
+            <p className="bp-copy mt-4 max-w-xl">
+              The flow stays readable at every step: search, compare, confirm. It&apos;s the same calm structure we want across the rest of the site.
             </p>
+          </div>
+
+          <Link
+            href="/search"
+            className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-5 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52]"
+          >
+            Start searching
+            <ArrowRight size={16} />
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 md:gap-x-12">
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {steps.map((step) => (
-            <StepItem key={step.step} {...step} />
+            <StepCard key={step.step} {...step} />
           ))}
         </div>
 
-        {/* Bottom Trust CTA */}
-        <div className="mt-24 p-8 md:p-12 bg-gray-50/50 rounded-[40px] border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8">
-           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="text-[20px] font-black text-[#333333] mb-2">Ready to start your recovery?</h4>
-              <p className="text-[16px] font-bold text-gray-400">Join 10,000+ patients who found their perfect physio on BookPhysio.</p>
-           </div>
-           <Link href="/search" className="px-10 py-5 bg-[#00766C] text-white text-[18px] font-black rounded-2xl shadow-xl shadow-teal-100 hover:bg-[#005A52] hover:scale-105 transition-all">
-              Book Your Appointment
-           </Link>
+        <div className="mt-8 flex flex-col gap-4 rounded-[24px] border border-[#E6E8EC] bg-white px-5 py-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">Trust signal</p>
+            <p className="mt-2 text-[18px] font-semibold tracking-[-0.03em] text-slate-900">
+              Verified care, transparent fees, and booking that works on mobile.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['ICP verified', 'Home visit ready', 'UPI accepted'].map((item) => (
+              <span key={item} className="bp-chip bp-chip-active">
+                <ShieldCheck size={14} />
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

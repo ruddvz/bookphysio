@@ -40,7 +40,7 @@ const pastAppt: AppointmentItem = {
 const cancelledAppt: AppointmentItem = {
   id: 'appt-cancelled',
   status: 'cancelled',
-  visit_type: 'online',
+  visit_type: 'home_visit',
   fee_inr: 500,
   availabilities: { starts_at: futureISO },
   providers: { users: { full_name: 'Sunita Rao' }, specialties: [] },

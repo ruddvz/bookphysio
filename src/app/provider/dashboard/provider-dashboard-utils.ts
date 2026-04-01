@@ -6,7 +6,7 @@
 export interface ProviderAppointment {
   id: string
   status: string
-  visit_type: 'in_clinic' | 'home_visit' | 'online' | string
+  visit_type: 'in_clinic' | 'home_visit' | string
   fee_inr: number
   availabilities: { starts_at: string; ends_at?: string } | null
   patient?: { full_name?: string | null } | null

@@ -67,7 +67,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://api.msg91.com https://prod-in.100ms.live wss://prod-in.100ms.live https://api.mapbox.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://api.msg91.com https://api.mapbox.com",
       "frame-src https://api.razorpay.com https://checkout.razorpay.com",
       "media-src 'self' blob:",
     ].join("; "),
@@ -315,21 +315,21 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://bookphysio.in"),
   title: {
-    default: "BookPhysio — Book Physiotherapists Online in India",
+    default: "BookPhysio - Book Physiotherapists in India",
     template: "%s | BookPhysio",
   },
   description:
-    "Find and book physiotherapists near you. In-clinic, home visits, and online sessions available across India. Instant booking, verified physios.",
-  keywords: "physiotherapist, physiotherapy, book physio, physio near me, home physio, online physio, India",
+    "Find and book physiotherapists near you. In-clinic appointments and home visits available across India. Instant booking, verified physios.",
+  keywords: "physiotherapist, physiotherapy, book physio, physio near me, home physio, India",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },
   openGraph: {
-    title: "BookPhysio — Book Physiotherapists Online in India",
+    title: "BookPhysio - Book Physiotherapists in India",
     description:
-      "Find and book physiotherapists near you. In-clinic, home visits, and online sessions across India.",
+      "Find and book physiotherapists near you. In-clinic appointments and home visits across India.",
     siteName: "BookPhysio",
     url: "https://bookphysio.in",
     type: "website",
@@ -338,15 +338,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BookPhysio — Book Physiotherapists Online in India",
+        alt: "BookPhysio - Book Physiotherapists in India",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BookPhysio — Book Physiotherapists Online in India",
+    title: "BookPhysio - Book Physiotherapists in India",
     description:
-      "Find and book physiotherapists near you. In-clinic, home visits, and online sessions across India.",
+      "Find and book physiotherapists near you. In-clinic appointments and home visits across India.",
     images: ["/og-image.png"],
   },
 };
@@ -413,7 +413,7 @@ export const metadata: Metadata = {
 export const metadata: Metadata = {
   title: "Book Physiotherapists Online in India",
   description:
-    "Find verified physiotherapists near you. Book in-clinic, home visit, or online sessions instantly. Serving Mumbai, Delhi, Bangalore, and more.",
+    "Find verified physiotherapists near you. Book in-clinic appointments or home visits instantly. Serving Mumbai, Delhi, Bangalore, and more.",
 };
 ```
 
@@ -433,7 +433,7 @@ export const metadata: Metadata = {
 export const metadata: Metadata = {
   title: "About BookPhysio",
   description:
-    "BookPhysio connects patients with verified physiotherapists across India for in-clinic, home visit, and online sessions.",
+    "BookPhysio connects patients with verified physiotherapists across India for in-clinic appointments and home visits.",
 };
 ```
 
@@ -522,7 +522,7 @@ export async function generateMetadata({
   // For now use a safe fallback; replace with real data fetch matching the page's fetch
   return {
     title: `Book a Physiotherapist`,
-    description: `Book an appointment with a verified physiotherapist on BookPhysio. In-clinic, home visit, and online sessions available.`,
+    description: `Book an appointment with a verified physiotherapist on BookPhysio. In-clinic appointments and home visits available.`,
     openGraph: {
       url: `https://bookphysio.in/doctor/${id}`,
     },
@@ -571,7 +571,7 @@ export async function generateMetadata({
   const city = slug.charAt(0).toUpperCase() + slug.slice(1);
   return {
     title: `Physiotherapists in ${city}`,
-    description: `Book physiotherapists in ${city}. In-clinic appointments, home visits, and online sessions. Verified physios, instant booking.`,
+    description: `Book physiotherapists in ${city}. In-clinic appointments and home visits. Verified physios, instant booking.`,
     openGraph: {
       url: `https://bookphysio.in/city/${slug}`,
     },

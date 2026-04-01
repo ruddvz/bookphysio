@@ -2,16 +2,16 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Loader2, Calendar, Clock, MapPin, Globe, Home, ShieldCheck, Check, Sparkles, MoveRight, HelpCircle } from 'lucide-react'
+import { ArrowRight, Loader2, Calendar, Clock, MapPin, Home, ShieldCheck, Check, Sparkles, MoveRight, HelpCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 
-interface FeeMap { in_clinic: number; home_visit: number; online: number }
+interface FeeMap { in_clinic: number; home_visit: number }
 interface BookingCardProps {
   doctorId: string
   fee: FeeMap
@@ -40,7 +40,6 @@ interface GroupedSlots {
 const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any; iconColor: string; bgColor: string }> = {
   in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-teal-600', bgColor: 'bg-teal-50' },
   home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-orange-600', bgColor: 'bg-orange-50' },
-  online: { label: 'Online', icon: Globe, iconColor: 'text-blue-600', bgColor: 'bg-blue-50' },
 }
 
 // ---------------------------------------------------------------------------

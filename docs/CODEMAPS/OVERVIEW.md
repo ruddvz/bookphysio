@@ -25,18 +25,17 @@ bookphysio.in
 │   │   ├── patient/            # Patient dashboard (7 pages)
 │   │   ├── provider/           # Provider portal (12 pages)
 │   │   ├── admin/              # Admin panel (4 pages)
-│   │   └── api/                # API routes (18 endpoints)
+│   │   └── api/                # API routes
 │   │       ├── contracts/      # TypeScript types shared with UI
 │   │       ├── auth/           # signup, otp/send, otp/verify
 │   │       ├── providers/      # search, [id], [id]/availability, [id]/reviews
 │   │       ├── appointments/   # list/create, [id] get/cancel
 │   │       ├── payments/       # create-order, webhook, refund
 │   │       ├── reviews/        # create review
-│   │       ├── telehealth/     # room creation
 │   │       ├── notifications/  # list, [id]/read
 │   │       ├── admin/          # users, listings
 │   │       └── upload/         # document upload
-│   ├── components/             # Shared UI components (19 files)
+│   ├── components/             # Shared UI components
 │   │   ├── ui/                 # shadcn/ui primitives
 │   │   └── *.tsx               # App-specific components
 │   └── lib/                    # Service clients + utilities
@@ -45,7 +44,6 @@ bookphysio.in
 │       ├── razorpay.ts         # Razorpay client
 │       ├── msg91.ts            # MSG91 SMS/OTP
 │       ├── resend.ts           # Resend email
-│       ├── hundredms.ts        # 100ms telehealth
 │       ├── mapbox.ts           # Geocoding
 │       ├── upstash.ts          # Rate limiting
 │       └── utils.ts            # cn() helper

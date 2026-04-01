@@ -89,12 +89,11 @@ CREATE TABLE appointments (
   provider_id uuid NOT NULL REFERENCES providers(id) ON DELETE RESTRICT,
   availability_id uuid NOT NULL REFERENCES availabilities(id) ON DELETE RESTRICT,
   location_id uuid REFERENCES locations(id) ON DELETE SET NULL,
-  visit_type text NOT NULL CHECK (visit_type IN ('in_clinic','home_visit','online')),
+  visit_type text NOT NULL CHECK (visit_type IN ('in_clinic','home_visit')),
   status text NOT NULL DEFAULT 'pending'
     CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
   insurance_id uuid REFERENCES insurances(id) ON DELETE SET NULL,
   fee_inr int NOT NULL CHECK (fee_inr >= 0),
-  telehealth_room_id text,
   notes text,
   created_at timestamptz NOT NULL DEFAULT now()
 );

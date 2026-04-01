@@ -35,7 +35,6 @@ const STATUS_LABELS: Record<string, string> = {
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'Clinic Visit',
   home_visit: 'Home Session',
-  online: 'Online Consult',
 }
 
 function AppointmentsSkeleton() {

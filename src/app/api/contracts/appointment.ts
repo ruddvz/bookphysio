@@ -1,7 +1,7 @@
 import type { ProviderCard, ProviderLocation } from './provider'
 import type { UserProfile } from './user'
 
-export type VisitType = 'in_clinic' | 'home_visit' | 'online'
+export type VisitType = 'in_clinic' | 'home_visit'
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 export interface AppointmentSlot {
@@ -22,7 +22,6 @@ export interface Appointment {
   status: AppointmentStatus
   fee_inr: number
   insurance_id: string | null
-  telehealth_room_id: string | null
   notes: string | null
   created_at: string
 }

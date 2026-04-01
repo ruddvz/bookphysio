@@ -54,7 +54,7 @@ Detailed breakdown of the patient journey for booking a Physiotherapist, modeled
 1. **Account Foundation:** Password creation with strict security rules.
 2. **Email Confirmation:** Account activation via sent link.
 3. **Identity Verification:** Secure login for practice confirmation.
-4. **Goal Selection:** 4-card interactive selection (New Patients, Insurance/Forms, Online Booking, Virtual Care).
+4. **Goal Selection:** 4-card interactive selection (New Patients, Insurance/Forms, In-person Booking, Home Visits).
 5. **Solution Recommendation:** Personalized recommendations for Zocdoc Marketplace vs. Free Booking options.
 
 ## Key Assets for BookPhysio

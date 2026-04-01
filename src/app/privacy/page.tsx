@@ -26,7 +26,7 @@ export default function PrivacyPage() {
                 <p className="mb-4">To provide you with the best experience and clinical care, we may collect:</p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Personal Information:</strong> Name, age, gender, phone number, and email.</li>
-                  <li><strong>Clinical Information:</strong> Reason for visit, preferred visit types (in-clinic, home, online), and historical records of bookings.</li>
+                  <li><strong>Clinical Information:</strong> Reason for visit, preferred visit types (in-clinic, home), and historical records of bookings.</li>
                   <li><strong>Payment Information:</strong> Transaction details through our secure payment gateway providers (Razorpay).</li>
                 </ul>
               </section>

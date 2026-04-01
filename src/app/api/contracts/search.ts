@@ -5,7 +5,7 @@ export interface SearchFilters {
   city?: string
   specialty_id?: string
   insurance_id?: string
-  visit_type?: 'in_clinic' | 'home_visit' | 'online'
+  visit_type?: 'in_clinic' | 'home_visit'
   available_date?: string
   min_rating?: number
   max_fee_inr?: number

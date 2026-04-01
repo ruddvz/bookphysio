@@ -92,7 +92,7 @@ export default function PatientPayments() {
                   const providerLabel = p.provider_name
                     ? (p.provider_name.startsWith('Dr.') ? p.provider_name : `Dr. ${p.provider_name}`)
                     : '—'
-                  const visitLabel = p.visit_type === 'in_clinic' ? 'In Clinic' : p.visit_type === 'home_visit' ? 'Home Visit' : 'Online'
+                  const visitLabel = p.visit_type === 'in_clinic' ? 'In Clinic' : 'Home Visit'
 
                   return (
                     <tr key={p.id} className="hover:bg-[#FAFAFA] transition-colors">

@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Search, Filter, Clock, Video, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight } from 'lucide-react'
+import { CalendarDays, Search, Filter, Clock, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight } from 'lucide-react'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -13,7 +13,6 @@ const STATUS_STLYES: Record<string, string> = {
 }
 
 const VISIT_TYPE_ICONS: Record<string, any> = {
-  online: Video,
   in_clinic: Activity,
   home_visit: MapPin,
 }
@@ -22,7 +21,7 @@ function ProviderAppointmentsContent() {
   const [activeTab, setActiveTab] = useState('upcoming')
   const appointments = [
     { id: '1', patient: 'Rahul Sharma', date: 'Mar 31, 2026', time: '10:00 AM', type: 'in_clinic', status: 'confirmed', age: 34, disease: 'Back Pain' },
-    { id: '2', patient: 'Ananya Iyer', date: 'Apr 01, 2026', time: '11:30 AM', type: 'online', status: 'pending', age: 28, disease: 'Post-Op Rehab' },
+      { id: '2', patient: 'Ananya Iyer', date: 'Apr 01, 2026', time: '11:30 AM', type: 'home_visit', status: 'pending', age: 28, disease: 'Post-Op Rehab' },
     { id: '3', patient: 'Vikram Singh', date: 'Apr 02, 2026', time: '02:00 PM', type: 'home_visit', status: 'confirmed', age: 45, disease: 'Shoulder Injury' },
   ]
 

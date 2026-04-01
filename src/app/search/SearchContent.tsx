@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Map as MapIcon, List, Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap } from 'lucide-react'
+import { Map as MapIcon, List, Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
@@ -34,8 +34,46 @@ import type { SearchResponse } from '@/app/api/contracts/search'
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
   home_visit: 'Home Visit',
-  online: 'Online',
 }
+
+const DEMO_RESULTS = [
+  {
+    title: 'Sports Rehab Starter',
+    specialty: 'ACL and runner return-to-play',
+    city: 'Bangalore',
+    fee: '₹800',
+    nextSlot: 'Today · 6:30 PM',
+    icon: Activity,
+    href: '/search?city=Bangalore&specialty=Sports%20Physio',
+  },
+  {
+    title: 'Back Pain Fast Track',
+    specialty: 'Spine and posture support',
+    city: 'Delhi',
+    fee: '₹900',
+    nextSlot: 'Tomorrow · 10:30 AM',
+    icon: MapPin,
+    href: '/search?city=Delhi&specialty=Pain%20Management',
+  },
+  {
+    title: 'Home Visit Preview',
+    specialty: 'Mobility support at home',
+    city: 'Mumbai',
+    fee: '₹1,200',
+    nextSlot: 'Today · Evening',
+    icon: Zap,
+    href: '/search?visit_type=home_visit',
+  },
+  {
+    title: 'Post-op Recovery',
+    specialty: 'Shoulder and knee follow-up',
+    city: 'Pune',
+    fee: '₹1,000',
+    nextSlot: 'Soon',
+    icon: Sparkles,
+    href: '/search?specialty=Post-Surgery%20Rehab',
+  },
+]
 
 function providerToDoctor(p: ProviderCard): Doctor {
   const nameWithTitle = p.full_name.startsWith('Dr.') ? p.full_name : `Dr. ${p.full_name}`
@@ -71,6 +109,7 @@ export default function SearchContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [showMap, setShowMap] = useState(true)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
@@ -100,37 +139,39 @@ export default function SearchContent() {
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
 
-  useEffect(() => {
-    async function fetchProviders() {
-      setLoading(true)
-      const apiParams: Record<string, string> = { page: '1', limit: '40' } // Larger limit for better clustering
-      if (city) apiParams.city = city
-      else if (location) apiParams.city = location
-      if (specialty) apiParams.specialty_id = specialty
-      if (visit_type) apiParams.visit_type = visit_type
-      if (max_fee) apiParams.max_fee_inr = max_fee
-      if (lat) apiParams.lat = lat
-      if (lng) apiParams.lng = lng
+  const fetchProviders = useCallback(async () => {
+    setLoading(true)
+    setError(false)
 
-      const qs = new URLSearchParams(apiParams).toString()
+    const apiParams: Record<string, string> = { page: '1', limit: '40' } // Larger limit for better clustering
+    if (city) apiParams.city = city
+    else if (location) apiParams.city = location
+    if (specialty) apiParams.specialty_id = specialty
+    if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
+    if (max_fee) apiParams.max_fee_inr = max_fee
+    if (lat) apiParams.lat = lat
+    if (lng) apiParams.lng = lng
 
+    const qs = new URLSearchParams(apiParams).toString()
 
-      try {
-        const res = await fetch(`/api/providers?${qs}`, { cache: 'no-store' })
-        if (!res.ok) throw new Error('Failed to fetch')
-        const data = await res.json() as SearchResponse
-        setDoctors(data.providers.map(providerToDoctor))
-        setTotal(data.total)
-      } catch {
-        setDoctors([])
-        setTotal(0)
-      } finally {
-        setLoading(false)
-      }
+    try {
+      const res = await fetch(`/api/providers?${qs}`, { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = (await res.json()) as SearchResponse
+      setDoctors(data.providers.map(providerToDoctor))
+      setTotal(data.total)
+    } catch {
+      setDoctors([])
+      setTotal(0)
+      setError(true)
+    } finally {
+      setLoading(false)
     }
+  }, [city, location, specialty, visit_type, max_fee, lat, lng])
 
+  useEffect(() => {
     fetchProviders()
-  }, [searchParams, city, location, specialty, visit_type, max_fee, lat, lng])
+  }, [fetchProviders])
 
   const displayLocation = (lat && lng) ? 'Near Me' : city ?? location ?? 'India'
 
@@ -169,6 +210,8 @@ export default function SearchContent() {
                </div>
                <button
                 onClick={() => setShowMap(!showMap)}
+                aria-label={showMap ? 'Hide map view' : 'Show map view'}
+                title={showMap ? 'Hide map view' : 'Show map view'}
                 className={cn(
                   "relative w-16 h-8 rounded-full transition-all duration-500 shadow-inner active:scale-95 group overflow-hidden",
                   showMap ? "bg-[#00766C] shadow-teal-900/10" : "bg-gray-100"
@@ -210,27 +253,101 @@ export default function SearchContent() {
               ) : doctors.length === 0 ? (
                 <div className="pt-16 pb-32">
                   <EmptyState
-                    title="No Experts Found"
-                    description={`We couldn't locate any verified physios matching your criteria in ${displayLocation}. Expand your search radius or clear filters to see more results.`}
+                    title="No exact matches found"
+                    description={`We couldn't locate any verified physios matching your criteria in ${displayLocation}. Here is a premium demo preview of how BookPhysio surfaces nearby care.`}
                     icon={SearchIcon}
                     action={
-                      <div className="flex flex-col items-center gap-6">
-                        <button
-                          onClick={() => router.push('/search')}
-                          className="px-12 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
-                        >
-                          Clear All Filters
-                        </button>
-                        <div className="flex items-center gap-10 px-8 py-4 bg-gray-50 rounded-[28px] border border-gray-100 opacity-60">
-                           <div className="flex flex-col items-center">
-                              <Activity size={24} className="text-[#00766C] mb-1" />
-                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Global Filter</span>
-                           </div>
-                           <div className="h-8 w-px bg-gray-200" />
-                           <div className="flex flex-col items-center">
-                              <Zap size={24} className="text-[#FF6B35] mb-1" />
-                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Instant Reach</span>
-                           </div>
+                      <div className="w-full max-w-5xl space-y-6">
+                        {error && (
+                          <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
+                              <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
+                                Live results could not be loaded just now, but the demo preview below still shows the intended result flow.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => fetchProviders()}
+                              className="inline-flex items-center justify-center rounded-[22px] bg-[#333333] px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-[#00766C]"
+                            >
+                              Retry search
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-[#E6F4F3] px-3 py-1 text-[#00766C]">
+                            <Sparkles size={12} />
+                            Demo preview
+                          </span>
+                          <span>These cards show how live results will look once providers match.</span>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                          {DEMO_RESULTS.map((result) => {
+                            const ResultIcon = result.icon
+
+                            return (
+                              <Link
+                                key={result.title}
+                                href={result.href}
+                                className="group rounded-[30px] border border-gray-100 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-teal-100 hover:shadow-xl"
+                              >
+                                <div className="flex items-start justify-between gap-4">
+                                  <div className="min-w-0 flex-1">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">
+                                      Preview result
+                                    </div>
+                                    <h3 className="mt-3 text-[18px] font-black tracking-tight text-[#333333]">{result.title}</h3>
+                                    <p className="mt-2 text-[13px] font-medium leading-relaxed text-gray-500">{result.specialty}</p>
+                                  </div>
+                                  <div className="flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#E6F4F3] text-[#00766C] transition-transform group-hover:scale-105">
+                                    <ResultIcon size={22} strokeWidth={2.5} />
+                                  </div>
+                                </div>
+
+                                <div className="mt-5 flex flex-wrap items-center gap-2">
+                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
+                                    {result.city}
+                                  </span>
+                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
+                                    {result.fee}
+                                  </span>
+                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
+                                    {result.nextSlot}
+                                  </span>
+                                </div>
+
+                                <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
+                                  <span className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">Preview search flow</span>
+                                  <span className="inline-flex items-center gap-2 text-[13px] font-black text-[#00766C]">
+                                    Open
+                                    <ArrowRight size={14} />
+                                  </span>
+                                </div>
+                              </Link>
+                            )
+                          })}
+                        </div>
+
+                        <div className="flex flex-col items-center gap-4">
+                          <button
+                            onClick={() => router.push('/search')}
+                            className="px-12 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
+                          >
+                            Clear All Filters
+                          </button>
+                          <div className="flex items-center gap-10 px-8 py-4 bg-gray-50 rounded-[28px] border border-gray-100 opacity-70">
+                             <div className="flex flex-col items-center">
+                                <Activity size={24} className="text-[#00766C] mb-1" />
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Global Filter</span>
+                             </div>
+                             <div className="h-8 w-px bg-gray-200" />
+                             <div className="flex flex-col items-center">
+                                <Zap size={24} className="text-[#FF6B35] mb-1" />
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Instant Reach</span>
+                             </div>
+                          </div>
                         </div>
                       </div>
                     }

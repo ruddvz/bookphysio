@@ -1,7 +1,7 @@
 # bookphysio.in — User Flows
 
 > Step-by-step interaction flows for all critical paths. Primary reference for Phase 9 API wiring.
-> Flows 1–6: Patient. Flows 7–11: Provider. Flows 12–13: Admin.
+> Flows 1–6: Patient. Flows 7–10: Provider. Flows 11–12: Admin.
 > Admin/provider E2E Playwright test coverage deferred to Phase 10.
 > Phase 8.16 mobile tests reference flows 1, 2, 6 — complete this doc before starting 8.16 tests.
 
@@ -144,7 +144,7 @@
 1. Step 1 (Account): email + password → Supabase account created
 2. Step 2 (Email confirm): confirmation email sent via Resend → provider clicks link
 3. Step 3 (Identity): provider logs in with new credentials
-4. Step 4 (Goals): 4-card interactive selection (New Patients / Insurance+Forms / Online Booking / Virtual Care) — multi-select
+4. Step 4 (Goals): 4-card interactive selection (New Patients / Insurance+Forms / In-person Booking / Home Visits) — multi-select
 5. Step 5 (Profile): ICP registration number (required, Zod validated), name, specialty, city → profile saved
 6. Provider redirected to `/provider/dashboard` (pending admin approval)
 
@@ -218,32 +218,7 @@
 
 ---
 
-## Flow 11: Online Session Join — 100ms Room (Provider)
-
-**Entry point:** `/provider/appointments/[id]` (appointment with visit_type = `online`)
-
-**Happy path:**
-1. Provider opens appointment detail for an `online` session
-2. "Join Session" button visible (active 10 min before slot time)
-3. Provider clicks "Join Session" → `POST /api/telehealth/room` creates 100ms room
-4. Room URL returned → provider redirected into video room
-5. Patient joins from their appointment detail page (same room URL)
-6. Session ends → provider or patient clicks "End Session" → room closed via 100ms API
-
-**Error paths:**
-- Room init failure (100ms API error): "Could not start video session. Please try again or contact the patient via phone."
-- Camera permission denied by browser: browser native permission prompt shown → if denied, show "Camera access required for video sessions. Please allow camera in browser settings."
-- Microphone permission denied by browser: same pattern as camera
-- Provider disconnects mid-session: patient sees "Provider disconnected" message; room remains open for 5 minutes for reconnection
-- Room auto-closes: room lifecycle managed by 100ms — closes when both participants leave or after session end time + 15 min buffer
-
-**Edge cases:**
-- In-clinic or home-visit appointment: "Join Session" button not shown — not applicable
-- Provider joins before patient: waiting screen shown until patient joins
-
----
-
-## Flow 12: Admin Login
+## Flow 11: Admin Login
 
 **Entry point:** `/login`
 
@@ -261,7 +236,7 @@
 
 ---
 
-## Flow 13: Provider Approval / Rejection (Admin)
+## Flow 12: Provider Approval / Rejection (Admin)
 
 **Entry point:** `/admin/listings`
 

@@ -1,7 +1,7 @@
 {
   "name": "BookPhysio — Premium Physiotherapy Discovery",
   "short_name": "BookPhysio",
-  "description": "Find and book physiotherapists near you. In-clinic, home visits, and online sessions available across India.",
+  "description": "Find and book physiotherapists near you. In-clinic and home visits available across India.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

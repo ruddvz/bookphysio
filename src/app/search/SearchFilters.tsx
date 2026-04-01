@@ -19,17 +19,16 @@ const CITIES = [
   'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
 ]
 
-const VISIT_TYPES = ['In-clinic', 'Home Visit', 'Online']
+const VISIT_TYPES = ['In-clinic', 'Home Visit']
 const VISIT_TYPE_URL: Record<string, string> = {
   'In-clinic': 'in_clinic',
   'Home Visit': 'home_visit',
-  'Online': 'online',
 }
 const VISIT_TYPE_LABEL: Record<string, string> = Object.fromEntries(
   Object.entries(VISIT_TYPE_URL).map(([k, v]) => [v, k])
 )
 
-type VisitType = 'Any' | 'In-clinic' | 'Home Visit' | 'Online'
+type VisitType = 'Any' | 'In-clinic' | 'Home Visit'
 
 const DEFAULT_MAX_FEE = 2000
 const DEFAULT_CITY = ''
@@ -133,6 +132,10 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
   const [localMaxFee, setLocalMaxFee] = useState(currentMaxFee)
   const [geoLoading, setGeoLoading] = useState(false)
 
+  useEffect(() => {
+    setLocalMaxFee(currentMaxFee)
+  }, [currentMaxFee])
+
   const hasActiveFilters =
     currentCity !== DEFAULT_CITY ||
     currentVisitType !== 'Any' ||
@@ -141,7 +144,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
     currentLat !== null
 
   const pushParams = useCallback(
-    (updates: Record<string, string | null>) => {
+    (updates: Record<string, string | null>, options?: { replace?: boolean }) => {
       const next = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(updates)) {
         if (value === null || value === '') {
@@ -155,7 +158,13 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         next.delete('lat')
         next.delete('lng')
       }
-      router.push(`/search?${next.toString()}`)
+      const nextUrl = `/search?${next.toString()}`
+      if (options?.replace) {
+        router.replace(nextUrl)
+        return
+      }
+
+      router.push(nextUrl)
     },
     [router, searchParams]
   )
@@ -258,7 +267,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         {/* Pricing Filter (Premium Slider) */}
         <div className="flex items-center gap-4 px-6 py-2.5 rounded-2xl border border-gray-200 bg-white ml-1 hover:border-gray-300 transition-colors">
           <div className="flex flex-col">
-             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Max Fee</span>
+             <span id="max-fee-label" className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Max Fee</span>
              <span className="text-[14px] font-black text-[#00766C] whitespace-nowrap leading-none">₹{localMaxFee}</span>
           </div>
           <input
@@ -266,9 +275,12 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
             min={0}
             max={2000}
             step={100}
+            aria-labelledby="max-fee-label"
+            aria-label="Maximum consultation fee"
             value={localMaxFee}
             onChange={(e) => setLocalMaxFee(Number(e.target.value))}
-            onMouseUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })}
+            onPointerUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) }, { replace: true })}
+            onKeyUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) }, { replace: true })}
             className="w-24 accent-[#00766C] cursor-pointer"
           />
         </div>
@@ -413,6 +425,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
                   </div>
                   <input
                     type="range" min={0} max={2000} step={100} value={localMaxFee}
+                    aria-label="Maximum consultation fee"
                     onChange={(e) => setLocalMaxFee(Number(e.target.value))}
                     className="w-full h-2.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-[#00766C]"
                   />

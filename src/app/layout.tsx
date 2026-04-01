@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BookPhysio — Book Physiotherapists Online",
+  title: "BookPhysio — Book Physiotherapists",
   description:
-    "Find and book physiotherapists near you. In-clinic, home visits, and online sessions available across India.",
+    "Find and book physiotherapists near you. In-clinic and home visits available across India.",
   keywords: "physiotherapist, physiotherapy, book physio, physio near me, India",
   icons: {
     icon: "/icon.svg",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
 
-    title: "BookPhysio — Book Physiotherapists Online",
+    title: "BookPhysio — Book Physiotherapists",
     description:
       "Find and book physiotherapists near you.",
     siteName: "BookPhysio",

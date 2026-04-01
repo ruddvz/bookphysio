@@ -2,16 +2,33 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { verifyOtp } from '@/lib/msg91'
 import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
+import { otpRatelimit } from '@/lib/upstash'
 
 const DEV_OTP = process.env.DEV_ACCESS_CODE ? `${process.env.DEV_ACCESS_CODE}00` : null
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
+  const body = await request.json().catch(() => null)
+  if (!body || typeof body !== 'object') {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+  }
+
   const parsed = otpVerifySchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { phone, otp } = parsed.data
   const { full_name } = body // Optional full name for signup
+
+  const ip = request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
+  const sourceLimit = await otpRatelimit.limit(`otp-verify:ip:${ip}`)
+  if (!sourceLimit.success) {
+    return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
+  }
+
+  const rateLimitKey = `verify:${phone}`
+  const { success } = await otpRatelimit.limit(rateLimitKey)
+  if (!success) {
+    return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
+  }
 
   // Dev access bypass — code "264200" when DEV_ACCESS_CODE=2642 is set
   if (DEV_OTP && otp === DEV_OTP) {
@@ -27,7 +44,7 @@ export async function POST(request: NextRequest) {
         type: 'magiclink',
         email: existingUser.email ?? `${phone.replace('+', '')}@dev.bookphysio.in`,
       })
-      if (sessionError) return NextResponse.json({ error: sessionError.message }, { status: 500 })
+      if (sessionError) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
 
       // Sign in via the server client to set cookies
       const supabase = await createClient()
@@ -35,7 +52,7 @@ export async function POST(request: NextRequest) {
         token_hash: sessionData.properties?.hashed_token ?? '',
         type: 'magiclink',
       })
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      if (error) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
       return NextResponse.json({ user: data.user, session: data.session })
     }
 
@@ -48,27 +65,27 @@ export async function POST(request: NextRequest) {
       email_confirm: true,
       user_metadata: { role: 'patient', full_name: full_name ?? 'Dev User', phone },
     })
-    if (createError) return NextResponse.json({ error: createError.message }, { status: 500 })
+    if (createError) return NextResponse.json({ error: 'Unable to create user' }, { status: 500 })
 
     // Generate session for the new user
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
       email: devEmail,
     })
-    if (linkError) return NextResponse.json({ error: linkError.message }, { status: 500 })
+    if (linkError) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
 
     const supabase = await createClient()
     const { data, error } = await supabase.auth.verifyOtp({
       token_hash: linkData.properties?.hashed_token ?? '',
       type: 'magiclink',
     })
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
     return NextResponse.json({ user: data.user ?? newUser.user, session: data.session })
   }
 
   // Primary verification via MSG91
   const result = await verifyOtp(phone, otp)
-  if (!result.success) return NextResponse.json({ error: result.error ?? 'Invalid OTP' }, { status: 400 })
+  if (!result.success) return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
 
   // Bridging to Supabase session
   const supabase = await createClient()
@@ -78,7 +95,7 @@ export async function POST(request: NextRequest) {
     type: 'sms'
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  if (error) return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
 
   // Update full name if provided (using admin to bypass RLS/protected field issues if any)
   if (full_name && data.user) {

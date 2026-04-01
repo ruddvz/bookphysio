@@ -26,7 +26,7 @@ Standardized tech stack analysis for the ZocDoc clone, adapted for BookPhysio.
 | **Maps** | Mapbox | Mapbox GL JS | Identical to ZocDoc for search results. |
 | **Authentication** | Custom / OAuth | Supabase Auth + MSG91 | Added support for Phone OTP (critical for India). |
 | **Payments** | Insurance / Cards | Razorpay | Standard for Indian payments (UPI, Cards). |
-| **Telehealth** | Custom / Twilio | 100ms / Zoom | Fast integration for 'Video Visit' equivalent. |
+| **Remote consultations** | Custom / Twilio | Not included | Retired from BookPhysio MVP scope. |
 
 ## Utilities & Performance
 

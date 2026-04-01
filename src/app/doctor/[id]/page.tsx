@@ -17,7 +17,7 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
 // Types used by this page
 // ---------------------------------------------------------------------------
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 
 interface Review {
   id: string
@@ -110,13 +110,14 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
     ? `${primaryLocation.address}, ${primaryLocation.city}`
     : (provider.city ?? 'India')
 
-  const visitTypes: VisitType[] = provider.visit_types ?? []
+  const visitTypes: VisitType[] = (provider.visit_types ?? []).filter(
+    (visitType): visitType is VisitType => visitType === 'in_clinic' || visitType === 'home_visit'
+  )
 
   const baseFee = provider.consultation_fee_inr ?? 500
   const feeMap: Record<VisitType, number> = {
     in_clinic: baseFee,
     home_visit: Math.round(baseFee * 1.3),
-    online: Math.round(baseFee * 0.9),
   }
 
   const reviews = (provider as unknown as { reviews?: Review[] }).reviews ?? []
@@ -192,10 +193,20 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                       <div className="flex items-center justify-between gap-4 mb-4">
                         <h1 className="text-[36px] md:text-[48px] font-black text-[#333333] tracking-tighter leading-none">{nameWithTitle}</h1>
                         <div className="hidden md:flex gap-3">
-                          <button className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-[#00766C] hover:border-teal-100 transition-all shadow-sm active:scale-90">
+                          <button
+                            type="button"
+                            aria-label="Share doctor profile"
+                            title="Share doctor profile"
+                            className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-[#00766C] hover:border-teal-100 transition-all shadow-sm active:scale-90"
+                          >
                              <Share2 size={20} />
                           </button>
-                          <button className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm active:scale-90">
+                          <button
+                            type="button"
+                            aria-label="Save doctor profile"
+                            title="Save doctor profile"
+                            className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm active:scale-90"
+                          >
                              <Heart size={20} />
                           </button>
                         </div>

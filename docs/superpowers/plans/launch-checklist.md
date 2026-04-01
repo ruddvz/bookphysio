@@ -81,9 +81,9 @@
 - [ ] `.env.example` up to date with all required keys documented
 - [ ] No secrets committed to repo — verified with `git log` + `git grep`
 
-### Video Sessions
-- [ ] 100ms rooms tested end-to-end for online session type
-- [ ] 100ms room lifecycle tested — room closes automatically when session ends or provider disconnects
+### Appointment Handling
+- [ ] Provider appointments tested end-to-end for accept/reject and status updates
+- [ ] Appointment lifecycle tested - complete, cancel, and reschedule flows close cleanly
 
 ---
 
@@ -105,7 +105,7 @@
 - [ ] Patient: search → select doctor → select slot → pay (Razorpay live) → booking confirmation
 - [ ] Patient: OTP login (MSG91 delivery on real +91 number)
 - [ ] Provider: onboarding (5-step signup, ICP number required)
-- [ ] Provider: online session join via 100ms room
+- [ ] Provider: appointment management and status updates
 - [ ] Admin: login and dashboard access
 
 ### Payments

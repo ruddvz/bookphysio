@@ -3,7 +3,7 @@
  *
  * Covers all 13 user flows from docs/USER_FLOWS.md.
  * Smoke tests verify: route loads (no 5xx), key UI elements present, no JS errors.
- * These are NOT full integration tests — no real API calls to MSG91/Razorpay/100ms.
+ * These are NOT full integration tests — no real API calls to MSG91/Razorpay or external services.
  */
 
 import { test, expect } from '@playwright/test'
@@ -253,31 +253,9 @@ test.describe('Flow 10: Provider Appointment Accept/Reject', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Flow 11: Online Session Join — 100ms Room (Provider)
+// Flow 11: Admin Login
 // ---------------------------------------------------------------------------
-test.describe('Flow 11: Online Session Join (100ms)', () => {
-  test('provider dashboard loads without 5xx (session join entry point)', async ({ page }) => {
-    const response = await page.goto('/provider/dashboard', { waitUntil: 'networkidle' })
-    expect(response?.status()).toBeLessThan(500)
-  })
-
-  test('telehealth API endpoint exists', async ({ request }) => {
-    // POST to telehealth room creation — should return 401 (unauthorized) not 404
-    const response = await request.post('/api/telehealth/room', {
-      data: { appointment_id: 'test' },
-    })
-
-    // Accept 401 (unauthorized), 400 (bad request), or 405 (method not allowed)
-    // — proves the route exists. 404 would mean route is missing.
-    const status = response.status()
-    expect(status).not.toBe(404)
-  })
-})
-
-// ---------------------------------------------------------------------------
-// Flow 12: Admin Login
-// ---------------------------------------------------------------------------
-test.describe('Flow 12: Admin Login', () => {
+test.describe('Flow 11: Admin Login', () => {
   test('admin dashboard redirects or loads without 5xx', async ({ page }) => {
     const response = await page.goto('/admin', { waitUntil: 'networkidle' })
     expect(response?.status()).toBeLessThan(500)
@@ -291,9 +269,9 @@ test.describe('Flow 12: Admin Login', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Flow 13: Provider Approval / Rejection (Admin)
+// Flow 12: Provider Approval / Rejection (Admin)
 // ---------------------------------------------------------------------------
-test.describe('Flow 13: Provider Approval/Rejection (Admin)', () => {
+test.describe('Flow 12: Provider Approval/Rejection (Admin)', () => {
   test('admin listings page loads with approval queue', async ({ page }) => {
     const errors = trackJsErrors(page)
     const response = await page.goto('/admin/listings', { waitUntil: 'networkidle' })

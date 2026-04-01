@@ -3,6 +3,7 @@ import { streamText } from 'ai'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
+import { aiChatRequestSchema } from '@/lib/validations/ai'
 
 // Safely initialize the rate limiter if environment variables exist
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -23,20 +24,32 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Optional Rate Limiting (The "Cap")
     if (ratelimit) {
-      const ip = req.headers.get('x-forwarded-for') ?? 'anonymous'
+      const ip = req.ip ?? req.headers.get('x-real-ip') ?? 'anonymous'
       const { success } = await ratelimit.limit(ip)
       
       if (!success) {
-        return new NextResponse("Rate limit exceeded. Please wait a bit before messaging Motio again.", { status: 429 })
+        return new NextResponse("Rate limit exceeded. Please wait a bit before asking BookPhysio AI again.", { status: 429 })
       }
     }
 
-    // 2. Read the messages from the frontend
-    const { messages } = await req.json()
+    // 2. Read and validate the messages from the frontend
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return new NextResponse('Invalid chat request.', { status: 400 })
+    }
+
+    const parsed = aiChatRequestSchema.safeParse(body)
+    if (!parsed.success) {
+      return new NextResponse('Invalid chat request.', { status: 400 })
+    }
+
+    const { messages } = parsed.data
 
     // 3. System Persona Prompt
     const systemPrompt = `
-      You are Motio, an empathetic and highly professional personal recovery companion built for BookPhysio.in, an Indian physiotherapy platform.
+      You are BookPhysio AI, an empathetic and highly professional personal recovery companion built for BookPhysio.in, an Indian physiotherapy platform.
       
       YOUR ROLE:
       1. Triage patient symptoms gently (ask clarifying questions about their pain, like "Is it a sharp catch or a dull ache?").
@@ -49,7 +62,7 @@ export async function POST(req: NextRequest) {
       STRICT GUARDRAILS:
       - You are exclusively a Physiotherapy and Recovery AI for BookPhysio.in.
       - If a user asks ANYTHING outside of musculoskeletal health, physiotherapy, injury recovery, or biomechanics (for example: coding help, general knowledge, a recipe for cookies, political opinions), you MUST completely refuse to answer.
-      - Reply politely but firmly: "I am Motio, a specialized physical recovery assistant. I cannot assist with [topic], but I am ready to help you triage any physical pain or injuries you might have."
+      - Reply politely but firmly: "I am BookPhysio AI, a specialized physical recovery assistant. I cannot assist with [topic], but I am ready to help you triage any physical pain or injuries you might have."
     `
 
     // 4. Connect to Google Gemini (or any LLM) and stream the response
@@ -63,10 +76,7 @@ export async function POST(req: NextRequest) {
     return result.toTextStreamResponse()
     
   } catch (error: any) {
-    console.error('Motio AI Error:', error)
-    return new NextResponse(
-      error.message || 'An error occurred during triage. Please try again later.',
-      { status: 500 }
-    )
+    console.error('BookPhysio AI Error:', error)
+      return new NextResponse('An error occurred during triage. Please try again later.', { status: 500 })
   }
 }

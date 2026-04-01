@@ -39,8 +39,8 @@ const CITY_MAP: Record<string, { label: string; description: string }> = {
 
 const MOCK_DOCTORS: Doctor[] = [
   { id: '1', name: 'Dr. Priya Sharma', credentials: 'BPT, MPT (Sports)', specialty: 'Sports Physiotherapist', rating: 4.9, reviewCount: 187, location: 'Andheri West, Mumbai', distance: '1.2 km', nextSlot: 'Today at 2:30 PM', visitTypes: ['In-clinic', 'Home Visit'], fee: 700, icpVerified: true },
-  { id: '2', name: 'Dr. Rohit Mehta', credentials: 'BPT, MPT (Ortho)', specialty: 'Orthopedic Physiotherapist', rating: 4.7, reviewCount: 132, location: 'Bandra, Mumbai', distance: '3.4 km', nextSlot: 'Today at 4:00 PM', visitTypes: ['In-clinic', 'Online'], fee: 800, icpVerified: true },
-  { id: '3', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit', 'Online'], fee: 900, icpVerified: true },
+  { id: '2', name: 'Dr. Rohit Mehta', credentials: 'BPT, MPT (Ortho)', specialty: 'Orthopedic Physiotherapist', rating: 4.7, reviewCount: 132, location: 'Bandra, Mumbai', distance: '3.4 km', nextSlot: 'Today at 4:00 PM', visitTypes: ['In-clinic'], fee: 800, icpVerified: true },
+  { id: '3', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 900, icpVerified: true },
   { id: '4', name: 'Dr. Vikram Singh', credentials: 'BPT', specialty: 'Sports Physiotherapist', rating: 4.6, reviewCount: 68, location: 'Lajpat Nagar, Delhi', distance: '4.2 km', nextSlot: 'Today at 5:30 PM', visitTypes: ['In-clinic'], fee: 600, icpVerified: false },
   { id: '5', name: 'Dr. Sneha Patel', credentials: 'BPT, MPT (Paeds)', specialty: 'Paediatric Physiotherapist', rating: 4.9, reviewCount: 211, location: 'Powai, Mumbai', distance: '5.1 km', nextSlot: 'Today at 11:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 1000, icpVerified: true },
 ]
@@ -94,7 +94,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               Physiotherapists in {city.label}
             </h1>
             <p className="text-[18px] text-white/90 max-w-[700px] leading-relaxed">
-              {city.description} Book verified physiotherapists for in-clinic, home visit, and online sessions.
+              {city.description} Book verified physiotherapists for in-clinic and home visit sessions.
             </p>
           </div>
         </section>
@@ -124,11 +124,11 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 </div>
                 <h3 className="text-[18px] font-semibold text-[#333333] mb-2">No providers currently in {city.label}</h3>
                 <p className="text-[15px] text-[#666666] max-w-[400px] mx-auto">
-                   We're currently onboarding specialists in {city.label}. Please try a nearby city or check our online consultation experts.
+                   We're currently onboarding specialists in {city.label}. Please try a nearby city or browse our other physiotherapy specialists.
                 </p>
                 <div className="mt-8">
                    <button className="px-6 py-2.5 bg-[#00766C] text-white font-semibold rounded-[24px] hover:bg-[#005A52] transition-colors">
-                     Explore Online Physiotherapists
+                     Explore Other Cities
                    </button>
                 </div>
               </div>

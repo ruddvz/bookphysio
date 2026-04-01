@@ -50,7 +50,7 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
              Patient Verification
           </div>
           <h2 className="text-[36px] md:text-[48px] font-black text-[#333333] tracking-tighter leading-tight">Patient Details</h2>
-          <p className="text-[17px] text-gray-400 font-bold max-w-lg leading-relaxed">Please provide the details of the individual attending the clinic or online session.</p>
+          <p className="text-[17px] text-gray-400 font-bold max-w-lg leading-relaxed">Please provide the details of the individual attending the appointment.</p>
         </div>
         
         <div className="hidden lg:flex flex-col items-end">
