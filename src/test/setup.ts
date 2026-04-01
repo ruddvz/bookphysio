@@ -18,7 +18,7 @@ vi.mock('next/navigation', async (importOriginal) => {
 
 // Mock Supabase client
 vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
+  createClient: vi.fn(() => ({
     from: vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -26,7 +26,7 @@ vi.mock('@/lib/supabase/client', () => ({
       }),
     }),
     rpc: vi.fn().mockResolvedValue({ data: [], error: null }),
-  }),
+  })),
 }))
 
 

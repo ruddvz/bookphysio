@@ -12,6 +12,7 @@ vi.mock('@/lib/supabase/server', () => ({
       range: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null, count: 0 }),
     })),
+    rpc: vi.fn().mockResolvedValue({ data: [], error: null }),
   })),
 }))
 

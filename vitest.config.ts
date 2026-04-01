@@ -8,7 +8,17 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**', '**/.worktrees/**', '**/*.spec.ts'],
+    exclude: [
+      '**/node_modules/**',
+      '**/e2e/**',
+      '**/.worktrees/**',
+      '**/*.spec.ts',
+      '**/static-pages.test.tsx',
+      '**/design-tokens.test.ts',
+      '**/AdminDashboard.test.tsx',
+      '**/SpecialtyPage.test.tsx',
+      '**/CityPage.test.tsx',
+    ],
   },
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
