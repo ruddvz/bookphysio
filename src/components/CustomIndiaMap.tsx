@@ -32,9 +32,18 @@ const MAJOR_CITIES: { name: string; lat: number; lng: number; tier: 1 | 2 | 3 }[
 interface CustomIndiaMapProps {
   doctors: { id: string; lat?: number | null; lng?: number | null; location?: string; name?: string }[]
   hoveredDoctorId?: string | null
+  selectedCity?: string | null
+  onCitySelect?: (cityName: string) => void
+  onProviderSelect?: (providerId: string) => void
 }
 
-export default function CustomIndiaMap({ doctors, hoveredDoctorId }: CustomIndiaMapProps) {
+export default function CustomIndiaMap({
+  doctors,
+  hoveredDoctorId,
+  selectedCity,
+  onCitySelect,
+  onProviderSelect,
+}: CustomIndiaMapProps) {
   const [geoData, setGeoData] = useState<GeoJSON.FeatureCollection | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -185,6 +194,7 @@ export default function CustomIndiaMap({ doctors, hoveredDoctorId }: CustomIndia
           const isActive = city.hasProviders
           const isHovered = hoveredCity === city.name ||
             city.providerIds.some(id => id === hoveredDoctorId)
+          const isSelected = selectedCity === city.name
           const r = city.tier === 1 ? 6 : city.tier === 2 ? 4 : 3
 
           return (
@@ -193,6 +203,11 @@ export default function CustomIndiaMap({ doctors, hoveredDoctorId }: CustomIndia
               className="cursor-pointer"
               onMouseEnter={() => setHoveredCity(city.name)}
               onMouseLeave={() => setHoveredCity(null)}
+              onClick={() => {
+                if (onCitySelect && city.providerCount > 0) {
+                  onCitySelect(city.name)
+                }
+              }}
             >
               {/* Pulse ring for active hubs */}
               {isActive && (

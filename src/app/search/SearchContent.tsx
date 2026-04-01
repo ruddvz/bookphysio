@@ -71,13 +71,29 @@ export default function SearchContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [showMap, setShowMap] = useState(true) 
+  const [showMap, setShowMap] = useState(true)
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
 
   const condition = searchParams.get('condition')
   const location = searchParams.get('location')
   const city = searchParams.get('city')
+
+  // Handle city selection from map
+  const handleCitySelect = (selectedCity: string) => {
+    const params = new URLSearchParams(searchParams)
+    params.set('city', selectedCity)
+    params.delete('location') // Remove location param when city is selected
+    router.push(`/search?${params.toString()}`)
+  }
+
+  // Handle provider selection from map
+  const handleProviderSelect = (providerId: string) => {
+    setHoveredDoctorId(providerId)
+    // Scroll to provider in list (optional enhancement)
+    const element = document.getElementById(`doctor-${providerId}`)
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
   const specialty = searchParams.get('specialty')
   const visit_type = searchParams.get('visit_type')
   const max_fee = searchParams.get('max_fee')
@@ -235,13 +251,14 @@ export default function SearchContent() {
                     </div>
                   </div>
                   {doctors.map((doctor) => (
-                    <DoctorCard
-                      key={doctor.id}
-                      doctor={doctor}
-                      isHovered={hoveredDoctorId === doctor.id}
-                      onMouseEnter={() => setHoveredDoctorId(doctor.id)}
-                      onMouseLeave={() => setHoveredDoctorId(null)}
-                    />
+                    <div key={doctor.id} id={`doctor-${doctor.id}`}>
+                      <DoctorCard
+                        doctor={doctor}
+                        isHovered={hoveredDoctorId === doctor.id}
+                        onMouseEnter={() => setHoveredDoctorId(doctor.id)}
+                        onMouseLeave={() => setHoveredDoctorId(null)}
+                      />
+                    </div>
                   ))}
                   
                   {/* Strategic End of List Content */}
@@ -265,7 +282,13 @@ export default function SearchContent() {
             mobileView === 'map' ? "fixed inset-0 z-40 md:relative" : "hidden md:block"
           )}>
             <div className="h-full w-full relative bg-white">
-              <CustomIndiaMap doctors={doctors} hoveredDoctorId={hoveredDoctorId} />
+              <CustomIndiaMap
+                doctors={doctors}
+                hoveredDoctorId={hoveredDoctorId}
+                selectedCity={city}
+                onCitySelect={handleCitySelect}
+                onProviderSelect={handleProviderSelect}
+              />
 
               
               {/* Mobile Back Button */}
