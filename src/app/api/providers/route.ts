@@ -17,69 +17,59 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { city, min_rating, max_fee_inr, page, limit, visit_type } = parsed.data
+  const { city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
   const supabase = await createClient()
 
-  // Build the query
-  // We use !inner for filtering by related tables
-  let q = supabase
-    .from('providers')
-    .select(
-      `id, slug, title, bio, experience_years, consultation_fee_inr,
-      rating_avg, rating_count,
-      users!inner (full_name, avatar_url),
-      locations${city || visit_type ? '!inner' : ''} (id, city, state, address, lat, lng, visit_type),
-      provider_specialties!inner (specialties (id, name, slug)),
-      provider_insurances (insurances (id, name, logo_url))`,
-      { count: 'exact' }
-    )
-    .eq('verified', true)
-    .eq('active', true)
+  const { data, error } = await supabase.rpc('search_providers_v2', {
+    p_lat: lat ?? null,
+    p_lng: lng ?? null,
+    p_radius_km: Number(radius_km),
+    p_city: city ?? null,
+    p_specialty_id: specialty_id ?? null,
+    p_visit_type: visit_type ?? null,
+    p_min_rating: min_rating ?? 0,
+    p_max_fees: max_fee_inr ?? 2000000,
+    p_page: page,
+    p_limit: limit
+  })
 
-  if (city) q = q.ilike('locations.city', city)
-  if (visit_type) q = q.contains('locations.visit_type', [visit_type])
-  if (min_rating) q = q.gte('rating_avg', min_rating)
-  if (max_fee_inr) q = q.lte('consultation_fee_inr', max_fee_inr)
-
-  const from = (page - 1) * limit
-  const { data, error, count } = await q
-    .range(from, from + limit - 1)
-    .order('rating_avg', { ascending: false })
 
   if (error) {
-    console.error('Supabase fetch error:', error)
-    return NextResponse.json({ error: 'Failed to fetch providers' }, { status: 500 })
+    console.error('Supabase RPC error:', error)
+    return NextResponse.json({ error: 'Failed to fetch providers', details: error.message }, { status: 500 })
   }
 
-  // Map the nested response to ProviderCard[]
-  const providers: ProviderCard[] = (data || []).map((p) => {
-    const provider = p as any
-    return {
-      id: provider.id,
-      slug: provider.slug,
-      full_name: provider.users.full_name,
-      title: provider.title,
-      avatar_url: provider.users.avatar_url,
-      specialties: provider.provider_specialties?.map((ps: any) => ps.specialties).filter(Boolean) || [],
-      rating_avg: provider.rating_avg || 0,
-      rating_count: provider.rating_count || 0,
-      experience_years: provider.experience_years,
-      consultation_fee_inr: provider.consultation_fee_inr,
-      next_available_slot: null,
-      visit_types: provider.locations?.[0]?.visit_type || [],
-      city: provider.locations?.[0]?.city || null,
-      lat: provider.locations?.[0]?.lat || null,
-      lng: provider.locations?.[0]?.lng || null,
-      insurances: provider.provider_insurances?.map((pi: any) => pi.insurances).filter(Boolean) || [],
-    }
-  })
+  const results = (data as any[]) || []
+  const total = results.length > 0 ? (results[0].total_count || 0) : 0
+
+
+  const providers: ProviderCard[] = results.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    full_name: p.full_name,
+    title: p.title,
+    avatar_url: p.avatar_url,
+    specialties: [], // We might need to fetch names if needed, or adjust RPC
+    rating_avg: p.rating_avg || 0,
+    rating_count: p.rating_count || 0,
+    experience_years: p.experience_years,
+    consultation_fee_inr: p.consultation_fee_inr,
+    next_available_slot: null,
+    visit_types: [], // RPC could be updated to return this
+    city: p.city,
+    lat: p.lat,
+    lng: p.lng,
+    insurances: [],
+    distance: p.distance_km ? `${p.distance_km.toFixed(1)} km` : undefined
+  }))
 
   const response: SearchResponse = {
     providers,
-    total: count ?? 0,
+    total: Number(total),
     page,
     limit,
   }
 
   return NextResponse.json(response)
+
 }

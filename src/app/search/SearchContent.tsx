@@ -12,15 +12,15 @@ import type { ProviderCard } from '@/app/api/contracts/provider'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 
-const ProviderMap = dynamic(() => import('@/components/ProviderMap'), {
+const CustomIndiaMap = dynamic(() => import('@/components/CustomIndiaMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-[#f8fafc] flex flex-col items-center justify-center gap-4 relative overflow-hidden">
+    <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-6 relative overflow-hidden">
        {/* Background Animated Dots */}
        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#00766C_1px,transparent_1.5px)] [background-size:24px_24px]"></div>
-       <div className="w-16 h-16 rounded-full border-4 border-gray-100 border-t-[#00766C] animate-spin" />
+       <div className="w-16 h-16 rounded-full border-2 border-gray-100 border-t-[#00766C] animate-spin" />
        <div>
-          <p className="text-[14px] font-black tracking-widest text-[#00766C] uppercase">Initializing Map</p>
+          <p className="text-[14px] font-black tracking-widest text-[#00766C] uppercase">Projecting Geography</p>
           <div className="w-24 h-1 bg-gray-100 rounded-full mt-2 relative overflow-hidden">
              <div className="absolute inset-y-0 left-0 bg-[#00766C] animate-progress-indeterminate"></div>
           </div>
@@ -28,6 +28,7 @@ const ProviderMap = dynamic(() => import('@/components/ProviderMap'), {
     </div>
   )
 })
+
 import type { SearchResponse } from '@/app/api/contracts/search'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
@@ -80,18 +81,23 @@ export default function SearchContent() {
   const specialty = searchParams.get('specialty')
   const visit_type = searchParams.get('visit_type')
   const max_fee = searchParams.get('max_fee')
+  const lat = searchParams.get('lat')
+  const lng = searchParams.get('lng')
 
   useEffect(() => {
     async function fetchProviders() {
       setLoading(true)
-      const apiParams: Record<string, string> = { page: '1', limit: '20' }
+      const apiParams: Record<string, string> = { page: '1', limit: '40' } // Larger limit for better clustering
       if (city) apiParams.city = city
       else if (location) apiParams.city = location
       if (specialty) apiParams.specialty_id = specialty
       if (visit_type) apiParams.visit_type = visit_type
       if (max_fee) apiParams.max_fee_inr = max_fee
+      if (lat) apiParams.lat = lat
+      if (lng) apiParams.lng = lng
 
       const qs = new URLSearchParams(apiParams).toString()
+
 
       try {
         const res = await fetch(`/api/providers?${qs}`, { cache: 'no-store' })
@@ -108,9 +114,10 @@ export default function SearchContent() {
     }
 
     fetchProviders()
-  }, [searchParams, city, location, specialty, visit_type, max_fee])
+  }, [searchParams, city, location, specialty, visit_type, max_fee, lat, lng])
 
-  const displayLocation = city ?? location ?? 'India'
+  const displayLocation = (lat && lng) ? 'Near Me' : city ?? location ?? 'India'
+
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white selection:bg-[#00766C]/10 selection:text-[#00766C]">
@@ -257,20 +264,10 @@ export default function SearchContent() {
             showMap ? "md:w-[40%] lg:w-[35%]" : "w-0 border-none opacity-0 overflow-hidden",
             mobileView === 'map' ? "fixed inset-0 z-40 md:relative" : "hidden md:block"
           )}>
-            <div className="h-full w-full relative bg-[#F8FAFC]">
-              <ProviderMap doctors={doctors} hoveredDoctorId={hoveredDoctorId} />
-              
-              {/* Desktop Zoom Overlay Hint */}
-              {showMap && (
-                 <div className="hidden lg:flex absolute top-10 left-10 p-4 px-6 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-[28px] shadow-2xl items-center gap-4 animate-in slide-in-from-top-12 duration-1000 delay-1000">
-                    <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center text-[#00766C] animate-pulse"><MapIcon size={20} /></div>
-                    <div>
-                       <p className="text-[14px] font-black text-[#333333] leading-none mb-1">Click Marker</p>
-                       <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-none">To view profile</p>
-                    </div>
-                 </div>
-              )}
+            <div className="h-full w-full relative bg-white">
+              <CustomIndiaMap doctors={doctors} hoveredDoctorId={hoveredDoctorId} />
 
+              
               {/* Mobile Back Button */}
               <button
                 onClick={() => setMobileView('list')}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Sparkles, TrendingUp, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { Search, MapPin, Sparkles, TrendingUp, CheckCircle2, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Specialty {
@@ -19,18 +19,18 @@ interface ActivityItem {
 }
 
 const specialties: Specialty[] = [
-  { word: 'Physiotherapists', gradient: 'from-[#00766C] to-emerald-500' },
-  { word: 'Sports Physios', gradient: 'from-blue-600 to-indigo-500' },
-  { word: 'Neuro Physios', gradient: 'from-amber-600 to-orange-500' },
-  { word: 'Paediatric Physios', gradient: 'from-rose-600 to-pink-500' },
-  { word: "Women's Health", gradient: 'from-purple-600 to-violet-500' },
+  { word: 'Physiotherapists', gradient: 'from-[#00766C] to-emerald-400' },
+  { word: 'Sports Physios', gradient: 'from-teal-600 to-emerald-500' },
+  { word: 'Neuro Physios', gradient: 'from-blue-700 to-cyan-500' },
+  { word: 'Paediatric Physios', gradient: 'from-emerald-600 to-teal-400' },
+  { word: "Women's Health", gradient: 'from-[#005A52] to-teal-300' },
 ];
 
 const activities: ActivityItem[] = [
-  { id: 1, doctor: "Dr. Priya Sharma", location: "Indiranagar", service: "Sports Recovery", emoji: "👩‍⚕️" },
-  { id: 2, doctor: "Dr. Rahul Verma", location: "Koramangala", service: "Back Pain Rehab", emoji: "👨‍⚕️" },
-  { id: 3, doctor: "Dr. Ananya Nair", location: "Whitefield", service: "Neuro Assessment", emoji: "👩‍⚕️" },
-  { id: 4, doctor: "Dr. Sameer Khan", location: "Jayanagar", service: "ACL Post-Op", emoji: "👨‍⚕️" },
+  { id: 1, doctor: "Dr. Priya Sharma", location: "Mumbai", service: "Sports Recovery", emoji: "👩‍⚕️" },
+  { id: 2, doctor: "Dr. Rahul Verma", location: "Delhi", service: "Back Pain Rehab", emoji: "👨‍⚕️" },
+  { id: 3, doctor: "Dr. Ananya Nair", location: "Bangalore", service: "Neuro Assessment", emoji: "👩‍⚕️" },
+  { id: 4, doctor: "Dr. Sameer Khan", location: "Pune", service: "ACL Post-Op", emoji: "👨‍⚕️" },
 ];
 
 const TRENDING = ['Back Pain', 'ACL Rehab', 'Sports Massage', 'Posture Fix'];
@@ -47,21 +47,21 @@ interface SearchBarProps {
 
 function SearchBar({ condition, location, onConditionChange, onLocationChange, onSubmit }: SearchBarProps) {
   return (
-    <div className="mt-10 group relative max-w-[850px] w-full">
-      <div className="absolute -inset-1 bg-gradient-to-r from-teal-100 to-emerald-100 rounded-[32px] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-      <div className="relative bg-white rounded-[28px] border-2 border-white shadow-2xl p-2.5 md:flex items-center gap-2">
+    <div className="mt-12 group relative max-w-[850px] w-full animate-in zoom-in-95 duration-700 delay-300 fill-mode-both">
+      <div className="absolute -inset-1.5 bg-[#00766C]/5 rounded-[36px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="relative bg-white rounded-[32px] border border-gray-100 shadow-2xl p-3 md:flex items-center gap-2">
         <div className="flex-[1.5] flex items-center px-6 py-4 md:py-0 md:h-16">
           <div className="w-full">
-            <label className="flex items-center gap-2 text-[11px] font-black text-teal-600 uppercase tracking-widest mb-1">
-              <Search size={14} className="stroke-[3]" />
-              What&apos;s hurting?
+            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">
+              <Search size={14} className="text-[#00766C]" />
+              Symptom / Condition
             </label>
             <input
               type="text"
               value={condition}
               onChange={(e) => onConditionChange(e.target.value)}
               placeholder="E.g. Knee pain, Back rehab"
-              className="w-full bg-transparent text-[18px] font-black text-[#333333] outline-none placeholder:text-gray-300 placeholder:font-bold"
+              className="w-full bg-transparent text-[17px] font-bold text-[#333333] outline-none placeholder:text-gray-200"
             />
           </div>
         </div>
@@ -70,39 +70,38 @@ function SearchBar({ condition, location, onConditionChange, onLocationChange, o
 
         <div className="flex-1 flex items-center px-6 py-4 md:py-0 md:h-16">
           <div className="w-full">
-            <label className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">
-              <MapPin size={14} className="stroke-[3]" />
-              Where?
+            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">
+              <MapPin size={14} className="text-[#00766C]" />
+              Location
             </label>
             <input
               type="text"
               value={location}
               onChange={(e) => onLocationChange(e.target.value)}
               placeholder="City or Postcode"
-              className="w-full bg-transparent text-[18px] font-black text-[#333333] outline-none placeholder:text-gray-300 placeholder:font-bold"
+              className="w-full bg-transparent text-[17px] font-bold text-[#333333] outline-none placeholder:text-gray-200"
             />
           </div>
         </div>
 
         <button
           onClick={onSubmit}
-          className="w-full md:w-auto px-10 h-16 bg-[#00766C] text-white text-[17px] font-black rounded-[20px] shadow-xl shadow-teal-100 hover:bg-[#005A52] hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3 shrink-0"
+          className="w-full md:w-auto px-10 h-16 bg-[#333333] text-white text-[15px] font-black rounded-2xl hover:bg-[#00766C] transition-all flex items-center justify-center gap-3 shrink-0 active:scale-95 shadow-xl shadow-gray-200"
         >
-          Find Physios
-          <Sparkles size={20} className="fill-white/20" />
+          Find Experts
+          <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center">
+            <Sparkles size={14} className="fill-white/20" />
+          </div>
         </button>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 md:gap-5 px-4">
-        <div className="flex items-center gap-2 text-[13px] font-black text-gray-400 uppercase tracking-tighter">
-          <TrendingUp size={14} className="text-[#FF6B35]" />
-          Trending:
-        </div>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-4 px-4 overflow-hidden">
+        <span className="text-[11px] font-black text-gray-300 uppercase tracking-widest whitespace-nowrap">Popular:</span>
         {TRENDING.map((tag) => (
           <button
             key={tag}
             onClick={() => onConditionChange(tag)}
-            className="text-[14px] font-bold text-gray-500 hover:text-[#00766C] hover:bg-teal-50 px-3 py-1 rounded-full transition-colors border border-transparent hover:border-teal-100 bg-white/50"
+            className="text-[13px] font-bold text-gray-500 hover:text-[#00766C] px-4 py-1.5 rounded-full transition-all border border-gray-100 hover:border-[#00766C]/20 bg-white shadow-sm"
           >
             {tag}
           </button>
@@ -126,62 +125,55 @@ function HeroActivity() {
 
   return (
     <div className="hidden lg:flex flex-col items-center gap-8 relative z-20">
-      <div className="relative w-[480px] h-[560px] group">
-        <div className="absolute -inset-10 bg-teal-100/30 rounded-[60px] blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity"></div>
-        <div className="absolute top-1/2 -right-20 w-40 h-40 bg-orange-100/30 rounded-full blur-[60px]"></div>
+      <div className="relative w-[520px] h-[600px] group">
+        <div className="absolute -inset-20 bg-teal-50/20 rounded-[80px] blur-[120px] opacity-40 group-hover:opacity-60 transition-opacity duration-1000"></div>
 
-        {/* Main Card — gradient background instead of broken image */}
-        <div className="relative h-full w-full bg-gradient-to-br from-[#E6F4F3] via-[#F0FAF9] to-[#DBEAFE] rounded-[48px] border-8 border-white shadow-[0_48px_96px_-24px_rgba(0,0,0,0.12)] overflow-hidden transition-all duration-1000 ease-out group-hover:scale-[1.01] flex items-center justify-center">
+        {/* Main Card — refined shadow and roundedness */}
+        <div className="relative h-full w-full bg-white rounded-[64px] border border-gray-100 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-1000 ease-out flex items-center justify-center">
           
-          {/* Decorative circles */}
-          <div className="absolute -top-16 -left-16 w-48 h-48 bg-teal-200/30 rounded-full blur-2xl"></div>
-          <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-blue-200/20 rounded-full blur-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-50/30 via-white to-blue-50/20"></div>
           
-          {/* Centre icon */}
-          <div className="relative flex flex-col items-center gap-4 z-10">
-            <div className="w-28 h-28 bg-white rounded-[40px] shadow-2xl flex items-center justify-center text-6xl">
-              🏥
+          {/* Centre icon with premium glass effect */}
+          <div className="relative flex flex-col items-center gap-6 z-10">
+            <div className="w-32 h-32 bg-white rounded-[48px] shadow-2xl flex items-center justify-center text-6xl animate-pulse duration-[4000ms]">
+               <ShieldCheck size={64} className="text-[#00766C]" strokeWidth={1} />
             </div>
-            <div className="px-6 py-2 bg-white/80 backdrop-blur rounded-2xl shadow-sm border border-white">
-              <p className="text-[15px] font-black text-[#00766C]">Expert Physiotherapy</p>
-              <p className="text-[12px] font-bold text-gray-400 text-center">In-clinic · Home · Online</p>
+            <div className="px-8 py-3 bg-white/90 backdrop-blur-xl rounded-[24px] shadow-xl border border-white">
+              <p className="text-[16px] font-black text-[#333333] tracking-tighter">Verified Clinical Care</p>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-none">Registration Active</p>
+              </div>
             </div>
           </div>
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
-
-          {/* Live Activity Card */}
-          <div key={cur.id} className="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-2xl p-5 rounded-[28px] border border-white shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-6 fade-in duration-700">
+          {/* Live Activity Card - Refined */}
+          <div key={cur.id} className="absolute bottom-10 left-10 right-10 bg-[#333333] p-6 rounded-[32px] shadow-2xl flex items-center gap-5 animate-in slide-in-from-bottom-12 fade-in duration-1000">
             <div className="relative shrink-0">
-              <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-2xl shadow-sm">{cur.emoji}</div>
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full animate-pulse"></div>
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shadow-inner border border-white/5">{cur.emoji}</div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 border-2 border-[#333333] rounded-full"></div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-black text-[#333333] tracking-tight truncate">{cur.doctor} just booked</p>
-              <p className="text-[12px] font-bold text-gray-400 truncate">{cur.service} · {cur.location}</p>
+              <p className="text-[15px] font-black text-white tracking-tight truncate">{cur.doctor} just booked</p>
+              <p className="text-[12px] font-bold text-gray-400 truncate tracking-wide">{cur.service} · {cur.location}</p>
             </div>
-            <div className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full tracking-widest shrink-0">LIVE</div>
+            <div className="w-10 h-10 border border-white/10 rounded-2xl flex items-center justify-center text-white/40">
+               <ArrowRight size={20} />
+            </div>
           </div>
 
-          {/* Float Badge 1 */}
-          <div className="absolute top-8 left-8 bg-[#00766C] p-3 px-5 rounded-[20px] shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-left-8 duration-1000 delay-300">
-            <CheckCircle2 size={16} className="text-white" />
-            <p className="text-[14px] font-black text-white tracking-tight">Verified Practitioners</p>
-          </div>
-
-          {/* Float Badge 2 - Rating */}
-          <div className="absolute top-24 right-8 bg-white/90 backdrop-blur-md p-3 px-5 rounded-[20px] shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-8 duration-1000 delay-700">
-            <div className="flex -space-x-2">
+          {/* Float Badge: Quality */}
+          <div className="absolute top-10 right-10 bg-white/90 backdrop-blur-md p-4 px-6 rounded-[28px] shadow-2xl border border-white flex items-center gap-4">
+            <div className="flex -space-x-2.5">
               {[1,2,3].map(i => (
-                <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-100 shadow-sm overflow-hidden">
-                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i+10}`} alt="User" />
+                <div key={i} className="w-9 h-9 rounded-full border-2 border-white bg-gray-100 shadow-lg overflow-hidden ring-4 ring-teal-50/30">
+                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=physio${i}`} alt="User" />
                 </div>
               ))}
             </div>
             <div>
-              <p className="text-[13px] font-black text-[#333333] leading-none mb-0.5">4.9/5 Average</p>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">by 12k+ Patients</p>
+              <p className="text-[14px] font-black text-[#333333] leading-none mb-1 tracking-tighter">4.9/5 Rating</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.14em] leading-none">by 12k+ Sessions</p>
             </div>
           </div>
         </div>
@@ -217,42 +209,39 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden w-full bg-[#FCFDFD] min-h-[85vh] flex items-center">
-      {/* Background Ornaments */}
-      <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-teal-50/50 rounded-full blur-[120px] opacity-40"></div>
-      <div className="absolute top-[60%] -right-[5%] w-[30%] h-[30%] bg-orange-50/40 rounded-full blur-[100px] opacity-30"></div>
+    <section className="relative overflow-hidden w-full bg-[#FCFDFD] min-h-[90vh] flex items-center">
+      {/* Refined Background Elements */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent"></div>
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-teal-50/40 rounded-full blur-[100px] -z-10"></div>
 
-      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] pt-12 md:pt-16 pb-12 md:pb-20 relative z-10 w-full">
-        <div className="flex flex-col items-center text-center">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-20 pb-24 relative z-10 w-full">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
 
           {/* Text content */}
-          <div className="max-w-[900px] flex flex-col items-center">
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-100 shadow-sm rounded-2xl text-[13px] font-black uppercase tracking-[0.15em] text-[#00766C] mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-              <ShieldCheck size={16} className="text-[#059669]" strokeWidth={3} />
-              Verify. Book. Recover.
-              <div className="h-4 w-px bg-gray-100 ml-2"></div>
-              <Zap size={14} className="fill-[#FF6B35] text-[#FF6B35] animate-pulse ml-1" />
-              <span className="text-gray-400">Trusted in 12 Cities</span>
+          <div className="max-w-[800px] text-center lg:text-left flex flex-col items-center lg:items-start">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-teal-50 border border-teal-100/50 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-[#00766C] mb-10 animate-in fade-in slide-in-from-top-6 duration-1000">
+              <Zap size={14} className="fill-[#00766C]" strokeWidth={3} />
+              India&apos;s Premium Recovery Network
             </div>
 
-            <h1 className="text-[48px] md:text-[80px] lg:text-[88px] font-black text-[#333333] leading-[0.95] tracking-tighter mb-10">
-              Find the Best<br />
-              <div className="h-[1.1em] overflow-hidden flex justify-center items-center">
+            <h1 className="text-[56px] md:text-[88px] lg:text-[96px] font-black text-[#333333] leading-[0.88] tracking-[-0.06em] mb-10">
+              Find Expert<br />
+              <div className="h-[1.1em] overflow-hidden flex justify-center lg:justify-start items-center">
                 <span
                   key={currentSpecialty.word}
                   className={cn(
-                    'bg-gradient-to-r bg-clip-text text-transparent transition-all duration-500 animate-in slide-in-from-bottom-4 fade-in',
+                    'bg-gradient-to-r bg-clip-text text-transparent transition-all duration-700 animate-in slide-in-from-bottom-8 fade-in',
                     currentSpecialty.gradient
                   )}
                 >
                   {currentSpecialty.word}
                 </span>
               </div>
-              near you.
+              at home.
             </h1>
 
-            <p className="text-[18px] md:text-[22px] font-bold text-gray-400 max-w-[620px] leading-relaxed mb-12 text-balance">
-              Skip the waiting room. Connect with India's highest-verified physiotherapy experts for in-clinic or home-visit care in minutes.
+            <p className="text-[18px] md:text-[21px] font-bold text-gray-400 max-w-[620px] leading-relaxed mb-12 text-balance lg:mr-auto">
+              Skip the clinic waiting list. Connect with the country&apos;s most verified physiotherapy specialists for in-person or online recovery in minutes.
             </p>
 
             <SearchBar
@@ -263,25 +252,29 @@ export default function HeroSection() {
               onSubmit={handleSubmit}
             />
 
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-10 md:gap-16">
-              <div className="flex flex-col gap-1">
-                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">5,000+</span>
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Experts</span>
+            <div className="mt-20 flex flex-wrap items-center justify-center lg:justify-start gap-12 md:gap-16 opacity-60">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[32px] font-black text-[#333333] tracking-tight">5,000+</span>
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Verify Experts</span>
               </div>
-              <div className="h-10 w-px bg-gray-100 hidden sm:block"></div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">1M+</span>
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Appointments</span>
+              <div className="w-px h-10 bg-gray-100 hidden sm:block"></div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[32px] font-black text-[#333333] tracking-tight">1M+</span>
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Bookings</span>
               </div>
-              <div className="h-10 w-px bg-gray-100 hidden sm:block"></div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[28px] md:text-[32px] font-black text-[#333333] tracking-tighter">4.9/5</span>
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">App Rating</span>
+              <div className="w-px h-10 bg-gray-100 hidden sm:block"></div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[32px] font-black text-[#333333] tracking-tight">4.9/5</span>
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Patient Rating</span>
               </div>
             </div>
           </div>
+
+          {/* Right: Immersive Card */}
+          <HeroActivity />
         </div>
       </div>
     </section>
   );
 }
+
