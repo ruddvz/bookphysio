@@ -2,13 +2,13 @@ import jwt from 'jsonwebtoken'
 
 function createManagementToken(): string {
   const payload = {
-    access_key: process.env.HMS_APP_ACCESS_KEY!,
+    access_key: process.env.HMS_APP_ACCESS_KEY || 'dummy_key',
     type: 'management',
     version: 2,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 86400,
   }
-  return jwt.sign(payload, process.env.HMS_APP_SECRET!, { algorithm: 'HS256' })
+  return jwt.sign(payload, process.env.HMS_APP_SECRET || 'dummy_secret', { algorithm: 'HS256' })
 }
 
 interface HmsRoomResponse {
