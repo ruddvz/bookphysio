@@ -1,21 +1,16 @@
-name: Deploy to GitHub Pages
+name: Deploy to Vercel
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,64 +20,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
 
-      - name: Stash API route handlers & middleware (incompatible with static export)
-        run: |
-          mkdir -p /tmp/api_stashed
-          # Stash API routes
-          if [ -d "src/app/api" ]; then
-            echo "Stashing src/app/api..."
-            mkdir -p /tmp/api_stashed/src/app/api
-            find src/app/api -name "route.ts" | while read f; do
-              mkdir -p /tmp/api_stashed/$(dirname $f)
-              mv "$f" "/tmp/api_stashed/$f"
-            done
-          fi
-          # Stash Middleware
-          if [ -f "middleware.ts" ]; then
-            echo "Stashing middleware.ts..."
-            mv middleware.ts /tmp/api_stashed/middleware.ts
-          fi
+      - name: Pull Vercel Environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build static export
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-role-key' }}
-          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'placeholder-mapbox' }}
-          NEXT_PUBLIC_APP_URL: https://bookphysio.in
-          NEXT_TELEMETRY_DISABLED: 1
-          GITHUB_ACTIONS: true
-        run: |
-          echo "Building for bookphysio.in (no basePath)"
-          CI=false npm run build
+      - name: Build Project
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Add CNAME for custom domain
-        run: echo "bookphysio.in" > out/CNAME
-
-      - name: Restore API route handlers & middleware
-        if: always()
-        run: |
-          if [ -d "/tmp/api_stashed" ]; then
-            echo "Restoring stashed files from /tmp/api_stashed..."
-            cp -rv /tmp/api_stashed/* . || true
-            rm -rf /tmp/api_stashed
-          fi
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
