@@ -19,7 +19,7 @@ const specialties: Specialty[] = [
     label: "Sports Physio", 
     description: "Athletic injuries & performance", 
     href: "/search?specialty=Sports+Physio", 
-    bgColor: "bg-[#DCE9FD]", // --color-section-blue
+    bgColor: "bg-blue-50", 
     iconColor: "text-blue-600"
   },
   { 
@@ -27,42 +27,43 @@ const specialties: Specialty[] = [
     label: "Neuro Physio", 
     description: "Brain, spine & nerve recovery", 
     href: "/search?specialty=Neuro+Physio", 
-    bgColor: "bg-[#FEFAE6]", // --color-section-yellow
-    iconColor: "text-amber-600"
+    bgColor: "bg-teal-50", 
+    iconColor: "text-[#00766C]"
   },
   { 
     icon: Bone, 
     label: "Ortho Physio", 
     description: "Joint pain & bone health", 
     href: "/search?specialty=Ortho+Physio", 
-    bgColor: "bg-[#FDFACE]", // --color-section-cream
-    iconColor: "text-orange-600" 
+    bgColor: "bg-emerald-50", 
+    iconColor: "text-emerald-600" 
   },
   { 
     icon: Baby, 
     label: "Paediatric", 
     description: "Child growth & motor skills", 
     href: "/search?specialty=Paediatric+Physio", 
-    bgColor: "bg-[#FFC794]/30", // --color-section-peach (muted)
-    iconColor: "text-rose-600"
+    bgColor: "bg-cyan-50", 
+    iconColor: "text-cyan-6200"
   },
   { 
     icon: Heart, 
     label: "Women's Health", 
     description: "Pre-natal & pelvic wellness", 
     href: "/search?specialty=Womens+Health", 
-    bgColor: "bg-purple-50", 
-    iconColor: "text-purple-600"
+    bgColor: "bg-[#F0FAF9]", 
+    iconColor: "text-[#005A52]"
   },
   { 
     icon: UserRound, 
     label: "Geriatric", 
     description: "Senior mobility & strength", 
     href: "/search?specialty=Geriatric+Physio", 
-    bgColor: "bg-[#F9F8F7]", // --color-section-beige
-    iconColor: "text-teal-700"
+    bgColor: "bg-blue-50", 
+    iconColor: "text-blue-700"
   },
 ];
+
 
 function SpecialtyCard({ icon: Icon, label, description, href, bgColor, iconColor }: Specialty) {
   return (

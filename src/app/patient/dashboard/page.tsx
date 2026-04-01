@@ -198,7 +198,43 @@ export default function PatientDashboardHome() {
                 </div>
              )}
           </section>
+          
+          {/* Growth & Referral Loop: Physio Journal */}
+          <section className="bg-gradient-to-br from-[#00766C] to-[#005A52] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-teal-900/20 text-white relative overflow-hidden group">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
+             
+             <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1 space-y-6">
+                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[10px] font-black uppercase text-teal-100 tracking-widest shadow-sm">
+                      <Heart size={12} strokeWidth={3} fill="currentColor" />
+                      Community Referral
+                   </div>
+                   <h2 className="text-[28px] md:text-[32px] font-black leading-none tracking-tighter">
+                      Share the progress, <br />get ₹500 off.
+                   </h2>
+                   <p className="text-[15px] font-bold text-teal-100/60 leading-relaxed max-w-[400px]">
+                      Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
+                   </p>
+                   
+                   <button className="flex items-center gap-3 px-8 py-4 bg-white text-[#00766C] text-[14px] font-black rounded-2xl hover:bg-teal-50 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl group/btn">
+                      Copy My Referral Link
+                      <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
+                   </button>
+                </div>
+                
+                <div className="hidden md:flex w-[240px] h-[180px] bg-white/5 backdrop-blur-md rounded-[32px] border border-white/10 items-center justify-center relative shadow-inner">
+                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                   <div className="flex flex-col items-center gap-3 animate-bounce duration-[2000ms]">
+                      <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-[#00766C] shadow-2xl">
+                         <Zap size={32} strokeWidth={3} fill="currentColor" />
+                      </div>
+                      <span className="text-[12px] font-black tracking-widest uppercase">Verified Gift</span>
+                   </div>
+                </div>
+             </div>
+          </section>
         </div>
+
 
         {/* ── Right Column: Upcoming & Support ── */}
         <aside className="space-y-6 sticky top-28">
