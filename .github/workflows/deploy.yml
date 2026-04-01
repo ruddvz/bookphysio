@@ -1,9 +1,9 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (Disabled - Using GitHub Pages)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+  push:
+    branches: [never-run-this-branch-exists-only-to-disable-this-workflow]
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
