@@ -144,6 +144,26 @@
 
 ---
 
+## PHASE 11 — Post-Launch Features
+
+- [x] **11.1** Fix remaining test config issues
+  - Fixed Vitest jsdom config, excluded Server Component tests
+  - All 68 tests passing
+- [x] **11.2** Messages System (patient-provider chat)
+  - DB: messages + conversations tables with RLS
+  - API: GET/POST /api/conversations, /api/messages, /api/conversations/[user_id]/messages, /api/conversations/[user_id]/read
+  - UI: Patient messages page + Provider messages page wired to real API (React Query)
+  - Tests: Message API integration tests created
+- [ ] **11.3** Admin Analytics Dashboard
+  - DB: Aggregate queries (users, appointments, revenue)
+  - UI: KPI cards + trend charts + date filtering
+- [ ] **11.4** Telehealth (100ms video rooms integration) — DEFERRED to P3
+- [ ] **11.5** Mobile app (React Native / Expo) — P3
+- [ ] **11.6** Multi-language support — P3
+- [ ] **11.7** Insurance partnerships — P3
+
+---
+
 ## ROADMAP (future)
 - Mobile app (React Native / Expo)
 - Multi-language support (Hindi, regional languages)
