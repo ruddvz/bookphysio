@@ -20,7 +20,15 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },
+  manifest: "/manifest.json",
+  themeColor: "#00766C",
+  appleWebApp: {
+    title: "BookPhysio",
+    statusBarStyle: "default",
+    capable: true,
+  },
   openGraph: {
+
     title: "BookPhysio — Book Physiotherapists Online",
     description:
       "Find and book physiotherapists near you.",

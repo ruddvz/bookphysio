@@ -41,15 +41,17 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0 group" aria-label="BookPhysio home">
           <div className="relative">
-            <svg width="40" height="40" viewBox="0 0 36 36" fill="none" aria-hidden="true" className="shrink-0 transition-transform group-hover:scale-105">
-              <rect width="36" height="36" rx="12" fill="#00766C" className="fill-[#00766C] group-hover:fill-[#005A52] transition-colors"/>
-              <path d="M10 18C10 13.58 13.58 10 18 10C20.21 10 22.21 10.9 23.66 12.34L21.54 14.46C20.63 13.55 19.38 13 18 13C15.24 13 13 15.24 13 18C13 20.76 15.24 23 18 23C20.03 23 21.78 21.82 22.63 20.1H18V17.1H26V18C26 22.42 22.42 26 18 26C13.58 26 10 22.42 10 18Z" fill="white"/>
+            <svg width="40" height="40" viewBox="0 0 36 36" fill="none" aria-hidden="true" className="shrink-0 transition-transform group-hover:scale-110 duration-500">
+               <rect width="36" height="36" rx="14" fill="#00766C" className="fill-[#00766C] group-hover:fill-[#005A52] transition-colors shadow-lg"/>
+               {/* Medical Pulse Heartbeat Path */}
+               <path d="M9 18H13L15 12L19 24L21 18H27" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <span className="text-[24px] font-black text-[#333333] ml-3 tracking-tighter group-hover:text-[#00766C] transition-colors">
+          <span className="text-[26px] font-black text-[#333333] ml-3.5 tracking-tighter group-hover:text-[#00766C] transition-colors font-black">
             BookPhysio
           </span>
         </Link>
+
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-2" aria-label="Main navigation">
