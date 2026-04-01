@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowRight, Smartphone } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { cn } from '@/lib/utils'
+
 
 const loginSchema = z.object({
   phone: z
@@ -20,148 +22,196 @@ interface LoginErrors {
 
 export default function LoginPage() {
   const router = useRouter()
+  const [loginMode, setLoginMode] = useState<'phone' | 'email'>('phone')
   const [phone, setPhone] = useState('')
-  const [errors, setErrors] = useState<LoginErrors>({})
+  const [email, setEmail] = useState('')
+  const [errors, setErrors] = useState<LoginErrors & { email?: string }>({})
   const [loading, setLoading] = useState(false)
-  const [phoneFocused, setPhoneFocused] = useState(false)
+  const [inputFocused, setInputFocused] = useState(false)
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
 
   function handlePhoneChange(value: string) {
     setPhone(value.replace(/\D/g, ''))
-    if (errors.phone || errors.general) {
-      setErrors({})
-    }
-  }
-
-  function handlePhoneBlur() {
-    setPhoneFocused(false)
-    if (!phone) return
-    const result = loginSchema.safeParse({ phone })
-    if (!result.success) {
-      setErrors({ phone: result.error.issues[0].message })
-    }
+    if (errors.phone || errors.general) setErrors({})
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const result = loginSchema.safeParse({ phone })
-    if (!result.success) {
-      const fieldErrors: LoginErrors = {}
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof LoginErrors
-        fieldErrors[field] = issue.message
-      }
-      setErrors(fieldErrors)
-      return
-    }
+    setErrors({})
     setLoading(true)
-    const rawPhone = phone.replace(/\D/g, '')
-    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
 
     try {
-      const res = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({})) as { error?: string }
-        // On static export (GitHub Pages), API routes don't exist — still allow navigation
-        if (res.status === 404) {
-          const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
-          router.push('/verify-otp?' + params.toString())
+      if (loginMode === 'phone') {
+        const result = loginSchema.safeParse({ phone })
+        if (!result.success) {
+          setErrors({ phone: result.error.issues[0].message })
+          setLoading(false)
           return
         }
-        setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
-        return
+        
+        const rawPhone = phone.replace(/\D/g, '')
+        const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+        
+        const res = await fetch('/api/auth/otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanPhone }),
+        })
+        
+        if (!res.ok && res.status !== 404) {
+          const data = await res.json()
+          throw new Error(data.error || 'Failed to send OTP')
+        }
+        
+        const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
+        router.push('/verify-otp?' + params.toString())
+      } else {
+        // Magic Link Logic
+        if (!email || !email.includes('@')) {
+          setErrors({ email: 'Please enter a valid email address' })
+          setLoading(false)
+          return
+        }
+
+        const res = await fetch('/api/auth/magic-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || 'Failed to send magic link')
+        }
+
+        setMagicLinkSent(true)
       }
-      const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
-      router.push('/verify-otp?' + params.toString())
-    } catch {
-      // Network error on static export — still navigate to OTP page
-      const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
-      router.push('/verify-otp?' + params.toString())
+    } catch (err: any) {
+      setErrors({ general: err.message })
     } finally {
       setLoading(false)
     }
   }
 
+  if (magicLinkSent) {
+    return (
+      <div className="bg-white rounded-3xl p-8 sm:p-12 max-w-[440px] w-full shadow-2xl border border-gray-50 animate-in zoom-in-95 duration-500 text-center">
+        <div className="w-20 h-20 bg-teal-50 rounded-3xl flex items-center justify-center text-[#00766C] mx-auto mb-8 animate-bounce">
+           <Smartphone className="w-10 h-10" />
+        </div>
+        <h2 className="text-2xl font-black text-[#333333] mb-4 tracking-tight">Check your inbox</h2>
+        <p className="text-gray-500 font-bold mb-8 leading-relaxed">
+          We've sent a magic login link to <span className="text-[#00766C]">{email}</span>. Click the link to sign in instantly.
+        </p>
+        <button 
+          onClick={() => setMagicLinkSent(false)}
+          className="text-[14px] font-black text-[#00766C] hover:underline"
+        >
+          Back to login
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <div className="bg-white rounded-[12px] p-6 sm:p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
+    <div className="bg-white rounded-3xl p-8 sm:p-12 max-w-[440px] w-full shadow-2xl border border-gray-50 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <BpLogo />
 
-      <h1 className="text-[20px] sm:text-[24px] font-bold text-[#333333] mb-1.5 mt-4">
-        Log in to BookPhysio
+      <h1 className="text-[28px] font-black text-[#333333] mb-2 mt-8 tracking-tighter leading-none">
+        Welcome back
       </h1>
-      <p className="text-[14px] text-[#666666] mb-6 sm:mb-7">Welcome back</p>
+      <p className="text-[15px] font-bold text-gray-400 mb-8">Access your recovery dashboard</p>
+
+      {/* Segmented Control Mode Switcher */}
+      <div className="flex bg-gray-50 p-1.5 rounded-2xl mb-8 border border-gray-100">
+        <button
+          onClick={() => setLoginMode('phone')}
+          className={cn(
+            "flex-1 py-3 text-[13px] font-black rounded-xl transition-all",
+            loginMode === 'phone' ? "bg-white text-[#00766C] shadow-lg shadow-gray-200/50" : "text-gray-400 hover:text-gray-600"
+          )}
+        >
+          Mobile OTP
+        </button>
+        <button
+          onClick={() => setLoginMode('email')}
+          className={cn(
+            "flex-1 py-3 text-[13px] font-black rounded-xl transition-all",
+            loginMode === 'email' ? "bg-white text-[#00766C] shadow-lg shadow-gray-200/50" : "text-gray-400 hover:text-gray-600"
+          )}
+        >
+          Magic Link
+        </button>
+      </div>
 
       {errors.general && (
-        <div className="mb-4 rounded-[8px] bg-red-50 border border-red-200 px-4 py-3 text-[13px] text-red-600">
+        <div className="mb-6 rounded-2xl bg-red-50 border border-red-100 px-5 py-4 text-[13px] font-bold text-red-600">
           {errors.general}
         </div>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        {/* Mobile Number */}
-        <div className="mb-6">
-          <label
-            htmlFor="phone"
-            className="block text-[13px] text-[#666666] mb-1.5 font-medium"
-          >
-            Mobile Number
-          </label>
-          <div
-            className={`flex border-[1.5px] rounded-[8px] overflow-hidden transition-colors ${
-              errors.phone
-                ? 'border-[#DC2626]'
-                : phoneFocused
-                ? 'border-[#00766C]'
-                : 'border-[#E5E5E5]'
-            }`}
-          >
-            <span className="px-3 py-2.5 text-[15px] text-[#333333] bg-[#F5F5F5] border-r-[1.5px] border-[#E5E5E5] whitespace-nowrap leading-relaxed flex items-center gap-1.5">
-              <Smartphone className="w-4 h-4 text-[#9CA3AF]" />
-              +91
-            </span>
-            <input
-              id="phone"
-              type="tel"
-              inputMode="numeric"
-              pattern="[6-9][0-9]{9}"
-              placeholder="98765 43210"
-              maxLength={10}
-              value={phone}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              onFocus={() => setPhoneFocused(true)}
-              onBlur={handlePhoneBlur}
-              className="flex-1 px-3.5 py-2.5 text-[15px] text-[#333333] border-none outline-none bg-white"
-              autoComplete="tel"
-            />
+        {loginMode === 'phone' ? (
+          <div className="mb-8">
+            <label className="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Mobile Number</label>
+            <div className={cn(
+              "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
+              errors.phone ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-[#00766C] shadow-lg shadow-teal-50' : 'border-gray-100 bg-gray-50/10'
+            )}>
+              <span className="px-4 py-4 text-[15px] font-black text-[#333333] bg-gray-50 border-r-2 border-gray-100 flex items-center gap-2">
+                +91
+              </span>
+              <input
+                type="tel"
+                placeholder="98765 43210"
+                maxLength={10}
+                value={phone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                className="flex-1 px-5 py-4 text-[15px] font-black text-[#333333] border-none outline-none bg-transparent"
+              />
+            </div>
+            {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.phone}</p>}
           </div>
-          {errors.phone && (
-            <p className="text-[12px] text-[#DC2626] mt-1">
-              {errors.phone}
-            </p>
-          )}
-        </div>
+        ) : (
+          <div className="mb-8">
+            <label className="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Email Address</label>
+            <div className={cn(
+              "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
+              errors.email ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-[#00766C] shadow-lg shadow-teal-50' : 'border-gray-100 bg-gray-50/10'
+            )}>
+              <input
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                className="flex-1 px-5 py-4 text-[15px] font-black text-[#333333] border-none outline-none bg-transparent"
+              />
+            </div>
+            {errors.email && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.email}</p>}
+          </div>
+        )}
 
-        {/* Send OTP button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-6 transition-colors outline-none ${
-            loading
-              ? 'bg-[#a0cdc9] cursor-not-allowed'
-              : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
-          }`}
+          className={cn(
+            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98]",
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#333333] hover:bg-[#00766C] shadow-xl shadow-teal-900/10'
+          )}
         >
-          {loading ? 'Sending OTP…' : (
+          {loading ? 'Sending link...' : (
             <>
-              Send OTP
-              <ArrowRight className="w-4 h-4" />
+              {loginMode === 'phone' ? 'Send OTP' : 'Send Magic Link'}
+              <ArrowRight size={18} strokeWidth={3} />
             </>
           )}
         </button>
       </form>
+
 
       {/* Divider */}
       <div className="flex items-center gap-3 mb-4">
