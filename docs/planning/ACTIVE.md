@@ -6,18 +6,21 @@
 
 ---
 
-## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.2 Done ✓
+## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.3 Done ✓
 
 Latest Session Work (2026-04-01 continued):
 - [x] Fixed Vitest configuration (excluded Server Component tests, added rpc mock)
 - [x] All 68 tests passing ✓
-- [x] **11.1 — Test Suite Fixed** ✓ (integrated test success)
+- [x] **11.1 — Test Suite Fixed** ✓
 - [x] **11.2 — Messages System Backend + UI** ✓
   - DB: messages + conversations tables with RLS, read_at timestamps
   - API: 4 endpoints (GET/POST conversations, messages, read)
   - Patient UI: Real API, conversations list, message thread, React Query
   - Provider UI: Mirror of patient (provider perspective)
-  - Tests: Message API integration tests (excluded from jsdom for now)
+  - Build green ✓ | Tests green (68/68) ✓ | Commit done ✓
+- [x] **11.3 — Admin Analytics Dashboard** ✓
+  - API: /api/admin/analytics — KPIs, monthly GMV, monthly appointments
+  - UI: KPI cards + Revenue Pulse SVG chart wired to real data (React Query)
   - Build green ✓ | Tests green (68/68) ✓ | Commit done ✓
 
 ---
@@ -25,18 +28,16 @@ Latest Session Work (2026-04-01 continued):
 ## NEXT PHASE (Phase 11 — Post-Launch Features)
 
 ### Currently In Progress
-- [ ] **11.3** Admin Analytics Dashboard (currently stub)
-  - DB: Aggregate queries for stats (users, appointments, revenue)
-  - UI: KPI cards + trend charts + date filtering
+- Nothing in progress
 
 ### High Priority (P1)
-- [ ] 11.3 Admin Analytics Dashboard wiring
+- No P1 items remaining
 
 ### Medium Priority (P2)
-- [ ] **11.3** Admin Analytics Dashboard (currently stub)
-  - DB: Aggregate queries for stats (users, appointments, revenue)
-  - UI: KPI cards + trend charts + date filtering
-- [ ] **11.4** Telehealth (100ms video rooms integration)
+- None at this time
+
+### Low Priority / Deferred (P3)
+- [ ] **11.4** Telehealth (100ms video rooms integration) — very low priority, do last
 
 ### Low Priority (P3)
 - [ ] **11.5** Mobile app (React Native / Expo)
@@ -82,8 +83,8 @@ Latest Session Work (2026-04-01 continued):
 | 4 | Booking | Razorpay not wired — "Pay" button is UI-only | P1 | ~~Done~~ |
 | 5 | Patient Dashboard | All data is mock/hardcoded | P2 | ~~Done (Phase 9)~~ |
 | 6 | Provider Dashboard | All data is mock/hardcoded | P2 | ~~Done (Phase 9)~~ |
-| 7 | Admin | Analytics page is a stub | P3 | Open |
-| 8 | Messages | Both patient + provider message pages are stubs | P3 | Open |
+| 7 | Admin | Analytics page is a stub | P3 | ~~Done (11.3)~~ |
+| 8 | Messages | Both patient + provider message pages are stubs | P3 | ~~Done (11.2)~~ |
 | 10 | Global | CI/CD (GitHub Actions) not configured | P3 | ~~Done (10.2)~~ |
 | 11 | Homepage | InsurancePlans section not built — post-launch only | P3 | Deferred |
 

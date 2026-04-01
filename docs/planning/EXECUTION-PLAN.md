@@ -154,9 +154,10 @@
   - API: GET/POST /api/conversations, /api/messages, /api/conversations/[user_id]/messages, /api/conversations/[user_id]/read
   - UI: Patient messages page + Provider messages page wired to real API (React Query)
   - Tests: Message API integration tests created
-- [ ] **11.3** Admin Analytics Dashboard
-  - DB: Aggregate queries (users, appointments, revenue)
-  - UI: KPI cards + trend charts + date filtering
+- [x] **11.3** Admin Analytics Dashboard
+  - DB: Aggregate queries via /api/admin/analytics (users, appointments, revenue, GMV)
+  - UI: KPI cards + Revenue Pulse SVG chart wired to real API (React Query)
+  - Monthly revenue data for last 7 months, completion rate, active patients, provider count
 - [ ] **11.4** Telehealth (100ms video rooms integration) — DEFERRED to P3
 - [ ] **11.5** Mobile app (React Native / Expo) — P3
 - [ ] **11.6** Multi-language support — P3
