@@ -19,7 +19,15 @@ export async function GET(
     .single()
 
   if (error || !data) return NextResponse.json({ error: 'Appointment not found' }, { status: 404 })
-  return NextResponse.json(data)
+
+  // Attach patient profile (name + phone) so both patient and provider views have it
+  const { data: patientProfile } = await supabase
+    .from('users')
+    .select('full_name, phone, avatar_url')
+    .eq('id', data.patient_id)
+    .single()
+
+  return NextResponse.json({ ...data, patient_profile: patientProfile ?? null })
 }
 
 export async function PATCH(
@@ -32,6 +40,25 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
+
+  if (body.action === 'update_notes') {
+    const { data: apptCheck } = await supabase
+      .from('appointments')
+      .select('id, provider_id')
+      .eq('id', id)
+      .eq('provider_id', user.id)
+      .single()
+    if (!apptCheck) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const notes = typeof body.notes === 'string' ? body.notes.slice(0, 2000) : ''
+    const { data: updated, error: notesErr } = await supabase
+      .from('appointments')
+      .update({ notes })
+      .eq('id', id)
+      .select()
+      .single()
+    if (notesErr) return NextResponse.json({ error: 'Failed to update notes' }, { status: 500 })
+    return NextResponse.json(updated)
+  }
 
   // Only cancellation is supported via PATCH
   if (body.action !== 'cancel') return NextResponse.json({ error: 'Invalid action' }, { status: 400 })

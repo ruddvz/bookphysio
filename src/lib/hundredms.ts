@@ -1,34 +1,34 @@
-import jwt from 'jsonwebtoken'
+import { SDK as HMSSDK } from '@100mslive/server-sdk'
 
-function createManagementToken(): string {
-  const payload = {
-    access_key: process.env.HMS_APP_ACCESS_KEY || 'dummy_key',
-    type: 'management',
-    version: 2,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 86400,
-  }
-  return jwt.sign(payload, process.env.HMS_APP_SECRET || 'dummy_secret', { algorithm: 'HS256' })
-}
-
-interface HmsRoomResponse {
-  id: string
+function getClient() {
+  return new HMSSDK(
+    process.env.HMS_APP_ACCESS_KEY || 'dummy_key',
+    process.env.HMS_APP_SECRET || 'dummy_secret',
+  )
 }
 
 export async function createTelehealthRoom(appointmentId: string): Promise<string> {
-  const token = createManagementToken()
-  const res = await fetch('https://api.100ms.live/v2/rooms', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      name: `appointment-${appointmentId}`,
-      description: 'bookphysio telehealth session',
-      template_id: process.env.HMS_TEMPLATE_ID,
-    }),
+  const hms = getClient()
+  const room = await hms.rooms.create({
+    name: `appointment-${appointmentId}`,
+    description: 'bookphysio telehealth session',
+    template_id: process.env.HMS_TEMPLATE_ID,
   })
-  const data = await res.json() as HmsRoomResponse
-  return data.id
+  return room.id
+}
+
+export async function createAuthToken(roomId: string, userId: string, role = 'guest'): Promise<string> {
+  const hms = getClient()
+  const { token } = await hms.auth.getAuthToken({ roomId, userId, role })
+  return token
+}
+
+/** Returns an existing enabled room code for the role, or creates one. */
+export async function getOrCreateRoomCode(roomId: string, role: string): Promise<string> {
+  const hms = getClient()
+  for await (const code of hms.roomCodes.list(roomId, { role, enabled: true })) {
+    return code.code
+  }
+  const code = await hms.roomCodes.createForRole(roomId, role)
+  return code.code
 }

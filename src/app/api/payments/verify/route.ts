@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { verifyPaymentSignature } from '@/lib/razorpay'
 import { verifyPaymentSchema } from '@/lib/validations/payment'
+import { sendBookingConfirmation } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -77,6 +78,41 @@ export async function POST(request: NextRequest) {
     if (slotError) {
       console.error('Availability update error:', slotError)
     }
+  }
+
+  // 6. Send booking confirmation email (best-effort — never fail the payment response)
+  try {
+    const { data: fullAppt } = await supabaseAdmin
+      .from('appointments')
+      .select('fee_inr, visit_type, availabilities (starts_at, ends_at), providers (users!inner (full_name)), patient:users!appointments_patient_id_fkey (full_name, phone)')
+      .eq('id', appointment_id)
+      .single()
+
+    const authUser = await supabaseAdmin.auth.admin.getUserById(user.id)
+    const patientEmail = authUser.data.user?.email
+
+    if (patientEmail && fullAppt) {
+      const slot = fullAppt.availabilities as { starts_at: string; ends_at: string } | null
+      const providerUser = (fullAppt.providers as { users: { full_name: string } } | null)?.users
+      const patientUser = fullAppt.patient as { full_name: string } | null
+      const startsAt = slot?.starts_at ? new Date(slot.starts_at) : null
+
+      await sendBookingConfirmation({
+        to: patientEmail,
+        patientName: patientUser?.full_name ?? 'Patient',
+        providerName: providerUser?.full_name ? `Dr. ${providerUser.full_name}` : 'your physiotherapist',
+        appointmentDate: startsAt
+          ? startsAt.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+          : 'Scheduled',
+        appointmentTime: startsAt
+          ? startsAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+          : '',
+        visitType: fullAppt.visit_type === 'in_clinic' ? 'In Clinic' : fullAppt.visit_type === 'home_visit' ? 'Home Visit' : 'Online',
+        amountInr: fullAppt.fee_inr,
+      })
+    }
+  } catch (emailErr) {
+    console.error('Booking confirmation email failed (non-fatal):', emailErr)
   }
 
   return NextResponse.json({ success: true })

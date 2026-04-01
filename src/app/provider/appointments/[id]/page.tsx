@@ -1,180 +1,309 @@
-import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Activity, Zap, ShieldCheck, Mail, Calendar, Clock, DollarSign, ArrowUpRight, CircleAlert } from 'lucide-react'
-import Link from 'next/link'
+'use client'
 
-export async function generateStaticParams() {
-  return [{ id: 'placeholder' }]
+import { useParams } from 'next/navigation'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Video, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
+
+type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
+
+interface AppointmentDetail {
+  id: string
+  patient_id: string
+  visit_type: VisitType
+  status: AppointmentStatus
+  fee_inr: number
+  notes: string | null
+  created_at: string
+  availabilities: { starts_at: string; ends_at: string; slot_duration_mins: number }
+  locations: { name: string; city: string } | null
+  patient_profile: { full_name: string; phone: string; avatar_url: string | null } | null
 }
 
-export default async function ProviderAppointmentDetail({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
-}) {
-  const resolvedParams = await params
-  const id = resolvedParams?.id || 'placeholder'
+const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> = {
+  pending:   { label: 'Pending',   cls: 'bg-yellow-50 border-yellow-100 text-yellow-700' },
+  confirmed: { label: 'Confirmed', cls: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
+  cancelled: { label: 'Cancelled', cls: 'bg-red-50 border-red-100 text-red-700' },
+  completed: { label: 'Completed', cls: 'bg-blue-50 border-blue-100 text-blue-700' },
+  no_show:   { label: 'No Show',   cls: 'bg-gray-50 border-gray-100 text-gray-600' },
+}
+
+function canJoinNow(startsAt: string): boolean {
+  const diff = new Date(startsAt).getTime() - Date.now()
+  return diff <= 15 * 60 * 1000 && diff > -60 * 60 * 1000
+}
+
+export default function ProviderAppointmentDetail() {
+  const { id } = useParams<{ id: string }>()
+  const queryClient = useQueryClient()
+  const [notes, setNotes] = useState('')
+  const [saved, setSaved] = useState(false)
+
+  const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
+    queryKey: ['appointment', id],
+    queryFn: async () => {
+      const res = await fetch(`/api/appointments/${id}`)
+      if (!res.ok) throw new Error('Not found')
+      return res.json()
+    },
+    enabled: !!id,
+  })
+
+  useEffect(() => {
+    if (appt?.notes) setNotes(appt.notes)
+  }, [appt?.notes])
+
+  const notesMut = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_notes', notes }),
+      })
+      if (!res.ok) throw new Error('Save failed')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointment', id] })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <div className="max-w-[1000px] mx-auto px-6 py-16 flex items-center justify-center min-h-[300px]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#00766C]" />
+      </div>
+    )
+  }
+
+  if (isError || !appt) {
+    return (
+      <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10">
+        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-gray-400 hover:text-[#00766C] font-black text-[11px] uppercase tracking-[0.2em] transition-colors no-underline">
+          <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center">
+            <ArrowLeft size={14} strokeWidth={3} />
+          </div>
+          Back to Registry
+        </Link>
+        <p className="text-gray-400 mt-6">Appointment not found.</p>
+      </div>
+    )
+  }
+
+  const patientName = appt.patient_profile?.full_name ?? 'Patient'
+  const patientInitials = patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+  const formattedDate = new Date(appt.availabilities.starts_at).toLocaleDateString('en-IN', {
+    weekday: 'short', day: 'numeric', month: 'long', year: 'numeric',
+  })
+  const startTime = new Date(appt.availabilities.starts_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  const endTime = new Date(appt.availabilities.ends_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+  const refCode = `BP-RECA-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
+  const statusCfg = STATUS_CONFIG[appt.status]
+  const joinEnabled = appt.visit_type === 'online' && appt.status === 'confirmed' && canJoinNow(appt.availabilities.starts_at)
+  const locationLabel = appt.visit_type === 'online'
+    ? 'Online Session'
+    : appt.visit_type === 'home_visit'
+    ? 'Home Visit'
+    : appt.locations ? `${appt.locations.name}, ${appt.locations.city}` : 'Clinic'
 
   return (
     <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
       <div className="mb-10">
-         <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-gray-400 hover:text-[#00766C] font-black text-[11px] uppercase tracking-[0.2em] transition-colors group no-underline">
-            <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-teal-100 group-hover:bg-teal-50 transition-all">
-               <ArrowLeft size={14} strokeWidth={3} />
-            </div>
-            Back to Registry
-         </Link>
+        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-gray-400 hover:text-[#00766C] font-black text-[11px] uppercase tracking-[0.2em] transition-colors group no-underline">
+          <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-teal-100 group-hover:bg-teal-50 transition-all">
+            <ArrowLeft size={14} strokeWidth={3} />
+          </div>
+          Back to Registry
+        </Link>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
-        <div className="space-y-4 text-left">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#EEF2FF] border border-blue-100 rounded-full text-[10px] font-black uppercase text-blue-600 tracking-widest shadow-sm">
-              <ShieldCheck size={12} strokeWidth={3} />
-              Verified Clinical Record
-           </div>
-           <h1 className="text-[36px] md:text-[42px] font-black text-[#333333] leading-none tracking-tighter">
-             Consultation <span className="text-[#00766C]">Analysis</span>
-           </h1>
-           <p className="text-[15px] font-bold text-gray-400">BP-RECA-2026-{id.toUpperCase()}</p>
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#EEF2FF] border border-blue-100 rounded-full text-[10px] font-black uppercase text-blue-600 tracking-widest shadow-sm">
+            <ShieldCheck size={12} strokeWidth={3} />
+            Verified Clinical Record
+          </div>
+          <h1 className="text-[36px] md:text-[42px] font-black text-[#333333] leading-none tracking-tighter">
+            Consultation <span className="text-[#00766C]">Analysis</span>
+          </h1>
+          <p className="text-[15px] font-bold text-gray-400">{refCode}</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
-           <div className="px-6 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700 text-[13px] font-black uppercase tracking-widest flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              Confirmed Session
-           </div>
-           <button className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
-              <MoreHorizontal size={20} />
-           </button>
+          <div className={cn('px-6 py-3 border rounded-2xl text-[13px] font-black uppercase tracking-widest flex items-center gap-3', statusCfg.cls)}>
+            <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
+            {statusCfg.label}
+          </div>
+          {joinEnabled && (
+            <Link
+              href={`/provider/telehealth/${appt.id}`}
+              className="flex items-center gap-2 px-5 py-3 bg-[#4F46E5] text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-[#4338CA] transition-colors no-underline"
+            >
+              <Video size={16} />
+              Join Call
+            </Link>
+          )}
+          <button className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
+            <MoreHorizontal size={20} />
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
-         <div className="space-y-8">
-            <div className="bg-white rounded-[44px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.06)] relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50/30 rounded-full blur-[80px] -mr-32 -mt-32"></div>
-               <div className="relative z-10">
-                  <div className="flex items-center gap-4 mb-10 pb-10 border-b border-gray-50">
-                     <div className="w-20 h-20 rounded-[32px] bg-teal-50 flex items-center justify-center text-[#00766C] text-[32px] font-black shadow-inner font-sans">
-                        RV
-                     </div>
-                     <div className="flex-1">
-                        <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Patient Registry</p>
-                        <h2 className="text-[28px] font-black text-[#333333] tracking-tighter leading-none mb-2">Rahul Verma</h2>
-                        <div className="flex items-center gap-4 text-[13px] font-bold text-gray-400">
-                           <span className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-emerald-500" /> Patient ID: 9942</span>
-                           <span className="text-gray-200">·</span>
-                           <span>Last Session: 12d ago</span>
-                        </div>
-                     </div>
+        <div className="space-y-8">
+          {/* Patient Card */}
+          <div className="bg-white rounded-[44px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.06)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50/30 rounded-full blur-[80px] -mr-32 -mt-32" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-10 pb-10 border-b border-gray-50">
+                <div className="w-20 h-20 rounded-[32px] bg-teal-50 flex items-center justify-center text-[#00766C] text-[32px] font-black shadow-inner">
+                  {appt.patient_profile?.avatar_url
+                    ? <img src={appt.patient_profile.avatar_url} alt={patientName} className="w-full h-full rounded-[32px] object-cover" />
+                    : patientInitials
+                  }
+                </div>
+                <div className="flex-1">
+                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Patient Registry</p>
+                  <h2 className="text-[28px] font-black text-[#333333] tracking-tighter leading-none mb-2">{patientName}</h2>
+                  <div className="flex items-center gap-4 text-[13px] font-bold text-gray-400">
+                    <span className="flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-emerald-500" />
+                      Verified Patient
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-                     <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm transition-transform group-hover:bg-teal-50">
-                              <Phone size={18} />
-                           </div>
-                           <div>
-                              <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Contact</p>
-                              <p className="text-[15px] font-black text-[#333333]">+91 98765 00000</p>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm transition-transform group-hover:bg-blue-50">
-                              <Mail size={18} />
-                           </div>
-                           <div>
-                              <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Email Registry</p>
-                              <p className="text-[15px] font-black text-[#333333]">rahul.v@clinical.in</p>
-                           </div>
-                        </div>
-                     </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                {appt.patient_profile?.phone && (
+                  <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm">
+                        <Phone size={18} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Contact</p>
+                        <p className="text-[15px] font-black text-[#333333]">{appt.patient_profile.phone}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-6">
-                     <div className="flex items-center justify-between">
-                        <h3 className="text-[18px] font-black text-[#333333] flex items-center gap-3 tracking-tight">
-                           <ClipboardList className="text-[#00766C]" size={20} strokeWidth={3} />
-                           Clinical Lab Notes
-                        </h3>
-                        <span className="text-[11px] font-black text-gray-300 uppercase tracking-widest">Auto-Saving Enabled</span>
-                     </div>
-                     <div className="relative">
-                        <textarea 
-                          rows={8} 
-                          placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
-                          className="w-full p-8 bg-gray-50/50 border border-gray-100 rounded-[32px] text-[16px] font-bold text-[#333333] leading-relaxed placeholder:text-gray-300 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-[#00766C]/20 outline-none transition-all resize-none shadow-inner"
-                        />
-                        <div className="absolute bottom-4 right-4 group">
-                           <button className="flex items-center gap-3 px-8 py-4 bg-[#333333] text-white rounded-[20px] text-[14px] font-black hover:bg-[#00766C] transition-all shadow-xl active:scale-[0.97]">
-                              Commit Record
-                              <CheckCircle2 size={18} strokeWidth={3} />
-                           </button>
-                        </div>
-                     </div>
+                )}
+                <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-orange-500 shadow-sm">
+                      <MapPin size={18} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Session Type</p>
+                      <p className="text-[15px] font-black text-[#333333] capitalize">{appt.visit_type.replace('_', ' ')}</p>
+                    </div>
                   </div>
-               </div>
+                </div>
+              </div>
+
+              {/* Clinical Notes */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[18px] font-black text-[#333333] flex items-center gap-3 tracking-tight">
+                    <ClipboardList className="text-[#00766C]" size={20} strokeWidth={3} />
+                    Clinical Lab Notes
+                  </h3>
+                  <span className="text-[11px] font-black text-gray-300 uppercase tracking-widest">
+                    {saved ? '✓ Saved' : 'Auto-Saving Enabled'}
+                  </span>
+                </div>
+                <div className="relative">
+                  <textarea
+                    rows={8}
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
+                    className="w-full p-8 bg-gray-50/50 border border-gray-100 rounded-[32px] text-[16px] font-bold text-[#333333] leading-relaxed placeholder:text-gray-300 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-[#00766C]/20 outline-none transition-all resize-none shadow-inner"
+                  />
+                  <div className="absolute bottom-4 right-4">
+                    <button
+                      onClick={() => notesMut.mutate()}
+                      disabled={notesMut.isPending}
+                      className="flex items-center gap-3 px-8 py-4 bg-[#333333] text-white rounded-[20px] text-[14px] font-black hover:bg-[#00766C] transition-all shadow-xl active:scale-[0.97] disabled:opacity-70"
+                    >
+                      {notesMut.isPending ? 'Saving...' : 'Commit Record'}
+                      <CheckCircle2 size={18} strokeWidth={3} />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-         </div>
-         <aside className="space-y-8">
-            <div className="bg-[#333333] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
-               <div className="relative z-10 space-y-8">
-                  <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] leading-none mb-1">Session Context</p>
-                  <div className="space-y-6">
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
-                           <Calendar size={22} strokeWidth={3} />
-                        </div>
-                        <div>
-                           <p className="text-[15px] font-black">Mon, 31 Mar 2026</p>
-                           <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Appointment Date</p>
-                        </div>
-                     </div>
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
-                           <Clock size={22} strokeWidth={3} />
-                        </div>
-                        <div>
-                           <p className="text-[15px] font-black">10:00 AM — 11:30 AM</p>
-                           <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Duration: 90m</p>
-                        </div>
-                     </div>
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
-                           <MapPin size={22} strokeWidth={3} />
-                        </div>
-                        <div>
-                           <p className="text-[15px] font-black">Indira Nagar Clinic</p>
-                           <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Facility Location</p>
-                        </div>
-                     </div>
+          </div>
+        </div>
+
+        {/* Session Context Sidebar */}
+        <aside className="space-y-8">
+          <div className="bg-[#333333] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+            <div className="relative z-10 space-y-8">
+              <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Session Context</p>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                    <Calendar size={22} strokeWidth={3} />
                   </div>
-                  <div className="pt-6 border-t border-white/5">
-                     <div className="flex items-center justify-between gap-4 mb-8">
-                        <div className="flex flex-col">
-                           <p className="text-[15px] font-black">₹4,250</p>
-                           <p className="text-[11px] font-black text-white/30 uppercase tracking-widest">Session Fee</p>
-                        </div>
-                        <div className="px-3 py-1.5 bg-emerald-500 rounded-xl text-[10px] font-black uppercase text-white shadow-lg shadow-emerald-500/20">Paid</div>
-                     </div>
-                     <Link href="#" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all font-black text-white/80 no-underline">
-                        <span className="text-[13px] font-black uppercase tracking-widest leading-none">View Invoice</span>
-                        <ArrowUpRight size={18} className="text-white/20 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
-                     </Link>
+                  <div>
+                    <p className="text-[15px] font-black">{formattedDate}</p>
+                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Appointment Date</p>
                   </div>
-               </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                    <Clock size={22} strokeWidth={3} />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-black">{startTime} — {endTime}</p>
+                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">
+                      Duration: {appt.availabilities.slot_duration_mins}m
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                    <MapPin size={22} strokeWidth={3} />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-black">{locationLabel}</p>
+                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Facility Location</p>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-6 border-t border-white/5">
+                <div className="flex items-center justify-between gap-4 mb-8">
+                  <div>
+                    <p className="text-[15px] font-black">₹{appt.fee_inr.toLocaleString('en-IN')}</p>
+                    <p className="text-[11px] font-black text-white/30 uppercase tracking-widest">Session Fee</p>
+                  </div>
+                  <div className="px-3 py-1.5 bg-emerald-500 rounded-xl text-[10px] font-black uppercase text-white shadow-lg shadow-emerald-500/20">Paid</div>
+                </div>
+                <Link href="#" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all font-black text-white/80 no-underline">
+                  <span className="text-[13px] font-black uppercase tracking-widest leading-none">View Invoice</span>
+                  <ArrowUpRight size={18} className="text-white/20 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
+                </Link>
+              </div>
             </div>
-            <div className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col gap-4">
-               <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-gray-500 hover:bg-gray-50 hover:text-[#333333] transition-all border-none bg-transparent cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center bg-white"><Zap size={18} /></div>
-                  Reschedule Session
-               </button>
-               <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl border border-orange-100 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
-                  Flag Issue
-               </button>
-            </div>
-         </aside>
+          </div>
+
+          <div className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col gap-4">
+            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-gray-500 hover:bg-gray-50 hover:text-[#333333] transition-all border-none bg-transparent cursor-pointer">
+              <div className="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center bg-white"><Zap size={18} /></div>
+              Reschedule Session
+            </button>
+            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer">
+              <div className="w-10 h-10 rounded-xl border border-orange-100 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
+              Flag Issue
+            </button>
+          </div>
+        </aside>
       </div>
     </div>
   )

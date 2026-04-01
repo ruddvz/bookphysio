@@ -47,7 +47,7 @@
 ## PHASE 3 — Booking Flow (Sprint 3)
 - [~] Booking Wizard (`/book/[id]`) — all 3 steps built (StepConfirm, StepPayment, StepSuccess)
 - [x] Razorpay checkout integration (real payment flow)
-- [ ] Booking confirmation email via Resend
+- [ ] Booking confirmation email via Resend → **[x] Done (11.4 session)**
 
 ---
 
@@ -55,9 +55,9 @@
 - [~] Layout + sidebar nav (`/patient/layout.tsx`) — built
 - [~] Dashboard home (`/patient/dashboard`) — built, mock data
 - [~] Appointments list (`/patient/appointments`) — built
-- [~] Appointment detail (`/patient/appointments/[id]`) — built
-- [~] Profile & settings (`/patient/profile`) — built
-- [~] Payment history (`/patient/payments`) — built
+- [x] Appointment detail (`/patient/appointments/[id]`) — wired to real API, cancel action, join session logic
+- [x] Profile & settings (`/patient/profile`) — wired to real API, save full_name
+- [x] Payment history (`/patient/payments`) — wired to real API
 - [~] Notifications (`/patient/notifications`) — built
 - [~] Messages (`/patient/messages`) — built (stub)
 

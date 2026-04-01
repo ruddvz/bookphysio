@@ -6,9 +6,9 @@
 
 ---
 
-## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.3 Done ✓
+## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.5 Done ✓
 
-Latest Session Work (2026-04-01 continued):
+Latest Session Work (2026-04-01):
 - [x] Fixed Vitest configuration (excluded Server Component tests, added rpc mock)
 - [x] All 68 tests passing ✓
 - [x] **11.1 — Test Suite Fixed** ✓
@@ -22,6 +22,16 @@ Latest Session Work (2026-04-01 continued):
   - API: /api/admin/analytics — KPIs, monthly GMV, monthly appointments
   - UI: KPI cards + Revenue Pulse SVG chart wired to real data (React Query)
   - Build green ✓ | Tests green (68/68) ✓ | Commit done ✓
+- [x] **11.4 — Core Page Wiring (Launch Readiness)** ✓
+  - Patient appointment detail: real API, cancel confirmation, online join logic
+  - Provider appointment detail: real API, patient profile, clinical notes save
+  - API: /api/appointments/[id] now includes patient_profile in response
+  - API: /api/profile — GET + PATCH user profile
+  - API: /api/payments — GET patient payment history
+  - Patient profile page: real data, save full_name
+  - Patient payments page: real payment history table
+  - Booking confirmation email: wired into payments/verify (Resend, best-effort)
+  - Build green ✓ | Tests green (68/68) ✓ | Pushed ✓
 
 ---
 
@@ -37,7 +47,7 @@ Latest Session Work (2026-04-01 continued):
 - None at this time
 
 ### Low Priority / Deferred (P3)
-- [ ] **11.4** Telehealth (100ms video rooms integration) — very low priority, do last
+- Telehealth video rooms (11.4 from original queue) — deferred, do last
 
 ### Low Priority (P3)
 - [ ] **11.5** Mobile app (React Native / Expo)
@@ -77,7 +87,7 @@ Latest Session Work (2026-04-01 continued):
 
 | # | Area | Issue | Priority | Status |
 |---|------|-------|----------|--------|
-| 1 | Search | Map view is a stub (no Mapbox integration yet) | P2 | Open |
+| 1 | Search | Map view is a stub (no Mapbox integration yet) | P2 | ~~Done — custom SVG map with d3-geo~~ |
 | 2 | Auth | OTP 6-digit inputs may not have auto-advance | P1 | ~~Done (8.4)~~ |
 | 3 | Doctor Signup | 5-step progress indicator fidelity | P2 | ~~Done (8.5)~~ |
 | 4 | Booking | Razorpay not wired — "Pay" button is UI-only | P1 | ~~Done~~ |
