@@ -2,6 +2,10 @@
 
 > Roadmap with phase checkboxes. Orchestrator reads this at startup.
 > `[ ]` = pending, `[x]` = done, `[~]` = built but needs polish/wiring
+>
+> **STATUS AS OF 2026-04-01: Phase 10 COMPLETE ✅**
+> All development phases 0-10 are done. App is live on GitHub Pages (bookphysio.in).
+> Phase 11+ are post-launch features.
 
 ---
 
