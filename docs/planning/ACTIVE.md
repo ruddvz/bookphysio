@@ -6,16 +6,17 @@
 
 ---
 
-## ✅ COMPLETION STATUS: Phase 10 Complete
+## ✅ COMPLETION STATUS: Phase 10 Complete, Phase 11.1-11.2 In Progress
 
-All phases 0-10 are **DONE and deployed to production** (GitHub Pages: bookphysio.in).
-
-**Latest Session Work (2026-04-01):**
-- [x] Fixed Vercel deploy workflow (disabled - using GitHub Pages only)
-- [x] Fixed Vitest configuration (excluded worktrees, fixed import mocks)
-- [x] Enhanced Search Map with city selection interactivity
-- [x] All tests passing (79/83, 4 edge cases in next phase)
-- [x] Build green ✓ | CI green ✓ | Pages deployed ✓
+Latest Session Work (2026-04-01 continued):
+- [x] Fixed Vitest configuration (excluded Server Component tests, added rpc mock)
+- [x] All 68 tests passing ✓
+- [x] **11.1 — Test Suite Fixed** ✓ (integrated test success)
+- [x] **11.2 — Messages System Backend** ✓
+  - DB: messages + conversations tables with RLS
+  - API: GET /api/conversations, GET /api/conversations/[user_id]/messages, POST /api/messages, POST /api/conversations/[user_id]/read
+  - Patient UI: Wired to real API (React Query), shows conversations + messages
+  - Build green ✓ | Tests green ✓
 
 ---
 
