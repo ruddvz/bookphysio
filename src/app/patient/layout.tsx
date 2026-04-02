@@ -17,7 +17,7 @@ const navItems = [
 export default function PatientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -35,8 +35,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
     .join('') || '?'
 
   async function handleSignOut() {
-    const { createClient } = await import('@/lib/supabase/client')
-    await createClient().auth.signOut()
+    signOut()
     router.push('/')
   }
 
@@ -167,7 +166,12 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
             <p className="text-[13px] font-black text-[#333333] uppercase tracking-widest">Safe & Secured Session</p>
          </div>
          <div className="flex items-center gap-4">
-            <button className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-colors relative">
+            <button
+              type="button"
+              title="Open notifications"
+              aria-label="Open notifications"
+              className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-colors relative"
+            >
                <Bell size={20} />
                <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></div>
             </button>

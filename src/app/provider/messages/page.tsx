@@ -6,6 +6,8 @@ import { Search, MessageSquare, Send, Paperclip, MoreVertical, Phone, Video, Che
 import { cn } from '@/lib/utils'
 import type { Conversation, Message } from '@/app/api/contracts/message'
 
+const EMPTY_MESSAGES: Message[] = []
+
 function formatTime(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
@@ -19,7 +21,7 @@ function formatTime(dateString: string): string {
 }
 
 export default function ProviderMessages() {
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [messageText, setMessageText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
@@ -36,21 +38,23 @@ export default function ProviderMessages() {
   })
 
   const conversations = conversationsData?.conversations || []
+  const activeChat = conversations.find(c => c.id === selectedConversationId) || null
+  const activeUserId = activeChat?.other_user?.id ?? null
 
   // Fetch messages for selected conversation
   const { data: messagesData, isLoading: messagesLoading } = useQuery({
-    queryKey: ['provider-messages', selectedId],
+    queryKey: ['provider-messages', activeUserId],
     queryFn: async () => {
-      if (!selectedId) return { messages: [], total: 0 }
-      const res = await fetch(`/api/conversations/${selectedId}/messages?limit=100`)
+      if (!activeUserId) return { messages: [], total: 0 }
+      const res = await fetch(`/api/conversations/${activeUserId}/messages?limit=100`)
       if (!res.ok) throw new Error('Failed to fetch messages')
       return res.json() as Promise<{ messages: Message[]; total: number }>
     },
-    enabled: !!selectedId,
+    enabled: !!activeUserId,
     staleTime: 10000,
   })
 
-  const messages = messagesData?.messages || []
+  const messages = messagesData?.messages ?? EMPTY_MESSAGES
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -58,19 +62,17 @@ export default function ProviderMessages() {
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receiver_id: selectedId, content }),
+        body: JSON.stringify({ receiver_id: activeUserId, content }),
       })
       if (!res.ok) throw new Error('Failed to send message')
       return res.json() as Promise<{ message: Message }>
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['provider-messages', selectedId] })
+      queryClient.invalidateQueries({ queryKey: ['provider-messages', activeUserId] })
       queryClient.invalidateQueries({ queryKey: ['provider-conversations'] })
       setMessageText('')
     },
   })
-
-  const activeChat = conversations.find(c => c.id === selectedId)
 
   // Auto-scroll to bottom when messages arrive
   useEffect(() => {
@@ -92,7 +94,7 @@ export default function ProviderMessages() {
         {/* ── Left Pane: Conversations ── */}
         <div className={cn(
           "w-full md:w-[380px] border-r border-gray-100 flex flex-col bg-gray-50/50 shrink-0 transition-all",
-          selectedId && "hidden md:flex"
+          selectedConversationId && "hidden md:flex"
         )}>
           <div className="p-6 border-b border-gray-100 bg-white">
             <div className="relative group">
@@ -118,16 +120,16 @@ export default function ProviderMessages() {
               conversations.map((chat) => (
                 <button
                   key={chat.id}
-                  onClick={() => setSelectedId(chat.id)}
+                  onClick={() => setSelectedConversationId(chat.id)}
                   className={cn(
                     "w-full p-4 rounded-[24px] flex items-center gap-4 transition-all duration-300 group",
-                    selectedId === chat.id ? "bg-white shadow-xl shadow-teal-900/5 translate-x-2 border border-teal-50" : "hover:bg-white/60"
+                    selectedConversationId === chat.id ? "bg-white shadow-xl shadow-teal-900/5 translate-x-2 border border-teal-50" : "hover:bg-white/60"
                   )}
                 >
                   <div className="relative shrink-0">
                     <div className={cn(
                       "w-14 h-14 rounded-2xl flex items-center justify-center text-[18px] font-black transition-transform duration-500 group-hover:scale-105",
-                      selectedId === chat.id ? "bg-[#00766C] text-white" : "bg-white border border-gray-100 text-gray-400"
+                      selectedConversationId === chat.id ? "bg-[#00766C] text-white" : "bg-white border border-gray-100 text-gray-400"
                     )}>
                       {(chat.other_user?.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -159,14 +161,14 @@ export default function ProviderMessages() {
         {/* ── Right Pane: Chat Area ── */}
         <div className={cn(
           "flex-1 flex flex-col bg-white transition-all",
-          !selectedId && "hidden md:flex"
+          !selectedConversationId && "hidden md:flex"
         )}>
           {activeChat ? (
             <>
               {/* Chat Header */}
               <div className="px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="flex items-center gap-4">
-                  <button onClick={() => setSelectedId(null)} className="md:hidden p-2 -ml-2 text-gray-400 hover:text-[#333333]">
+                  <button aria-label="Back to conversation list" title="Back to conversation list" onClick={() => setSelectedConversationId(null)} className="md:hidden p-2 -ml-2 text-gray-400 hover:text-[#333333]">
                      <MessageSquare size={24} />
                   </button>
                   <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-[#00766C] font-black text-[18px]">
@@ -183,9 +185,9 @@ export default function ProviderMessages() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><Phone size={20} /></button>
-                  <button className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><Video size={20} /></button>
-                  <button className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><MoreVertical size={20} /></button>
+                  <button aria-label="Voice call unavailable" title="Voice call unavailable" className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><Phone size={20} /></button>
+                  <button aria-label="Video call unavailable" title="Video call unavailable" className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><Video size={20} /></button>
+                  <button aria-label="More actions unavailable" title="More actions unavailable" className="p-3 rounded-xl hover:bg-gray-50 text-gray-400 transition-colors" disabled><MoreVertical size={20} /></button>
                 </div>
               </div>
 
@@ -241,7 +243,7 @@ export default function ProviderMessages() {
               {/* Input Area */}
               <div className="p-6 md:p-8 bg-white border-t border-gray-100">
                 <div className="relative flex items-center gap-4 max-w-[900px] mx-auto">
-                   <button className="w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors shrink-0" disabled>
+                   <button aria-label="Attachments unavailable" title="Attachments unavailable" className="w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors shrink-0" disabled>
                       <Paperclip size={20} />
                    </button>
                    <div className="flex-1 relative">

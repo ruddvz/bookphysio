@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoProfileById, parseDemoCookie } from '@/lib/demo/session'
+import { markDemoConversationRead } from '@/lib/demo/store'
 
 export async function POST(
   request: NextRequest,
@@ -7,9 +9,22 @@ export async function POST(
 ) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { user_id } = await params
+  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+
+  if (!user && demoSession) {
+    const targetUser = getDemoProfileById(user_id)
+
+    if (!targetUser || targetUser.role === 'admin') {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+    }
+
+    markDemoConversationRead(demoSession.sessionId, demoSession.userId, user_id)
+    return NextResponse.json({ success: true }, { status: 200 })
+  }
+
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Get conversation between current user and target user
   const { data: conversation, error: convError } = await supabase

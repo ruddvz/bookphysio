@@ -1,4 +1,8 @@
+"use client"
+
+import { useState } from 'react'
 import { ArrowUpRight, CheckCircle, Clock, Eye, FileCheck, ShieldCheck, Sparkles, XCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const summaryCards = [
   { title: 'Pending', value: '342', detail: 'New provider submissions', icon: Clock },
@@ -7,6 +11,26 @@ const summaryCards = [
 ]
 
 export default function AdminListings() {
+  const [reviewState, setReviewState] = useState<'pending' | 'approved' | 'rejected'>('pending')
+  const [actionMessage, setActionMessage] = useState<string | null>(null)
+
+  function focusReviewRow() {
+    document.getElementById('provider-review-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setActionMessage('Focused the next provider submission in the review queue.')
+  }
+
+  function exportQueue() {
+    const csv = ['Provider,ICP,City,Status', `Dr. Arun K,ICP-MH-12345,Mumbai,${reviewState}`].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const downloadUrl = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = downloadUrl
+    anchor.download = 'provider-review-queue.csv'
+    anchor.click()
+    URL.revokeObjectURL(downloadUrl)
+    setActionMessage('Provider queue exported for ops review.')
+  }
+
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-6 py-10 md:px-10 md:py-12 animate-in fade-in duration-500">
       <section className="overflow-hidden rounded-[36px] border border-gray-100 bg-white shadow-[0_28px_80px_-40px_rgba(0,0,0,0.2)]">
@@ -32,11 +56,11 @@ export default function AdminListings() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
+              <button onClick={focusReviewRow} className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
                 Review next provider
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
-              <button className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
+              <button onClick={exportQueue} className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
                 Export queue
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
@@ -78,6 +102,12 @@ export default function AdminListings() {
           </div>
         </div>
 
+        {actionMessage && (
+          <div className="mx-6 rounded-[24px] border border-teal-100 bg-[#F7FCFB] px-4 py-3 text-[13px] font-bold text-[#00766C] md:mx-8">
+            {actionMessage}
+          </div>
+        )}
+
         <div className="overflow-x-auto p-2 md:p-6">
           <table className="w-full text-left whitespace-nowrap">
             <thead className="border-b border-gray-100 bg-[#fafbfc]">
@@ -91,7 +121,7 @@ export default function AdminListings() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              <tr className="transition-colors hover:bg-[#fafbfc]">
+              <tr id="provider-review-row" className="transition-colors hover:bg-[#fafbfc]">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E6F4F3] font-bold text-[#00766C] text-[13px]">
@@ -107,20 +137,27 @@ export default function AdminListings() {
                 <td className="px-6 py-4 text-[14px] text-[#666666]">Mumbai</td>
                 <td className="px-6 py-4 text-[14px] text-[#666666]">2 hours ago</td>
                 <td className="px-6 py-4">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[12px] font-semibold text-amber-700">
+                  <span className={cn(
+                    'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold',
+                    reviewState === 'approved'
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : reviewState === 'rejected'
+                        ? 'bg-rose-50 text-rose-700'
+                        : 'bg-amber-50 text-amber-700'
+                  )}>
                     <Clock className="h-3 w-3" />
-                    Pending
+                    {reviewState === 'approved' ? 'Approved' : reviewState === 'rejected' ? 'Needs changes' : 'Pending'}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button aria-label="View provider documents" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#E6F4F3] hover:text-[#00766C]" title="View Documents">
+                    <button onClick={() => setActionMessage('Opened Dr. Arun K. credential checklist for document review.')} aria-label="View provider documents" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#E6F4F3] hover:text-[#00766C]" title="View Documents">
                       <Eye className="h-5 w-5" />
                     </button>
-                    <button aria-label="Approve provider" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#F0FDF4] hover:text-[#059669]" title="Approve">
+                    <button onClick={() => { setReviewState('approved'); setActionMessage('Dr. Arun K. has been approved and moved live.'); }} aria-label="Approve provider" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#F0FDF4] hover:text-[#059669]" title="Approve">
                       <CheckCircle className="h-5 w-5" />
                     </button>
-                    <button aria-label="Reject provider" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]" title="Reject">
+                    <button onClick={() => { setReviewState('rejected'); setActionMessage('Dr. Arun K. has been returned for document corrections.'); }} aria-label="Reject provider" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]" title="Reject">
                       <XCircle className="h-5 w-5" />
                     </button>
                   </div>

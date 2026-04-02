@@ -1,18 +1,37 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoProfileById, parseDemoCookie } from '@/lib/demo/session'
+import { sendDemoMessage } from '@/lib/demo/store'
 import { messageRequestSchema } from '@/lib/validations/message'
 import type { Message } from '@/app/api/contracts/message'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
   const parsed = messageRequestSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { receiver_id, content } = parsed.data
+  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+
+  if (!user && demoSession) {
+    const receiverProfile = getDemoProfileById(receiver_id)
+
+    if (!receiverProfile) {
+      return NextResponse.json({ error: 'Receiver not found' }, { status: 404 })
+    }
+
+    if (receiverProfile.role === 'admin') {
+      return NextResponse.json({ error: 'Cannot message admin users' }, { status: 403 })
+    }
+
+    const message = sendDemoMessage(demoSession.sessionId, demoSession.userId, receiver_id, content)
+    return NextResponse.json({ message }, { status: 201 })
+  }
+
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Validate receiver exists
   const { data: receiverUser, error: receiverError } = await supabase
@@ -31,14 +50,16 @@ export async function POST(request: NextRequest) {
   }
 
   // Get or create conversation
-  let { data: conversation, error: convError } = await supabase
+  const conversationLookup = await supabase
     .from('conversations')
     .select('id')
     .or(`and(user_id_1.eq.${user.id},user_id_2.eq.${receiver_id}),and(user_id_1.eq.${receiver_id},user_id_2.eq.${user.id})`)
     .single()
+  let conversation = conversationLookup.data
+  const conversationError = conversationLookup.error
 
   // If conversation doesn't exist, create it
-  if (convError && convError.code === 'PGRST116') {
+  if (conversationError && conversationError.code === 'PGRST116') {
     const { data: newConv, error: createError } = await supabase
       .from('conversations')
       .insert({
@@ -53,8 +74,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create conversation' }, { status: 500 })
     }
     conversation = newConv
-  } else if (convError) {
-    console.error('[api/messages] Conversation fetch error:', convError)
+  } else if (conversationError) {
+    console.error('[api/messages] Conversation fetch error:', conversationError)
     return NextResponse.json({ error: 'Failed to fetch conversation' }, { status: 500 })
   }
 

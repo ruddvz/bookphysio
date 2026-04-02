@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createClient } from '@/lib/supabase/server'
+import { parseDemoCookie } from '@/lib/demo/session'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -33,22 +34,27 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    const demoSession = !user ? parseDemoCookie(req.cookies.get('bp-demo-session')?.value) : null
+
+    if (!user && demoSession?.role !== 'provider') {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const { data: profile } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single()
 
-    if (profile?.role !== 'provider') {
-      return new NextResponse('Forbidden', { status: 403 })
+      if (profile?.role !== 'provider') {
+        return new NextResponse('Forbidden', { status: 403 })
+      }
     }
 
     if (ratelimit) {
-      const { success } = await ratelimit.limit(user.id)
+      const rateLimitKey = user?.id ?? demoSession?.userId ?? 'demo-provider'
+      const { success } = await ratelimit.limit(rateLimitKey)
       if (!success) {
         return new NextResponse('Rate limit exceeded. Please wait a bit before asking BookPhysio AI again.', { status: 429 })
       }
@@ -89,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     return result.toTextStreamResponse()
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Provider AI Error:', error)
     return new NextResponse('An error occurred. BookPhysio AI is currently syncing with the database.', { status: 500 })
   }

@@ -48,7 +48,8 @@ export default function ProviderDashboardHome() {
   const [error, setError] = useState(false)
   const [checklistOpen, setChecklistOpen] = useState(true)
 
-  const displayName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Doctor'
+   const rawDisplayName = (user?.user_metadata?.full_name as string | undefined) ?? 'Doctor'
+   const displayName = rawDisplayName.replace(/^Dr\.?\s+/i, '').split(' ')[0] ?? 'Doctor'
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
@@ -277,7 +278,7 @@ export default function ProviderDashboardHome() {
                  {[
                     { label: 'Clinical Profile', sub: 'Qualifications & Photo', href: '/provider/profile', done: true },
                     { label: 'Work Availability', sub: 'Clinical Hours & Buffer', href: '/provider/availability', done: false },
-                    { label: 'Account Verification', sub: 'KYC & License Check', href: '#', done: false },
+                    { label: 'Account Verification', sub: 'KYC & License Check', href: '/provider/profile', done: false },
                  ].map((item, i) => (
                     <div key={i} className="flex items-center gap-4 group/item">
                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2", 

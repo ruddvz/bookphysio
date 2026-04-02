@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { clearDemoSession } from '@/lib/demo/client'
+import { DEMO_LOCAL_STORAGE_KEY, isDemoAccessEnabled } from '@/lib/demo/session'
 
 interface AuthContextValue {
   session: Session | null
@@ -20,12 +22,16 @@ const AuthContext = createContext<AuthContextValue>({
 
 /** Try to load dev session from localStorage (used on static export / GitHub Pages) */
 function loadDevSession(): Session | null {
+  if (!isDemoAccessEnabled()) {
+    return null
+  }
+
   try {
-    const raw = localStorage.getItem('bp-dev-session')
+    const raw = localStorage.getItem(DEMO_LOCAL_STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as { user: User; access_token: string; expires_at: number }
     if (parsed.expires_at < Math.floor(Date.now() / 1000)) {
-      localStorage.removeItem('bp-dev-session')
+      localStorage.removeItem(DEMO_LOCAL_STORAGE_KEY)
       return null
     }
     return {
@@ -47,7 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   function signOut() {
     setSession(null)
-    try { localStorage.removeItem('bp-dev-session') } catch { /* noop */ }
+    clearDemoSession().catch(() => {
+      // Ignore demo cleanup failures during sign-out.
+    })
     const supabase = createClient()
     supabase.auth.signOut().catch(() => { /* noop on static export */ })
   }
@@ -67,13 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession)
+      setSession(newSession ?? loadDevSession())
     })
 
     // Listen for dev auth events (fired from verify-otp page)
     function handleDevAuth() {
       const devSession = loadDevSession()
-      if (devSession) setSession(devSession)
+      setSession(devSession)
     }
     window.addEventListener('bp-dev-auth', handleDevAuth)
 

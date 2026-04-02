@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoMessages, markDemoConversationRead } from '@/lib/demo/store'
+import { parseDemoCookie } from '@/lib/demo/session'
 import { getMessagesSchema } from '@/lib/validations/message'
 
 export async function GET(
@@ -8,21 +10,28 @@ export async function GET(
 ) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { user_id } = await params
   const { searchParams } = new URL(request.url)
   const parsed = getMessagesSchema.safeParse({
     user_id,
-    limit: searchParams.get('limit'),
-    offset: searchParams.get('offset'),
+    limit: searchParams.get('limit') ?? undefined,
+    offset: searchParams.get('offset') ?? undefined,
   })
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { limit, offset } = parsed.data
+  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+
+  if (!user && demoSession) {
+    markDemoConversationRead(demoSession.sessionId, demoSession.userId, user_id)
+    return NextResponse.json(getDemoMessages(demoSession.sessionId, demoSession.userId, user_id, limit, offset), { status: 200 })
+  }
+
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Get or create conversation between current user and target user
-  let { data: conversation, error: convError } = await supabase
+  const { data: conversation, error: convError } = await supabase
     .from('conversations')
     .select('id')
     .or(`and(user_id_1.eq.${user.id},user_id_2.eq.${user_id}),and(user_id_1.eq.${user_id},user_id_2.eq.${user.id})`)

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/app/providers";
@@ -21,7 +21,6 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   manifest: "/manifest.json",
-  themeColor: "#00766C",
   appleWebApp: {
     title: "BookPhysio",
     statusBarStyle: "default",
@@ -37,13 +36,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#00766C",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} h-full antialiased`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

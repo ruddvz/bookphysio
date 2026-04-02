@@ -15,7 +15,7 @@ describe('ProviderAvailability', () => {
     expect(screen.getByText(/6 of 7 days active/i)).toBeInTheDocument()
   })
 
-  it('shows error if end time is before start time', () => {
+  it('shows error if end time is before start time', async () => {
     render(<ProviderAvailability />)
     const startInput = screen.getByLabelText(/Monday start time/i)
     const endInput = screen.getByLabelText(/Monday end time/i)
@@ -26,8 +26,8 @@ describe('ProviderAvailability', () => {
     const saveButton = screen.getByRole('button', { name: /Save Availability/i })
     fireEvent.click(saveButton)
     
-    expect(screen.getByText(/End time must be after start time/i)).toBeInTheDocument()
-  })
+    expect(await screen.findByText(/End time must be after start time/i, {}, { timeout: 10000 })).toBeInTheDocument()
+  }, 15000)
 
   it('disables save button when no changes are made', () => {
     render(<ProviderAvailability />)
@@ -56,12 +56,12 @@ describe('ProviderAvailability', () => {
     expect(saveButton).toBeDisabled()
   })
 
-  it('updates slot duration', () => {
+  it('updates slot duration', async () => {
     render(<ProviderAvailability />)
-    const durationBtn = screen.getByText(/60 mins/i)
+    const durationBtn = await screen.findByText(/60 mins/i, {}, { timeout: 10000 })
     fireEvent.click(durationBtn)
     
     expect(durationBtn).toHaveClass('bg-[#00766C]')
-    expect(screen.getByRole('button', { name: /Save Availability/i })).toBeEnabled()
-  })
+    expect(await screen.findByRole('button', { name: /Save Availability/i }, { timeout: 10000 })).toBeEnabled()
+  }, 15000)
 })

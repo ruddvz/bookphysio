@@ -1,10 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeReturnPath } from '@/lib/demo/session'
 import { otpRatelimit } from '@/lib/upstash'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
   const email = typeof body === 'object' && body ? (body as { email?: unknown }).email : null
+  const requestedReturn = typeof body === 'object' && body ? (body as { returnTo?: unknown }).returnTo : null
+  const returnTo = typeof requestedReturn === 'string' ? sanitizeReturnPath(requestedReturn) : null
 
   if (!email || !email.includes('@')) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
@@ -23,13 +26,18 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = await createClient()
+  const callbackUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin)
+
+  if (returnTo) {
+    callbackUrl.searchParams.set('next', returnTo)
+  }
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       // shouldCreateUser: true allows new users to sign up via magic link
       shouldCreateUser: true,
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+      emailRedirectTo: callbackUrl.toString(),
     },
   })
 

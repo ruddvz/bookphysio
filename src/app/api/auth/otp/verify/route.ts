@@ -1,10 +1,29 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { verifyOtp } from '@/lib/msg91'
+import { isDemoAccessEnabled } from '@/lib/demo/session'
 import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
 import { otpRatelimit } from '@/lib/upstash'
 
-const DEV_OTP = process.env.DEV_ACCESS_CODE ? `${process.env.DEV_ACCESS_CODE}00` : null
+const DEV_OTP = isDemoAccessEnabled() && process.env.DEV_ACCESS_CODE ? `${process.env.DEV_ACCESS_CODE}00` : null
+
+async function resolveUserRole(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string | undefined,
+  fallbackRole: string | undefined
+) {
+  if (!userId) {
+    return fallbackRole ?? 'patient'
+  }
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', userId)
+    .single()
+
+  return profile?.role ?? fallbackRole ?? 'patient'
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
@@ -53,7 +72,8 @@ export async function POST(request: NextRequest) {
         type: 'magiclink',
       })
       if (error) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
-      return NextResponse.json({ user: data.user, session: data.session })
+      const role = await resolveUserRole(supabase, data.user?.id, existingUser.user_metadata?.role)
+      return NextResponse.json({ user: data.user, session: data.session, role })
     }
 
     // Create new user with phone
@@ -80,7 +100,8 @@ export async function POST(request: NextRequest) {
       type: 'magiclink',
     })
     if (error) return NextResponse.json({ error: 'Unable to create session' }, { status: 500 })
-    return NextResponse.json({ user: data.user ?? newUser.user, session: data.session })
+    const role = await resolveUserRole(supabase, data.user?.id ?? newUser.user?.id, newUser.user?.user_metadata?.role)
+    return NextResponse.json({ user: data.user ?? newUser.user, session: data.session, role })
   }
 
   // Primary verification via MSG91
@@ -105,5 +126,7 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  return NextResponse.json({ user: data.user, session: data.session })
+  const role = await resolveUserRole(supabase, data.user?.id, data.user?.user_metadata?.role)
+
+  return NextResponse.json({ user: data.user, session: data.session, role })
 }

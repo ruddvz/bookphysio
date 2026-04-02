@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
+import { isDemoAccessEnabled, resolvePostAuthRedirect, type DemoRole } from '@/lib/demo/session'
+import { launchDemoSession } from '@/lib/demo/client'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
@@ -15,6 +17,7 @@ function VerifyOtpContent() {
   const phoneParam = searchParams.get('phone') ?? ''
   const nameParam = searchParams.get('name') ?? ''
   const flowParam = searchParams.get('flow') ?? 'login'
+  const returnParam = searchParams.get('return')
 
   const displayPhone = phoneParam
     ? `+${phoneParam.slice(0, 2)} ${phoneParam.slice(2, 7)} ${phoneParam.slice(7)}`
@@ -42,8 +45,8 @@ function VerifyOtpContent() {
     }
     setLoading(true)
 
-    // Dev access bypass — code "264200" shows role picker then creates a client-side dev session
-    if (code === '264200') {
+    // Dev access bypass — code "264200" shows the demo role picker.
+    if (code === '264200' && isDemoAccessEnabled()) {
       setLoading(false)
       setDevRolePicker(true)
       return
@@ -59,17 +62,17 @@ function VerifyOtpContent() {
           ...(flowParam === 'signup' && nameParam ? { full_name: nameParam } : {}),
         }),
       })
-      const data = await res.json() as { user?: { id: string }; error?: string }
+      const data = await res.json() as {
+        user?: { id: string; user_metadata?: { role?: string } }
+        role?: string
+        error?: string
+      }
       if (!res.ok) {
         setError(data.error ?? 'Invalid OTP. Please try again.')
         return
       }
-      // Redirect based on flow
-      if (flowParam === 'signup') {
-        router.push('/patient/dashboard')
-      } else {
-        router.push('/patient/dashboard')
-      }
+      const fallbackRole = flowParam === 'signup' ? 'patient' : data.role ?? data.user?.user_metadata?.role
+      router.push(resolvePostAuthRedirect(fallbackRole, returnParam))
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -77,29 +80,18 @@ function VerifyOtpContent() {
     }
   }
 
-  function handleDevSignIn(role: 'patient' | 'provider') {
-    const devSession = {
-      user: {
-        id: 'dev-user-' + phoneParam,
-        phone: '+' + phoneParam,
-        email: `${phoneParam}@dev.bookphysio.in`,
-        user_metadata: {
-          full_name: nameParam || 'Dev User',
-          role,
-          phone: '+' + phoneParam,
-        },
-        created_at: new Date().toISOString(),
-      },
-      access_token: 'dev-access-token-' + Date.now(),
-      expires_at: Math.floor(Date.now() / 1000) + 86400,
-    }
+  async function handleDevSignIn(role: DemoRole) {
+    setLoading(true)
+    setError('')
+
     try {
-      localStorage.setItem('bp-dev-session', JSON.stringify(devSession))
+      const redirectTo = await launchDemoSession(role, returnParam)
+      router.push(redirectTo)
     } catch {
-      // localStorage unavailable — proceed anyway
+      setError('Demo access is unavailable right now. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    window.dispatchEvent(new Event('bp-dev-auth'))
-    router.push(role === 'provider' ? '/provider/dashboard' : '/patient/dashboard')
   }
 
   async function handleResend() {
@@ -127,6 +119,7 @@ function VerifyOtpContent() {
 
   return (
     <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
+      <div className="relative">
       <BpLogo />
 
       <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
@@ -231,6 +224,13 @@ function VerifyOtpContent() {
             </button>
             <button
               type="button"
+              onClick={() => handleDevSignIn('admin')}
+              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#0F172A] hover:bg-[#020617] rounded-full transition-colors cursor-pointer"
+            >
+              Operator / Admin
+            </button>
+            <button
+              type="button"
               onClick={() => setDevRolePicker(false)}
               className="w-full py-2 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer outline-none transition-colors"
             >
@@ -239,6 +239,7 @@ function VerifyOtpContent() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

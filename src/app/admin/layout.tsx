@@ -1,12 +1,20 @@
 'use client';
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, FileCheck, BarChart3, LogOut, Settings } from 'lucide-react'
 import { ReactNode } from 'react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { signOut } = useAuth()
+
+  async function handleSignOut() {
+    signOut()
+    router.push('/')
+  }
 
   const navLinks = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -65,7 +73,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Settings className="w-5 h-5 text-[#999999]" />
             Settings
           </button>
-          <button className="flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-[#DC2626] hover:bg-[#FEF2F2] transition-colors outline-none cursor-pointer">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex items-center w-full gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-[#DC2626] hover:bg-[#FEF2F2] transition-colors outline-none cursor-pointer"
+          >
             <LogOut className="w-5 h-5 text-[#DC2626]/80" />
             Log out
           </button>

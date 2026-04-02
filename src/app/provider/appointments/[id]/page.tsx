@@ -1,10 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { UserCircle, Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Loader2 } from 'lucide-react'
+import { Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 type VisitType = 'in_clinic' | 'home_visit'
@@ -34,7 +35,7 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> =
 export default function ProviderAppointmentDetail() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
-  const [notes, setNotes] = useState('')
+  const [notesDraft, setNotesDraft] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
@@ -47,21 +48,18 @@ export default function ProviderAppointmentDetail() {
     enabled: !!id,
   })
 
-  useEffect(() => {
-    if (appt?.notes) setNotes(appt.notes)
-  }, [appt?.notes])
-
   const notesMut = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/appointments/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update_notes', notes }),
+        body: JSON.stringify({ action: 'update_notes', notes: notesDraft ?? appt?.notes ?? '' }),
       })
       if (!res.ok) throw new Error('Save failed')
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['appointment', id] })
+      setNotesDraft(null)
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     },
@@ -130,7 +128,7 @@ export default function ProviderAppointmentDetail() {
             <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
             {statusCfg.label}
           </div>
-          <button className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
+          <button aria-label="Appointment actions" title="Appointment actions" className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
             <MoreHorizontal size={20} />
           </button>
         </div>
@@ -145,7 +143,7 @@ export default function ProviderAppointmentDetail() {
               <div className="flex items-center gap-4 mb-10 pb-10 border-b border-gray-50">
                 <div className="w-20 h-20 rounded-[32px] bg-teal-50 flex items-center justify-center text-[#00766C] text-[32px] font-black shadow-inner">
                   {appt.patient_profile?.avatar_url
-                    ? <img src={appt.patient_profile.avatar_url} alt={patientName} className="w-full h-full rounded-[32px] object-cover" />
+                    ? <Image src={appt.patient_profile.avatar_url} alt={patientName} width={80} height={80} className="w-full h-full rounded-[32px] object-cover" />
                     : patientInitials
                   }
                 </div>
@@ -202,8 +200,8 @@ export default function ProviderAppointmentDetail() {
                 <div className="relative">
                   <textarea
                     rows={8}
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
+                    value={notesDraft ?? appt.notes ?? ''}
+                    onChange={e => setNotesDraft(e.target.value)}
                     placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
                     className="w-full p-8 bg-gray-50/50 border border-gray-100 rounded-[32px] text-[16px] font-bold text-[#333333] leading-relaxed placeholder:text-gray-300 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-[#00766C]/20 outline-none transition-all resize-none shadow-inner"
                   />
@@ -268,8 +266,8 @@ export default function ProviderAppointmentDetail() {
                   </div>
                   <div className="px-3 py-1.5 bg-emerald-500 rounded-xl text-[10px] font-black uppercase text-white shadow-lg shadow-emerald-500/20">Paid</div>
                 </div>
-                <Link href="#" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all font-black text-white/80 no-underline">
-                  <span className="text-[13px] font-black uppercase tracking-widest leading-none">View Invoice</span>
+                <Link href="/provider/earnings" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all font-black text-white/80 no-underline">
+                  <span className="text-[13px] font-black uppercase tracking-widest leading-none">Open Earnings</span>
                   <ArrowUpRight size={18} className="text-white/20 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
                 </Link>
               </div>

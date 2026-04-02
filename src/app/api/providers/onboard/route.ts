@@ -53,8 +53,18 @@ export async function POST(request: NextRequest) {
 
     if (userError) throw userError
 
+    const { error: authUserError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      user_metadata: {
+        role: 'provider',
+        full_name: step1.name,
+        phone: step1.phone,
+      },
+    })
+
+    if (authUserError) throw authUserError
+
     // 2. Create provider profile
-    const { data: provider, error: providerError } = await supabaseAdmin
+    const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
         id: user.id, // ID matches user ID
@@ -108,8 +118,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Onboarding error:', error)
-    return NextResponse.json({ error: error.message || 'Onboarding failed' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Onboarding failed'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

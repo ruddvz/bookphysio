@@ -1,9 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoAdminAnalytics } from '@/lib/demo/store'
+import { parseDemoCookie } from '@/lib/demo/session'
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+
+  if (!user && demoSession?.role === 'admin') {
+    return NextResponse.json(getDemoAdminAnalytics())
+  }
+
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { data: profile } = await supabase

@@ -14,6 +14,16 @@ const overviewCards = [
 
 export default function AdminUsers() {
   const [activeTab, setActiveTab] = useState<RegistryTab>('patients')
+  const [actionMessage, setActionMessage] = useState<string | null>(null)
+
+  const tabOrder: RegistryTab[] = ['patients', 'providers', 'suspended']
+
+  function cycleTab() {
+    const currentIndex = tabOrder.indexOf(activeTab)
+    const nextTab = tabOrder[(currentIndex + 1) % tabOrder.length]
+    setActiveTab(nextTab)
+    setActionMessage(`Showing ${nextTab} accounts.`)
+  }
 
   const currentRow = {
     patients: {
@@ -73,11 +83,11 @@ export default function AdminUsers() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
+              <button onClick={() => { setActiveTab('providers'); setActionMessage('Provider profiles are ready for review.') }} className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
                 Open profile queue
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
-              <button className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
+              <button onClick={() => { setActiveTab('suspended'); setActionMessage('Suspended accounts moved into focus.') }} className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
                 Review suspensions
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
@@ -124,6 +134,12 @@ export default function AdminUsers() {
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
           </div>
         </div>
+
+        {actionMessage && (
+          <div className="mx-6 rounded-[24px] border border-teal-100 bg-[#F7FCFB] px-4 py-3 text-[13px] font-bold text-[#00766C] md:mx-8">
+            {actionMessage}
+          </div>
+        )}
 
         <div className="border-b border-gray-100 px-6 md:px-8">
           <div className="flex gap-8 overflow-x-auto" role="group" aria-label="User registry filters">
@@ -202,10 +218,10 @@ export default function AdminUsers() {
                 <td className="px-6 py-4 text-[14px] text-[#666666]">{currentRow.lastActive}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button aria-label="View user details" title="View Details" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#E6F4F3] hover:text-[#00766C]">
+                    <button onClick={() => setActionMessage(`Opened ${currentRow.name} for a detailed profile review.`)} aria-label="View user details" title="View Details" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#E6F4F3] hover:text-[#00766C]">
                       <Eye className="h-5 w-5" />
                     </button>
-                    <button aria-label="Suspend user" title="Suspend User" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]">
+                    <button onClick={() => setActionMessage(`${currentRow.name} has been moved into the suspension review queue.`)} aria-label="Suspend user" title="Suspend User" className="rounded-lg p-2 text-[#666666] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]">
                       <Ban className="h-5 w-5" />
                     </button>
                   </div>
@@ -221,7 +237,7 @@ export default function AdminUsers() {
           </p>
           <div className="flex gap-2">
             <button disabled className="cursor-not-allowed rounded-lg border border-gray-100 bg-[#F8FAFC] px-4 py-2 text-[14px] font-medium text-[#64748B]">Previous</button>
-            <button className="rounded-lg border border-gray-100 px-4 py-2 text-[14px] font-medium text-[#333333] transition-colors cursor-pointer hover:bg-[#fafbfc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white">Next</button>
+            <button onClick={cycleTab} className="rounded-lg border border-gray-100 px-4 py-2 text-[14px] font-medium text-[#333333] transition-colors cursor-pointer hover:bg-[#fafbfc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white">Next</button>
           </div>
         </div>
       </section>

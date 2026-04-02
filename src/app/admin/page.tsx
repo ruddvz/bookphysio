@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -29,7 +30,15 @@ type AdminStat = {
   caption: string
 }
 
-const REVENUE_BARS = [38, 54, 44, 72, 64, 88, 76]
+const REVENUE_BARS = [
+  { heightClass: 'h-[38%]' },
+  { heightClass: 'h-[54%]' },
+  { heightClass: 'h-[44%]' },
+  { heightClass: 'h-[72%]' },
+  { heightClass: 'h-[64%]' },
+  { heightClass: 'h-[88%]' },
+  { heightClass: 'h-[76%]' },
+]
 
 const queuePreview = [
   {
@@ -165,14 +174,14 @@ export default function AdminDashboardHome() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
+              <Link href="/admin/listings" className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]">
                 Open approvals
                 <ArrowUpRight size={16} strokeWidth={3} />
-              </button>
-              <button className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
+              </Link>
+              <Link href="/admin/analytics" className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]">
                 Review analytics
                 <ArrowUpRight size={16} strokeWidth={3} />
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -249,8 +258,7 @@ export default function AdminDashboardHome() {
               <div key={index} className="flex flex-col gap-3">
                 <div className="flex h-[240px] items-end rounded-[26px] border border-gray-100 bg-[linear-gradient(180deg,_#fafbfc,_white)] p-3 shadow-inner">
                   <div
-                    className="w-full rounded-[18px] bg-[linear-gradient(180deg,_#00766C,_#56c2b8)] shadow-[0_20px_40px_-18px_rgba(0,118,108,0.55)]"
-                    style={{ height: `${bar}%` }}
+                    className={cn('w-full rounded-[18px] bg-[linear-gradient(180deg,_#00766C,_#56c2b8)] shadow-[0_20px_40px_-18px_rgba(0,118,108,0.55)]', bar.heightClass)}
                   />
                 </div>
                 <p className="text-center text-[11px] font-black uppercase tracking-widest text-gray-400">W{index + 1}</p>

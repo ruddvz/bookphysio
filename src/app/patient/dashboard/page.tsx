@@ -39,11 +39,37 @@ export default function PatientDashboardHome() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+   const [referralCopied, setReferralCopied] = useState(false)
 
   const displayName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'there'
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+
+   async function handleCopyReferralLink() {
+      const referralLink = `${window.location.origin}/signup?ref=bp-${user?.id?.slice(-6) ?? 'demo'}`
+
+      try {
+         if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(referralLink)
+         } else {
+            const textarea = document.createElement('textarea')
+            textarea.value = referralLink
+            textarea.setAttribute('readonly', 'true')
+            textarea.style.position = 'absolute'
+            textarea.style.left = '-9999px'
+            document.body.appendChild(textarea)
+            textarea.select()
+            document.execCommand('copy')
+            document.body.removeChild(textarea)
+         }
+
+         setReferralCopied(true)
+         window.setTimeout(() => setReferralCopied(false), 2200)
+      } catch {
+         setReferralCopied(false)
+      }
+   }
 
   function fetchAppointments() {
     setLoading(true)
@@ -230,7 +256,7 @@ export default function PatientDashboardHome() {
                    </h2>
                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest tracking-widest">{past.length} Previous Specialists</p>
                 </div>
-                <button className="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-[#00766C] transition-colors">
+                <button aria-label="Open care team actions" title="Open care team actions" className="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-[#00766C] transition-colors">
                    <MoreHorizontal size={20} strokeWidth={3} />
                 </button>
              </div>
@@ -279,8 +305,8 @@ export default function PatientDashboardHome() {
                       Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
                    </p>
                    
-                   <button className="flex items-center gap-3 px-8 py-4 bg-white text-[#00766C] text-[14px] font-black rounded-2xl hover:bg-teal-50 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl group/btn">
-                      Copy My Referral Link
+                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-white text-[#00766C] text-[14px] font-black rounded-2xl hover:bg-teal-50 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl group/btn">
+                      {referralCopied ? 'Referral Link Copied' : 'Copy My Referral Link'}
                       <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                    </button>
                 </div>

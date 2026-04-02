@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoAppointments } from '@/lib/demo/store'
+import { parseDemoCookie } from '@/lib/demo/session'
 import { createAppointmentSchema } from '@/lib/validations/booking'
 
 export async function POST(request: NextRequest) {
@@ -49,9 +51,15 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(appointment, { status: 201 })
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+
+  if (!user && demoSession) {
+    return NextResponse.json({ appointments: getDemoAppointments(demoSession.role) })
+  }
+
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Check user role (patient or provider)

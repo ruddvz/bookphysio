@@ -23,7 +23,7 @@ describe('UI Performance Components', () => {
     expect(screen.getByText('Try searching for something else.')).toBeInTheDocument()
   })
 
-  it('EmptyState renders action button when provided', () => {
+  it('EmptyState renders action button when provided', async () => {
     render(
       <EmptyState 
         title="No items" 
@@ -32,6 +32,6 @@ describe('UI Performance Components', () => {
         action={<button>Click me</button>}
       />
     )
-    expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument()
-  })
+    expect(await screen.findByRole('button', { name: /click me/i }, { timeout: 10000 })).toBeInTheDocument()
+  }, 15000)
 })

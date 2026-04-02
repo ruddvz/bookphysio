@@ -19,7 +19,7 @@ const navItems = [
 export default function ProviderLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading } = useAuth()
+   const { user, loading, signOut } = useAuth()
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -37,8 +37,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
     .join('') || '?'
 
   async function handleSignOut() {
-    const { createClient } = await import('@/lib/supabase/client')
-    await createClient().auth.signOut()
+      signOut()
     router.push('/')
   }
 
@@ -123,7 +122,12 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                <span className="text-[11px] font-black uppercase tracking-widest leading-none">Practice In-Person</span>
             </div>
             <div className="h-8 w-px bg-gray-100 ml-2"></div>
-            <button className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-colors relative">
+                  <button
+                     type="button"
+                     title="Open notifications"
+                     aria-label="Open notifications"
+                     className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-colors relative"
+                  >
                <Bell size={20} />
                <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#FF6B35] border-2 border-white rounded-full animate-bounce"></div>
             </button>
