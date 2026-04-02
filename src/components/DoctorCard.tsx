@@ -128,8 +128,8 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={cn(
-        'bp-card overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-[#00766C]/20 hover:shadow-[0_22px_50px_-30px_rgba(15,23,42,0.22)]',
-        isHovered && 'border-[#00766C]/20 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.22)]',
+        'bp-card overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-[0_22px_50px_-30px_rgba(24,49,45,0.22)]',
+        isHovered && 'border-bp-accent/20 shadow-[0_22px_50px_-30px_rgba(24,49,45,0.22)]',
         className
       )}
       aria-label={`${doctor.name} - ${doctor.specialty}`}
@@ -137,12 +137,12 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
       <div className="grid gap-6 p-5 md:p-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex gap-5">
           <div className="relative shrink-0">
-            <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-[#E6F4F3] text-[28px] font-semibold text-[#005A52] shadow-[0_18px_35px_-28px_rgba(15,23,42,0.28)]">
+            <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
               {initials}
             </div>
             {doctor.icpVerified && (
-              <div className="absolute -bottom-2 -right-2 rounded-full border border-white bg-white p-1.5 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.3)]">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#00766C] text-white">
+              <div className="absolute -bottom-2 -right-2 rounded-full border border-white bg-white p-1.5 shadow-[0_10px_24px_-16px_rgba(24,49,45,0.3)]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-bp-primary text-white">
                   <ShieldCheck size={16} strokeWidth={2.5} />
                 </div>
               </div>
@@ -152,29 +152,29 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-start gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-[22px] font-semibold tracking-[-0.03em] text-slate-900 md:text-[24px]">
+                <h3 className="text-[22px] font-bold tracking-tight text-bp-primary md:text-[24px]">
                   {doctor.name}
                 </h3>
-                <p className="mt-1 text-[14px] text-slate-500">{doctor.credentials}</p>
+                <p className="mt-1 text-[14px] font-medium text-bp-body/60">{doctor.credentials}</p>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-[#E6E8EC] bg-[#FCFDFD] px-3 py-1.5 text-[13px] font-semibold text-slate-700">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-bp-border bg-white px-3 py-1.5 text-[13px] font-bold text-bp-primary">
                 <Star size={14} className="fill-[#F59E0B] text-[#F59E0B]" />
                 {doctor.rating.toFixed(1)}
-                <span className="text-slate-400">({doctor.reviewCount})</span>
+                <span className="text-bp-body/40 font-medium">({doctor.reviewCount})</span>
               </div>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#E6F4F3] px-3 py-1 text-[12px] font-semibold text-[#005A52]">
+              <span className="rounded-full bg-bp-primary text-white px-3 py-1 text-[12px] font-bold">
                 {doctor.specialty}
               </span>
               {doctor.visitTypes.map((visitType) => (
                 <span
                   key={visitType}
                   className={cn(
-                    'rounded-full border px-3 py-1 text-[12px] font-semibold',
-                    visitType === 'In-clinic' && 'border-[#DCE3E7] bg-white text-slate-600',
+                    'rounded-full border px-3 py-1 text-[12px] font-bold',
+                    visitType === 'In-clinic' && 'border-bp-border bg-white text-bp-body',
                     visitType === 'Home Visit' && 'border-[#E7D6C5] bg-[#FFF7F1] text-[#B45309]'
                   )}
                 >
@@ -184,34 +184,34 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[18px] border border-[#E6E8EC] bg-[#FCFDFD] p-3">
-                <div className="flex items-center gap-2 text-slate-400">
+              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3">
+                <div className="flex items-center gap-2 text-bp-body/40">
                   <MapPin size={14} />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em]">Location</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Location</span>
                 </div>
-                <p className="mt-2 text-[14px] font-medium text-slate-900">{doctor.location}</p>
-                <p className="mt-1 text-[13px] text-slate-500">{doctor.distance}</p>
+                <p className="mt-2 text-[14px] font-bold text-bp-primary">{doctor.location}</p>
+                <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
               </div>
 
-              <div className="rounded-[18px] border border-[#E6E8EC] bg-[#FCFDFD] p-3">
-                <div className="flex items-center gap-2 text-slate-400">
+              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3">
+                <div className="flex items-center gap-2 text-bp-body/40">
                   <Clock3 size={14} />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em]">Next slot</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next slot</span>
                 </div>
-                <p className="mt-2 text-[14px] font-medium text-slate-900">{doctor.nextSlot}</p>
-                <p className="mt-1 text-[13px] text-slate-500">Book before it fills.</p>
+                <p className="mt-2 text-[14px] font-bold text-bp-primary">{doctor.nextSlot}</p>
+                <p className="mt-1 text-[13px] font-medium text-bp-body/60">Fast-filling slot</p>
               </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-[#E6E8EC] pt-4">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-bp-border pt-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Consult fee</p>
-                <p className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-slate-900">₹{doctor.fee}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Consult fee</p>
+                <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">₹{doctor.fee}</p>
               </div>
 
               <button
                 onClick={handleBook}
-                className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-5 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-full bg-bp-primary px-6 py-3 text-[14px] font-bold text-white transition-all hover:bg-bp-primary/90 active:scale-[0.98] shadow-lg shadow-bp-primary/10"
               >
                 View profile
                 <ArrowRight size={16} />
@@ -220,45 +220,45 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           </div>
         </div>
 
-        <div className="bp-card-soft p-4">
+        <div className="bg-bp-surface/40 rounded-3xl border border-bp-border p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h4 className="flex items-center gap-2 text-[13px] font-semibold tracking-[-0.02em] text-slate-900">
-                <CalendarDays size={14} className="text-[#00766C]" />
-                Preview availability
+              <h4 className="flex items-center gap-2 text-[13px] font-bold tracking-tight text-bp-primary">
+                <CalendarDays size={14} className="text-bp-accent" />
+                Availability
               </h4>
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Available this week</p>
+              <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Select date</p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <button
                 onClick={handlePrev}
                 disabled={startIndex === 0}
                 aria-label="Previous days"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E6E8EC] bg-white text-slate-500 transition-all hover:border-[#00766C]/30 hover:text-[#00766C] disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={14} />
               </button>
               <button
                 onClick={handleNext}
                 disabled={startIndex >= availability.length - 3}
                 aria-label="Next days"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E6E8EC] bg-white text-slate-500 transition-all hover:border-[#00766C]/30 hover:text-[#00766C] disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-3 gap-2">
             {visibleDays.map((day) => (
-              <div key={day.iso} className="flex flex-col gap-2 rounded-[18px] border border-[#E6E8EC] bg-white p-3">
+              <div key={day.iso} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
                 <div className="text-center">
-                  <p className="text-[12px] font-semibold text-slate-900">{day.label}</p>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">{day.dateLabel}</p>
+                  <p className="text-[12px] font-bold text-bp-primary">{day.label}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-bp-body/30">{day.dateLabel}</p>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {day.slots.length > 0 ? (
                     day.slots.slice(0, 3).map((slot) => {
                       const isSelected = selectedSlot?.time === slot && selectedSlot?.dayIso === day.iso
@@ -272,20 +272,20 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                             setSelectedSlot(isSelected ? null : { time: slot, dayIso: day.iso })
                           }}
                           className={cn(
-                            'inline-flex w-full items-center justify-center gap-1 rounded-full border px-3 py-2 text-[12px] font-semibold transition-all',
+                            'inline-flex w-full items-center justify-center gap-1 rounded-xl border py-2 text-[11px] font-bold transition-all',
                             isSelected
-                              ? 'border-[#00766C] bg-[#00766C] text-white shadow-[0_12px_20px_-16px_rgba(0,118,108,0.6)]'
-                              : 'border-[#E6E8EC] bg-[#FCFDFD] text-slate-700 hover:border-[#00766C]/25 hover:text-[#005A52]'
+                              ? 'border-bp-accent bg-bp-accent text-white shadow-lg shadow-bp-accent/20'
+                              : 'border-bp-border bg-bp-surface/30 text-bp-body hover:border-bp-accent/25 hover:text-bp-primary'
                           )}
                         >
                           {slot}
-                          {isSelected && <Check size={11} strokeWidth={3} />}
+                          {isSelected && <Check size={10} strokeWidth={4} />}
                         </button>
                       )
                     })
                   ) : (
-                    <div className="rounded-[16px] border border-dashed border-[#E6E8EC] bg-[#FCFDFD] px-3 py-6 text-center text-[12px] text-slate-400">
-                      No slots
+                    <div className="rounded-xl border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
+                      Off
                     </div>
                   )}
                 </div>
@@ -295,9 +295,9 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
           <button
             onClick={handleBook}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#00766C] px-4 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52] active:scale-[0.99]"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-bp-accent px-4 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent/90 active:scale-[0.99] shadow-lg shadow-bp-accent/10"
           >
-            Open booking profile
+            Book Appointment
             <ArrowRight size={16} />
           </button>
         </div>

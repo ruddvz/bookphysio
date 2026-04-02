@@ -1,10 +1,46 @@
-<svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Premium BP Monogram -->
-  <g transform="translate(0, 0)">
-    <circle cx="24" cy="24" r="24" fill="#0F172A"/>
-    <path d="M16 14V34M16 14H24C26.2091 14 28 15.7909 28 18C28 20.2091 26.2091 22 24 22M16 22H26C28.2091 22 30 23.7909 30 26C30 28.2091 28.2091 30 26 30H16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<svg width="600" height="200" viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Swiss Minimalist Concept for Bookphysio.in Branding -->
   
-  <!-- BookPhysio Wordmark -->
-  <text x="64" y="34" fill="#0F172A" style="font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.05em;">Book<tspan font-weight="400">Physio</tspan></text>
+  <!-- Icon Symbol: Mobius Spine Ribbon -->
+  <g transform="translate(40, 60)">
+    <defs>
+      <linearGradient id="ribbon-grad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#00766C"/>
+        <stop offset="1" stop-color="#004D46"/>
+      </linearGradient>
+      <filter id="ribbon-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+        <feOffset dx="0" dy="2" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.3"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    
+    <!-- The "B" with Negative Space Spine -->
+    <path d="M10 0 C30 0, 45 15, 45 40 C45 65, 30 80, 10 80 H0" stroke="url(#ribbon-grad)" stroke-width="12" stroke-linecap="round" fill="none" filter="url(#ribbon-glow)"/>
+    <path d="M0 0 V80" stroke="url(#ribbon-grad)" stroke-width="12" stroke-linecap="round" />
+    
+    <!-- Negative Space Vertebrae -->
+    <g transform="translate(-1, 10)">
+      <rect width="14" height="6" rx="3" fill="white" />
+      <rect y="20" width="14" height="6" rx="3" fill="white" />
+      <rect y="40" width="14" height="6" rx="3" fill="white" />
+      <rect y="60" width="14" height="6" rx="3" fill="white" />
+    </g>
+  </g>
+
+  <!-- Wordmark: Inter-based High-end Typography -->
+  <g transform="translate(150, 115)">
+    <text font-family="Inter, sans-serif" font-weight="900" font-size="52" letter-spacing="-0.04em" fill="#333333">
+       book<tspan fill="#00766C">physio</tspan>.in
+    </text>
+    <text y="28" font-family="Inter, sans-serif" font-weight="900" font-size="10" letter-spacing="0.28em" fill="#999999" text-transform="uppercase">
+       Clinical Mobility Copilot
+    </text>
+  </g>
 </svg>

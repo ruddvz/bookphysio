@@ -57,7 +57,7 @@ test('login: GET /login shows phone OTP login form', async ({ page }) => {
   expect(response?.status()).toBe(200)
 
   // Heading
-  await expect(page.getByRole('heading', { name: /log in/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
 
   // Mobile number label
   await expect(page.getByLabel('Mobile Number')).toBeVisible()

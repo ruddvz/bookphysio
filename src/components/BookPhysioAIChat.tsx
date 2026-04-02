@@ -31,6 +31,8 @@ import { cn } from '@/lib/utils'
 
 type AIChatVariant = 'patient' | 'provider'
 
+type AceExpression = 'neutral' | 'happy' | 'thinking' | 'caring'
+
 export type BookPhysioAIMessage = {
   id: string
   role: 'assistant' | 'user'
@@ -91,13 +93,82 @@ const TONE_STYLES: Record<Tone, { icon: string; badge: string; panel: string }> 
   violet: { icon: 'bg-violet-50 text-violet-600', badge: 'bg-violet-50 text-violet-700 border-violet-100', panel: 'from-violet-50/70 to-white' },
 }
 
+/**
+ * Functional Ace Mascot
+ * Designed with Apple/Silicon Valley sophisticated minimalism.
+ * Supports functional emotional states based on AI reply context.
+ */
+function AceMascot({ expression = 'neutral', className }: { expression?: AceExpression; className?: string }) {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+      <circle cx="24" cy="24" r="24" fill="#00766C"/>
+      
+      <defs>
+        <radialGradient id="ace-depth" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 24) rotate(90) scale(24)">
+          <stop stopColor="white" stopOpacity="0.15"/>
+          <stop offset="1" stopColor="white" stopOpacity="0"/>
+        </radialGradient>
+        <filter id="ace-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
+          <feOffset dx="0" dy="1" result="offsetblur"/>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.2"/>
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <circle cx="24" cy="24" r="24" fill="url(#ace-depth)"/>
+
+      <g filter="url(#ace-shadow)" transform="translate(12, 11)">
+        <path d="M12 4.5C8.5 4.5 5.5 7.5 5.5 11C5.5 14.5 8.5 17.5 12 17.5C15.5 17.5 18.5 14.5 18.5 11C18.5 7.5 15.5 4.5 12 4.5Z" fill="white" fillOpacity="0.95"/>
+        <path d="M4 23C4 18 7.5 15.5 12 15.5C16.5 15.5 20 18 20 23" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+        
+        <g transform="translate(12, 11.5)">
+          {expression === 'thinking' && (
+            <g transform="translate(-4, -1)">
+              <circle cx="0.5" cy="0" r="1.2" fill="#00766C" />
+              <circle cx="7.5" cy="0" r="1.2" fill="#00766C" />
+              <path d="M2.5 4 Q4 5 5.5 4" stroke="#00766C" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+            </g>
+          )}
+          {expression === 'happy' && (
+            <g transform="translate(-4, -1)">
+              <path d="M-0.5 -1 Q1.5 -3 3.5 -1" stroke="#00766C" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              <path d="M4.5 -1 Q6.5 -3 8.5 -1" stroke="#00766C" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              <path d="M1 4 Q4 7 7 4" stroke="#00766C" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            </g>
+          )}
+          {expression === 'caring' && (
+            <g transform="translate(-4, -1)">
+              <circle cx="0.5" cy="0" r="1.5" fill="#00766C" opacity="0.9" />
+              <circle cx="7.5" cy="0" r="1.5" fill="#00766C" opacity="0.9" />
+              <path d="M1 5 Q4 8 7 5" stroke="#00766C" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </g>
+          )}
+          {expression === 'neutral' && (
+            <g transform="translate(-4, -1)">
+              <circle cx="0.5" cy="0" r="1.2" fill="#00766C" />
+              <circle cx="7.5" cy="0" r="1.2" fill="#00766C" />
+              <path d="M2.5 5 L5.5 5" stroke="#00766C" strokeWidth="1.5" strokeLinecap="round" />
+            </g>
+          )}
+        </g>
+      </g>
+    </svg>
+  )
+}
+
 function getVariantCopy(variant: AIChatVariant): VariantCopy {
   if (variant === 'patient') {
     return {
       eyebrow: 'Recovery Companion',
       title: 'Describe the pain. Get the next best step.',
       description:
-        'BookPhysio AI turns symptoms into clear triage, nearby specialist matches, and booking-ready next actions without the clutter of a generic chatbot.',
+        'Ace turns symptoms into clear triage, nearby specialist matches, and booking-ready next actions without the clutter of a generic chatbot.',
       modeLabel: 'Patient mode',
       liveNote:
         'Share what hurts, how long it has been going on, and what movements make it worse. The assistant will keep the response focused, human, and ready for booking.',
@@ -120,7 +191,7 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
       safetyPoints: [
         'Short, plain-language guidance that is easy to follow.',
         'Recovery-first prompts with clear escalation to a physiotherapist.',
-        'A single AI identity that stays consistent across the product.',
+        'A single AI identity (Ace) that stays consistent across the product.',
       ],
       railTitle: 'Example journey',
       railCards: [
@@ -150,7 +221,7 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
           cta: 'Open sessions',
         },
       ],
-      footerNote: 'Demo guidance only. BookPhysio AI is designed to keep the care journey clear, calm, and easy to convert.',
+      footerNote: 'Demo guidance only. Ace is designed to keep the care journey clear, calm, and easy to convert.',
       contextLabel: 'Recovery triage and booking guidance',
     }
   }
@@ -159,7 +230,7 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
     eyebrow: 'Clinical Copilot',
     title: 'Evidence-backed support for physiotherapists.',
     description:
-      'BookPhysio AI gives physiotherapists a structured workspace for case reasoning, concise research context, and action-ready plans with a unified product identity.',
+      'Ace gives physiotherapists a structured workspace for case reasoning, concise research context, and action-ready plans with a unified product identity.',
     modeLabel: 'Provider mode',
     liveNote:
       'Add age, complaint, red flags, and clinical findings. The assistant responds in a compact, citation-aware format that is easier to use in a real practice flow.',
@@ -180,7 +251,7 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
     ],
     safetyTitle: 'Clinical guardrails',
     safetyPoints: [
-      'BookPhysio AI stays on musculoskeletal and rehabilitation topics only.',
+      'Ace stays on musculoskeletal and rehabilitation topics only.',
       'The tone is calm, precise, and tailored to physiotherapy workflows.',
       'Source-aware responses make the demo feel like a real clinical workspace.',
     ],
@@ -249,6 +320,13 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
     initialMessages,
   })
 
+  // Determine current mascot expression
+  const currentExpression: AceExpression = isLoading
+    ? 'thinking'
+    : messages[messages.length - 1]?.role === 'assistant'
+      ? 'happy'
+      : 'neutral'
+
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight
@@ -264,12 +342,12 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
           <aside className="hidden xl:flex flex-col gap-6">
             <div className="rounded-[36px] border border-gray-100 bg-white/90 p-6 shadow-[0_28px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-xl">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#00766C] text-white shadow-lg shadow-teal-100">
-                  <Bot size={24} />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00766C] text-white shadow-lg shadow-teal-100 overflow-hidden translate-z-0">
+                  <AceMascot expression={currentExpression} />
                 </div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">{copy.eyebrow}</p>
-                  <h1 className="text-[20px] font-black tracking-tight text-[#333333]">BookPhysio AI</h1>
+                  <h1 className="text-[20px] font-black tracking-tight text-[#333333]">Ace</h1>
                 </div>
               </div>
 
@@ -498,8 +576,8 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     <label htmlFor={inputId} className="sr-only">
                       {variant === 'patient' ? 'Ask BookPhysio AI about symptoms and recovery' : 'Ask BookPhysio AI about a clinical case'}
                     </label>
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[26px] border border-gray-100 bg-[#fafbfc] text-[#00766C]">
-                      <Stethoscope size={22} />
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[26px] bg-[#00766C] text-white shadow-lg shadow-teal-100 overflow-hidden translate-z-0">
+                      <AceMascot expression={currentExpression} />
                     </div>
                     <input
                       id={inputId}

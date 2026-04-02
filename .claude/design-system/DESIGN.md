@@ -87,7 +87,30 @@
 
 ---
 
-## 5. Component Patterns
+## 6. Brand Assets & Mascot
+
+### 6a. Name & Voice
+- **Name:** Ace
+- **Role:** Website support character and clinical copilot.
+- **Voice:** Professional, empathetic, health-guided, and highly structured. Avoids generic chatbot patterns.
+
+### 6b. Official Mascot: Ace
+- **Aesthetic:** High-end 3D UI/UX asset with a "smooth clay" render style. Soft studio lighting and sleek Apple-like design. 
+- **Concept:** Futuristic but approachable humanoid figure suggesting empathy and structural guidance. Soft rounded edges, non-threatening.
+- **Color Palette:** Pure white with subtle navy blue and premium metallic teal accents.
+
+### 6c. Text Logo
+- **Format:** "Bookphysio.in" (Strictly capital 'B', then lowercase).
+- **Typography:** Custom geometric sans-serif, precise kerning, modern and unembellished.
+- **Color:** Solid deep navy blue on pure white background.
+
+### 6d. Iconic Symbol
+- **Concept:** Fluid, continuous mobius-like ribbon suggesting human spine/kinetic movement without literal bone structures.
+- **Style:** High-end Silicon Valley tech identity. Geometric precision with clever negative space.
+
+---
+
+## 7. Component Patterns
 
 ### 5a. Navbar
 - White background, `box-shadow: 0 1px 4px rgba(0,0,0,0.08)`, sticky top, `z-index: 50`

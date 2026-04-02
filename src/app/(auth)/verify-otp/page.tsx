@@ -118,20 +118,20 @@ function VerifyOtpContent() {
   }
 
   return (
-    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
+    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="relative">
       <BpLogo />
 
-      <h1 className="text-[24px] font-bold text-[#333333] mb-1.5">
+      <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Verify your number
       </h1>
-      <p className="text-[14px] text-[#666666] mb-8">
+      <p className="text-[15px] font-bold text-bp-body/40 mb-10">
         Code sent to{' '}
-        <span className="font-semibold text-[#333333]">{displayPhone}</span>
+        <span className="text-bp-primary">{displayPhone}</span>
       </p>
 
       {/* OTP digit inputs */}
-      <div className="mb-6">
+      <div className="mb-8">
         <OtpInput
           value={otp}
           onChange={setOtp}
@@ -143,29 +143,29 @@ function VerifyOtpContent() {
 
       {/* Error */}
       {error && (
-        <p className="text-[12px] text-[#DC2626] text-center -mt-3 mb-4">
+        <p className="text-[12px] font-bold text-red-500 text-center -mt-4 mb-6">
           {error}
         </p>
       )}
 
       {/* Resend + countdown */}
-      <div className="flex justify-between items-center mb-7">
+      <div className="flex justify-between items-center mb-10">
         {countdown > 0 ? (
-          <span className="text-[14px] text-[#666666]">
+          <span className="text-[14px] font-bold text-bp-body/40">
             Resend OTP
           </span>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            className="inline-flex items-center gap-1.5 text-[14px] text-[#00766C] font-semibold bg-transparent border-none cursor-pointer p-0 outline-none hover:text-[#005A52] transition-colors"
+            className="inline-flex items-center gap-2 text-[14px] text-bp-accent font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-4 h-4" />
             Resend OTP
           </button>
         )}
         <span
-          className={`text-[14px] tabular-nums ${countdown > 0 ? 'text-[#666666]' : 'text-transparent'}`}
+          className={`text-[14px] font-bold tabular-nums ${countdown > 0 ? 'text-bp-body/40' : 'text-transparent'}`}
         >
           {formatCountdown(countdown)}
         </span>
@@ -176,14 +176,15 @@ function VerifyOtpContent() {
         type="button"
         onClick={() => handleVerify()}
         disabled={!allFilled || loading}
-        className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full mb-5 transition-colors outline-none ${
-          allFilled && !loading ? 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer' : 'bg-[#a0cdc9] cursor-not-allowed'
-        }`}
+        className={cn(
+          "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98]",
+          allFilled && !loading ? 'bg-bp-primary hover:bg-bp-primary/95 shadow-xl shadow-bp-primary/10 cursor-pointer' : 'bg-bp-border cursor-not-allowed text-white/50'
+        )}
       >
         {loading ? 'Verifying…' : (
           <>
             Verify
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-5 h-5 text-bp-accent" />
           </>
         )}
       </button>
@@ -193,7 +194,7 @@ function VerifyOtpContent() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-1.5 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer no-underline outline-none transition-colors"
+          className="inline-flex items-center gap-2 text-[14px] text-bp-body/40 hover:text-bp-primary font-bold bg-transparent border-none cursor-pointer no-underline outline-none transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -202,37 +203,37 @@ function VerifyOtpContent() {
 
       {/* Dev role picker overlay */}
       {devRolePicker && (
-        <div className="absolute inset-0 bg-white rounded-[12px] flex flex-col items-center justify-center gap-6 p-10 animate-in fade-in duration-200">
+        <div className="absolute inset-x-[-32px] sm:inset-x-[-48px] inset-y-[-32px] sm:inset-y-[-48px] bg-white rounded-[40px] flex flex-col items-center justify-center gap-8 p-10 animate-in fade-in zoom-in-95 duration-300 z-50">
           <div className="text-center">
-            <p className="text-[11px] font-semibold text-[#00766C] uppercase tracking-widest mb-2">Dev Access</p>
-            <h2 className="text-[22px] font-bold text-[#333333]">Sign in as…</h2>
+            <p className="text-[10px] font-black text-bp-accent uppercase tracking-[0.2em] mb-3">Dev Access</p>
+            <h2 className="text-[28px] font-black text-bp-primary tracking-tighter">Sign in as…</h2>
           </div>
-          <div className="w-full flex flex-col gap-3">
+          <div className="w-full flex flex-col gap-4">
             <button
               type="button"
               onClick={() => handleDevSignIn('patient')}
-              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#00766C] hover:bg-[#005A52] rounded-full transition-colors cursor-pointer"
+              className="w-full py-5 text-[16px] font-black text-white bg-bp-accent hover:bg-bp-accent/90 rounded-2xl shadow-xl shadow-bp-accent/20 transition-all active:scale-95"
             >
               Patient
             </button>
             <button
               type="button"
               onClick={() => handleDevSignIn('provider')}
-              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#333333] hover:bg-[#111] rounded-full transition-colors cursor-pointer"
+              className="w-full py-5 text-[16px] font-black text-white bg-bp-primary hover:bg-bp-primary/95 rounded-2xl shadow-xl shadow-bp-primary/10 transition-all active:scale-95"
             >
               Doctor / Provider
             </button>
             <button
               type="button"
               onClick={() => handleDevSignIn('admin')}
-              className="w-full py-3.5 text-[16px] font-semibold text-white bg-[#0F172A] hover:bg-[#020617] rounded-full transition-colors cursor-pointer"
+              className="w-full py-5 text-[16px] font-black text-white bg-slate-900 hover:bg-slate-950 rounded-2xl shadow-xl transition-all active:scale-95"
             >
               Operator / Admin
             </button>
             <button
               type="button"
               onClick={() => setDevRolePicker(false)}
-              className="w-full py-2 text-[14px] text-[#666666] hover:text-[#333333] bg-transparent border-none cursor-pointer outline-none transition-colors"
+              className="w-full py-3 text-[14px] text-bp-body/40 hover:text-bp-primary font-bold transition-colors"
             >
               Cancel
             </button>

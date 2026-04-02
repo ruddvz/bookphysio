@@ -158,9 +158,9 @@ function PatientAppointmentsContent() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="py-20 bg-white border-2 border-dashed border-gray-100 rounded-[40px]">
+          <div className="py-20 bg-white border-2 border-dashed border-bp-border rounded-[40px]">
             <EmptyState
-              title={`No ${tab} appointments Found`}
+              title={`No ${tab} sessions found`}
               description={
                 tab === 'upcoming'
                   ? 'Your treatment calendar is currently clear. Ready to book your next session?'

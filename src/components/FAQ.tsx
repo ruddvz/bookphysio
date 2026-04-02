@@ -42,7 +42,7 @@ export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
-    <section className="bp-section bg-[#F7F8F9]">
+    <section className="bp-section bg-[#fff9f1]">
       <div className="bp-shell">
         <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -50,15 +50,15 @@ export default function FAQ() {
               <HelpCircle size={13} />
               Help center
             </div>
-            <h2 className="bp-title">Common questions.</h2>
+            <h2 className="bp-title">Questions patients ask before they book.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              Keep this section concise and direct. It should answer the questions people actually need before they book.
+              The FAQ should feel like part of the product, not a legal appendix. Clear answers, generous spacing, and one obvious action.
             </p>
           </div>
 
           <Link
             href="/search"
-            className="rounded-full bg-[#00766C] px-5 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52]"
+            className="bp-button-primary"
           >
             Browse providers
           </Link>
@@ -73,7 +73,7 @@ export default function FAQ() {
                 key={faq.id}
                 className={cn(
                   'bp-card overflow-hidden transition-all duration-300',
-                  isOpen ? 'border-[#00766C]/20 shadow-[0_22px_50px_-30px_rgba(15,23,42,0.22)]' : 'hover:border-[#00766C]/15'
+                  isOpen ? 'border-[#0f7668]/20 shadow-[0_22px_50px_-30px_rgba(24,49,45,0.22)]' : 'hover:border-[#0f7668]/15'
                 )}
               >
                 <button
@@ -81,16 +81,16 @@ export default function FAQ() {
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
                   className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                 >
-                  <span className={cn('text-[17px] font-semibold tracking-[-0.03em]', isOpen ? 'text-[#005A52]' : 'text-slate-900')}>
+                  <span className={cn('text-[17px] font-semibold tracking-[-0.03em]', isOpen ? 'text-[#0f7668]' : 'text-[#18312d]')}>
                     {faq.question}
                   </span>
-                  <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all', isOpen ? 'border-[#00766C] bg-[#E6F4F3] text-[#00766C]' : 'border-[#E6E8EC] bg-white text-slate-400')}>
+                  <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all', isOpen ? 'border-[#0f7668] bg-[#dcefe9] text-[#0f7668]' : 'border-[#ddd3c6] bg-white text-[#7d8a85]')}>
                     {isOpen ? <Minus size={18} /> : <Plus size={18} />}
                   </span>
                 </button>
 
                 <div className={cn('grid overflow-hidden transition-all duration-300', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
-                  <div className="min-h-0 px-6 pb-6 text-[15px] leading-7 text-slate-600">{faq.answer}</div>
+                  <div className="min-h-0 px-6 pb-6 text-[15px] leading-7 text-[#58645f]">{faq.answer}</div>
                 </div>
               </article>
             )

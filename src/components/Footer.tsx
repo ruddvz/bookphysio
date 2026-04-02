@@ -33,12 +33,12 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#0F1720] text-white">
+    <footer className="border-t border-[#244540]/10 bg-[#18312d] text-white">
       <div className="bp-shell py-16 md:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-xl">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#00766C] text-white shadow-[0_16px_28px_-20px_rgba(0,118,108,0.7)]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#0f7668] text-white shadow-[0_16px_28px_-20px_rgba(15,118,104,0.7)]">
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
                   <path d="M6 11H9L10.5 7L13.5 15L15 11H18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -49,21 +49,21 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/65">
-              A calmer way to find physiotherapy care. Search by condition, compare verified providers, and book the session that fits.
+            <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/70">
+              A sharper way to find physiotherapy care. Start with the search, compare verified providers, and book with clarity.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#0F1720] transition-all hover:bg-[#F0F4F4]"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#18312d] transition-all hover:bg-[#f7efe5]"
               >
                 Start searching
                 <ArrowRight size={16} />
               </Link>
               <Link
                 href="/doctor-signup"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-[14px] font-semibold text-white transition-all hover:border-[#00766C]/50 hover:bg-white/10"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-[14px] font-semibold text-white transition-all hover:border-[#dcefe9]/50 hover:bg-white/10"
               >
                 Join as provider
               </Link>
@@ -71,11 +71,11 @@ export default function Footer() {
 
             <div className="mt-7 flex flex-wrap gap-2 text-[13px] text-white/60">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <ShieldCheck size={14} className="text-[#8DD4CD]" />
+                <ShieldCheck size={14} className="text-[#dcefe9]" />
                 Verified providers
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <MapPin size={14} className="text-[#8DD4CD]" />
+                <MapPin size={14} className="text-[#dcefe9]" />
                 Home visits
               </span>
             </div>

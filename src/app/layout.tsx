@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/app/providers";
 
@@ -7,6 +7,13 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
@@ -37,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#00766C",
+  themeColor: "#18312D",
 };
 
 export default function RootLayout({
@@ -46,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${inter.variable} ${fraunces.variable} h-full antialiased`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

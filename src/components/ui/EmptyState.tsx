@@ -24,14 +24,14 @@ export function EmptyState({
         className
       )}
     >
-      <div className="w-16 h-16 bg-[#F9FAFB] rounded-full flex items-center justify-center mb-5">
-        <Icon className="w-8 h-8 text-[#9CA3AF]" />
+      <div className="w-20 h-20 bg-bp-surface rounded-[32px] flex items-center justify-center mb-8 border border-bp-border text-bp-body/20">
+        <Icon className="w-10 h-10" strokeWidth={1.5} />
       </div>
-      <h3 className="text-[18px] font-bold text-[#333333] mb-2">{title}</h3>
-      <p className="text-[15px] text-[#6B6B6B] max-w-sm mb-8 leading-relaxed">
+      <h3 className="text-2xl font-black text-bp-primary mb-3 tracking-tight">{title}</h3>
+      <p className="text-[15px] font-bold text-bp-body/40 max-w-sm mb-10 leading-relaxed">
         {description}
       </p>
-      {action && <div>{action}</div>}
+      {action && <div className="w-full flex justify-center">{action}</div>}
     </div>
   );
 }

@@ -33,10 +33,10 @@ export default function Navbar() {
   const closeMobile = () => setMobileMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-[100] w-full border-b border-[#E6E8EC] bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-[100] w-full border-b border-[#ddd3c6] bg-[#fffaf4]/92 backdrop-blur-md">
       <div className="bp-shell flex h-20 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3 text-[#111827]" aria-label="BookPhysio home">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#00766C] text-white shadow-[0_14px_24px_-18px_rgba(0,118,108,0.8)]">
+        <Link href="/" className="flex items-center gap-3 text-[#18312d]" aria-label="BookPhysio home">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#18312d] text-white shadow-[0_14px_24px_-18px_rgba(24,49,45,0.8)]">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
               <path d="M6 11H9L10.5 7L13.5 15L15 11H18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -50,7 +50,7 @@ export default function Navbar() {
               onClick={() => setBrowseOpen((previous) => !previous)}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium transition-colors hover:bg-[#F4F7F7]',
-                browseOpen ? 'bg-[#E6F4F3] text-[#005A52]' : 'text-slate-700'
+                browseOpen ? 'bg-[#dcefe9] text-[#18312d]' : 'text-[#4f5e5a]'
               )}
             >
               Browse
@@ -58,13 +58,13 @@ export default function Navbar() {
             </button>
 
             {browseOpen && (
-              <div className="absolute left-0 top-full mt-3 w-[280px] overflow-hidden rounded-[24px] border border-[#E6E8EC] bg-white p-2 shadow-[0_24px_50px_-30px_rgba(15,23,42,0.24)]">
-                <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Specialties</p>
+              <div className="absolute left-0 top-full mt-3 w-[280px] overflow-hidden rounded-[24px] border border-[#ddd3c6] bg-[#fffaf4] p-2 shadow-[0_24px_50px_-30px_rgba(24,49,45,0.24)]">
+                <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d8a85]">Specialties</p>
                 {SPECIALTIES.map((specialty) => (
                   <Link
                     key={specialty}
                     href={`/search?specialty=${encodeURIComponent(specialty)}`}
-                    className="flex items-center justify-between rounded-[16px] px-3 py-3 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F6FAF9] hover:text-[#005A52]"
+                    className="flex items-center justify-between rounded-[16px] px-3 py-3 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]"
                     onClick={() => setBrowseOpen(false)}
                   >
                     {specialty}
@@ -75,25 +75,25 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/how-it-works" className="rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+          <Link href="/how-it-works" className="rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
             How it works
           </Link>
-          <Link href="/doctor-signup" className="rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+          <Link href="/doctor-signup" className="rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
             For providers
           </Link>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
+          <Link href="/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
             Log in
           </Link>
-          <Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-5 py-2.5 text-[14px] font-semibold text-white transition-all hover:bg-[#005A52]">
-            Sign up
+          <Link href="/search" className="inline-flex items-center gap-2 rounded-full bg-[#18312d] px-5 py-2.5 text-[14px] font-semibold text-white transition-all hover:bg-[#0f7668]">
+            Find care
           </Link>
         </div>
 
         <button
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-[#E6E8EC] bg-white text-slate-700 transition-all hover:border-[#00766C]/30 hover:text-[#005A52] lg:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-[#ddd3c6] bg-white text-[#4f5e5a] transition-all hover:border-[#0f7668]/30 hover:text-[#0f7668] lg:hidden"
           onClick={() => setMobileMenuOpen((previous) => !previous)}
           aria-label="Toggle menu"
         >
@@ -102,29 +102,29 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-[#E6E8EC] bg-white lg:hidden">
+        <div className="border-t border-[#ddd3c6] bg-[#fffaf4] lg:hidden">
           <nav className="bp-shell flex flex-col gap-4 py-5">
             <div className="space-y-2">
-              <Link onClick={closeMobile} href="/search" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
-                <LayoutGrid className="h-5 w-5 text-[#00766C]" />
+              <Link onClick={closeMobile} href="/search" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
+                <LayoutGrid className="h-5 w-5 text-[#0f7668]" />
                 Browse Specialties
               </Link>
-              <Link onClick={closeMobile} href="/how-it-works" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
-                <HelpCircle className="h-5 w-5 text-[#00766C]" />
+              <Link onClick={closeMobile} href="/how-it-works" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
+                <HelpCircle className="h-5 w-5 text-[#0f7668]" />
                 How it works
               </Link>
             </div>
 
-            <div className="h-px bg-[#E6E8EC]" />
+            <div className="h-px bg-[#ddd3c6]" />
 
             <div className="space-y-2">
-              <Link onClick={closeMobile} href="/login" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-slate-700 transition-colors hover:bg-[#F4F7F7] hover:text-[#005A52]">
-                <LogIn className="h-5 w-5 text-slate-400" />
+              <Link onClick={closeMobile} href="/login" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
+                <LogIn className="h-5 w-5 text-[#7d8a85]" />
                 Log in
               </Link>
-              <Link onClick={closeMobile} href="/signup" className="flex items-center gap-3 rounded-[18px] bg-[#00766C] px-4 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#005A52]">
+              <Link onClick={closeMobile} href="/search" className="flex items-center gap-3 rounded-[18px] bg-[#18312d] px-4 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#0f7668]">
                 <UserPlus className="h-5 w-5" />
-                Sign up
+                Find care
               </Link>
             </div>
           </nav>

@@ -5,15 +5,18 @@ export default function PrivacyPage() {
   return (
     <>
       <Navbar />
-      <main className="py-24 bg-[#F7F8F9] min-h-screen">
-        <div className="max-w-[800px] mx-auto px-6">
-          <div className="bg-white rounded-[16px] border border-[#E5E5E5] p-12 shadow-sm">
-            <h1 className="text-[40px] font-bold text-[#333333] mb-4 tracking-tight">Privacy Policy</h1>
-            <p className="text-[#666666] mb-12 pb-6 border-b border-[#E5E5E5]">Last updated: March 2026</p>
+      <main className="py-32 bg-bp-surface min-h-screen">
+        <div className="max-w-[760px] mx-auto px-6">
+          <div className="relative group p-12 bg-white border border-bp-border rounded-[40px] shadow-2xl shadow-bp-primary/5 transition-all duration-700">
+            <h1 className="text-[48px] font-black text-bp-primary mb-2 tracking-tighter">Privacy Policy</h1>
+            <p className="text-[14px] text-bp-body/40 font-bold uppercase tracking-widest mb-12 pb-8 border-b border-bp-border">Last updated: March 2026</p>
             
-            <div className="space-y-10 text-[17px] leading-[1.8] text-[#555555]">
+            <div className="space-y-12 text-[17px] leading-[1.8] text-bp-body/70 font-medium">
               <section>
-                <h2 className="text-[24px] font-bold text-[#333333] mb-4">Introduction</h2>
+                <h2 className="text-[26px] font-black text-bp-primary mb-6 tracking-tight flex items-center gap-3">
+                   <div className="w-2 h-8 bg-bp-accent rounded-full"></div>
+                   Introduction
+                </h2>
                 <p>
                   At BookPhysio.in, your privacy is our top priority. This Privacy Policy describes how we collect, use, 
                   and share your personal information when you use our website, mobile application, and-related services 

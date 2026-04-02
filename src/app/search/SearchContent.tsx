@@ -177,36 +177,36 @@ export default function SearchContent() {
 
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-white selection:bg-[#00766C]/10 selection:text-[#00766C]">
+    <div className="flex flex-col h-screen overflow-hidden bg-bp-surface selection:bg-bp-accent/10 selection:text-bp-accent">
       
       {/* ── Search Header (Premium) ── */}
-      <header className="z-30 bg-white border-b border-gray-100 flex-shrink-0 relative">
+      <header className="z-30 bg-white border-b border-bp-border flex-shrink-0 relative">
         <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-6 md:py-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400">
-                <Link href="/" className="hover:text-[#00766C] transition-colors">Find Physios</Link>
+              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-bp-body/60">
+                <Link href="/" className="hover:text-bp-accent transition-colors">Find Physios</Link>
                 <ChevronRight size={12} strokeWidth={4} />
-                <span className="text-[#00766C] bg-[#E6F4F3] px-2.5 py-1 rounded-lg border border-teal-100">{displayLocation}</span>
+                <span className="text-bp-accent bg-bp-accent/5 px-2.5 py-1 rounded-lg border border-bp-accent/10">{displayLocation}</span>
                 {specialty && (
                   <>
                     <ChevronRight size={12} strokeWidth={4} />
-                    <span className="text-gray-600">{specialty}</span>
+                    <span className="text-bp-body">{specialty}</span>
                   </>
                 )}
               </div>
-              <h1 className="text-[32px] md:text-[42px] font-black text-[#333333] tracking-tighter leading-none flex items-center gap-4">
+              <h1 className="text-[32px] md:text-[42px] font-bold text-bp-primary tracking-tighter leading-none flex items-center gap-4">
                 {loading ? 'Sourcing Top Experts' : total > 0 ? `${total} Top Experts Found` : 'Search Results'}
-                {loading && <div className="w-8 h-8 rounded-full border-4 border-gray-100 border-t-[#00766C] animate-spin shrink-0" />}
+                {loading && <div className="w-8 h-8 rounded-full border-4 border-bp-surface border-t-bp-accent animate-spin shrink-0" />}
               </h1>
-              <p className="text-[15px] font-bold text-gray-400 tracking-tight leading-relaxed">Verified physiotherapy clinic & home-visit experts available in {displayLocation}.</p>
+              <p className="text-[15px] font-medium text-bp-body/70 tracking-tight leading-relaxed">Verified physiotherapy clinic & home-visit experts available in {displayLocation}.</p>
             </div>
 
             {/* Desktop Map Interaction Tooltip */}
-            <div className="hidden md:flex items-center gap-5 p-2 bg-[#F9FBFC] border border-gray-100 rounded-[24px]">
+            <div className="hidden md:flex items-center gap-5 p-2 bg-bp-surface/50 border border-bp-border rounded-[24px]">
                <div className="flex flex-col text-right">
-                  <span className="text-[14px] font-black text-[#333333] leading-none mb-1">Live Map View</span>
-                  <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase">Toggle on/off</span>
+                  <span className="text-[14px] font-bold text-bp-primary leading-none mb-1">Live Map View</span>
+                  <span className="text-[11px] font-bold text-bp-body/40 tracking-widest uppercase">Toggle on/off</span>
                </div>
                <button
                 onClick={() => setShowMap(!showMap)}
@@ -214,11 +214,11 @@ export default function SearchContent() {
                 title={showMap ? 'Hide map view' : 'Show map view'}
                 className={cn(
                   "relative w-16 h-8 rounded-full transition-all duration-500 shadow-inner active:scale-95 group overflow-hidden",
-                  showMap ? "bg-[#00766C] shadow-teal-900/10" : "bg-gray-100"
+                  showMap ? "bg-bp-primary shadow-bp-primary/10" : "bg-bp-border/50"
                 )}
               >
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-r from-teal-500 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity",
+                  "absolute inset-0 bg-gradient-to-r from-bp-primary to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity",
                   showMap ? "opacity-100" : "opacity-0"
                 )}></div>
                 <div className={cn(

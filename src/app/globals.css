@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-fraunces);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,13 +47,13 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* bookphysio.in brand tokens */
-  --color-bp-teal: #00766C;
-  --color-bp-teal-dark: #005A52;
-  --color-bp-teal-light: #E6F4F3;
-  --color-bp-orange: #FF6B35;
-  --color-bp-surface: #F5F5F5;
-  --color-bp-body: #333333;
+  /* bookphysio.in refreshed premium tokens */
+  --color-bp-primary: #0b3b32;
+  --color-bp-accent: #12b3a0;
+  --color-bp-secondary: #d9734d;
+  --color-bp-surface: #fbf9f4;
+  --color-bp-body: #616b68;
+  --color-bp-border: #ebe1d2;
 
   /* Zocdoc layout palette (section backgrounds) */
   --color-section-cream: #FDFACE;
@@ -67,29 +67,29 @@
 
 :root {
   /* bookphysio.in design system — mapped to shadcn tokens */
-  --background: oklch(0.985 0.002 240);
-  --foreground: oklch(0.22 0.01 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.01 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.01 240);
-  --primary: oklch(0.44 0.09 174);      /* #00766C teal */
-  --primary-foreground: oklch(1 0 0);   /* white */
-  --secondary: oklch(0.96 0.01 174);    /* #E6F4F3 teal-light */
-  --secondary-foreground: oklch(0.44 0.09 174);
-  --muted: oklch(0.97 0.005 240);       /* #F7F8F9 */
-  --muted-foreground: oklch(0.48 0.01 240);
-  --accent: oklch(0.65 0.17 37);        /* #FF6B35 orange */
-  --accent-foreground: oklch(1 0 0);
+  --background: oklch(0.965 0.012 75);
+  --foreground: oklch(0.28 0.02 170);
+  --card: oklch(0.99 0.008 70);
+  --card-foreground: oklch(0.28 0.02 170);
+  --popover: oklch(0.99 0.008 70);
+  --popover-foreground: oklch(0.28 0.02 170);
+  --primary: oklch(0.48 0.09 178);
+  --primary-foreground: oklch(0.99 0.008 70);
+  --secondary: oklch(0.93 0.018 165);
+  --secondary-foreground: oklch(0.34 0.03 178);
+  --muted: oklch(0.95 0.012 78);
+  --muted-foreground: oklch(0.5 0.02 170);
+  --accent: oklch(0.63 0.13 42);
+  --accent-foreground: oklch(0.99 0.008 70);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.006 240);      /* #E6E8EC */
-  --input: oklch(0.92 0.006 240);
-  --ring: oklch(0.44 0.09 174);
-  --chart-1: oklch(0.44 0.09 174);
-  --chart-2: oklch(0.65 0.17 37);
-  --chart-3: oklch(0.60 0.09 174);
-  --chart-4: oklch(0.80 0.06 174);
-  --chart-5: oklch(0.35 0.09 174);
+  --border: oklch(0.88 0.014 72);
+  --input: oklch(0.88 0.014 72);
+  --ring: oklch(0.48 0.09 178);
+  --chart-1: oklch(0.48 0.09 178);
+  --chart-2: oklch(0.63 0.13 42);
+  --chart-3: oklch(0.58 0.07 156);
+  --chart-4: oklch(0.77 0.06 84);
+  --chart-5: oklch(0.34 0.03 178);
   --radius: 0.75rem;                    /* 12px base radius */
   --sidebar: oklch(0.97 0.006 240);
   --sidebar-foreground: oklch(0.22 0.01 240);
@@ -141,12 +141,12 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    color: #1F2937;
-    background-color: #F7F8F9;
-    background-image: radial-gradient(circle at top left, rgba(0, 118, 108, 0.06), transparent 28%), linear-gradient(180deg, #FFFFFF 0%, #F7F8F9 100%);
+    color: #243532;
+    background-color: #f6efe5;
+    background-image: radial-gradient(circle at top left, rgba(15, 118, 104, 0.08), transparent 24%), radial-gradient(circle at top right, rgba(196, 109, 76, 0.09), transparent 26%), linear-gradient(180deg, #f8f2e9 0%, #fdf9f3 44%, #f4eee4 100%);
     overflow-x: hidden;
   }
   html {
@@ -154,24 +154,26 @@
     scroll-behavior: smooth;
   }
   h1 {
+    font-family: var(--font-fraunces), Georgia, serif;
     font-size: 48px;
     line-height: 1.05;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.04em;
-    color: #111827;
+    color: #18312d;
   }
   h2 {
+    font-family: var(--font-fraunces), Georgia, serif;
     font-size: 32px;
     line-height: 1.1;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.03em;
-    color: #111827;
+    color: #18312d;
   }
   h3 {
     font-size: 20px;
     line-height: 1.2;
     font-weight: 600;
-    color: #111827;
+    color: #18312d;
   }
 }
 
@@ -194,35 +196,44 @@
   }
 
   .bp-kicker {
-    @apply inline-flex items-center gap-2 rounded-full border border-[#DCE3E7] bg-white px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C];
+    @apply inline-flex items-center gap-2 rounded-full border border-[#d8cec0] bg-[#fffaf3] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f7668];
   }
 
   .bp-title {
-    @apply text-[32px] font-semibold tracking-[-0.04em] text-slate-900 md:text-[44px];
+    font-family: var(--font-fraunces), Georgia, serif;
+    @apply text-[34px] font-semibold tracking-[-0.04em] text-[#18312d] md:text-[48px];
   }
 
   .bp-copy {
-    @apply text-[16px] leading-7 text-slate-600 md:text-[18px];
+    @apply text-[16px] leading-7 text-[#5b6763] md:text-[18px];
   }
 
   .bp-card {
-    @apply rounded-[24px] border border-[#E6E8EC] bg-white shadow-[0_20px_45px_-30px_rgba(15,23,42,0.22)];
+    @apply rounded-[28px] border border-[#ded4c7] bg-[#fffdf9] shadow-[0_28px_65px_-42px_rgba(24,49,45,0.38)];
   }
 
   .bp-card-soft {
-    @apply rounded-[24px] border border-[#E8ECEF] bg-[#FCFDFD];
+    @apply rounded-[28px] border border-[#e3d9cb] bg-[#f9f2e8];
   }
 
   .bp-chip {
-    @apply inline-flex items-center rounded-full border border-[#DDE3E8] bg-white px-4 py-2 text-[13px] font-semibold text-slate-600 transition-all duration-200;
+    @apply inline-flex items-center rounded-full border border-[#d7cec1] bg-[#fffaf3] px-4 py-2 text-[13px] font-semibold text-[#55625e] transition-all duration-200;
   }
 
   .bp-chip-active {
-    @apply border-[#00766C] bg-[#E6F4F3] text-[#005A52];
+    @apply border-[#0f7668]/20 bg-[#dcefe9] text-[#18312d];
   }
 
   .bp-stat-card {
-    @apply rounded-[20px] border border-[#E6E8EC] bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.2)];
+    @apply rounded-[24px] border border-[#e0d7ca] bg-[#fffaf4] p-4 shadow-[0_16px_36px_-28px_rgba(24,49,45,0.24)];
+  }
+
+  .bp-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#18312d] px-5 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[#0f7668];
+  }
+
+  .bp-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[#d7cec1] bg-[#fffaf3] px-5 py-3 text-[14px] font-semibold text-[#243532] transition-all hover:border-[#0f7668] hover:text-[#0f7668];
   }
 }
 
@@ -262,7 +273,7 @@
 
 @media (max-width: 768px) {
   h1 {
-    font-size: 36px;
+    font-size: 38px;
     line-height: 1.08;
   }
   h2 {

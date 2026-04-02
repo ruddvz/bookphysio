@@ -110,17 +110,17 @@ export default function LoginPage() {
 
   if (magicLinkSent) {
     return (
-      <div className="bg-white rounded-3xl p-8 sm:p-12 max-w-[440px] w-full shadow-2xl border border-gray-50 animate-in zoom-in-95 duration-500 text-center">
-        <div className="w-20 h-20 bg-teal-50 rounded-3xl flex items-center justify-center text-[#00766C] mx-auto mb-8 animate-bounce">
+      <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in zoom-in-95 duration-500 text-center">
+        <div className="w-20 h-20 bg-bp-accent/10 rounded-[24px] flex items-center justify-center text-bp-accent mx-auto mb-8 animate-bounce">
            <Smartphone className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl font-black text-[#333333] mb-4 tracking-tight">Check your inbox</h2>
-        <p className="text-gray-500 font-bold mb-8 leading-relaxed">
-          We've sent a magic login link to <span className="text-[#00766C]">{email}</span>. Click the link to sign in instantly.
+        <h2 className="text-2xl font-black text-bp-primary mb-4 tracking-tight">Check your inbox</h2>
+        <p className="text-bp-body/60 font-bold mb-8 leading-relaxed">
+          We've sent a magic login link to <span className="text-bp-accent">{email}</span>. Click the link to sign in instantly.
         </p>
         <button 
           onClick={() => setMagicLinkSent(false)}
-          className="text-[14px] font-black text-[#00766C] hover:underline"
+          className="text-[14px] font-black text-bp-accent hover:underline"
         >
           Back to login
         </button>
@@ -129,21 +129,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-white rounded-3xl p-8 sm:p-12 max-w-[440px] w-full shadow-2xl border border-gray-50 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <BpLogo />
 
-      <h1 className="text-[28px] font-black text-[#333333] mb-2 mt-8 tracking-tighter leading-none">
+      <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Welcome back
       </h1>
-      <p className="text-[15px] font-bold text-gray-400 mb-8">Access your recovery dashboard</p>
+      <p className="text-[15px] font-bold text-bp-body/40 mb-10">Access your recovery dashboard</p>
 
       {/* Segmented Control Mode Switcher */}
-      <div className="flex bg-gray-50 p-1.5 rounded-2xl mb-8 border border-gray-100">
+      <div className="flex bg-bp-surface p-1.5 rounded-2xl mb-10 border border-bp-border">
         <button
           onClick={() => setLoginMode('phone')}
           className={cn(
-            "flex-1 py-3 text-[13px] font-black rounded-xl transition-all",
-            loginMode === 'phone' ? "bg-white text-[#00766C] shadow-lg shadow-gray-200/50" : "text-gray-400 hover:text-gray-600"
+            "flex-1 py-3.5 text-[13px] font-black rounded-xl transition-all",
+            loginMode === 'phone' ? "bg-white text-bp-accent shadow-lg shadow-bp-primary/5" : "text-bp-body/40 hover:text-bp-primary"
           )}
         >
           Mobile OTP
@@ -151,8 +151,8 @@ export default function LoginPage() {
         <button
           onClick={() => setLoginMode('email')}
           className={cn(
-            "flex-1 py-3 text-[13px] font-black rounded-xl transition-all",
-            loginMode === 'email' ? "bg-white text-[#00766C] shadow-lg shadow-gray-200/50" : "text-gray-400 hover:text-gray-600"
+            "flex-1 py-3.5 text-[13px] font-black rounded-xl transition-all",
+            loginMode === 'email' ? "bg-white text-bp-accent shadow-lg shadow-bp-primary/5" : "text-bp-body/40 hover:text-bp-primary"
           )}
         >
           Magic Link
@@ -167,16 +167,17 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} noValidate>
         {loginMode === 'phone' ? (
-          <div className="mb-8">
-            <label className="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Mobile Number</label>
+          <div className="mb-10">
+            <label htmlFor="phone" className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Mobile Number</label>
             <div className={cn(
               "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
-              errors.phone ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-[#00766C] shadow-lg shadow-teal-50' : 'border-gray-100 bg-gray-50/10'
+              errors.phone ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-accent/5' : 'border-bp-border bg-bp-surface/30'
             )}>
-              <span className="px-4 py-4 text-[15px] font-black text-[#333333] bg-gray-50 border-r-2 border-gray-100 flex items-center gap-2">
+              <span className="px-5 py-4 text-[15px] font-black text-bp-primary bg-bp-surface/50 border-r-2 border-bp-border flex items-center gap-2">
                 +91
               </span>
               <input
+                id="phone"
                 type="tel"
                 placeholder="98765 43210"
                 maxLength={10}
@@ -184,17 +185,17 @@ export default function LoginPage() {
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                className="flex-1 px-5 py-4 text-[15px] font-black text-[#333333] border-none outline-none bg-transparent"
+                className="flex-1 px-5 py-4 text-[15px] font-black text-bp-primary border-none outline-none bg-transparent placeholder:text-bp-body/20"
               />
             </div>
             {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.phone}</p>}
           </div>
         ) : (
-          <div className="mb-8">
-            <label className="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Email Address</label>
+          <div className="mb-10">
+            <label className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
             <div className={cn(
               "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
-              errors.email ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-[#00766C] shadow-lg shadow-teal-50' : 'border-gray-100 bg-gray-50/10'
+              errors.email ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-accent/5' : 'border-bp-border bg-bp-surface/30'
             )}>
               <input
                 type="email"
@@ -203,7 +204,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                className="flex-1 px-5 py-4 text-[15px] font-black text-[#333333] border-none outline-none bg-transparent"
+                className="flex-1 px-5 py-4 text-[15px] font-black text-bp-primary border-none outline-none bg-transparent placeholder:text-bp-body/20"
               />
             </div>
             {errors.email && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.email}</p>}
@@ -214,35 +215,35 @@ export default function LoginPage() {
           type="submit"
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98]",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#333333] hover:bg-[#00766C] shadow-xl shadow-teal-900/10'
+            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-10 transition-all active:scale-[0.98]",
+            loading ? 'bg-bp-border cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary/95 shadow-xl shadow-bp-primary/10'
           )}
         >
           {loading ? 'Sending link...' : (
             <>
               {loginMode === 'phone' ? 'Send OTP' : 'Send Magic Link'}
-              <ArrowRight size={18} strokeWidth={3} />
+              <ArrowRight size={18} strokeWidth={3} className="text-bp-accent" />
             </>
           )}
         </button>
       </form>
       {/* Divider */}
-      <div className="mb-7">
+      <div className="mb-8">
         <DemoAccessPanel />
       </div>
 
       {/* Signup link */}
-      <p className="text-center text-[14px] text-[#666666] mb-3">
+      <p className="text-center text-[14px] text-bp-body/60 mb-4">
         New to BookPhysio?{' '}
-        <Link href={signupHref} className="text-[#00766C] font-semibold no-underline hover:text-[#005A52] transition-colors">
+        <Link href={signupHref} className="text-bp-accent font-bold no-underline hover:text-bp-accent/80 transition-colors">
           Create an account
         </Link>
       </p>
 
       {/* Doctor link */}
-      <p className="text-center text-[14px] text-[#666666]">
+      <p className="text-center text-[14px] text-bp-body/60">
         Are you a doctor?{' '}
-        <Link href="/doctor-signup" className="text-[#00766C] font-semibold no-underline hover:text-[#005A52] transition-colors">
+        <Link href="/doctor-signup" className="text-bp-accent font-bold no-underline hover:text-bp-accent/80 transition-colors">
           Join as a doctor →
         </Link>
       </p>

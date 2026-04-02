@@ -64,6 +64,16 @@ bookphysio.in
     └── workflow-101.md         # Master workflow
 ```
 
+## Design Tokens (Updated April 2026)
+
+| Token | Value | Intent |
+|-------|-------|--------|
+| `bp-primary` | `#0B3B32` | Deep Pine: Headings, Sidebar, Primary CTAs |
+| `bp-accent` | `#12B3A0` | Active Teal: Icons, interactive states, pulse dots |
+| `bp-surface` | `#FBF9F4` | Soft Parchment: Page background, muted sections |
+| `bp-border` | `#EBE1D2` | Golden Sand: High-trust component borders |
+| `bp-body` | `#616B68` | Warm Smoke: Secondary text, body copy |
+
 ## Agent → File Ownership Map
 
 | Agent | Owns | Key Files |

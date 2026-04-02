@@ -27,46 +27,46 @@ export default function RecoveryBundles() {
     <section className="mb-12 relative z-10 px-1">
       <div className="flex items-center justify-between mb-8">
         <div>
-           <h2 className="text-[26px] font-black text-[#333333] tracking-tight">Recovery Bundles</h2>
-           <p className="text-[14px] text-gray-400 font-bold mt-1">Multi-session plans for a complete finish line</p>
+           <h2 className="text-[26px] font-black text-bp-primary tracking-tight">Recovery Bundles</h2>
+           <p className="text-[14px] text-bp-body/40 font-bold mt-1">Multi-session plans for a complete finish line</p>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-rose-50 rounded-2xl border border-rose-100 text-rose-600 text-[11px] font-black uppercase tracking-widest">
-           <Zap size={14} className="fill-rose-600" />
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-bp-accent/10 rounded-2xl border border-bp-accent/10 text-bp-accent text-[11px] font-black uppercase tracking-widest">
+           <Zap size={14} className="fill-bp-accent" />
            Limited Offers
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {MOCK_BUNDLES.map((bundle) => (
-          <div key={bundle.id} className="relative group p-8 bg-white border border-gray-100 rounded-[40px] hover:border-[#00766C] hover:shadow-2xl hover:shadow-teal-900/10 transition-all duration-700 overflow-hidden cursor-pointer">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50/50 rounded-bl-full -z-0 transition-all group-hover:scale-150 duration-1000"></div>
+          <div key={bundle.id} className="relative group p-8 bg-white border border-bp-border rounded-[40px] hover:border-bp-accent hover:shadow-2xl hover:shadow-bp-primary/5 transition-all duration-700 overflow-hidden cursor-pointer">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-bp-surface rounded-bl-full -z-0 transition-all group-hover:scale-150 duration-1000"></div>
              
              <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
-                   <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center text-[#00766C]">
+                   <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
                       <Package size={28} />
                    </div>
-                   <div className="px-3 py-1 bg-[#333333] text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
+                   <div className="px-3 py-1 bg-bp-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
                       {bundle.tag}
                    </div>
                 </div>
 
-                <h3 className="text-[22px] font-black text-[#333333] mb-2 leading-tight group-hover:text-[#00766C] transition-colors">{bundle.title}</h3>
+                <h3 className="text-[22px] font-black text-bp-primary mb-2 leading-tight group-hover:text-bp-accent transition-colors">{bundle.title}</h3>
                 <div className="flex items-baseline gap-2 mb-8">
-                   <span className="text-[32px] font-black text-[#333333] tracking-tighter">{bundle.price}</span>
-                   <span className="text-[13px] text-gray-400 font-bold uppercase tracking-widest">/ {bundle.sessions} Sessions</span>
+                   <span className="text-[32px] font-black text-bp-primary tracking-tighter">{bundle.price}</span>
+                   <span className="text-[13px] text-bp-body/40 font-bold uppercase tracking-widest">/ {bundle.sessions} Sessions</span>
                 </div>
 
                 <div className="space-y-3 mb-8">
                    {bundle.features.map((f, i) => (
-                     <div key={i} className="flex items-center gap-3 text-[14px] font-bold text-gray-500">
-                        <CheckCircle2 size={16} className="text-[#059669]" />
+                     <div key={i} className="flex items-center gap-3 text-[14px] font-bold text-bp-body/60">
+                        <CheckCircle2 size={16} className="text-bp-accent" />
                         {f}
                      </div>
                    ))}
                 </div>
 
-                <button className="w-full py-4 bg-gray-50 rounded-2xl text-[#333333] text-[15px] font-black hover:bg-[#00766C] hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
+                <button className="w-full py-4 bg-bp-surface rounded-2xl text-bp-primary text-[15px] font-black hover:bg-bp-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
                    Register Interest
                    <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>

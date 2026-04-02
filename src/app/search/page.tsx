@@ -5,12 +5,12 @@ import SearchContent from './SearchContent'
 
 export default function SearchPage() {
   return (
-    <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
+    <div className="bg-bp-surface min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1">
         <Suspense fallback={
-          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-24 text-center text-[#666666]">
+          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-24 text-center text-bp-body/60">
             Loading search results...
           </div>
         }>

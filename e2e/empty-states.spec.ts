@@ -6,11 +6,10 @@ test.describe('8.17 Empty States and Skeletons', () => {
     await page.goto('/search?specialty=UnicornPhysio')
     
     // Check for EmptyState components
-    const emptyState = page.locator('h3:has-text("No physiotherapists found")')
+    const emptyState = page.locator('h3:has-text("No exact matches found")')
     await expect(emptyState).toBeVisible()
-    
-    const description = page.getByText(/We couldn't find any physiotherapists matching your criteria/i)
-    await expect(description).toBeVisible()
+
+    const description = page.getByText(/We couldn't locate any verified physios matching your criteria/i)
     
     const clearButton = page.getByRole('button', { name: /clear all filters/i })
     await expect(clearButton).toBeVisible()
@@ -40,9 +39,9 @@ test.describe('8.17 Empty States and Skeletons', () => {
     })
 
     await page.goto('/patient/appointments?tab=upcoming')
-    await expect(page.getByText('No upcoming appointments')).toBeVisible()
-    
+    await expect(page.getByText(/No upcoming sessions found/i)).toBeVisible()
+
     await page.click('button:has-text("past")')
-    await expect(page.getByText('No past appointments')).toBeVisible()
+    await expect(page.getByText(/No past sessions found/i)).toBeVisible()
   })
 })
