@@ -1,5 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+
+// Stable dev test accounts — same user every time, role baked into metadata (picked up by DB trigger)
+const DEV_ACCOUNTS: Record<string, { email: string; phone: string; name: string }> = {
+  patient:  { email: 'dev-patient@bookphysio.in',  phone: '+919000000001', name: 'Dev Patient' },
+  provider: { email: 'dev-provider@bookphysio.in', phone: '+919000000002', name: 'Dev Provider' },
+  admin:    { email: 'dev-admin@bookphysio.in',    phone: '+919000000003', name: 'Dev Admin' },
+}
 
 export async function GET(request: NextRequest) {
   // Only allow in local development — never in production or test
@@ -7,70 +13,56 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const searchParams = request.nextUrl.searchParams
-  const role = searchParams.get('role') || 'patient'
-  const name = searchParams.get('name') || 'Dev User'
-  const phone = searchParams.get('phone') || '+919876543210'
-
-  if (!['patient', 'provider', 'admin'].includes(role)) {
+  const role = request.nextUrl.searchParams.get('role') ?? 'patient'
+  if (!Object.keys(DEV_ACCOUNTS).includes(role)) {
     return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
   }
 
+  const account = DEV_ACCOUNTS[role]
+  const dashboardPath = role === 'provider' ? '/provider/dashboard' : role === 'admin' ? '/admin/dashboard' : '/patient/dashboard'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? `http://localhost:${process.env.PORT ?? 3000}`
+  const redirectTo = `${siteUrl}/auth/callback?next=${dashboardPath}`
+
   try {
     const { supabaseAdmin } = await import('@/lib/supabase/admin')
-    const uniqueId = Math.floor(Math.random() * 1000000)
-    const devEmail = `dev-${role}-${uniqueId}@bookphysio.in`
-    const devPhone = `+91${Math.floor(6000000000 + Math.random() * 3999999999)}`
 
-    // Create a new user directly
-    const { data: user, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: devEmail,
-      email_confirm: true,
-      user_metadata: { 
-        role, 
-        full_name: `${name} (${role.toUpperCase()})`,
-        is_dev: true
-      }
-    })
+    // Get or create the stable dev test user
+    const { data: listData } = await supabaseAdmin.auth.admin.listUsers()
+    const existing = listData?.users.find(u => u.email === account.email)
 
-    if (createError) {
-      console.error('Dev Signup Error:', createError)
-      // If user exists, try to get them instead of failing
-      if (createError.message.includes('already registered')) {
-         const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers()
-         const found = existingUser.users.find(u => u.email === devEmail || u.phone === devPhone)
-         if (!found) return NextResponse.json({ error: createError.message }, { status: 500 })
-      } else {
-        return NextResponse.json({ error: createError.message, details: createError }, { status: 500 })
+    if (!existing) {
+      const { error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: account.email,
+        phone: account.phone,
+        email_confirm: true,
+        phone_confirm: true,
+        user_metadata: {
+          role,
+          full_name: account.name,
+          is_dev: true,
+        },
+      })
+      if (createError) {
+        return NextResponse.json({ error: createError.message }, { status: 500 })
       }
     }
 
-    // Generate a login link
+    // Generate a magic link — Supabase visits action_link then redirects to /auth/callback
     const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: devEmail,
+      email: account.email,
+      options: { redirectTo },
     })
 
-    if (linkError) {
-      return NextResponse.json({ error: 'Failed to generate session' }, { status: 500 })
+    if (linkError || !linkData.properties?.action_link) {
+      return NextResponse.json({ error: linkError?.message ?? 'No action_link returned' }, { status: 500 })
     }
 
-    // Verify the link to set cookies in the server client
-    const supabase = await createClient()
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      token_hash: linkData.properties?.hashed_token ?? '',
-      type: 'magiclink',
-    })
+    // Redirect the browser through Supabase's auth flow — cookies are set correctly this way
+    return NextResponse.redirect(linkData.properties.action_link)
 
-    if (verifyError) {
-      return NextResponse.json({ error: 'Failed to establish session' }, { status: 500 })
-    }
-
-    // Redirect to the appropriate dashboard
-    const redirectPath = role === 'provider' ? '/provider/dashboard' : role === 'admin' ? '/admin/dashboard' : '/patient/dashboard'
-    return NextResponse.redirect(new URL(redirectPath, request.url))
-
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
