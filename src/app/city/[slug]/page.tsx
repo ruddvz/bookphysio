@@ -55,9 +55,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!city) return { title: 'Not Found | BookPhysio.in' }
   
+  const title = `Best Physiotherapists in ${city.label} | BookPhysio.in`
+  const description = `${city.description} Book verified physiotherapists for in-clinic and home visit sessions in ${city.label}.`
+  
   return {
-    title: `Best Physiotherapists in ${city.label} | BookPhysio.in`,
-    description: city.description,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://bookphysio.in/city/${slug}`,
+      siteName: 'BookPhysio.in',
+      locale: 'en_IN',
+      type: 'website',
+    },
+    alternates: {
+      canonical: `https://bookphysio.in/city/${slug}`,
+    }
   }
 }
 

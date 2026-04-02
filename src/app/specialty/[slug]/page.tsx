@@ -75,9 +75,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!specialty) return { title: 'Not Found | BookPhysio.in' }
   
+  const title = `Best ${specialty.label} in India | Verified Experts | BookPhysio.in`
+  const description = `Find and book verified ${specialty.label} near you. ${specialty.description} Same-day appointments available for clinic and home visits.`
+  
   return {
-    title: `Best ${specialty.label} in India | BookPhysio.in`,
-    description: `Find and book verified ${specialty.label} near you. ${specialty.description} Same-day appointments available.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://bookphysio.in/specialty/${slug}`,
+      siteName: 'BookPhysio.in',
+      locale: 'en_IN',
+      type: 'website',
+    },
+    alternates: {
+      canonical: `https://bookphysio.in/specialty/${slug}`,
+    }
   }
 }
 
