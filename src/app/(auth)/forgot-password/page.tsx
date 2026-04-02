@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { Mail, ArrowLeft, KeyRound, RotateCcw, ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +21,7 @@ const forgotSchema = z.object({
 })
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [identifier, setIdentifier] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [focused, setFocused] = useState(false)
@@ -63,10 +66,24 @@ export default function ForgotPasswordPage() {
         })
         
         if (!res.ok) {
-          const data = await res.json()
-          setError(data.message || 'Failed to send OTP')
+          const data = await res.json().catch(() => ({})) as { message?: string; error?: string }
+          setError(data.message || data.error || 'Failed to send OTP')
           return
         }
+
+        const otpStateSaved = savePendingOtp({
+          phone: cleanPhone.replace(/^\+/, ''),
+          flow: 'login',
+          returnTo: '/update-password',
+        })
+
+        if (!otpStateSaved) {
+          setError('Unable to continue. Please retry.')
+          return
+        }
+
+        router.push('/verify-otp')
+        return
       }
       
       setSubmitted(true)
@@ -84,8 +101,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <BpLogo />
+    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
 
       {!submitted ? (
         <>

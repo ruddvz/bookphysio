@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { ArrowRight, Smartphone } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
+import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 
@@ -70,16 +71,22 @@ export default function LoginPage() {
           body: JSON.stringify({ phone: cleanPhone }),
         })
         
-        if (!res.ok && res.status !== 404) {
-          const data = await res.json()
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({})) as { error?: string }
           throw new Error(data.error || 'Failed to send OTP')
         }
-        
-        const params = new URLSearchParams({ phone: '91' + phone, flow: 'login' })
-        if (returnTo) {
-          params.set('return', returnTo)
+
+        const otpStateSaved = savePendingOtp({
+          phone: '91' + phone,
+          flow: 'login',
+          returnTo,
+        })
+
+        if (!otpStateSaved) {
+          throw new Error('Unable to continue. Please retry.')
         }
-        router.push('/verify-otp?' + params.toString())
+
+        router.push('/verify-otp')
       } else {
         // Magic Link Logic
         if (!email || !email.includes('@')) {
@@ -129,8 +136,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <BpLogo />
+    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
 
       <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Welcome back
@@ -192,12 +199,13 @@ export default function LoginPage() {
           </div>
         ) : (
           <div className="mb-10">
-            <label className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
+            <label htmlFor="email" className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
             <div className={cn(
               "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
               errors.email ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-accent/5' : 'border-bp-border bg-bp-surface/30'
             )}>
               <input
+                id="email"
                 type="email"
                 placeholder="name@example.com"
                 value={email}
@@ -241,10 +249,11 @@ export default function LoginPage() {
       </p>
 
       {/* Doctor link */}
-      <p className="text-center text-[14px] text-bp-body/60">
+      <p className="flex items-center justify-center gap-1 text-center text-[14px] text-bp-body/60">
         Are you a doctor?{' '}
-        <Link href="/doctor-signup" className="text-bp-accent font-bold no-underline hover:text-bp-accent/80 transition-colors">
-          Join as a doctor →
+        <Link href="/doctor-signup" className="inline-flex items-center gap-1 text-bp-accent font-bold no-underline hover:text-bp-accent/80 transition-colors">
+          Join as a doctor
+          <ArrowRight className="h-4 w-4" />
         </Link>
       </p>
     </div>

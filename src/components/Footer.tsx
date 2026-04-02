@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { ArrowRight, Heart, MapPin, ShieldCheck } from 'lucide-react'
+import BpLogo from '@/components/BpLogo'
 
 const COLUMNS = [
   {
@@ -39,13 +39,11 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-xl">
             <Link href="/" className="flex items-center gap-3">
-              <Image 
-                src="/logo.png" 
-                alt="BookPhysio" 
-                width={160}
-                height={40}
-                className="h-10 w-auto object-contain brightness-0 invert" 
-                loading="lazy"
+              <BpLogo
+                className="mb-0"
+                frameClassName="h-10 w-40"
+                imageClassName="brightness-0 invert"
+                priority={false}
               />
             </Link>
 
@@ -56,7 +54,7 @@ export default function Footer() {
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#18312d] transition-all hover:bg-[#f7efe5]"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#18312d] transition-all hover:bg-white"
               >
                 Start searching
                 <ArrowRight size={16} />

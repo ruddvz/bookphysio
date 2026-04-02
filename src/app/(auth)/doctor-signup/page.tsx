@@ -251,7 +251,7 @@ function FocusableInput({
 
 function ProgressIndicator({ current }: { current: StepNumber }) {
   return (
-    <div className="mb-8">
+    <div className="mb-8" aria-label="Signup progress">
       <div className="flex items-center justify-between">
         {STEP_LABELS.map((label, i) => {
           const step = (i + 1) as StepNumber
@@ -263,19 +263,20 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
               {/* Circle + label */}
               <div className="flex flex-col items-center gap-1.5">
                 <div
+                  aria-current={active ? 'step' : undefined}
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors ${
                     done
                       ? 'bg-[#00766C] text-white'
                       : active
-                      ? 'bg-white text-[#00766C] ring-2 ring-[#00766C]'
-                      : 'bg-[#F0F0F0] text-[#999999]'
+                      ? 'border-2 border-[#00766C] bg-white text-[#00766C] ring-2 ring-[#00766C]/20'
+                      : 'border-2 border-[#BBBBBB] bg-white text-[#888888]'
                   }`}
                 >
                   {done ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step}
                 </div>
                 <span
                   className={`text-[11px] whitespace-nowrap hidden sm:block ${
-                    active ? 'text-[#00766C] font-semibold' : done ? 'text-[#00766C]' : 'text-[#999999]'
+                    active ? 'text-[#00766C] font-semibold' : done ? 'text-[#00766C]' : 'text-[#888888]'
                   }`}
                 >
                   {label}
@@ -284,9 +285,9 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
 
               {/* Connector line */}
               {i < STEP_LABELS.length - 1 && (
-                <div className="flex-1 h-0.5 mx-1.5 mb-4">
+                <div className="mx-1.5 mb-4 h-[2px] flex-1">
                   <div
-                    className={`h-full transition-colors ${step < current ? 'bg-[#00766C]' : 'bg-[#E5E5E5]'}`}
+                    className={`h-full transition-colors ${step < current ? 'bg-[#00766C]' : 'bg-[#CCCCCC]'}`}
                   />
                 </div>
               )}
@@ -1096,8 +1097,8 @@ export default function DoctorSignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-[12px] p-10 max-w-[560px] w-full shadow-lg animate-in fade-in duration-500">
-      <BpLogo />
+    <div className="bg-white rounded-[24px] border border-bp-border p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-xl shadow-bp-primary/5 animate-in fade-in duration-500">
+      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
       <ProgressIndicator current={currentStep} />
 
       {currentStep === 1 && (

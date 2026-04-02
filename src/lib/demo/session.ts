@@ -21,6 +21,7 @@ interface DemoProfileDefinition {
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60
+const APP_ORIGIN = 'https://bookphysio.local'
 
 const DEMO_PROFILES: Record<DemoRole, DemoProfileDefinition> = {
   patient: {
@@ -120,17 +121,27 @@ export function sanitizeReturnPath(value: string | null | undefined): string | n
   }
 
   try {
-    const normalized = new URL(value, 'https://bookphysio.local')
-    return `${normalized.pathname}${normalized.search}${normalized.hash}`
+    const normalized = new URL(value, APP_ORIGIN)
+    const sanitizedPath = `${normalized.pathname}${normalized.search}${normalized.hash}`
+
+    if (normalized.origin !== APP_ORIGIN || !sanitizedPath.startsWith('/') || sanitizedPath.startsWith('//')) {
+      return null
+    }
+
+    return sanitizedPath
   } catch {
     return null
   }
 }
 
 function isRoleCompatibleReturnPath(role: DemoRole, returnPath: string): boolean {
-  const pathname = new URL(returnPath, 'https://bookphysio.local').pathname
+  const pathname = new URL(returnPath, APP_ORIGIN).pathname
 
   if (pathname === '/') {
+    return true
+  }
+
+  if (pathname === '/update-password') {
     return true
   }
 

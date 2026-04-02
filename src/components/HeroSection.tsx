@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Clock3, Home, MapPin, Search, ShieldCheck, Sparkles, Star, Stethoscope } from 'lucide-react'
+import { ArrowRight, MapPin, Search, Sparkles } from 'lucide-react'
 
 const focusWords = [
   'sports rehab',
@@ -19,36 +19,6 @@ const heroStats = [
   { label: 'Cities covered', value: '18' },
   { label: 'Average rating', value: '4.9/5' },
   { label: 'Visit formats', value: 'Clinic + home' },
-]
-
-const previewRows = [
-  {
-    initials: 'PS',
-    name: 'Dr. Priya Sharma',
-    specialty: 'Sports physiotherapy',
-    location: 'Mumbai',
-    fee: 900,
-    slot: 'Today · 6:30 PM',
-    badge: 'Home visit',
-  },
-  {
-    initials: 'RV',
-    name: 'Dr. Rahul Verma',
-    specialty: 'Orthopedic rehab',
-    location: 'Delhi',
-    fee: 800,
-    slot: 'Tomorrow · 9:00 AM',
-    badge: 'In-clinic',
-  },
-  {
-    initials: 'AK',
-    name: 'Dr. Ayesha Khan',
-    specialty: 'Neuro physiotherapy',
-    location: 'Bengaluru',
-    fee: 1100,
-    slot: 'Today · 8:15 PM',
-    badge: 'Verified',
-  },
 ]
 
 function SearchBar({
@@ -120,93 +90,6 @@ function SearchBar({
   )
 }
 
-function PreviewPanel() {
-  return (
-    <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-      <div className="bp-card relative overflow-hidden p-6 md:p-7">
-        <div className="absolute right-6 top-6 rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-bp-body">
-          Search preview
-        </div>
-        <div className="flex items-start justify-between gap-4 pr-20">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bp-body/60">What appears after search</p>
-            <h2 className="mt-2 text-[32px] font-semibold tracking-tight text-bp-primary">Matches in Mumbai</h2>
-          </div>
-        </div>
-
-        <div className="mt-6 space-y-3">
-          {previewRows.map((row) => (
-            <div
-              key={row.name}
-              className="flex items-center gap-4 rounded-[22px] border border-bp-border bg-bp-surface/40 p-4 transition-all hover:border-bp-accent/20 hover:bg-white"
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-bp-surface text-[14px] font-semibold text-bp-primary">
-                {row.initials}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-[15px] font-semibold text-bp-primary">{row.name}</p>
-                  <ShieldCheck size={14} className="text-bp-accent" />
-                </div>
-                <p className="truncate text-[13px] text-bp-body/80">
-                  {row.specialty} · {row.location}
-                </p>
-              </div>
-
-              <div className="text-right">
-                <p className="text-[14px] font-semibold text-bp-primary">₹{row.fee}</p>
-                <p className="text-[12px] text-bp-accent">{row.slot}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-5">
-        <div className="bp-card-soft p-6 md:p-7">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bp-body/60">Why this works</p>
-          <h3 className="mt-3 text-[28px] font-semibold tracking-[-0.04em] text-bp-primary">The search does the heavy lifting.</h3>
-          <div className="mt-6 space-y-4">
-            {[
-              { icon: ShieldCheck, title: 'Verified first', text: 'Registration and trust cues appear before the booking decision.' },
-              { icon: Clock3, title: 'Slots visible', text: 'You can spot same-day availability without opening extra screens.' },
-              { icon: Home, title: 'Visit mode in-line', text: 'Home visits and clinic visits are comparable from the same result list.' },
-            ].map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-[22px] border border-bp-border bg-bp-surface/40 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-bp-primary text-white">
-                    <Icon size={18} />
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-semibold text-bp-primary">{title}</p>
-                    <p className="text-[13px] leading-6 text-bp-body/80">{text}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[28px] border border-bp-primary/10 bg-bp-primary p-6 text-white shadow-[0_28px_65px_-42px_rgba(11,59,50,0.5)]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-white/10">
-              <Stethoscope size={20} />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">Search promise</p>
-              <p className="text-[22px] font-semibold tracking-[-0.04em] text-white">Pick the care format first, not after the search.</p>
-            </div>
-          </div>
-          <p className="mt-4 text-[14px] leading-7 text-white/72">
-            The homepage should feel like a confident intake surface. Search at the center, trust next, proof after that.
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function HeroSection() {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -236,9 +119,9 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-bp-border bg-bp-surface/40">
+    <section className="relative overflow-hidden border-b border-bp-border bg-bp-surface/40" aria-label="Hero">
       <div className="absolute left-1/2 top-0 h-[500px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.08),transparent_70%)]" />
-      <div className="bp-shell relative py-16 md:py-24 lg:py-32">
+      <div className="bp-shell relative flex min-h-[calc(100vh-5rem)] flex-col justify-center py-16 md:py-24 lg:py-32">
         <div className="mx-auto max-w-5xl text-center">
           <div className="mx-auto mb-8 inline-flex">
             <div className="rounded-full border border-bp-border bg-white/60 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent backdrop-blur-sm">
@@ -249,7 +132,7 @@ export default function HeroSection() {
 
           <h1 className="mx-auto max-w-4xl text-[54px] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary md:text-[82px] lg:text-[96px]">
             Expert care for <br className="hidden md:block" />
-            <span className="relative inline-block overflow-hidden align-top text-bp-accent">
+            <span className="relative inline-flex min-h-[1.05em] items-end overflow-hidden align-baseline pb-[0.06em] text-bp-accent">
               <span key={currentIndex} className="animate-specialty inline-block">
                 {focusWords[currentIndex]}
               </span>
@@ -270,7 +153,7 @@ export default function HeroSection() {
             />
           </div>
 
-          <div className="mt-16 flex flex-wrap justify-center gap-10 opacity-70 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+          <div className="mt-16 flex flex-wrap justify-center gap-10 transition-all">
             {heroStats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="text-[20px] font-bold text-bp-primary">{stat.value}</p>

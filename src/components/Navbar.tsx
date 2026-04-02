@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, HelpCircle, LayoutGrid, LogIn, Menu, Sparkles, UserPlus, X } from 'lucide-react'
+import { ChevronDown, HelpCircle, LayoutGrid, LogIn, Menu, Sparkles, Stethoscope, UserPlus, X } from 'lucide-react'
+import BpLogo from '@/components/BpLogo'
 import { cn } from '@/lib/utils'
 
 const SPECIALTIES = [
@@ -34,17 +34,10 @@ export default function Navbar() {
   const closeMobile = () => setMobileMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-[100] w-full border-b border-[#ddd3c6] bg-[#fffaf4]/92 backdrop-blur-md">
+    <header className="sticky top-0 z-[100] w-full border-b border-[#ddd3c6] bg-[#fffaf4]/90 backdrop-blur-md">
       <div className="bp-shell flex h-20 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 text-[#18312d]" aria-label="BookPhysio home">
-          <Image 
-            src="/logo.png" 
-            alt="BookPhysio" 
-            width={160}
-            height={40}
-            className="h-10 w-auto object-contain" 
-            priority
-          />
+          <BpLogo className="mb-0" frameClassName="h-10 w-40" priority />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
@@ -99,6 +92,7 @@ export default function Navbar() {
           className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-[#ddd3c6] bg-white text-[#4f5e5a] transition-all hover:border-[#0f7668]/30 hover:text-[#0f7668] lg:hidden"
           onClick={() => setMobileMenuOpen((previous) => !previous)}
           aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -115,6 +109,10 @@ export default function Navbar() {
               <Link onClick={closeMobile} href="/how-it-works" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
                 <HelpCircle className="h-5 w-5 text-[#0f7668]" />
                 How it works
+              </Link>
+              <Link onClick={closeMobile} href="/doctor-signup" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
+                <Stethoscope className="h-5 w-5 text-[#0f7668]" />
+                For providers
               </Link>
             </div>
 

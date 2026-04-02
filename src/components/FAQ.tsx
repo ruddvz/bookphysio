@@ -32,9 +32,9 @@ const faqs = [
   },
   {
     id: 5,
-    question: 'Is BookPhysio meant for mobile?',
+    question: 'Can I cancel a session?',
     answer:
-      'Yes. The refreshed layout is built to stay readable on smaller screens, with the search bar and cards sized for tap-first use.',
+      'Yes. Once a booking is confirmed you can review the appointment details and cancel within the timeline shown in your dashboard.',
   },
 ]
 
@@ -42,7 +42,7 @@ export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
-    <section className="bp-section bg-[#fff9f1]">
+    <section className="bp-section bg-[#fff9f1]" aria-label="Booking questions">
       <div className="bp-shell">
         <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -52,7 +52,7 @@ export default function FAQ() {
             </div>
             <h2 className="bp-title">Questions patients ask before they book.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              The FAQ should feel like part of the product, not a legal appendix. Clear answers, generous spacing, and one obvious action.
+              Everything you need to know before booking your first session.
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export default function FAQ() {
             const isOpen = openId === faq.id
 
             return (
-              <article
+              <div
                 key={faq.id}
                 className={cn(
                   'bp-card overflow-hidden transition-all duration-300',
@@ -77,8 +77,11 @@ export default function FAQ() {
                 )}
               >
                 <button
+                  id={`faq-trigger-${faq.id}`}
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${faq.id}`}
                   className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                 >
                   <span className={cn('text-[17px] font-semibold tracking-[-0.03em]', isOpen ? 'text-[#0f7668]' : 'text-[#18312d]')}>
@@ -89,10 +92,23 @@ export default function FAQ() {
                   </span>
                 </button>
 
-                <div className={cn('grid overflow-hidden transition-all duration-300', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}>
-                  <div className="min-h-0 px-6 pb-6 text-[15px] leading-7 text-[#58645f]">{faq.answer}</div>
+                <div
+                  id={`faq-answer-${faq.id}`}
+                  role="region"
+                  aria-labelledby={`faq-trigger-${faq.id}`}
+                  aria-hidden={!isOpen}
+                  className={cn('grid overflow-hidden transition-all duration-300', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}
+                >
+                  <div
+                    className={cn(
+                      'min-h-0 overflow-hidden px-6 text-[15px] leading-7 text-[#58645f] transition-all duration-300',
+                      isOpen ? 'pb-6 opacity-100' : 'invisible pb-0 opacity-0'
+                    )}
+                  >
+                    {faq.answer}
+                  </div>
                 </div>
-              </article>
+              </div>
             )
           })}
         </div>

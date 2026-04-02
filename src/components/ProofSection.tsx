@@ -31,7 +31,7 @@ const previewRows = [
 
 export default function ProofSection() {
   return (
-    <section className="bg-white py-24 md:py-32">
+    <section className="bg-white py-24 md:py-32" aria-label="Network transparency">
       <div className="container-bp">
         <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-[40px] border border-bp-border bg-bp-surface/30 p-8 md:p-12">

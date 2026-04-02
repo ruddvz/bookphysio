@@ -26,9 +26,18 @@ const testimonials = [
   },
 ]
 
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+}
+
 export default function Testimonials() {
   return (
-    <section className="bp-section bg-[#f4ecdf]">
+    <section className="bp-section bg-[#f4ecdf]" aria-label="Patient testimonials">
       <div className="bp-shell">
         <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -38,7 +47,7 @@ export default function Testimonials() {
             </div>
             <h2 className="bp-title">Proof without the hard sell.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              The tone should stay human and credible. These quotes should support the search experience, not overpower it.
+              Real patients. Real results. Every review is tied to a verified booking.
             </p>
           </div>
 
@@ -63,7 +72,7 @@ export default function Testimonials() {
 
               <div className="mt-6 flex items-center gap-3 border-t border-[#e1d7c9] pt-5">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#dcefe9] text-[15px] font-semibold text-[#18312d]">
-                  {testimonial.author.charAt(0)}
+                  {getInitials(testimonial.author)}
                 </div>
                 <div>
                   <p className="text-[15px] font-semibold text-[#18312d]">{testimonial.author}</p>

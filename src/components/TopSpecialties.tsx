@@ -85,7 +85,7 @@ function SpecialtyCard({ icon: Icon, label, description, href, tone, iconTone }:
         </h3>
         <p className="mt-2 text-[14px] leading-6 text-[#66706b]">{description}</p>
 
-        <div className="mt-auto pt-6 text-[13px] font-semibold text-[#0f7668]">
+        <div className="mt-auto pt-6 text-[13px] font-semibold text-[#0b5c52] underline-offset-4 group-hover:underline">
           Explore specialists
         </div>
       </div>
@@ -95,7 +95,7 @@ function SpecialtyCard({ icon: Icon, label, description, href, tone, iconTone }:
 
 export default function TopSpecialties() {
   return (
-    <section className="bp-section border-y border-[#e0d6c9] bg-[#fffaf4]">
+    <section className="bp-section border-y border-[#e0d6c9] bg-[#fffaf4]" aria-label="Browse by specialty">
       <div className="bp-shell">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -105,7 +105,7 @@ export default function TopSpecialties() {
             </div>
             <h2 className="bp-title">Start from the kind of recovery you need.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              The homepage should narrow the decision fast: choose a care lane first, then move into location, visit type, and availability.
+              Choose your care category and we'll surface verified physiotherapists in your city.
             </p>
           </div>
 

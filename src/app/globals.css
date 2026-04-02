@@ -54,6 +54,11 @@
   --color-bp-surface: #fbf9f4;
   --color-bp-body: #616b68;
   --color-bp-border: #ebe1d2;
+  --color-bp-accent-rgb: 18 179 160;
+  --color-bp-secondary-rgb: 217 115 77;
+  --color-bp-page-top: #f8f2e9;
+  --color-bp-page-mid: #fdf9f3;
+  --color-bp-page-bottom: #f4eee4;
 
   /* Zocdoc layout palette (section backgrounds) */
   --color-section-cream: #FDFACE;
@@ -146,7 +151,7 @@
     line-height: 1.5;
     color: #243532;
     background-color: #f6efe5;
-    background-image: radial-gradient(circle at top left, rgba(15, 118, 104, 0.08), transparent 24%), radial-gradient(circle at top right, rgba(196, 109, 76, 0.09), transparent 26%), linear-gradient(180deg, #f8f2e9 0%, #fdf9f3 44%, #f4eee4 100%);
+    background-image: radial-gradient(circle at top left, rgb(var(--color-bp-accent-rgb) / 0.08), transparent 24%), radial-gradient(circle at top right, rgb(var(--color-bp-secondary-rgb) / 0.09), transparent 26%), linear-gradient(180deg, var(--color-bp-page-top) 0%, var(--color-bp-page-mid) 44%, var(--color-bp-page-bottom) 100%);
     overflow-x: hidden;
   }
   html {

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowRight, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
@@ -84,44 +85,36 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: cleanPhone }),
       })
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({})) as { error?: string }
-        // On static export (GitHub Pages), API routes don't exist — still allow navigation
-        if (res.status === 404) {
-          const params = new URLSearchParams({ phone: '91' + form.phone, name: form.name, flow: 'signup' })
-          if (returnTo) {
-            params.set('return', returnTo)
-          }
-          router.push('/verify-otp?' + params.toString())
-          return
-        }
         setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
         return
       }
-      const params = new URLSearchParams({
+
+      const otpStateSaved = savePendingOtp({
         phone: '91' + form.phone,
-        name: form.name,
         flow: 'signup',
+        fullName: form.name,
+        returnTo,
       })
-      if (returnTo) {
-        params.set('return', returnTo)
+
+      if (!otpStateSaved) {
+        setErrors({ general: 'Unable to continue. Please retry.' })
+        return
       }
-      router.push('/verify-otp?' + params.toString())
+
+      router.push('/verify-otp')
     } catch {
-      // Network error on static export — still navigate to OTP page
-      const params = new URLSearchParams({ phone: '91' + form.phone, name: form.name, flow: 'signup' })
-      if (returnTo) {
-        params.set('return', returnTo)
-      }
-      router.push('/verify-otp?' + params.toString())
+      setErrors({ general: 'Unable to reach the OTP service. Try again.' })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <BpLogo />
+    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
 
       <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Create your account

@@ -38,7 +38,7 @@ function FeatureCard({ icon: Icon, title, description }: (typeof features)[numbe
 
 export default function HealthSystems() {
   return (
-    <section className="bp-section bg-bp-surface/30">
+    <section className="bp-section bg-bp-surface/30" aria-label="Patient trust signals">
       <div className="bp-shell">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="max-w-xl">
@@ -48,7 +48,7 @@ export default function HealthSystems() {
             </div>
             <h2 className="bp-title">Everything a patient should see before booking.</h2>
             <p className="bp-copy mt-4">
-              The home page needs a clear proof layer after the hero: verification, visit mode, speed, and price transparency without making the page feel bureaucratic.
+              Every detail patients need to feel confident - credentials, visit format, fees, and availability - shown upfront.
             </p>
 
             <div className="mt-8 space-y-3">

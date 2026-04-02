@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, CalendarCheck, Search, ShieldCheck, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, CalendarCheck, Search, ShieldCheck, SlidersHorizontal, Sparkles } from 'lucide-react'
 
 const steps = [
   {
@@ -12,7 +12,7 @@ const steps = [
   },
   {
     step: '02',
-    icon: Star,
+    icon: SlidersHorizontal,
     title: 'Compare verified options',
     description: 'Read credentials, reviews, and availability together so the shortlist stays easy to compare.',
   },
@@ -46,7 +46,7 @@ function StepCard({ step, icon: Icon, title, description }: (typeof steps)[numbe
 
 export default function HowItWorks() {
   return (
-    <section className="bp-section border-y border-[#e0d6c9] bg-[#f3ebdf]">
+    <section className="bp-section border-y border-[#e0d6c9] bg-[#f3ebdf]" aria-label="How booking works">
       <div className="bp-shell">
         <div className="flex flex-col items-start gap-6 text-left lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -56,7 +56,7 @@ export default function HowItWorks() {
             </div>
             <h2 className="bp-title">The booking flow should read in one pass.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              Search, compare, and confirm should feel like one continuous action. No hero gimmick, no dead-end panel, no visual drift.
+              Find a verified physiotherapist, check their availability, and book your session in under 60 seconds.
             </p>
           </div>
 
