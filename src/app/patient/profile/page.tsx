@@ -2,7 +2,21 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { User, Smartphone, Mail, Check, Loader2, AlertCircle } from 'lucide-react'
+import { 
+  User, 
+  Smartphone, 
+  Mail, 
+  Check, 
+  Loader2, 
+  AlertCircle,
+  Bell,
+  Lock,
+  CreditCard,
+  Shield,
+  LogOut,
+  Camera,
+  ChevronRight
+} from 'lucide-react'
 
 interface ProfileData {
   id: string
@@ -74,94 +88,215 @@ export default function PatientProfile() {
     .toUpperCase()
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">Profile &amp; Settings</h1>
+    <div className="max-w-[1142px] mx-auto px-4 md:px-6 py-8 md:py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
+      <div className="flex flex-col gap-2 mb-8 md:mb-12">
+        <h1 className="text-[32px] md:text-[40px] font-black text-bp-primary tracking-tighter leading-none">
+          Patient Profile
+        </h1>
+        <p className="text-[17px] text-[#666666] font-medium tracking-tight">
+          Manage your account settings, payments, and personal preferences.
+        </p>
+      </div>
 
-      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-8">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#E6F4F3] text-[#00766C] text-xl font-bold shrink-0 overflow-hidden">
-            {profile.avatar_url
-              ? <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
-              : initials
-            }
-          </div>
-          <div>
-            <h2 className="text-[20px] font-semibold text-[#333333]">{profile.full_name}</h2>
-            <p className="text-[15px] text-[#666666] capitalize">{profile.role} Account</p>
-          </div>
-        </div>
-
-        <form
-          className="flex flex-col gap-6"
-          onSubmit={e => { e.preventDefault(); saveMut.mutate() }}
-        >
-          {/* Full Name */}
-          <div className="relative">
-            <label className="block text-[14px] font-semibold text-[#333333] mb-2">Full Name</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-              />
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Sidebar Navigation */}
+        <aside className="lg:col-span-4 space-y-4">
+          <div className="bg-white rounded-[24px] md:rounded-[32px] border border-[#E5E5E5] shadow-sm overflow-hidden p-2">
+            <div className="flex flex-col">
+              {[
+                { icon: User, label: 'Personal Details', active: true },
+                { icon: Lock, label: 'Password & Security', active: false },
+                { icon: Bell, label: 'Notifications', active: false },
+                { icon: CreditCard, label: 'Payment Methods', active: false },
+                { icon: Shield, label: 'Privacy Settings', active: false },
+              ].map((item, idx) => (
+                <button
+                  key={idx}
+                  className={`flex items-center justify-between px-6 py-4 rounded-[20px] md:rounded-[24px] transition-all duration-200 ${
+                    item.active 
+                      ? 'bg-[#E6F4F3] text-[#00766C]' 
+                      : 'text-[#666666] hover:bg-[#F7F8F9] hover:text-[#333333]'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <item.icon className={`w-5 h-5 ${item.active ? 'text-[#00766C]' : 'text-[#9CA3AF]'}`} />
+                    <span className="text-[16px] font-semibold tracking-tight">{item.label}</span>
+                  </div>
+                  {item.active && <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]" />}
+                  {!item.active && <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />}
+                </button>
+              ))}
+              
+              <div className="h-px bg-[#E5E5E5] mx-6 my-2" />
+              
+              <button className="flex items-center gap-4 px-6 py-4 text-[#EF4444] hover:bg-red-50 rounded-[20px] md:rounded-[24px] transition-all duration-200">
+                <LogOut className="w-5 h-5" />
+                <span className="text-[16px] font-semibold tracking-tight">Logout</span>
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Phone — read only */}
-            <div className="relative">
-              <label className="block text-[14px] font-semibold text-[#333333] mb-2">Mobile Number</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={profile.phone ?? '—'}
-                  disabled
-                  className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-[#F9FAFB] text-[15px] text-[#6B7280] cursor-not-allowed outline-none"
-                />
-                <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-              </div>
-              <p className="mt-1.5 text-[12px] text-[#9CA3AF]">Verified via OTP</p>
-            </div>
-
-            {/* Email — read only */}
-            <div className="relative">
-              <label className="block text-[14px] font-semibold text-[#333333] mb-2">Email Address</label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={profile.email ?? '—'}
-                  disabled
-                  className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-[#F9FAFB] text-[15px] text-[#6B7280] cursor-not-allowed outline-none"
-                />
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-              </div>
-            </div>
-          </div>
-
-          <hr className="border-t border-[#E5E5E5] my-2" />
-
-          <div className="flex items-center justify-between">
-            {saveMut.isSuccess && (
-              <p className="text-[13px] text-emerald-600 font-medium flex items-center gap-1.5">
-                <Check className="w-4 h-4" /> Changes saved
+          <div className="bg-[#00766C] text-white rounded-[24px] md:rounded-[32px] p-8 relative overflow-hidden group">
+            <div className="relative z-10">
+              <h3 className="text-[20px] font-bold mb-2">Need help?</h3>
+              <p className="text-[14px] text-white/80 mb-4 leading-relaxed">
+                Our support team is available 24/7 to help you with any questions.
               </p>
-            )}
-            {saveMut.isError && (
-              <p className="text-[13px] text-red-500">Failed to save. Please try again.</p>
-            )}
-            {!saveMut.isSuccess && !saveMut.isError && <span />}
-            <button
-              type="submit"
-              disabled={saveMut.isPending || name.trim() === profile.full_name}
-              className="flex items-center gap-2 px-8 py-3 bg-[#00766C] hover:bg-[#005A52] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-[24px] text-[16px] font-semibold transition-colors duration-200 outline-none"
+              <button className="bg-white text-[#00766C] px-6 py-2.5 rounded-full text-[14px] font-bold hover:bg-opacity-90 transition-all">
+                Contact Support
+              </button>
+            </div>
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500" />
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <div className="lg:col-span-8 space-y-8">
+          <div className="bg-white rounded-[24px] md:rounded-[40px] border border-[#E5E5E5] shadow-sm overflow-hidden p-6 md:p-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-[#F0F0F0]">
+              <div className="flex items-center gap-6">
+                <div className="relative group">
+                  <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-teal-50 text-[#00766C] text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
+                    {profile.avatar_url
+                      ? <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                      : initials
+                    }
+                  </div>
+                  <button className="absolute bottom-0 right-0 w-8 h-8 md:w-10 md:h-10 bg-[#00766C] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform ring-4 ring-white">
+                    <Camera className="w-4 h-4 md:w-5 h-5" />
+                  </button>
+                </div>
+                <div>
+                  <h2 className="text-[24px] md:text-[28px] font-black text-bp-primary tracking-tighter mb-1">
+                    {profile.full_name}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-[#E6F4F3] text-[#00766C] text-[12px] font-black uppercase tracking-wider rounded-full">
+                      {profile.role} account
+                    </span>
+                    <span className="text-[14px] text-[#666666]">Member since 2024</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form
+              className="space-y-8"
+              onSubmit={e => { e.preventDefault(); saveMut.mutate() }}
             >
-              {saveMut.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
-              Save Changes
+              <div className="grid grid-cols-1 gap-8">
+                {/* Full Name */}
+                <div className="space-y-3">
+                  <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                    Full Name
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-white text-[16px] text-[#333333] font-medium focus:border-[#00766C] focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all duration-300 placeholder:text-[#9CA3AF]"
+                    />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF] transition-colors group-focus-within:text-[#00766C]" />
+                  </div>
+                  <p className="text-[13px] text-[#666666] ml-1">
+                    This is how your name will appear on official booking confirmations.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Phone — read only */}
+                  <div className="space-y-3">
+                    <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                      Mobile Number
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={profile.phone ?? '—'}
+                        disabled
+                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-[#F7F8F9] text-[16px] text-[#333333] font-medium cursor-not-allowed outline-none opacity-80"
+                      />
+                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-black uppercase">
+                        <Check className="w-3 h-3" /> Verified
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email — read only */}
+                  <div className="space-y-3">
+                    <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={profile.email ?? '—'}
+                        disabled
+                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-[#F7F8F9] text-[16px] text-[#333333] font-medium cursor-not-allowed outline-none opacity-80"
+                      />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+                    </div>
+                    {!profile.email && (
+                      <button type="button" className="text-[13px] text-[#00766C] font-bold hover:underline ml-1">
+                        + Add email address
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-10 border-t border-[#F0F0F0]">
+                <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col gap-1">
+                    {saveMut.isSuccess && (
+                      <p className="text-[14px] text-emerald-600 font-bold flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2">
+                        <Check className="w-4 h-4" /> Changes saved successfully
+                      </p>
+                    )}
+                    {saveMut.isError && (
+                      <p className="text-[14px] text-red-500 font-bold flex items-center gap-1.5 animate-in shake">
+                        <AlertCircle className="w-4 h-4" /> Failed to save. Please try again.
+                      </p>
+                    )}
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    disabled={saveMut.isPending || name.trim() === profile.full_name}
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-[#00766C] hover:bg-[#005A52] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-teal-900/10"
+                  >
+                    {saveMut.isPending ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Check className="w-5 h-5" />
+                    )}
+                    Update Profile
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+          <div className="bg-[#FFF4ED] border border-[#FFD8C2] rounded-[24px] md:rounded-[32px] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex gap-4">
+              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                <Shield className="w-6 h-6 text-[#FF6B35]" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-[16px] font-black text-[#853C1D] uppercase text-[12px]">Data Privacy</h4>
+                <p className="text-[14px] text-[#853C1D]/80 leading-snug">
+                  Your data is protected with 128-bit encryption and never shared with third parties.
+                </p>
+              </div>
+            </div>
+            <button className="text-[14px] font-black text-[#FF6B35] hover:underline whitespace-nowrap">
+              Learn More
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )

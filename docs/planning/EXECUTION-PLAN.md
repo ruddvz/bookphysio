@@ -56,7 +56,7 @@
 - [~] Dashboard home (`/patient/dashboard`) — built, mock data
 - [~] Appointments list (`/patient/appointments`) — built
 - [x] Appointment detail (`/patient/appointments/[id]`) — wired to real API, cancel action, join session logic
-- [x] Profile & settings (`/patient/profile`) — wired to real API, save full_name
+- [x] Profile & settings (`/patient/profile`) — wired to real API, save full_name, polished UI
 - [x] Payment history (`/patient/payments`) — wired to real API
 - [~] Notifications (`/patient/notifications`) — built
 - [~] Messages (`/patient/messages`) — built (stub)
