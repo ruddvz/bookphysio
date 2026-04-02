@@ -1,15 +1,32 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import crypto from 'crypto'
 
-// Stable dev test accounts — same user every time, role baked into metadata (picked up by DB trigger)
+// Stable test accounts — one per role, reused every time
 const DEV_ACCOUNTS: Record<string, { email: string; phone: string; name: string }> = {
   patient:  { email: 'dev-patient@bookphysio.in',  phone: '+919000000001', name: 'Dev Patient' },
   provider: { email: 'dev-provider@bookphysio.in', phone: '+919000000002', name: 'Dev Provider' },
   admin:    { email: 'dev-admin@bookphysio.in',    phone: '+919000000003', name: 'Dev Admin' },
 }
 
+function hasValidPreviewCookie(request: NextRequest): boolean {
+  const secret = process.env.PREVIEW_PASSWORD
+  const token = request.cookies.get('preview_token')?.value
+  if (!secret || !token) return false
+  const expected = crypto.createHmac('sha256', secret).update('bookphysio-preview').digest('hex')
+  try {
+    const a = Buffer.from(token)
+    const b = Buffer.from(expected)
+    if (a.length !== b.length) return false
+    return crypto.timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
+}
+
 export async function GET(request: NextRequest) {
-  // Only allow in local development — never in production or test
-  if (process.env.NODE_ENV !== 'development') {
+  // Allow in local dev OR if the user has a valid preview cookie (for live-site preview access)
+  const isLocalDev = process.env.NODE_ENV === 'development'
+  if (!isLocalDev && !hasValidPreviewCookie(request)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
