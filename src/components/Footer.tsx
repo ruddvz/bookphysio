@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Heart, MapPin, ShieldCheck } from 'lucide-react'
 
 const COLUMNS = [
@@ -38,7 +39,14 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-xl">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="BookPhysio" className="h-10 w-auto object-contain brightness-0 invert" />
+              <Image 
+                src="/logo.png" 
+                alt="BookPhysio" 
+                width={160}
+                height={40}
+                className="h-10 w-auto object-contain brightness-0 invert" 
+                loading="lazy"
+              />
             </Link>
 
             <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/70">

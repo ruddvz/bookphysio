@@ -7,6 +7,7 @@ import MobileBookingBar from './MobileBookingBar'
 import { MapPin, ShieldCheck, GraduationCap, Languages, Star, ChevronRight, Share2, Heart, Award, CheckCircle2, Calendar, Clock, Sparkles, Building2, UserCheck, PhoneCall, Mail, Activity } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 import Link from 'next/link'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
@@ -165,10 +166,13 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                       <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-400 rounded-[56px] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                       {provider.avatar_url ? (
                         <div className="relative p-2 bg-white rounded-[56px] shadow-2xl">
-                          <img
+                          <Image
                             src={provider.avatar_url}
                             alt={nameWithTitle}
+                            width={176}
+                            height={176}
                             className="w-32 h-32 md:w-44 md:h-44 rounded-[48px] object-cover bg-gray-50 border-4 border-white"
+                            priority
                           />
                         </div>
                       ) : (

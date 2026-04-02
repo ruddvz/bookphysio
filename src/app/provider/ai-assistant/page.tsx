@@ -1,6 +1,12 @@
 'use client'
 
-import { BookPhysioAIChat, type BookPhysioAIMessage } from '@/components/BookPhysioAIChat'
+import dynamic from 'next/dynamic'
+import type { BookPhysioAIMessage } from '@/components/BookPhysioAIChat'
+
+const BookPhysioAIChat = dynamic(() => import('@/components/BookPhysioAIChat').then(mod => mod.BookPhysioAIChat), {
+  ssr: false,
+  loading: () => <div className="h-screen w-full flex items-center justify-center bg-white">Loading Assistant...</div>
+})
 
 const INITIAL_MESSAGES: BookPhysioAIMessage[] = [
   {
