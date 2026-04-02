@@ -1,13 +1,20 @@
 import Razorpay from 'razorpay'
 import crypto from 'crypto'
 
-export const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
-})
+// Razorpay is currently disabled — payment flow is archived.
+// These functions are kept for future re-enablement.
+
+function getRazorpayClient() {
+  const key_id = process.env.RAZORPAY_KEY_ID
+  const key_secret = process.env.RAZORPAY_KEY_SECRET
+  if (!key_id || !key_secret) {
+    throw new Error('Razorpay is not configured')
+  }
+  return new Razorpay({ key_id, key_secret })
+}
 
 export async function createOrder(amountInr: number, receiptId: string) {
-  return razorpay.orders.create({
+  return getRazorpayClient().orders.create({
     amount: amountInr * 100,
     currency: 'INR',
     receipt: receiptId,
@@ -19,16 +26,19 @@ export function verifyPaymentSignature(
   paymentId: string,
   signature: string
 ): boolean {
-  const secret = process.env.RAZORPAY_KEY_SECRET || 'dummy_secret'
+  const secret = process.env.RAZORPAY_KEY_SECRET
+  if (!secret) return false
   const hmac = crypto.createHmac('sha256', secret)
   hmac.update(orderId + '|' + paymentId)
   const expectedSignature = hmac.digest('hex')
-  return expectedSignature === signature
+  return crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(signature))
 }
 
 export function verifyWebhookSignature(body: string, signature: string): boolean {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET
+  if (!secret) return false
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET || 'dummy_secret')
+    .createHmac('sha256', secret)
     .update(body)
     .digest('hex')
   return crypto.timingSafeEqual(

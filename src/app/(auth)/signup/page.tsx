@@ -114,7 +114,7 @@ export default function SignupPage() {
 
   return (
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
+      <BpLogo href="/" />
 
       <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Create your account

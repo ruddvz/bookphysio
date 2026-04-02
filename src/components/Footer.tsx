@@ -40,9 +40,7 @@ export default function Footer() {
           <div className="max-w-xl">
             <Link href="/" className="flex items-center gap-3">
               <BpLogo
-                className="mb-0"
-                frameClassName="h-10 w-40"
-                imageClassName="brightness-0 invert"
+                invert
                 priority={false}
               />
             </Link>

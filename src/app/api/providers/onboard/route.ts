@@ -42,11 +42,10 @@ export async function POST(request: NextRequest) {
     const validated = onboardSchema.parse(body)
     const { step1, step2, step3, step4 } = validated
 
-    // 1. Update user role and metadata if not already provider
+    // 1. Update user metadata — role stays 'patient' until admin approves
     const { error: userError } = await supabaseAdmin
       .from('users')
       .update({ 
-        role: 'provider',
         full_name: step1.name 
       })
       .eq('id', user.id)
@@ -55,9 +54,9 @@ export async function POST(request: NextRequest) {
 
     const { error: authUserError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
       user_metadata: {
-        role: 'provider',
         full_name: step1.name,
         phone: step1.phone,
+        provider_pending: true, // Admin must approve before role becomes 'provider'
       },
     })
 
@@ -73,7 +72,7 @@ export async function POST(request: NextRequest) {
         icp_registration_no: step2.icpNumber,
         consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
         verified: false,
-        active: true,
+        active: false, // Inactive until admin approves
         onboarding_step: 4
       })
       .select()

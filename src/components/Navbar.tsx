@@ -37,7 +37,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-[100] w-full border-b border-[#ddd3c6] bg-[#fffaf4]/90 backdrop-blur-md">
       <div className="bp-shell flex h-20 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 text-[#18312d]" aria-label="BookPhysio home">
-          <BpLogo className="mb-0" frameClassName="h-10 w-40" priority />
+          <BpLogo priority />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">

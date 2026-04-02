@@ -1,11 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sanitizeReturnPath } from '@/lib/demo/session'
+import { buildConfiguredAppUrl, getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
-  const email = typeof body === 'object' && body ? (body as { email?: unknown }).email : null
+  const email = typeof body === 'object' && body && typeof (body as { email?: unknown }).email === 'string'
+    ? (body as { email: string }).email.trim()
+    : null
   const requestedReturn = typeof body === 'object' && body ? (body as { returnTo?: unknown }).returnTo : null
   const returnTo = typeof requestedReturn === 'string' ? sanitizeReturnPath(requestedReturn) : null
 
@@ -13,20 +16,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
   }
 
-  const ip = request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
-  const sourceLimit = await otpRatelimit.limit(`magic-link:ip:${ip}`)
-  if (!sourceLimit.success) {
-    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  const ip = getRequestIpAddress(request)
+  if (ip) {
+    const sourceLimit = await otpRatelimit.limit(`magic-link:ip:${ip}`)
+    if (!sourceLimit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
   }
 
-  const rateLimitKey = `magic-link:${email.trim().toLowerCase()}`
+  const rateLimitKey = `magic-link:${email.toLowerCase()}`
   const { success } = await otpRatelimit.limit(rateLimitKey)
   if (!success) {
     return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
   }
 
   const supabase = await createClient()
-  const callbackUrl = new URL('/auth/callback', process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin)
+  const callbackUrl = buildConfiguredAppUrl('/auth/callback')
+
+  if (!callbackUrl) {
+    return NextResponse.json({ error: 'Magic link is not configured' }, { status: 500 })
+  }
 
   if (returnTo) {
     callbackUrl.searchParams.set('next', returnTo)

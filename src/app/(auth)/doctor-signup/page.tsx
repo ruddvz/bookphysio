@@ -1098,7 +1098,7 @@ export default function DoctorSignupPage() {
 
   return (
     <div className="bg-white rounded-[24px] border border-bp-border p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-xl shadow-bp-primary/5 animate-in fade-in duration-500">
-      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
+      <BpLogo href="/" />
       <ProgressIndicator current={currentStep} />
 
       {currentStep === 1 && (

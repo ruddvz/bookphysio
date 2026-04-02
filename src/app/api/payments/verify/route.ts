@@ -5,7 +5,9 @@ import { verifyPaymentSignature } from '@/lib/razorpay'
 import { verifyPaymentSchema } from '@/lib/validations/payment'
 import { sendBookingConfirmation } from '@/lib/resend'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
+  // Payment flow is temporarily disabled.
+  return NextResponse.json({ error: 'Payment system is not available yet.' }, { status: 503 })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

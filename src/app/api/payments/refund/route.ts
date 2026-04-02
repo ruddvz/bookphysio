@@ -1,14 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { razorpay } from '@/lib/razorpay'
 import { z } from 'zod'
 
 const refundSchema = z.object({
   appointment_id: z.string().uuid(),
 })
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
+  // Refund flow is temporarily disabled — payment system is being re-architected.
+  return NextResponse.json({ error: 'Refund system is not available yet.' }, { status: 503 })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

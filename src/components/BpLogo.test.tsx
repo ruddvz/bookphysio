@@ -10,23 +10,20 @@ vi.mock('next/image', () => ({
 }))
 
 describe('BpLogo', () => {
-  it('renders the shared auth-sized logo frame by default', () => {
+  it('renders an icon and brand text', () => {
     render(<BpLogo />)
-
-    const image = screen.getByAltText('BookPhysio')
-    const frame = image.parentElement
-
-    expect(image).toHaveAttribute('src', '/logo.png')
-    expect(frame?.className).toContain('h-[36px]')
-    expect(frame?.className).toContain('w-[144px]')
+    expect(screen.getByText('BookPhysio')).toBeInTheDocument()
   })
 
-  it('can render as a homepage link with custom sizing', () => {
-    render(<BpLogo href="/" frameClassName="h-[35px] w-[140px]" />)
+  it('renders as a link when href is provided', () => {
+    render(<BpLogo href="/" />)
+    const link = screen.getByRole('link', { name: /bookphysio home/i })
+    expect(link).toHaveAttribute('href', '/')
+  })
 
-    const image = screen.getByAltText('BookPhysio')
-    expect(image.closest('a')).toHaveAttribute('href', '/')
-    expect(image.parentElement?.className).toContain('h-[35px]')
-    expect(image.parentElement?.className).toContain('w-[140px]')
+  it('applies invert style for dark backgrounds', () => {
+    render(<BpLogo invert />)
+    const text = screen.getByText('BookPhysio')
+    expect(text.className).toContain('text-white')
   })
 })

@@ -11,7 +11,7 @@ import { metadata as loginMetadata } from './login/layout'
 import { metadata as signupMetadata } from './signup/layout'
 import { metadata as updatePasswordMetadata } from './update-password/layout'
 import { metadata as verifyOtpMetadata } from './verify-otp/layout'
-import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
+import { clearPendingOtp, readPendingOtp, savePendingOtp } from '@/lib/auth/pending-otp'
 
 const push = vi.fn()
 
@@ -29,6 +29,14 @@ vi.mock('@/components/auth/DemoAccessPanel', () => ({
 
 vi.mock('@/components/BpLogo', () => ({
   default: ({ href }: { href?: string }) => (href ? <a href={href}>BookPhysio Logo</a> : <div>BookPhysio Logo</div>),
+}))
+
+vi.mock('@/components/OtpInput', () => ({
+  default: ({ onComplete, disabled }: { onComplete: (code: string) => void; disabled?: boolean }) => (
+    <button type="button" disabled={disabled} onClick={() => onComplete('264200')}>
+      Complete OTP
+    </button>
+  ),
 }))
 
 vi.mock('@/lib/supabase/client', () => ({
@@ -184,5 +192,31 @@ describe('Auth regressions', () => {
     expect(screen.getByRole('link', { name: /go to login/i })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('link', { name: /recover access/i })).toHaveAttribute('href', '/forgot-password')
     expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
+  })
+
+  it('submits 264200 through the server flow instead of opening the local dev role picker', async () => {
+    savePendingOtp({
+      phone: '919876543210',
+      flow: 'login',
+      returnTo: null,
+    })
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({ role: 'patient', user: { id: 'user-1' } }),
+      })
+    )
+
+    render(<VerifyOtpPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/patient/dashboard')
+    })
+
+    expect(screen.queryByText(/sign in as/i)).not.toBeInTheDocument()
   })
 })

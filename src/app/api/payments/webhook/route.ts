@@ -4,9 +4,11 @@ import { verifyWebhookSignature } from '@/lib/razorpay'
 import { razorpayWebhookSchema } from '@/lib/validations/payment'
 import { sendBookingConfirmation } from '@/lib/resend'
 
-export async function POST(request: NextRequest) {
-  const body = await request.text()
-  const signature = request.headers.get('x-razorpay-signature') ?? ''
+export async function POST(_request: NextRequest) {
+  // Payment webhook is temporarily disabled.
+  return NextResponse.json({ error: 'Not available' }, { status: 503 })
+  const body = await _request.text()
+  const signature = _request.headers.get('x-razorpay-signature') ?? ''
 
   if (!verifyWebhookSignature(body, signature)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })

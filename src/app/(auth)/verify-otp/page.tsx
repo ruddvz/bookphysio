@@ -7,8 +7,7 @@ import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
 import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
-import { isDemoAccessEnabled, resolvePostAuthRedirect, type DemoRole } from '@/lib/demo/session'
-import { launchDemoSession } from '@/lib/demo/client'
+import { resolvePostAuthRedirect } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 
 const OTP_LENGTH = 6
@@ -22,7 +21,6 @@ function VerifyOtpContent() {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  const [devRolePicker, setDevRolePicker] = useState(false)
 
   useEffect(() => {
     setPendingOtp(readPendingOtp())
@@ -39,18 +37,19 @@ function VerifyOtpContent() {
     ? `+${pendingOtp.phone.slice(0, 2)} ${pendingOtp.phone.slice(2, 7)} ${pendingOtp.phone.slice(7)}`
     : ''
 
-  const allFilled = otp.every((d) => d !== '')
+  const allFilled = otp.every((digit) => digit !== '')
 
-  const formatCountdown = (s: number) => {
-    const mm = String(Math.floor(s / 60)).padStart(2, '0')
-    const ss = String(s % 60).padStart(2, '0')
+  const formatCountdown = (seconds: number) => {
+    const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
+    const ss = String(seconds % 60).padStart(2, '0')
     return `${mm}:${ss}`
   }
+
 
   if (!hasLoadedPendingOtp) {
     return (
       <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
+        <BpLogo href="/" />
         <div className="mt-10 space-y-4">
           <div className="h-8 w-44 rounded-full bg-bp-surface animate-pulse" />
           <div className="h-4 w-full rounded-full bg-bp-surface animate-pulse" />
@@ -68,7 +67,7 @@ function VerifyOtpContent() {
   if (!pendingOtp) {
     return (
       <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
+        <BpLogo href="/" />
 
         <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
           OTP session expired
@@ -114,13 +113,6 @@ function VerifyOtpContent() {
 
     setLoading(true)
 
-    // Dev access bypass — code "264200" shows the demo role picker.
-    if (code === '264200' && isDemoAccessEnabled()) {
-      setLoading(false)
-      setDevRolePicker(true)
-      return
-    }
-
     try {
       const res = await fetch('/api/auth/otp/verify', {
         method: 'POST',
@@ -145,21 +137,6 @@ function VerifyOtpContent() {
       router.push(resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo))
     } catch {
       setError('Network error. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleDevSignIn(role: DemoRole) {
-    setLoading(true)
-    setError('')
-
-    try {
-      const redirectTo = await launchDemoSession(role, pendingOtp?.returnTo ?? null)
-      clearPendingOtp()
-      router.push(redirectTo)
-    } catch {
-      setError('Demo access is unavailable right now. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -191,7 +168,7 @@ function VerifyOtpContent() {
   return (
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="relative">
-      <BpLogo href="/" frameClassName="h-[35px] w-[140px]" />
+      <BpLogo href="/" />
 
       <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Verify your number
@@ -271,46 +248,6 @@ function VerifyOtpContent() {
           Back
         </button>
       </div>
-
-      {/* Dev role picker overlay */}
-      {devRolePicker && (
-        <div className="absolute inset-x-[-32px] sm:inset-x-[-48px] inset-y-[-32px] sm:inset-y-[-48px] bg-white rounded-[40px] flex flex-col items-center justify-center gap-8 p-10 animate-in fade-in zoom-in-95 duration-300 z-50">
-          <div className="text-center">
-            <p className="text-[10px] font-black text-bp-accent uppercase tracking-[0.2em] mb-3">Dev Access</p>
-            <h2 className="text-[28px] font-black text-bp-primary tracking-tighter">Sign in as…</h2>
-          </div>
-          <div className="w-full flex flex-col gap-4">
-            <button
-              type="button"
-              onClick={() => handleDevSignIn('patient')}
-              className="w-full py-5 text-[16px] font-black text-white bg-bp-accent hover:bg-bp-accent/90 rounded-2xl shadow-xl shadow-bp-accent/20 transition-all active:scale-95"
-            >
-              Patient
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDevSignIn('provider')}
-              className="w-full py-5 text-[16px] font-black text-white bg-bp-primary hover:bg-bp-primary/95 rounded-2xl shadow-xl shadow-bp-primary/10 transition-all active:scale-95"
-            >
-              Doctor / Provider
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDevSignIn('admin')}
-              className="w-full py-5 text-[16px] font-black text-white bg-slate-900 hover:bg-slate-950 rounded-2xl shadow-xl transition-all active:scale-95"
-            >
-              Operator / Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => setDevRolePicker(false)}
-              className="w-full py-3 text-[14px] text-bp-body/40 hover:text-bp-primary font-bold transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
       </div>
     </div>
   )

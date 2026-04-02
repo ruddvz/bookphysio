@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const ip = request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
+  const ip = request.ip ?? 'unknown'
   const sourceLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
   if (!sourceLimit.success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
 

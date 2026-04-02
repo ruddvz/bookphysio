@@ -36,6 +36,7 @@ export const otpSendSchema = z.object({
 export const otpVerifySchema = z.object({
   phone: phoneSchema,
   otp: z.string().length(6, 'OTP must be exactly 6 digits').regex(/^\d{6}$/),
+  full_name: z.string().min(2, 'Name must be at least 2 characters').max(100).optional(),
 })
 
 export const resetPasswordSchema = z.object({

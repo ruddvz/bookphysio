@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isDemoAccessEnabled } from '@/lib/demo/session'
 
 export async function GET(request: NextRequest) {
-  // Only allow in development or if demo access is explicitly enabled
-  if (process.env.NODE_ENV !== 'development' && !isDemoAccessEnabled()) {
-    return NextResponse.json({ error: 'Not allowed in production' }, { status: 403 })
+  // Only allow in local development — never in production or test
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
   const searchParams = request.nextUrl.searchParams
