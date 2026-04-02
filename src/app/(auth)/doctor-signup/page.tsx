@@ -16,7 +16,10 @@ interface Step1Data {
 }
 
 interface Step2Data {
-  icpNumber: string
+  registrationType: 'IAP' | 'STATE'
+  iapNumber: string
+  stateRegistrationNumber: string
+  stateName: string
   degree: 'BPT' | 'MPT' | 'PhD' | ''
   experienceYears: string
   specialties: string[]
@@ -87,13 +90,24 @@ const step1Schema = z.object({
 })
 
 const step2Schema = z.object({
-  icpNumber: z.string().min(5, 'Enter your ICP registration number'),
+  registrationType: z.enum(['IAP', 'STATE']),
+  iapNumber: z.string().optional(),
+  stateRegistrationNumber: z.string().optional(),
+  stateName: z.string().optional(),
   degree: z.enum(['BPT', 'MPT', 'PhD'], { error: 'Select a degree' }),
   experienceYears: z
     .string()
     .regex(/^\d+$/, 'Enter a number')
     .refine((v) => parseInt(v) >= 0 && parseInt(v) <= 50, 'Enter valid years (0–50)'),
   specialties: z.array(z.string()).min(1, 'Select at least one specialty'),
+}).refine(data => {
+  if (data.registrationType === 'IAP') {
+    return !!data.iapNumber && data.iapNumber.length >= 3
+  }
+  return !!data.stateRegistrationNumber && !!data.stateName
+}, {
+  message: 'Registration details are required',
+  path: ['registrationType']
 })
 
 const step3Schema = z.object({
@@ -404,7 +418,10 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors
       setErrors({
-        icpNumber: flat.icpNumber?.[0],
+        iapNumber: flat.iapNumber?.[0],
+        stateRegistrationNumber: flat.stateRegistrationNumber?.[0],
+        stateName: flat.stateName?.[0],
+        registrationType: flat.registrationType?.[0],
         degree: flat.degree?.[0],
         experienceYears: flat.experienceYears?.[0],
         specialties: flat.specialties?.[0],
@@ -431,15 +448,82 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         Your credentials and expertise
       </p>
 
-      <div style={{ marginBottom: '16px' }}>
-        <Label>ICP Registration Number</Label>
-        <FocusableInput
-          value={data.icpNumber}
-          onChange={(v) => onChange({ ...data, icpNumber: v })}
-          placeholder="ICP-MH-YYYY-XXXXX"
-        />
-        <FieldError msg={errors.icpNumber} />
+      {/* Registration Type Switcher */}
+      <div style={{ marginBottom: '24px' }}>
+        <Label>Registration Type</Label>
+        <div style={{ display: 'flex', bg: '#F5F5F5', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: '#F5F5F5' }}>
+          <button
+            onClick={() => onChange({ ...data, registrationType: 'IAP' })}
+            style={{
+              flex: 1,
+              padding: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: data.registrationType === 'IAP' ? '#FFFFFF' : 'transparent',
+              color: data.registrationType === 'IAP' ? '#00766C' : '#999999',
+              boxShadow: data.registrationType === 'IAP' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            IAP Number (Recommended)
+          </button>
+          <button
+            onClick={() => onChange({ ...data, registrationType: 'STATE' })}
+            style={{
+              flex: 1,
+              padding: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              backgroundColor: data.registrationType === 'STATE' ? '#FFFFFF' : 'transparent',
+              color: data.registrationType === 'STATE' ? '#00766C' : '#999999',
+              boxShadow: data.registrationType === 'STATE' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            State Council Number
+          </button>
+        </div>
+        <FieldError msg={errors.registrationType} />
       </div>
+
+      {data.registrationType === 'IAP' ? (
+        <div style={{ marginBottom: '16px' }}>
+          <Label>IAP Registration Number</Label>
+          <FocusableInput
+            value={data.iapNumber}
+            onChange={(v) => onChange({ ...data, iapNumber: v })}
+            placeholder="e.g. L-12345"
+          />
+          <FieldError msg={errors.iapNumber} />
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+          <div style={{ flex: 1 }}>
+            <Label>Council/State Name</Label>
+            <FocusableInput
+              value={data.stateName}
+              onChange={(v) => onChange({ ...data, stateName: v })}
+              placeholder="e.g. Maharashtra"
+            />
+            <FieldError msg={errors.stateName} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <Label>Registration Number</Label>
+            <FocusableInput
+              value={data.stateRegistrationNumber}
+              onChange={(v) => onChange({ ...data, stateRegistrationNumber: v })}
+              placeholder="e.g. 2024/02/123"
+            />
+            <FieldError msg={errors.stateRegistrationNumber} />
+          </div>
+        </div>
+      )}
 
       <div style={{ marginBottom: '16px' }}>
         <Label>Degree</Label>
@@ -955,7 +1039,13 @@ export default function DoctorSignupPage() {
 
   const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '' })
   const [step2, setStep2] = useState<Step2Data>({
-    icpNumber: '', degree: '', experienceYears: '', specialties: [],
+    registrationType: 'IAP',
+    iapNumber: '',
+    stateRegistrationNumber: '',
+    stateName: '',
+    degree: '',
+    experienceYears: '',
+    specialties: [],
   })
   const [step3, setStep3] = useState<Step3Data>({
     clinicName: '', address: '', city: '', pincode: '', visitTypes: [],

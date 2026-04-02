@@ -7,6 +7,7 @@ import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
 import { isDemoAccessEnabled, resolvePostAuthRedirect, type DemoRole } from '@/lib/demo/session'
 import { launchDemoSession } from '@/lib/demo/client'
+import { cn } from '@/lib/utils'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45

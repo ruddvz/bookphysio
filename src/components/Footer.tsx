@@ -37,17 +37,9 @@ export default function Footer() {
       <div className="bp-shell py-16 md:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="max-w-xl">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#0f7668] text-white shadow-[0_16px_28px_-20px_rgba(15,118,104,0.7)]">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-                  <path d="M6 11H9L10.5 7L13.5 15L15 11H18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-[20px] font-semibold tracking-[-0.03em]">BookPhysio</p>
-                <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">India-first physio booking</p>
-              </div>
-            </div>
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="BookPhysio" className="h-10 w-auto object-contain brightness-0 invert" />
+            </Link>
 
             <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/70">
               A sharper way to find physiotherapy care. Start with the search, compare verified providers, and book with clarity.

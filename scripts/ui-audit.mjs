@@ -6,10 +6,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const outputDir = path.join(__dirname, '..', 'playwright-report', 'ui-audit')
 
 const pages = [
-  { url: 'http://localhost:3000', name: 'homepage' },
-  { url: 'http://localhost:3000/search', name: 'search' },
-  { url: 'http://localhost:3000/login', name: 'login' },
-  { url: 'http://localhost:3000/signup', name: 'signup' },
+  { url: 'http://localhost:3001', name: 'homepage' },
+  { url: 'http://localhost:3001/search', name: 'search' },
+  { url: 'http://localhost:3001/login', name: 'login' },
+  { url: 'http://localhost:3001/signup', name: 'signup' },
 ]
 
 async function capturePages() {

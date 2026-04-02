@@ -28,6 +28,7 @@ export interface Doctor {
   visitTypes: string[]
   fee: number
   icpVerified: boolean
+  isLive?: boolean
   lat?: number | null
   lng?: number | null
 }
@@ -193,12 +194,23 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
               </div>
 
-              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3">
-                <div className="flex items-center gap-2 text-bp-body/40">
-                  <Clock3 size={14} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next slot</span>
+              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-bp-body/40">
+                    <Clock3 size={14} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next slot</span>
+                  </div>
+                  {doctor.isLive && (
+                    <div className="flex items-center gap-1">
+                      <div className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                      </div>
+                      <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Live</span>
+                    </div>
+                  )}
                 </div>
-                <p className="mt-2 text-[14px] font-bold text-bp-primary">{doctor.nextSlot}</p>
+                <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">{doctor.nextSlot}</p>
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">Fast-filling slot</p>
               </div>
             </div>

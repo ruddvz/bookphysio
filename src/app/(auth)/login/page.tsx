@@ -32,11 +32,13 @@ export default function LoginPage() {
   const [inputFocused, setInputFocused] = useState(false)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [signupHref, setSignupHref] = useState('/signup')
+  const [returnTo, setReturnTo] = useState<string | null>(null)
 
   useEffect(() => {
-    const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
-    if (returnTo) {
-      setSignupHref(`/signup?return=${encodeURIComponent(returnTo)}`)
+    const returnPath = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
+    if (returnPath) {
+      setSignupHref(`/signup?return=${encodeURIComponent(returnPath)}`)
+      setReturnTo(returnPath)
     }
   }, [])
 
@@ -51,8 +53,6 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const returnTo = sanitizeReturnPath(typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('return'))
-
       if (loginMode === 'phone') {
         const result = loginSchema.safeParse({ phone })
         if (!result.success) {

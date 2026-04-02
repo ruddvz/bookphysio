@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { Mail, ArrowLeft, KeyRound, RotateCcw, ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { createClient } from '@/lib/supabase/client'
+import { cn } from '@/lib/utils'
 
 const forgotSchema = z.object({
   identifier: z
@@ -83,22 +84,24 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-white rounded-[12px] p-10 max-w-[440px] w-full shadow-lg animate-in fade-in duration-500">
+    <div className="bg-white rounded-[40px] p-8 sm:p-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <BpLogo />
 
       {!submitted ? (
         <>
-          <h1 className="text-[24px] font-bold text-[#333333] mb-3">Forgot Password?</h1>
-          <p className="text-[14px] text-[#666666] mb-7 leading-relaxed">
-            Enter your mobile number or email address and we&apos;ll send you a link to reset your password.
+          <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+            Forgot Password?
+          </h1>
+          <p className="text-[15px] font-bold text-bp-body/40 mb-10">
+            Enter your mobile number or email and we&apos;ll help you recover access.
           </p>
 
           <form onSubmit={handleSubmit} noValidate>
-            <div className="mb-6">
-              <label htmlFor="identifier" className="block text-[13px] text-[#666666] mb-1.5 font-medium">
+            <div className="mb-10">
+              <label htmlFor="identifier" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
                 Mobile Number or Email
               </label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   id="identifier"
                   type="text"
@@ -107,32 +110,30 @@ export default function ForgotPasswordPage() {
                   onFocus={() => setFocused(true)}
                   onBlur={() => setFocused(false)}
                   placeholder="e.g. 98765 43210 or name@email.com"
-                  className={`w-full pl-10 pr-4 py-2.5 text-[15px] text-[#333333] bg-white rounded-[8px] outline-none border-[1.5px] transition-colors ${
-                    error
-                      ? 'border-[#DC2626]'
-                      : focused
-                      ? 'border-[#00766C]'
-                      : 'border-[#E5E5E5]'
-                  }`}
+                  className={cn(
+                    "w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all",
+                    error ? "border-red-200 bg-red-50/30" : focused ? "border-bp-accent bg-white shadow-xl shadow-bp-primary/5" : "border-transparent hover:border-bp-border"
+                  )}
                 />
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                <KeyRound className={cn("absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors", focused ? "text-bp-accent" : "text-bp-body/20")} />
               </div>
               {error && (
-                <p className="text-[12px] text-[#DC2626] mt-1">{error}</p>
+                <p className="text-[11px] font-bold text-red-500 mt-1.5 ml-1">{error}</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 py-3.5 text-[16px] font-semibold text-white rounded-full transition-colors outline-none cursor-pointer ${
-                loading ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52]'
-              }`}
+              className={cn(
+                "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]",
+                loading ? "bg-bp-primary/40 cursor-not-allowed" : "bg-bp-primary hover:bg-bp-accent hover:shadow-bp-accent/20"
+              )}
             >
               {loading ? 'Sending…' : (
                 <>
                   Reset Password
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </button>
@@ -140,28 +141,28 @@ export default function ForgotPasswordPage() {
         </>
       ) : (
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
-            <Mail className="w-8 h-8 text-[#00766C]" />
+          <div className="w-20 h-20 mx-auto rounded-[24px] bg-bp-accent/10 flex items-center justify-center mb-8 animate-bounce">
+            <Mail className="w-10 h-10 text-bp-accent" />
           </div>
-          <h2 className="text-[24px] font-bold text-[#333333] mb-3">
+          <h2 className="text-[28px] font-black text-bp-primary mb-2 mt-4 tracking-tighter leading-none">
             {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? 'Check your inbox' : 'OTP Sent'}
           </h2>
-          <p className="text-[14px] text-[#666666] mb-8 leading-relaxed">
+          <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
             {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? (
               <>
                 If an account exists for{' '}
-                <span className="font-semibold text-[#333333]">{identifier}</span>, we have sent instructions to reset your password.
+                <span className="text-bp-primary font-black">{identifier}</span>, we have sent instructions to reset your password.
               </>
             ) : (
               <>
                 We have sent a verification code to{' '}
-                <span className="font-semibold text-[#333333]">{identifier}</span> to help you access your account.
+                <span className="text-bp-primary font-black">{identifier}</span> to help you access your account.
               </>
             )}
           </p>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-2 text-[#00766C] font-semibold text-[14px] bg-transparent border-none cursor-pointer hover:text-[#005A52] transition-colors outline-none"
+            className="text-[14px] font-black text-bp-accent hover:text-bp-primary transition-all flex items-center gap-2 mx-auto focus:outline-none"
           >
             <RotateCcw className="w-4 h-4" />
             Try another email/number
@@ -169,10 +170,10 @@ export default function ForgotPasswordPage() {
         </div>
       )}
 
-      <div className="mt-8 text-center border-t border-[#F5F5F5] pt-6">
+      <div className="mt-10 text-center border-t border-bp-border pt-8">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-[#00766C] font-semibold no-underline text-[14px] hover:text-[#005A52] transition-colors"
+          className="inline-flex items-center gap-2 text-bp-body/40 font-bold text-[14px] hover:text-bp-accent transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Login

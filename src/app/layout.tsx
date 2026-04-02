@@ -23,9 +23,9 @@ export const metadata: Metadata = {
     "Find and book physiotherapists near you. In-clinic and home visits available across India.",
   keywords: "physiotherapist, physiotherapy, book physio, physio near me, India",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   },
   manifest: "/manifest.json",
   appleWebApp: {

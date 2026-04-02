@@ -16,7 +16,11 @@ export const signupProviderSchema = z.object({
   phone: phoneSchema,
   password: passwordSchema,
   title: z.enum(['Dr.', 'PT', 'BPT', 'MPT']),
-  icp_registration_no: z.string().min(1, 'ICP registration number is required'),
+  registration_type: z.enum(['IAP', 'STATE']).default('IAP'),
+  iap_number: z.string().optional(),
+  state_registration_number: z.string().optional(),
+  state_name: z.string().optional(),
+  icp_registration_no: z.string().min(1, 'Registration number is required'),
   specialty_ids: z.array(z.string().uuid()).min(1, 'Select at least one specialty'),
 })
 

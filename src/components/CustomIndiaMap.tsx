@@ -1,14 +1,25 @@
 'use client'
 
-import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
-import { geoMercator, geoPath } from 'd3-geo'
-import { MapPin, Activity, Zap, Home, Video, Users, ChevronRight } from 'lucide-react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { Activity, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-// ── Major Indian Cities with coordinates ──
-// These always render as "network hubs" on the map
-const MAJOR_CITIES: { name: string; lat: number; lng: number; tier: 1 | 2 | 3 }[] = [
+// Gleo imports (using specific file imports to avoid potential workspace resolution issues)
+// NOTE: Gleo is ESM source based, so we import .mjs files. 
+// If your environment has trouble with .mjs in node_modules, 
+// you may need to add 'gleo' to transpilePackages in next.config.ts
+import MercatorMap from 'gleo/src/MercatorMap.mjs'
+import MercatorTiles from 'gleo/src/loaders/MercatorTiles.mjs'
+import GeoJSON from 'gleo/src/loaders/GeoJSON.mjs'
+import LatLng from 'gleo/src/geometry/LatLng.mjs'
+import Circle from 'gleo/src/symbols/Circle.mjs'
+import TextLabel from 'gleo/src/symbols/TextLabel.mjs'
+import Stroke from 'gleo/src/symbols/Stroke.mjs'
+import Fill from 'gleo/src/symbols/Fill.mjs'
+
+// â”€â”€ Major Indian Cities with coordinates â”€â”€
+const MAJOR_CITIES = [
   { name: 'Mumbai', lat: 19.076, lng: 72.8777, tier: 1 },
   { name: 'Delhi', lat: 28.6139, lng: 77.209, tier: 1 },
   { name: 'Bangalore', lat: 12.9716, lng: 77.5946, tier: 1 },
@@ -21,12 +32,6 @@ const MAJOR_CITIES: { name: string; lat: number; lng: number; tier: 1 | 2 | 3 }[
   { name: 'Lucknow', lat: 26.8467, lng: 80.9462, tier: 2 },
   { name: 'Chandigarh', lat: 30.7333, lng: 76.7794, tier: 2 },
   { name: 'Kochi', lat: 9.9312, lng: 76.2673, tier: 2 },
-  { name: 'Goa', lat: 15.4909, lng: 73.8278, tier: 3 },
-  { name: 'Bhopal', lat: 23.2599, lng: 77.4126, tier: 3 },
-  { name: 'Indore', lat: 22.7196, lng: 75.8577, tier: 3 },
-  { name: 'Surat', lat: 21.1702, lng: 72.8311, tier: 3 },
-  { name: 'Visakhapatnam', lat: 17.6868, lng: 83.2185, tier: 3 },
-  { name: 'Coimbatore', lat: 11.0168, lng: 76.9558, tier: 3 },
 ]
 
 interface CustomIndiaMapProps {
@@ -44,334 +49,191 @@ export default function CustomIndiaMap({
   onCitySelect,
   onProviderSelect,
 }: CustomIndiaMapProps) {
-  const [geoData, setGeoData] = useState<GeoJSON.FeatureCollection | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const mapRef = useRef<any>(null)
   const [hoveredCity, setHoveredCity] = useState<string | null>(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
+  const symbolsRef = useRef<Map<string, any>>(new Map())
 
-  // ── Fetch GeoJSON ──
-  useEffect(() => {
-    fetch('/maps/india.geojson')
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
-      .then((data: GeoJSON.FeatureCollection) => {
-        setGeoData(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Failed to load India GeoJSON:', err)
-        setError(true)
-        setLoading(false)
-      })
-  }, [])
-
-  // ── Container dimensions ──
-  useEffect(() => {
-    if (!containerRef.current) return
-    const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        setDimensions({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height
-        })
-      }
-    })
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  // ── Auto-fit Mercator projection ──
-  const projection = useMemo(() => {
-    if (!geoData || dimensions.width < 10 || dimensions.height < 10) return null
-    const padding = 30
-    // fitExtent auto-calculates both scale and translate to center the map
-    return geoMercator().fitExtent(
-      [[padding, padding], [dimensions.width - padding, dimensions.height - padding]],
-      geoData
-    )
-  }, [geoData, dimensions])
-
-
-  const path = useMemo(() => {
-    if (!projection) return null
-    return geoPath().projection(projection)
-  }, [projection])
-
-  // ── Provider clusters by city ──
+  // Provider clusters by city (memoized)
   const providerClusters = useMemo(() => {
     const map = new Map<string, { lat: number; lng: number; count: number; ids: string[] }>()
     for (const doc of doctors) {
       if (doc.lat == null || doc.lng == null) continue
-      const key = doc.location || `${doc.lat.toFixed(1)},${doc.lng.toFixed(1)}`
+      const key = doc.location || `${doc.lat.toFixed(1)},${doc.lng.toFixed(1)}` 
       const existing = map.get(key)
       if (existing) {
         existing.count++
         existing.ids.push(doc.id)
       } else {
-        map.set(key, { lat: doc.lat, lng: doc.lng, count: 1, ids: [doc.id] })
+        map.set(key, { lat: doc.lat, lng: doc.lng, count: 1, ids: [doc.id] })   
       }
     }
     return map
   }, [doctors])
 
-  // ── Merge major cities with provider data ──
-  const cityMarkers = useMemo(() => {
-    return MAJOR_CITIES.map(city => {
-      // Check if any providers match this city
-      const cluster = providerClusters.get(city.name)
-      return {
-        ...city,
-        providerCount: cluster?.count ?? 0,
-        hasProviders: !!cluster,
-        providerIds: cluster?.ids ?? [],
-      }
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return
+
+    // Initialize Gleo Map
+    const map = new MercatorMap(containerRef.current, {
+      center: new LatLng([22.5, 80]), // Centered on India
+      scale: 30000, 
     })
-  }, [providerClusters])
+    mapRef.current = map
 
-  const projectPoint = useCallback((lng: number, lat: number): [number, number] => {
-    if (!projection) return [0, 0]
-    return projection([lng, lat]) as [number, number]
-  }, [projection])
+    // Base Map (OpenStreetMap)
+    new MercatorTiles("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Â© OpenStreetMap",
+        s: ["a", "b", "c"]
+    }).addTo(map)
 
-  // ── Loading state ──
-  if (loading) {
-    return (
-      <div className="w-full h-full bg-[#FAFBFC] flex flex-col items-center justify-center gap-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#00766C_1px,transparent_1.5px)] [background-size:24px_24px]" />
-        <div className="w-12 h-12 rounded-full border-[3px] border-gray-100 border-t-[#00766C] animate-spin" />
-        <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">Rendering Map</p>
-      </div>
-    )
-  }
+    // Load India Boundaries (GeoJSON)
+    new GeoJSON("/maps/india.geojson", {
+        pointSymbolizer: () => [], // Ignore points
+        linestringSymbolizer: () => [new Stroke(null, { strokeColour: "#00766C44", width: 1.5 })],
+        polygonSymbolizer: () => [
+            new Fill(null, { fillColour: "#00766C05" }),
+            new Stroke(null, { strokeColour: "#00766C22", width: 1 })
+        ]
+    }).addTo(map)
 
-  // ── Error state ──
-  if (error || !geoData) {
-    return (
-      <div className="w-full h-full bg-[#FAFBFC] flex flex-col items-center justify-center gap-4 p-12 text-center">
-        <MapPin size={40} className="text-gray-200" />
-        <p className="text-[14px] font-bold text-gray-400">Map data unavailable</p>
-      </div>
-    )
-  }
+    setMapLoaded(true)
+
+    return () => {
+      // Cleanup: Gleo usually handles this but we'll clear our reference
+      if (containerRef.current) {
+        containerRef.current.innerHTML = ''
+      }
+      mapRef.current = null
+    }
+  }, [])
+
+  // Update Symbols logic
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return
+    const map = mapRef.current
+
+    // Gleo does not yet have an easy 'map.clearSymbols()' so we must track them
+    symbolsRef.current.forEach(s => map.removeSymbol(s))
+    symbolsRef.current.clear()
+
+    // 1. Layer: Major Cities (Fixed Points of Interest)
+    MAJOR_CITIES.forEach(city => {
+      const cluster = providerClusters.get(city.name)
+      const hasProviders = !!cluster
+      const isHovered = hoveredCity === city.name || 
+                        (cluster?.ids.includes(hoveredDoctorId || ""))
+
+      const pinColor = hasProviders ? "#00766C" : "#E5E7EB"
+      const radius = isHovered ? 12 : 8
+
+      const circle = new Circle(new LatLng([city.lat, city.lng]), {
+        radius: radius,
+        fillColour: pinColor,
+        strokeColour: "#FFFFFF",
+        width: 2,
+        interactive: true
+      })
+      
+      circle.addTo(map)
+      symbolsRef.current.set(`city-${city.name}`, circle)
+
+      // Add Label
+      if (city.tier === 1 || isHovered) {
+        const text = new TextLabel(new LatLng([city.lat + 0.1, city.lng]), {
+          str: city.name,
+          font: "bold 12px Inter, system-ui",
+          colour: isHovered ? "#00766C" : "#6B7280",
+          haloColour: "white",
+          haloWidth: 2,
+          align: "center"
+        })
+        text.addTo(map)
+        symbolsRef.current.set(`label-${city.name}`, text)
+      }
+
+      // Interaction
+      circle.on('pointerenter', () => setHoveredCity(city.name))
+      circle.on('pointerleave', () => setHoveredCity(null))
+      circle.on('click', () => {
+        if (onCitySelect) onCitySelect(city.name)
+      })
+    })
+
+    // 2. Layer: Provider Clusters for non-major city entries
+    providerClusters.forEach((cluster, key) => {
+      if (MAJOR_CITIES.some(c => c.name === key)) return // Already handled
+
+      const isHovered = cluster.ids.includes(hoveredDoctorId || "")
+      const circle = new Circle(new LatLng([cluster.lat, cluster.lng]), {
+        radius: isHovered ? 10 : 6,
+        fillColour: "#00766C",
+        strokeColour: "#FFFFFF",
+        width: 1.5,
+        interactive: true
+      })
+      circle.addTo(map)
+      symbolsRef.current.set(`cluster-${key}`, circle)
+
+      circle.on('pointerenter', () => setHoveredCity(key))
+      circle.on('pointerleave', () => setHoveredCity(null))
+      circle.on('click', () => {
+        if (onCitySelect) onCitySelect(key)
+      })
+    })
+
+  }, [mapLoaded, doctors, hoveredDoctorId, hoveredCity, onCitySelect, providerClusters])
 
   return (
-    <div ref={containerRef} className="w-full h-full bg-[#FAFBFC] relative overflow-hidden select-none">
-      {/* Dot-grid background */}
-      <div className="absolute inset-0 opacity-[0.025] bg-[radial-gradient(#00766C_1px,transparent_1px)] [background-size:32px_32px]" />
-
-      <svg
-        width={dimensions.width}
-        height={dimensions.height}
-        className="relative z-10"
-        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-      >
-        {/* ── District polygons ── */}
-        {path && geoData.features.map((feature, i) => {
-          const stateName = (feature.properties as Record<string, string>)?.st_nm ?? ''
-          return (
-            <path
-              key={i}
-              d={path(feature) || ''}
-              fill="#FFFFFF"
-              stroke="#00766C"
-              strokeOpacity={0.12}
-              strokeWidth={0.8}
-              className="transition-colors duration-300 hover:fill-[#E8F5F3]"
-            >
-              <title>{stateName}</title>
-            </path>
-          )
-        })}
-
-        {/* ── City markers ── */}
-        {projection && cityMarkers.map((city) => {
-          const [cx, cy] = projectPoint(city.lng, city.lat)
-          if (cx === 0 && cy === 0) return null
-          const isActive = city.hasProviders
-          const isHovered = hoveredCity === city.name ||
-            city.providerIds.some(id => id === hoveredDoctorId)
-          const isSelected = selectedCity === city.name
-          const r = city.tier === 1 ? 6 : city.tier === 2 ? 4 : 3
-
-          return (
-            <g
-              key={city.name}
-              className="cursor-pointer"
-              onMouseEnter={() => setHoveredCity(city.name)}
-              onMouseLeave={() => setHoveredCity(null)}
-              onClick={() => {
-                if (onCitySelect && city.providerCount > 0) {
-                  onCitySelect(city.name)
-                }
-              }}
-            >
-              {/* Pulse ring for active hubs */}
-              {isActive && (
-                <circle cx={cx} cy={cy} r={r + 8}
-                  className="fill-[#00766C]/8 animate-ping"
-                  style={{ animationDuration: '3s' }}
-                />
-              )}
-
-              {/* Outer glow */}
-              <circle cx={cx} cy={cy} r={r + 3}
-                className={cn(
-                  "transition-all duration-300",
-                  isHovered ? "fill-[#00766C]/20" : "fill-transparent"
-                )}
-              />
-
-              {/* Pin dot */}
-              <circle cx={cx} cy={cy} r={r}
-                className={cn(
-                  "stroke-white stroke-[2px] transition-all duration-300",
-                  isActive
-                    ? "fill-[#00766C]"
-                    : "fill-gray-300",
-                  isHovered && "fill-[#005A52] scale-125"
-                )}
-                style={isHovered ? { transform: `translate(${cx}px, ${cy}px) scale(1.4)`, transformOrigin: '0 0', translate: `${-cx * 0.4}px ${-cy * 0.4}px` } : undefined}
-              />
-
-              {/* City label — always show for tier 1, on hover for others */}
-              {(city.tier === 1 || isHovered) && (
-                <text
-                  x={cx}
-                  y={cy - r - 6}
-                  textAnchor="middle"
-                  className={cn(
-                    "pointer-events-none select-none",
-                    isHovered
-                      ? "fill-[#00766C] text-[12px] font-black"
-                      : "fill-gray-400 text-[10px] font-bold"
-                  )}
-                  style={{ fontFamily: 'system-ui, sans-serif' }}
-                >
-                  {city.name}
-                </text>
-              )}
-
-              {/* Provider count badge */}
-              {isActive && city.providerCount > 0 && (
-                <g>
-                  <rect
-                    x={cx + r + 4}
-                    y={cy - 8}
-                    width={Math.max(24, city.providerCount.toString().length * 8 + 16)}
-                    height={16}
-                    rx={8}
-                    className="fill-[#00766C]"
-                  />
-                  <text
-                    x={cx + r + 4 + Math.max(24, city.providerCount.toString().length * 8 + 16) / 2}
-                    y={cy + 1}
-                    textAnchor="middle"
-                    className="fill-white text-[9px] font-bold"
-                    style={{ fontFamily: 'system-ui, sans-serif' }}
-                  >
-                    {city.providerCount}
-                  </text>
-                </g>
-              )}
-            </g>
-          )
-        })}
-
-        {/* ── Extra provider dots not matching a major city ── */}
-        {projection && Array.from(providerClusters.entries())
-          .filter(([key]) => !MAJOR_CITIES.some(c => c.name === key))
-          .map(([key, cluster]) => {
-            const [cx, cy] = projectPoint(cluster.lng, cluster.lat)
-            if (cx === 0 && cy === 0) return null
-            const isHovered = cluster.ids.some(id => id === hoveredDoctorId)
-            return (
-              <g key={key}>
-                <circle cx={cx} cy={cy} r={isHovered ? 7 : 4}
-                  className={cn(
-                    "stroke-white stroke-[1.5px] transition-all duration-300",
-                    isHovered ? "fill-[#005A52]" : "fill-[#00766C]/70"
-                  )}
-                />
-              </g>
-            )
-          })
-        }
-      </svg>
-
-      {/* ── Legend card ── */}
-      <div className="absolute top-6 left-6 p-5 bg-white/95 backdrop-blur-xl border border-gray-100/80 rounded-2xl shadow-lg z-20 w-[200px]">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 bg-[#00766C] rounded-xl flex items-center justify-center text-white">
-            <MapPin size={18} strokeWidth={2.5} />
+    <div className="w-full h-full bg-[#f8fafc] relative overflow-hidden flex flex-col items-center justify-center rounded-3xl group shadow-inner">
+      {/* Map Content Layer */}
+      <div 
+        ref={containerRef} 
+        className="absolute inset-0 z-0 bg-transparent active:cursor-grabbing"
+      />
+      
+      {/* Stats Panel */}
+      <div className="absolute top-6 left-6 p-4 bg-white/90 backdrop-blur-md border border-white/40 shadow-xl rounded-2xl z-10 w-[180px] pointer-events-none transition-all group-hover:bg-white">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-8 h-8 bg-emerald-700 rounded-lg flex items-center justify-center text-white ring-4 ring-emerald-50">
+            <Activity size={16} />
           </div>
           <div>
-            <p className="text-[13px] font-black text-[#333] leading-none tracking-tight">India Map</p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Live Network</p>
-            </div>
+            <p className="text-[12px] font-black text-slate-800 leading-none">BookPhysio</p>
+            <p className="text-[10px] text-emerald-600 font-bold mt-1 uppercase tracking-wider">Live Network</p>
           </div>
         </div>
-
-        <div className="h-px bg-gray-100 mb-3" />
-
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-2 border-t pt-3">
           <div>
-            <span className="text-[18px] font-black text-[#333] leading-none">{doctors.length || '—'}</span>
-            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Experts</p>
+            <span className="text-xl font-black text-slate-900 leading-none">{doctors.length}</span>
+            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5 whitespace-nowrap">Verified Pros</p>
           </div>
           <div>
-            <span className="text-[18px] font-black text-[#00766C] leading-none">
-              {providerClusters.size || MAJOR_CITIES.filter(c => c.tier <= 2).length}
-            </span>
-            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Cities</p>
-          </div>
-        </div>
-
-        <div className="h-px bg-gray-100 mb-3" />
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#00766C]" />
-            <span className="text-[10px] font-bold text-gray-500">Active Hub</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-            <span className="text-[10px] font-bold text-gray-500">Coming Soon</span>
+            <span className="text-xl font-black text-emerald-600 leading-none">{MAJOR_CITIES.length}</span>
+            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5 whitespace-nowrap">Tier 1 Cities</p>
           </div>
         </div>
       </div>
 
-      {/* ── Hovered city tooltip (bottom-right) ── */}
+      {/* Popover for interactive city/pin info */}
       {hoveredCity && (
-        <div className="absolute bottom-6 right-6 p-4 bg-white border border-gray-100 rounded-2xl shadow-xl z-20 min-w-[180px] animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <p className="text-[15px] font-black text-[#333] tracking-tight">{hoveredCity}</p>
-          {(() => {
-            const city = cityMarkers.find(c => c.name === hoveredCity)
-            if (!city) return null
-            return (
-              <>
-                <p className="text-[11px] font-bold text-gray-400 mt-1">
-                  {city.providerCount > 0
-                    ? `${city.providerCount} verified expert${city.providerCount > 1 ? 's' : ''}`
-                    : 'Network expanding soon'
-                  }
-                </p>
-                {city.providerCount > 0 && (
-                  <Link
-                    href={`/search?city=${city.name}`}
-                    className="mt-3 flex items-center gap-1.5 text-[11px] font-black text-[#00766C] hover:underline"
-                  >
-                    View experts <ChevronRight size={12} />
-                  </Link>
-                )}
-              </>
-            )
-          })()}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 p-3 bg-slate-900 text-white rounded-xl shadow-2xl z-20 animate-in fade-in slide-in-from-bottom-2 duration-300 min-w-[200px]">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-black truncate">{hoveredCity}</span>
+            <ChevronRight size={14} className="text-emerald-400" />
+          </div>
+          <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-widest">
+            {providerClusters.get(hoveredCity)?.count || 0} available experts
+          </p>
+        </div>
+      )}
+
+      {/* No JS Fallback / Hint */}
+      {!mapLoaded && (
+        <div className="text-center p-12 bg-white/10 backdrop-blur rounded-3xl animate-pulse">
+          <div className="w-12 h-12 bg-white/50 rounded-full mx-auto mb-4" />
+          <p className="text-sm text-slate-500 font-medium">Initializing Interactive Grid...</p>
         </div>
       )}
     </div>

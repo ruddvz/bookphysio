@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
 
   // Dev access bypass — skip MSG91 + Supabase OTP when DEV_ACCESS_CODE is set
   if (process.env.DEV_ACCESS_CODE) {
-    return NextResponse.json({ message: 'OTP sent' })
+    console.log('DEV_ACCESS_CODE active, skipping SMS send for:', phone)
+    return NextResponse.json({ message: 'OTP sent (Bypassed via Dev Code)' })
   }
 
   // Initialize Supabase OTP session (this won't send SMS if we handle delivery,
@@ -32,12 +33,16 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { error: supabaseError } = await supabase.auth.signInWithOtp({ phone })
   if (supabaseError) {
-    return NextResponse.json({ error: 'Failed to prepare OTP' }, { status: 500 })
+    console.error('Supabase OTP Error:', supabaseError)
+    return NextResponse.json({ error: 'Failed to prepare OTP: ' + supabaseError.message }, { status: 500 })
   }
 
   // Delivery via MSG91
   const result = await sendOtp(phone)
-  if (!result.success) return NextResponse.json({ error: 'Failed to send OTP' }, { status: 500 })
+  if (!result.success) {
+    console.error('MSG91 Error:', result)
+    return NextResponse.json({ error: 'Failed to send OTP via SMS provider' }, { status: 500 })
+  }
 
   return NextResponse.json({ message: 'OTP sent' })
 }

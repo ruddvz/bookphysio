@@ -36,12 +36,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-[100] w-full border-b border-[#ddd3c6] bg-[#fffaf4]/92 backdrop-blur-md">
       <div className="bp-shell flex h-20 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 text-[#18312d]" aria-label="BookPhysio home">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#18312d] text-white shadow-[0_14px_24px_-18px_rgba(24,49,45,0.8)]">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-              <path d="M6 11H9L10.5 7L13.5 15L15 11H18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <span className="text-[18px] font-semibold tracking-[-0.03em] md:text-[20px]">BookPhysio</span>
+          <img src="/logo.png" alt="BookPhysio" className="h-10 w-auto object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">

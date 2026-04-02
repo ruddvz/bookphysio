@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import useSWR from 'swr'
 import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
@@ -88,6 +89,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     lat: p.lat,
     lng: p.lng,
     distance: '',
+    isLive: !!p.next_available_slot, // Mark as live if there is a detected slot
     nextSlot: p.next_available_slot
       ? new Date(p.next_available_slot).toLocaleString('en-IN', {
           weekday: 'short',
@@ -139,11 +141,9 @@ export default function SearchContent() {
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
 
-  const fetchProviders = useCallback(async () => {
-    setLoading(true)
-    setError(false)
-
-    const apiParams: Record<string, string> = { page: '1', limit: '40' } // Larger limit for better clustering
+  // Memoize API endpoint to only trigger SWR on search change
+  const fetchUrl = useMemo(() => {
+    const apiParams: Record<string, string> = { page: '1', limit: '40' }
     if (city) apiParams.city = city
     else if (location) apiParams.city = location
     if (specialty) apiParams.specialty_id = specialty
@@ -151,27 +151,34 @@ export default function SearchContent() {
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
+    return `/api/providers?${new URLSearchParams(apiParams).toString()}`
+  }, [city, location, specialty, visit_type, max_fee, lat, lng])
 
-    const qs = new URLSearchParams(apiParams).toString()
+  // Polling with SWR (Phase 11.5)
+  const { data, error: swrError, isLoading: swrLoading } = useSWR<SearchResponse>(
+    fetchUrl,
+    (url: string) => fetch(url, { cache: 'no-store' }).then(res => res.json()),
+    { 
+      refreshInterval: 30000, // 30 seconds poll
+      revalidateOnFocus: true,
+      dedupingInterval: 5000
+    }
+  )
 
-    try {
-      const res = await fetch(`/api/providers?${qs}`, { cache: 'no-store' })
-      if (!res.ok) throw new Error('Failed to fetch')
-      const data = (await res.json()) as SearchResponse
+  useEffect(() => {
+    if (data?.providers) {
       setDoctors(data.providers.map(providerToDoctor))
       setTotal(data.total)
-    } catch {
+      setLoading(false)
+      setError(false)
+    }
+    if (swrError) {
       setDoctors([])
       setTotal(0)
       setError(true)
-    } finally {
       setLoading(false)
     }
-  }, [city, location, specialty, visit_type, max_fee, lat, lng])
-
-  useEffect(() => {
-    fetchProviders()
-  }, [fetchProviders])
+  }, [data, swrError])
 
   const displayLocation = (lat && lng) ? 'Near Me' : city ?? location ?? 'India'
 

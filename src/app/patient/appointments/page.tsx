@@ -100,43 +100,49 @@ function PatientAppointmentsContent() {
     <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
       
       {/* Header with Search/Filter */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="space-y-4">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase text-[#00766C] tracking-widest shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
+        <div className="space-y-6">
+           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-black uppercase text-bp-accent tracking-widest shadow-sm">
               <Activity size={12} strokeWidth={3} />
-              Appointment Management
+              Session Tracker
            </div>
-           <h1 className="text-[36px] md:text-[42px] font-black text-[#333333] leading-none tracking-tighter">
-             My Treatment <span className="text-[#00766C]">Sessions</span>
+           <h1 className="text-[42px] md:text-[52px] font-black text-bp-primary leading-none tracking-tighter">
+             My Treatment <span className="text-bp-accent italic">Journey</span>
            </h1>
-           <p className="text-[15px] font-bold text-gray-400">View and manage your clinical recovery appointments.</p>
+           <p className="text-[16px] md:text-[18px] font-medium text-bp-body/60 max-w-[500px] leading-relaxed">
+             Everything about your recovery in one place. View upcoming appointments and historical progress.
+           </p>
         </div>
-        <div className="flex items-center gap-3">
-           <button className="h-14 px-6 bg-white border border-gray-100 rounded-[20px] text-[14px] font-black text-[#333333] flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm">
-              <Filter size={18} />
-              Filter
+        <div className="flex items-center gap-4">
+           <button className="h-16 px-8 bg-white border border-bp-border rounded-[24px] text-[14px] font-black text-bp-primary flex items-center gap-3 hover:border-bp-accent/20 hover:text-bp-accent transition-all shadow-sm active:scale-95">
+              <Filter size={18} strokeWidth={2.5} />
+              Advanced Filters
            </button>
-           <Link href="/search" className="h-14 px-6 bg-[#00766C] text-white rounded-[20px] text-[14px] font-black flex items-center gap-3 hover:bg-[#005A52] transition-all shadow-lg active:scale-95 shadow-teal-900/10">
-              <Search size={18} strokeWidth={3} />
-              Book New
+           <Link href="/search" className="h-16 px-8 bg-bp-primary text-white rounded-[24px] text-[15px] font-black flex items-center gap-4 hover:bg-bp-primary/95 hover:scale-[1.03] transition-all shadow-xl shadow-bp-primary/10 active:scale-95">
+              <CalendarPlus size={20} strokeWidth={3} />
+              Book New Session
            </Link>
         </div>
       </div>
 
       {/* Modern Tabs */}
-      <div className="mb-10 p-1 bg-gray-50 rounded-[24px] inline-flex items-center gap-1 border border-gray-100">
+      <div className="mb-12 p-1.5 bg-bp-surface border border-bp-border rounded-[32px] inline-flex items-center gap-1.5 shadow-inner">
         {(['upcoming', 'past'] as const).map((t) => (
           <button
             key={t}
             onClick={() => switchTab(t)}
             className={cn(
-              "px-8 py-3.5 rounded-[20px] text-[14px] font-black tracking-tight transition-all duration-300 capitalize",
+              "px-10 py-4 rounded-[28px] text-[14px] font-black tracking-tight transition-all duration-500 capitalize relative overflow-hidden group",
               tab === t
-                ? "bg-white text-[#00766C] shadow-sm ring-1 ring-black/5"
-                : "text-gray-400 hover:text-gray-600"
+                ? "bg-white text-bp-accent shadow-xl shadow-bp-primary/5 ring-1 ring-bp-border/50"
+                : "text-bp-body/40 hover:text-bp-primary"
             )}
           >
-            {t} Sessions
+            {tab === t && <span className="absolute inset-0 bg-bp-accent/5 animate-pulse"></span>}
+            <span className="relative z-10 flex items-center gap-2">
+               {t === 'upcoming' ? <CalendarDays size={16} /> : <Clock size={16} />}
+               {t} Sessions
+            </span>
           </button>
         ))}
       </div>
@@ -190,38 +196,41 @@ function PatientAppointmentsContent() {
               >
                 <div className="flex flex-col md:flex-row md:items-center gap-6 flex-1 min-w-0">
                   {/* Provider Brand */}
-                  <div className="w-16 h-16 rounded-[24px] bg-teal-50 flex items-center justify-center text-[#00766C] text-[24px] font-black shadow-sm group-hover:scale-105 transition-transform">
-                     {providerDisplayName(appt).charAt(4) === ' ' ? providerDisplayName(appt).charAt(4+1) : providerDisplayName(appt).charAt(0)}
+                  <div className="w-20 h-20 rounded-[32px] bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[28px] font-black shadow-sm group-hover:scale-110 group-hover:bg-bp-accent/5 transition-all">
+                     {providerDisplayName(appt).charAt(0)}
                   </div>
                   
                   {/* Details */}
-                  <div className="flex-1 min-w-0 space-y-2">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-[19px] md:text-[22px] font-black text-[#333333] tracking-tight truncate leading-none pt-1">
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <h3 className="text-[20px] md:text-[24px] font-black text-bp-primary tracking-tighter truncate leading-none">
                         {providerDisplayName(appt)}
                       </h3>
-                      <div className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm", STATUS_COLORS[appt.status])}>
+                      <div className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm", STATUS_COLORS[appt.status])}>
                          {STATUS_LABELS[appt.status] || appt.status}
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3 text-[14px] font-bold text-gray-400 flex-wrap">
-                       <span className="text-[#333333]/70">{appt.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</span>
-                       <span className="text-gray-200">·</span>
-                       <div className="flex items-center gap-1.5 py-0.5 px-2 bg-gray-50 rounded-lg text-[12px] uppercase tracking-widest">
+                    <div className="flex items-center gap-3 text-[13px] font-bold text-bp-body/40 flex-wrap uppercase tracking-wider">
+                       <div className="flex items-center gap-1.5 px-3 py-1 bg-bp-surface rounded-full text-bp-body/60 border border-bp-border">
+                          <Activity size={12} strokeWidth={3} className="text-bp-accent" />
+                          {appt.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}
+                       </div>
+                       <span className="text-bp-border">|</span>
+                       <div className="flex items-center gap-1.5 py-1 px-3 bg-bp-surface rounded-full text-bp-body/60 border border-bp-border">
+                          <MapPin size={12} strokeWidth={3} className="text-emerald-500" />
                           {VISIT_TYPE_LABELS[appt.visit_type] || appt.visit_type}
                        </div>
                     </div>
 
-                    <div className="flex items-center gap-6 pt-3">
-                       <div className="flex items-center gap-2 text-[14px] font-black text-[#00766C]">
-                          <Clock size={16} />
+                    <div className="flex items-center gap-8 pt-4">
+                       <div className="flex items-center gap-2.5 text-[15px] font-black text-bp-accent bg-bp-accent/5 px-4 py-2 rounded-2xl border border-bp-accent/10">
+                          <Calendar size={16} strokeWidth={3} />
                           {appt.availabilities?.starts_at ? formatApptDate(appt.availabilities.starts_at) : 'Review Pending'}
                        </div>
-                       <div className="h-4 w-px bg-gray-100 hidden sm:block"></div>
-                       <div className="flex items-center gap-2 text-[14px] font-black text-[#333333]">
-                          <span className="text-gray-300 text-[12px] font-bold uppercase tracking-widest">Fee</span>
-                          ₹{appt.fee_inr}
+                       <div className="flex items-center gap-3">
+                          <span className="text-bp-body/20 text-[11px] font-black uppercase tracking-widest">Fee Paid</span>
+                          <span className="text-[18px] font-black text-bp-primary tracking-tighter">₹{appt.fee_inr}</span>
                        </div>
                     </div>
                   </div>
@@ -229,10 +238,10 @@ function PatientAppointmentsContent() {
 
                 <Link
                   href={`/patient/appointments/${appt.id}`}
-                  className="px-8 py-4 rounded-[20px] bg-white border border-gray-100 text-[#333333] text-[14px] font-black flex items-center justify-center gap-3 hover:bg-gray-50 transition-all shadow-sm active:scale-95 group/view md:w-auto w-full"
+                  className="h-16 px-10 rounded-[28px] bg-bp-primary text-white text-[15px] font-black flex items-center justify-center gap-3 hover:bg-bp-primary/95 transition-all shadow-xl shadow-bp-primary/10 active:scale-95 group/view md:w-auto w-full group-hover:scale-[1.03]"
                 >
-                  View Details
-                  <ChevronRight size={18} strokeWidth={3} className="text-[#00766C] group-hover:translate-x-1 transition-transform" />
+                  View Records
+                  <ArrowRight size={20} strokeWidth={3} className="group-hover/view:translate-x-1.5 transition-transform" />
                 </Link>
               </div>
             ))}

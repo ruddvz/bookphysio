@@ -124,13 +124,13 @@ function PreviewPanel() {
   return (
     <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
       <div className="bp-card relative overflow-hidden p-6 md:p-7">
-        <div className="absolute right-6 top-6 rounded-full border border-[#d7cec1] bg-[#fff7ec] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8d5a42]">
+        <div className="absolute right-6 top-6 rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-bp-body">
           Search preview
         </div>
         <div className="flex items-start justify-between gap-4 pr-20">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7d8a85]">What appears after search</p>
-            <h2 className="mt-2 text-[32px] font-semibold tracking-tight text-[#18312d]">Matches in Mumbai</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bp-body/60">What appears after search</p>
+            <h2 className="mt-2 text-[32px] font-semibold tracking-tight text-bp-primary">Matches in Mumbai</h2>
           </div>
         </div>
 
@@ -138,25 +138,25 @@ function PreviewPanel() {
           {previewRows.map((row) => (
             <div
               key={row.name}
-              className="flex items-center gap-4 rounded-[22px] border border-[#e2d8cb] bg-[#fffaf4] p-4 transition-all hover:border-[#0f7668]/20 hover:bg-white"
+              className="flex items-center gap-4 rounded-[22px] border border-bp-border bg-bp-surface/40 p-4 transition-all hover:border-bp-accent/20 hover:bg-white"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-[#dcefe9] text-[14px] font-semibold text-[#18312d]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-bp-surface text-[14px] font-semibold text-bp-primary">
                 {row.initials}
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[15px] font-semibold text-[#18312d]">{row.name}</p>
-                  <ShieldCheck size={14} className="text-[#0f7668]" />
+                  <p className="truncate text-[15px] font-semibold text-bp-primary">{row.name}</p>
+                  <ShieldCheck size={14} className="text-bp-accent" />
                 </div>
-                <p className="truncate text-[13px] text-[#66706b]">
+                <p className="truncate text-[13px] text-bp-body/80">
                   {row.specialty} · {row.location}
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="text-[14px] font-semibold text-[#18312d]">₹{row.fee}</p>
-                <p className="text-[12px] text-[#0f7668]">{row.slot}</p>
+                <p className="text-[14px] font-semibold text-bp-primary">₹{row.fee}</p>
+                <p className="text-[12px] text-bp-accent">{row.slot}</p>
               </div>
             </div>
           ))}
@@ -165,22 +165,22 @@ function PreviewPanel() {
 
       <div className="space-y-5">
         <div className="bp-card-soft p-6 md:p-7">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7d8a85]">Why this works</p>
-          <h3 className="mt-3 text-[28px] font-semibold tracking-[-0.04em] text-[#18312d]">The search does the heavy lifting.</h3>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bp-body/60">Why this works</p>
+          <h3 className="mt-3 text-[28px] font-semibold tracking-[-0.04em] text-bp-primary">The search does the heavy lifting.</h3>
           <div className="mt-6 space-y-4">
             {[
               { icon: ShieldCheck, title: 'Verified first', text: 'Registration and trust cues appear before the booking decision.' },
               { icon: Clock3, title: 'Slots visible', text: 'You can spot same-day availability without opening extra screens.' },
               { icon: Home, title: 'Visit mode in-line', text: 'Home visits and clinic visits are comparable from the same result list.' },
             ].map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-[22px] border border-[#e2d8cb] bg-[#fffaf4] p-4">
+              <div key={title} className="rounded-[22px] border border-bp-border bg-bp-surface/40 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[#18312d] text-white">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-bp-primary text-white">
                     <Icon size={18} />
                   </div>
                   <div>
-                    <p className="text-[15px] font-semibold text-[#18312d]">{title}</p>
-                    <p className="text-[13px] leading-6 text-[#66706b]">{text}</p>
+                    <p className="text-[15px] font-semibold text-bp-primary">{title}</p>
+                    <p className="text-[13px] leading-6 text-bp-body/80">{text}</p>
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@ function PreviewPanel() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-[#244540]/10 bg-[#18312d] p-6 text-white shadow-[0_28px_65px_-42px_rgba(24,49,45,0.5)]">
+        <div className="rounded-[28px] border border-bp-primary/10 bg-bp-primary p-6 text-white shadow-[0_28px_65px_-42px_rgba(11,59,50,0.5)]">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-white/10">
               <Stethoscope size={20} />

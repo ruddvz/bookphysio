@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  transpilePackages: ["react-map-gl"],
+  transpilePackages: ["gleo"],
   typescript: {
     ignoreBuildErrors: true,
   },
