@@ -158,6 +158,9 @@
   - DB: Aggregate queries via /api/admin/analytics (users, appointments, revenue, GMV)
   - UI: KPI cards + Revenue Pulse SVG chart wired to real API (React Query)
   - Monthly revenue data for last 7 months, completion rate, active patients, provider count
+- [ ] **11.4** Advanced Interactions (Mapbox Live, Auth Wiring)
+  - [x] Forgot Password stub replaced with real Supabase Reset/OTP logic
+  - [ ] Mapbox Live Integration (currently SVG stub)
 - [ ] **11.5** Mobile app (React Native / Expo) — P3
 - [ ] **11.6** Multi-language support — P3
 - [ ] **11.7** Insurance partnerships — P3

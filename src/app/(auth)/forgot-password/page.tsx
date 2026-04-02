@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { z } from 'zod'
 import { Mail, ArrowLeft, KeyRound, RotateCcw, ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { createClient } from '@/lib/supabase/client'
 
 const forgotSchema = z.object({
   identifier: z
@@ -22,6 +23,8 @@ export default function ForgotPasswordPage() {
   const [focused, setFocused] = useState(false)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  
+  const supabase = createClient()
 
   function handleChange(value: string) {
     setIdentifier(value)
@@ -37,9 +40,37 @@ export default function ForgotPasswordPage() {
     }
     setLoading(true)
     try {
-      // Stub — real reset API not yet wired
-      await new Promise((r) => setTimeout(r, 600))
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
+      
+      if (isEmail) {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(identifier, {
+          redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
+        })
+        
+        if (resetError) {
+          setError(resetError.message)
+          return
+        }
+      } else {
+        // Phone users: bookphysio uses OTP login, but if they explicitly need a password reset, 
+        // we'll treat it as a trigger for the OTP flow to verify identity.
+        const cleanPhone = identifier.startsWith('+91') ? identifier : `+91${identifier.replace(/\s/g, '')}`
+        const res = await fetch('/api/auth/otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanPhone }),
+        })
+        
+        if (!res.ok) {
+          const data = await res.json()
+          setError(data.message || 'Failed to send OTP')
+          return
+        }
+      }
+      
       setSubmitted(true)
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred')
     } finally {
       setLoading(false)
     }
@@ -112,11 +143,21 @@ export default function ForgotPasswordPage() {
           <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
             <Mail className="w-8 h-8 text-[#00766C]" />
           </div>
-          <h2 className="text-[24px] font-bold text-[#333333] mb-3">Check your inbox</h2>
+          <h2 className="text-[24px] font-bold text-[#333333] mb-3">
+            {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? 'Check your inbox' : 'OTP Sent'}
+          </h2>
           <p className="text-[14px] text-[#666666] mb-8 leading-relaxed">
-            If an account exists for{' '}
-            <span className="font-semibold text-[#333333]">{identifier}</span>,
-            we have sent instructions to reset your password.
+            {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? (
+              <>
+                If an account exists for{' '}
+                <span className="font-semibold text-[#333333]">{identifier}</span>, we have sent instructions to reset your password.
+              </>
+            ) : (
+              <>
+                We have sent a verification code to{' '}
+                <span className="font-semibold text-[#333333]">{identifier}</span> to help you access your account.
+              </>
+            )}
           </p>
           <button
             onClick={handleReset}
