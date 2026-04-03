@@ -1,8 +1,7 @@
-# GitHub Pages Static Export — Changes Log
+# GitHub Pages Static Export — Legacy Changes Log
 
-This file tracks every change made to support `output: 'export'` for GitHub Pages.
-Once the deployment is live and stable, revert these changes (marked REVERT) from
-source files and keep only the workflow + config changes (marked KEEP).
+This file tracks the legacy changes that were made to support `output: 'export'` for GitHub Pages.
+The production hosting target is now Vercel. Keep this file only as migration history while any GitHub Pages cleanup remains outstanding.
 
 ---
 

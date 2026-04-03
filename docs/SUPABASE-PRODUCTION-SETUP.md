@@ -131,19 +131,14 @@ After the first deploy, create an admin user:
 
 ## 9. DNS Configuration (bookphysio.in)
 
-See the deploy workflow — GitHub Pages requires:
+Use the Vercel project domain settings for the final values. The common setup is:
 
 | Record Type | Name | Value |
 |------------|------|-------|
-| `A` | `@` | `185.199.108.153` |
-| `A` | `@` | `185.199.109.153` |
-| `A` | `@` | `185.199.110.153` |
-| `A` | `@` | `185.199.111.153` |
-| `CNAME` | `www` | `ruddvz.github.io` |
+| `A` | `@` | Vercel-provided apex record |
+| `CNAME` | `www` | `cname.vercel-dns.com` |
 
-> **Note**: GitHub Pages serves static exports only. For full SSR with API routes
-> and middleware, a Node.js hosting platform (Railway, Render, Fly.io) is needed.
-> The current setup uses static export with client-side API calls.
+> **Note**: This app should run on Vercel, not GitHub Pages. Vercel supports the Next.js API routes, middleware, and dynamic features used throughout the product.
 
 ## Checklist
 
@@ -152,7 +147,8 @@ See the deploy workflow — GitHub Pages requires:
 - [ ] Seed data inserted
 - [ ] Phone auth enabled
 - [ ] Storage buckets created with policies
-- [ ] GitHub secrets configured
-- [ ] DNS records pointed to GitHub Pages
+- [ ] Vercel project connected to GitHub repo
+- [ ] Vercel environment variables configured
+- [ ] DNS records pointed to Vercel
 - [ ] Admin user created
-- [ ] SSL certificate provisioned (automatic via GitHub Pages)
+- [ ] SSL certificate provisioned (automatic via Vercel)

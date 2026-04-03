@@ -128,8 +128,8 @@
 
 ## Phase 7: Domain & Hosting
 
-- [ ] **Hosting decision**: Vercel (recommended — supports API routes, ISR, image optimization) or GitHub Pages (static only — API routes won't work)
-- [ ] **DNS**: Point `bookphysio.in` A/CNAME to hosting provider
+- [ ] **Hosting target**: Vercel production project connected to this GitHub repo
+- [ ] **DNS**: Point `bookphysio.in` and `www.bookphysio.in` to Vercel-provided records
 - [ ] **SSL**: Verify HTTPS enforced on all routes
 - [ ] **Subdomain**: Configure `ai.bookphysio.in` if using Motio AI subdomain routing
 - [ ] **www redirect**: Ensure `www.bookphysio.in` redirects to `bookphysio.in`
@@ -166,16 +166,18 @@
 
 ## CRITICAL HOSTING DECISION
 
-**GitHub Pages (current)** cannot run Next.js API routes. Your app has 25+ API routes that handle:
+**GitHub Pages is deprecated for this app** because it cannot run Next.js API routes. Your app has 25+ API routes that handle:
 - Authentication (OTP send/verify)
 - Payment processing (Razorpay webhook)
 - Appointment CRUD
 - File uploads
 - Admin operations
 
-**You MUST deploy to a platform that supports serverless functions:**
-- **Vercel** (recommended — built for Next.js)
+**Production target:**
+- **Vercel** (required for Next.js server routes, ISR, middleware, and image optimization)
+
+**Fallback alternatives if Vercel is not available:**
 - **Railway** / **Render** / **Fly.io** (alternatives)
 - **AWS Amplify** or **Cloudflare Pages** (with Workers)
 
-GitHub Pages will only serve static HTML. All API-dependent features (auth, booking, payments) will break.
+GitHub Pages will only serve static HTML. All API-dependent features (auth, booking, payments) will break, and the repo's `pages-build-deployment` workflow should be retired after the Vercel cutover is complete.

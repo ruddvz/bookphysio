@@ -12,6 +12,7 @@ out/
 .DS_Store
 coverage/
 .next/
+.vercel/
 .turbo/
 playwright-report/
 test-results/

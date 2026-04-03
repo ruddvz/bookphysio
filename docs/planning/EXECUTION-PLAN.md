@@ -4,7 +4,7 @@
 > `[ ]` = pending, `[x]` = done, `[~]` = built but needs polish/wiring
 >
 > **STATUS AS OF 2026-04-01: Phase 10 COMPLETE ✅**
-> All development phases 0-10 are done. App is live on GitHub Pages (bookphysio.in).
+> All development phases 0-10 are done. Production hosting target is now Vercel; stale GitHub Pages references below are legacy until the cutover is fully verified.
 > Phase 11+ are post-launch features.
 
 ---
@@ -139,7 +139,7 @@
 - [x] Full test suite passes (Vitest + Playwright) — fix any failures found
 - [x] GitHub Actions CI/CD pipeline — run suite on every PR and push to main
 - [x] Supabase production environment setup (guide: docs/SUPABASE-PRODUCTION-SETUP.md)
-- [x] Domain + deployment (GitHub Pages → bookphysio.in, CNAME + deploy workflow updated)
+- [~] Domain + deployment (Vercel → bookphysio.in, GitHub Pages retired after cutover verification)
 - [x] Smoke test all flows end-to-end
 
 ---
