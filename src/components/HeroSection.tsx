@@ -126,7 +126,7 @@ export default function HeroSection() {
           <div className="mx-auto mb-8 inline-flex">
             <div className="rounded-full border border-bp-border bg-white/60 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent backdrop-blur-sm">
               <Sparkles size={14} className="mr-2 inline-block" />
-              India's premium physiotherapy network
+              India&apos;s premium physiotherapy network
             </div>
           </div>
 

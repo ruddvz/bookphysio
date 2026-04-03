@@ -31,6 +31,13 @@ function buildChartPath(data: { revenue: number }[], width = 1000, height = 350,
   }
 }
 
+const GEO_GRID_CELL_OPACITIES = [
+  0.14, 0.22, 0.31, 0.18,
+  0.27, 0.38, 0.24, 0.45,
+  0.19, 0.34, 0.28, 0.41,
+  0.16, 0.29, 0.36, 0.21,
+]
+
 export default function AdminAnalytics() {
   const { data, isLoading } = useQuery<AnalyticsData>({
     queryKey: ['admin-analytics'],
@@ -308,7 +315,7 @@ export default function AdminAnalytics() {
             </h2>
             <div className="space-y-8 max-w-lg mb-12">
               <p className="text-[18px] text-bp-body/40 font-medium leading-relaxed">
-                Platform load distribution across India's urban corridors. Visualizing the surge in home-visit demand within Tier-1 cities.
+                Platform load distribution across India&apos;s urban corridors. Visualizing the surge in home-visit demand within Tier-1 cities.
               </p>
               <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-1 border-l-2 border-bp-accent pl-6 font-black uppercase">
@@ -334,7 +341,7 @@ export default function AdminAnalytics() {
                    <div 
                     key={i} 
                     className="bg-white/5 rounded-xl border border-white/10 hover:bg-emerald-500/20 transition-all cursor-crosshair"
-                    style={{ opacity: 0.1 + Math.random() * 0.5 }} 
+                    style={{ opacity: GEO_GRID_CELL_OPACITIES[i % GEO_GRID_CELL_OPACITIES.length] }} 
                    />
                  ))}
                </div>

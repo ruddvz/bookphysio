@@ -58,7 +58,7 @@ export default function OGImage() {
           }}
         >
           <span style={{ color: '#12B3A0', fontSize: 13, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-            India's Physio-Only Platform
+            India&apos;s Physio-Only Platform
           </span>
         </div>
 

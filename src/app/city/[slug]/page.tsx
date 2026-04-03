@@ -138,7 +138,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 </div>
                 <h3 className="text-[18px] font-semibold text-bp-primary mb-2">No providers currently in {city.label}</h3>
                 <p className="text-[15px] text-bp-body max-w-[400px] mx-auto">
-                   We're currently onboarding specialists in {city.label}. Please try a nearby city or browse our other physiotherapy specialists.
+                   We&apos;re currently onboarding specialists in {city.label}. Please try a nearby city or browse our other physiotherapy specialists.
                 </p>
                 <div className="mt-8">
                    <button className="px-6 py-2.5 bg-bp-accent text-white font-semibold rounded-[24px] hover:bg-bp-primary transition-colors">

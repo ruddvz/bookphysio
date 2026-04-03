@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { Heart, Search, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -71,22 +71,57 @@ export default function PatientDashboardHome() {
       }
    }
 
-  const fetchAppointments = useCallback(() => {
+   async function fetchAppointments() {
     setLoading(true)
     setError(false)
-    fetch('/api/appointments')
-      .then((r) => r.json())
-      .then((data: { appointments?: Appointment[] }) => setAppointments(data.appointments ?? []))
-      .catch((err) => {
-        console.error('Fetch error:', err)
-        setError(true)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+      try {
+         const response = await fetch('/api/appointments')
+         if (!response.ok) {
+            throw new Error('Failed to fetch appointments')
+         }
+         const data: { appointments?: Appointment[] } = await response.json()
+         setAppointments(data.appointments ?? [])
+      } catch (err) {
+         console.error('Fetch error:', err)
+         setError(true)
+      } finally {
+         setLoading(false)
+      }
+   }
 
   useEffect(() => {
-    fetchAppointments()
-  }, [fetchAppointments])
+      let isMounted = true
+
+      async function loadInitialAppointments() {
+         try {
+            const response = await fetch('/api/appointments')
+            if (!response.ok) {
+               throw new Error('Failed to fetch appointments')
+            }
+            const data: { appointments?: Appointment[] } = await response.json()
+            if (!isMounted) {
+               return
+            }
+            setAppointments(data.appointments ?? [])
+         } catch (err) {
+            console.error('Fetch error:', err)
+            if (!isMounted) {
+               return
+            }
+            setError(true)
+         } finally {
+            if (isMounted) {
+               setLoading(false)
+            }
+         }
+      }
+
+      void loadInitialAppointments()
+
+      return () => {
+         isMounted = false
+      }
+   }, [])
 
   const now = new Date()
   const upcoming = appointments.filter((a) => {
@@ -130,6 +165,44 @@ export default function PatientDashboardHome() {
    ]
 
   if (loading) return <DashboardSkeleton />
+
+   if (error) {
+      return (
+         <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">
+            <EmptyState
+               title="Recovery feed unavailable"
+               description="We couldn&apos;t load your appointment activity right now. Please try again in a moment."
+               icon={CircleAlert}
+               className="border border-bp-border bg-white rounded-[40px] shadow-sm"
+               action={
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                     <button
+                        type="button"
+                        onClick={() => {
+                           void fetchAppointments()
+                        }}
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-accent px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
+                     >
+                        Retry Sync
+                     </button>
+                     <Link
+                        href="/search"
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-border bg-bp-surface px-8 py-4 text-[14px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent active:scale-[0.98]"
+                     >
+                        Book New Therapy
+                     </Link>
+                     <Link
+                        href="/patient/motio"
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
+                     >
+                        Ask BookPhysio AI
+                     </Link>
+                  </div>
+               }
+            />
+         </div>
+      )
+   }
 
   return (
     <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">

@@ -165,7 +165,7 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
                 </div>
                 <h3 className="text-[18px] font-semibold text-bp-primary mb-2">No providers found</h3>
                 <p className="text-[15px] text-bp-body max-w-[400px] mx-auto">
-                  We couldn't find any {specialty.label.toLowerCase()} matching your criteria. Try adjusting your filters or searching in a different area.
+                  We couldn&apos;t find any {specialty.label.toLowerCase()} matching your criteria. Try adjusting your filters or searching in a different area.
                 </p>
               </div>
             )}

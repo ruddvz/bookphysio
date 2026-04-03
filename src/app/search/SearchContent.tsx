@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import Link from 'next/link'
@@ -120,10 +120,6 @@ const POPULAR_CITIES = [
 export default function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [doctors, setDoctors] = useState<Doctor[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
 
   const location = searchParams.get('location')
@@ -171,20 +167,10 @@ export default function SearchContent() {
     }
   )
 
-  useEffect(() => {
-    if (data?.providers) {
-      setDoctors(data.providers.map(providerToDoctor))
-      setTotal(data.total)
-      setLoading(false)
-      setError(false)
-    }
-    if (swrError) {
-      setDoctors([])
-      setTotal(0)
-      setError(true)
-      setLoading(false)
-    }
-  }, [data, swrError])
+  const doctors = useMemo(() => data?.providers.map(providerToDoctor) ?? [], [data])
+  const total = data?.total ?? 0
+  const loading = swrLoading && !data
+  const error = Boolean(swrError)
 
   const displayLocation = (lat && lng) ? 'Near Me' : city ?? location ?? 'India'
 
@@ -368,6 +354,24 @@ export default function SearchContent() {
             </div>
           ) : (
             <div className="flex flex-col gap-8 pb-32 animate-in fade-in duration-1000">
+              {error && (
+                <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
+                    <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
+                      Showing the latest available provider results while we retry the live search.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      void mutate()
+                    }}
+                    className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
+                  >
+                    Retry search
+                  </button>
+                </div>
+              )}
               <div className="flex items-center justify-between px-2 mb-2">
                 <div className="flex items-center gap-3">
                    <div className="p-1.5 bg-bp-accent/10 rounded-lg text-bp-accent"><Zap size={16} strokeWidth={3} /></div>

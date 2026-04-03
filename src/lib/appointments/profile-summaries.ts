@@ -13,8 +13,19 @@ export interface AppointmentProviderSummary {
   specialties: Array<{ name: string }>
 }
 
-interface SupabaseAdminLike {
-  from: (table: string) => any
+interface SupabaseListResult {
+  data: unknown
+  error: unknown
+}
+
+interface SupabaseTableSelectBuilder {
+  select: (columns: string) => {
+    in: (column: string, values: string[]) => PromiseLike<SupabaseListResult>
+  }
+}
+
+export interface SummaryLookupClient {
+  from: (table: string) => SupabaseTableSelectBuilder
 }
 
 interface PatientSummaryRow {
@@ -64,7 +75,7 @@ function normalizeProviderUser(
 }
 
 export async function fetchPatientSummaryMap(
-  supabaseAdmin: SupabaseAdminLike,
+  supabaseAdmin: SummaryLookupClient,
   patientIds: string[],
 ): Promise<Map<string, AppointmentPatientSummary>> {
   const ids = uniqueIds(patientIds)
@@ -96,7 +107,7 @@ export async function fetchPatientSummaryMap(
 }
 
 export async function fetchProviderSummaryMap(
-  supabaseAdmin: SupabaseAdminLike,
+  supabaseAdmin: SummaryLookupClient,
   providerIds: string[],
 ): Promise<Map<string, AppointmentProviderSummary>> {
   const ids = uniqueIds(providerIds)

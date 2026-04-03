@@ -1,7 +1,21 @@
 type MessagingParticipantRole = 'patient' | 'provider'
 
+interface MaybeSingleResult {
+  data: { id: string } | null
+  error: { code?: string } | null
+}
+
+interface AppointmentRelationshipQuery {
+  eq: (column: string, value: string) => AppointmentRelationshipQuery
+  limit: (value: number) => AppointmentRelationshipQuery
+  in: (column: string, values: string[]) => AppointmentRelationshipQuery
+  maybeSingle: () => PromiseLike<MaybeSingleResult>
+}
+
 interface SupabaseAdminLike {
-  from: (table: string) => any
+  from: (table: string) => {
+    select: (columns: string) => AppointmentRelationshipQuery
+  }
 }
 
 export async function hasMessagingCareRelationship(

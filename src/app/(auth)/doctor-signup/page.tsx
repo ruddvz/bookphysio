@@ -537,7 +537,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
                 value={deg}
                 checked={data.degree === deg}
                 onChange={() => onChange({ ...data, degree: deg })}
-                style={{ accentcolor: 'var(--color-bp-accent)' }}
+                style={{ accentColor: 'var(--color-bp-accent)' }}
               />
               {deg}
             </label>
@@ -567,7 +567,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
                 type="checkbox"
                 checked={data.specialties.includes(s)}
                 onChange={() => toggleSpecialty(s)}
-                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />
               {s}
             </label>
@@ -701,7 +701,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
                 type="checkbox"
                 checked={data.visitTypes.includes(vt)}
                 onChange={() => toggleVisitType(vt)}
-                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />
               {label}
             </label>
@@ -823,7 +823,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                 value={d}
                 checked={data.slotDuration === d}
                 onChange={() => onChange({ ...data, slotDuration: d })}
-                style={{ accentcolor: 'var(--color-bp-accent)' }}
+                style={{ accentColor: 'var(--color-bp-accent)' }}
               />
               {d} min
             </label>
@@ -853,7 +853,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                 aria-label={`Enable ${day}`}
                 checked={av.enabled}
                 onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
-                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />,
               <select
                 key={`${day}-start`}

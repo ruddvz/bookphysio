@@ -224,7 +224,7 @@ export default function PatientAppointmentDetail() {
       {providerNotes && (
         <div className={cn(SECTION_CARD_CLS, "bg-bp-surface border-none")}>
           <h3 className="text-[16px] font-black text-bp-primary tracking-tight mb-3">Physiotherapist Notes</h3>
-          <p className="text-[15px] text-[#444444] leading-relaxed italic">"{providerNotes}"</p>
+          <p className="text-[15px] text-[#444444] leading-relaxed italic">&ldquo;{providerNotes}&rdquo;</p>
         </div>
       )}
 

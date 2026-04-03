@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cancelAppointmentSchema, updateNotesSchema } from '@/lib/validations/booking'
 import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/booking/policy'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
+import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { getActiveBookingAppointmentHoldKey, redis } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
@@ -105,11 +106,13 @@ export async function GET(
 
   if (error || !data) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
 
+  const appointmentSummaryClient = supabaseAdmin as unknown as SummaryLookupClient
+
   const patientProfile = user.id === data.provider_id
-    ? (await fetchPatientSummaryMap(supabaseAdmin, [data.patient_id as string])).get(data.patient_id as string) ?? null
+    ? (await fetchPatientSummaryMap(appointmentSummaryClient, [data.patient_id as string])).get(data.patient_id as string) ?? null
     : null
   const providerSummary = user.id === data.patient_id
-    ? (await fetchProviderSummaryMap(supabaseAdmin, [data.provider_id as string])).get(data.provider_id as string) ?? null
+    ? (await fetchProviderSummaryMap(appointmentSummaryClient, [data.provider_id as string])).get(data.provider_id as string) ?? null
     : null
 
   return jsonNoStore(

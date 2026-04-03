@@ -105,7 +105,7 @@ export default function TopSpecialties() {
             </div>
             <h2 className="bp-title">Start from the kind of recovery you need.</h2>
             <p className="bp-copy mt-4 max-w-xl">
-              Choose your care category and we'll surface verified physiotherapists in your city.
+              Choose your care category and we&apos;ll surface verified physiotherapists in your city.
             </p>
           </div>
 

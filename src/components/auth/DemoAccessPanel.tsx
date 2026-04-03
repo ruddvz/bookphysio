@@ -34,13 +34,14 @@ const demoOptions: Array<{
 ]
 
 export function DemoAccessPanel() {
-  if (!isDemoAccessEnabled()) {
-    return null
-  }
-
+  const demoAccessEnabled = isDemoAccessEnabled()
   const router = useRouter()
   const [loadingRole, setLoadingRole] = useState<DemoRole | null>(null)
   const [error, setError] = useState('')
+
+  if (!demoAccessEnabled) {
+    return null
+  }
 
   async function handleDemoAccess(role: DemoRole) {
     setLoadingRole(role)

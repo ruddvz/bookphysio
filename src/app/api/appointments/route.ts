@@ -14,6 +14,7 @@ import {
 import { buildAppointmentNotes, getVisitTypeConsultationFee } from '@/lib/booking/policy'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
+import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
 
 function jsonNoStore(body: unknown, init?: ResponseInit) {
   const response = NextResponse.json(body, init)
@@ -291,9 +292,11 @@ export async function GET(request: NextRequest) {
     return jsonNoStore({ error: 'Failed to fetch appointments' }, { status: 500 })
   }
 
+  const appointmentSummaryClient = supabaseAdmin as unknown as SummaryLookupClient
+
   if (role === 'provider') {
     const patientSummaryById = await fetchPatientSummaryMap(
-      supabaseAdmin,
+      appointmentSummaryClient,
       (data ?? []).map((appointment) => appointment.patient_id as string),
     )
 
@@ -315,7 +318,7 @@ export async function GET(request: NextRequest) {
   }
 
   const providerSummaryById = await fetchProviderSummaryMap(
-    supabaseAdmin,
+    appointmentSummaryClient,
     (data ?? []).map((appointment) => appointment.provider_id as string),
   )
 

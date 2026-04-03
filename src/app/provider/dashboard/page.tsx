@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { CalendarDays, Users, Clock, CircleAlert, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -54,29 +54,97 @@ export default function ProviderDashboardHome() {
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  const fetchAppointments = useCallback(() => {
+   async function fetchAppointments() {
     setLoading(true)
     setError(false)
-    fetch('/api/appointments')
-         .then((r) => {
-            if (!r.ok) throw new Error('Failed to fetch appointments')
-            return r.json()
-         })
-      .then((data: { appointments?: ProviderAppointment[] }) =>
-        setAppointments(data.appointments ?? [])
-      )
-      .catch((err) => {
-        console.error('Fetch error:', err)
-        setError(true)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+      try {
+         const response = await fetch('/api/appointments')
+         if (!response.ok) {
+            throw new Error('Failed to fetch appointments')
+         }
+         const data: { appointments?: ProviderAppointment[] } = await response.json()
+         setAppointments(data.appointments ?? [])
+      } catch (err) {
+         console.error('Fetch error:', err)
+         setError(true)
+      } finally {
+         setLoading(false)
+      }
+   }
 
   useEffect(() => {
-    fetchAppointments()
-  }, [fetchAppointments])
+      let isMounted = true
+
+      async function loadInitialAppointments() {
+         try {
+            const response = await fetch('/api/appointments')
+            if (!response.ok) {
+               throw new Error('Failed to fetch appointments')
+            }
+            const data: { appointments?: ProviderAppointment[] } = await response.json()
+            if (!isMounted) {
+               return
+            }
+            setAppointments(data.appointments ?? [])
+         } catch (err) {
+            console.error('Fetch error:', err)
+            if (!isMounted) {
+               return
+            }
+            setError(true)
+         } finally {
+            if (isMounted) {
+               setLoading(false)
+            }
+         }
+      }
+
+      void loadInitialAppointments()
+
+      return () => {
+         isMounted = false
+      }
+   }, [])
 
   if (loading) return <DashboardSkeleton />
+
+   if (error) {
+      return (
+         <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
+            <EmptyState
+               title="Clinical sync unavailable"
+               description="We couldn&apos;t load your provider schedule right now. Please retry in a moment."
+               icon={CircleAlert}
+               className="border border-bp-border bg-white rounded-[40px] shadow-sm"
+               action={
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                     <button
+                        type="button"
+                        onClick={() => {
+                           void fetchAppointments()
+                        }}
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-primary px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98]"
+                     >
+                        Retry Sync
+                     </button>
+                     <Link
+                        href="/provider/calendar"
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-border bg-bp-surface px-8 py-4 text-[14px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent active:scale-[0.98]"
+                     >
+                        Open Calendar
+                     </Link>
+                     <Link
+                        href="/provider/ai-assistant"
+                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
+                     >
+                        Ask BookPhysio AI
+                     </Link>
+                  </div>
+               }
+            />
+         </div>
+      )
+   }
 
   const todayAppts = filterToday(appointments)
   const weekAppts = filterThisWeek(appointments)
@@ -120,16 +188,6 @@ export default function ProviderDashboardHome() {
            </Link>
         </div>
       </div>
-
-      {error && (
-        <div className="mb-10 p-5 bg-red-50 border border-red-100 rounded-[28px] flex items-center justify-between gap-4 animate-in slide-in-from-top-4">
-          <div className="flex items-center gap-3 text-red-600 text-[14px] font-bold">
-            <CircleAlert size={20} strokeWidth={3} />
-            Clinical sync unavailable right now
-          </div>
-          <button onClick={fetchAppointments} className="px-5 py-2 bg-white text-red-600 rounded-full text-[12px] font-bold uppercase tracking-widest shadow-sm">Retry</button>
-        </div>
-      )}
 
       {/* ── Core Insight Hub (Stats) ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">

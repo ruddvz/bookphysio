@@ -27,6 +27,42 @@ const SPECIALTY_ALIASES: Record<string, string> = {
   'Home Visit Physio': 'home-visit',
 }
 
+interface SearchProviderRpcRow {
+  id: string
+  slug: string
+  full_name: string
+  title: ProviderCard['title']
+  avatar_url: string | null
+  rating_avg: number | null
+  rating_count: number | null
+  experience_years: number | null
+  consultation_fee_inr: number | null
+  visit_types: ProviderCard['visit_types'] | null
+  city: string | null
+  lat: number | null
+  lng: number | null
+  distance_km: number | null
+  total_count: number | null
+}
+
+interface ProviderAvailabilityRow {
+  starts_at: string
+  is_booked?: boolean | null
+  is_blocked?: boolean | null
+}
+
+interface ProviderInsuranceJoinRow {
+  insurances: ProviderCard['insurances'][number] | ProviderCard['insurances'] | null
+}
+
+interface ProviderDetailRow {
+  id: string
+  verified: boolean | null
+  specialties: ProviderCard['specialties']
+  availabilities: ProviderAvailabilityRow[] | null
+  provider_insurances: ProviderInsuranceJoinRow[] | null
+}
+
 function resolveSpecialtySlug(input: string | null | undefined): string | null {
   if (!input) return null
 
@@ -97,7 +133,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch providers' }, { status: 500 })
   }
 
-  const results = (data as any[]) || []
+  const results = (data ?? []) as SearchProviderRpcRow[]
   const total = results.length > 0 ? (results[0].total_count || 0) : 0
 
   const providerIds = results.map((provider) => provider.id)
@@ -118,23 +154,28 @@ export async function GET(request: NextRequest) {
     console.error('Supabase provider detail error:', providerDetailsError)
   }
 
-  const providerDetailsById = new Map<string, any>((providerDetails ?? []).map((provider) => [provider.id, provider]))
+  const detailRows = (providerDetails ?? []) as unknown as ProviderDetailRow[]
+  const providerDetailsById = new Map<string, ProviderDetailRow>(detailRows.map((provider) => [provider.id, provider]))
   const now = Date.now()
 
   const providers: ProviderCard[] = results.map((provider) => {
     const details = providerDetailsById.get(provider.id)
     const nextAvailableSlot = (details?.availabilities ?? [])
-      .filter((slot: { starts_at: string; is_booked?: boolean; is_blocked?: boolean }) => {
+      .filter((slot) => {
         return !slot.is_booked && !slot.is_blocked && new Date(slot.starts_at).getTime() >= now
       })
-      .sort(
-        (left: { starts_at: string }, right: { starts_at: string }) =>
-          new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime()
-      )[0]
+      .sort((left, right) => new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime())[0]
     const publicCoordinates = getPublicProviderCoordinates({
       city: provider.city,
       lat: provider.lat,
       lng: provider.lng,
+    })
+    const normalizedInsurances = (details?.provider_insurances ?? []).flatMap((entry) => {
+      if (!entry.insurances) {
+        return []
+      }
+
+      return Array.isArray(entry.insurances) ? entry.insurances : [entry.insurances]
     })
 
     return {
@@ -154,9 +195,9 @@ export async function GET(request: NextRequest) {
       city: provider.city,
       lat: publicCoordinates.lat,
       lng: publicCoordinates.lng,
-      insurances: (details?.provider_insurances ?? [])
-        .map((entry: { insurances?: ProviderCard['insurances'][number] | null }) => entry.insurances)
-        .filter(Boolean),
+      insurances: normalizedInsurances.filter(
+        (insurance): insurance is ProviderCard['insurances'][number] => Boolean(insurance),
+      ),
       distance: provider.distance_km ? `${provider.distance_km.toFixed(1)} km` : undefined,
     }
   })

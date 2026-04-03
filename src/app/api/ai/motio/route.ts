@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     return result.toTextStreamResponse()
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('BookPhysio AI Error:', error)
       return new NextResponse('An error occurred during triage. Please try again later.', { status: 500 })
   }

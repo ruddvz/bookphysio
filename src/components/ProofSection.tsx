@@ -78,7 +78,7 @@ export default function ProofSection() {
             <div className="space-y-4">
               <h3 className="text-3xl font-bold tracking-tight text-bp-primary">Why trust our network?</h3>
               <p className="text-lg leading-relaxed text-bp-body">
-                We've built India's first search-first physiotherapy platform to eliminate the guesswork in finding quality care.
+                We&apos;ve built India&apos;s first search-first physiotherapy platform to eliminate the guesswork in finding quality care.
               </p>
             </div>
 

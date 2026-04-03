@@ -2,7 +2,7 @@
 
 import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2, CalendarPlus } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -70,22 +70,57 @@ function PatientAppointmentsContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const fetchAppointments = useCallback(() => {
+  async function fetchAppointments() {
     setLoading(true)
     setError(false)
-    fetch('/api/appointments')
-      .then((r) => r.json())
-      .then((data: { appointments?: AppointmentItem[] }) => setAppointments(data.appointments ?? []))
-      .catch((err) => {
-        console.error('Fetch failed:', err)
-        setError(true)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    try {
+      const response = await fetch('/api/appointments')
+      if (!response.ok) {
+        throw new Error('Failed to fetch appointments')
+      }
+      const data: { appointments?: AppointmentItem[] } = await response.json()
+      setAppointments(data.appointments ?? [])
+    } catch (err) {
+      console.error('Fetch failed:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchAppointments()
-  }, [fetchAppointments])
+    let isMounted = true
+
+    async function loadInitialAppointments() {
+      try {
+        const response = await fetch('/api/appointments')
+        if (!response.ok) {
+          throw new Error('Failed to fetch appointments')
+        }
+        const data: { appointments?: AppointmentItem[] } = await response.json()
+        if (!isMounted) {
+          return
+        }
+        setAppointments(data.appointments ?? [])
+      } catch (err) {
+        console.error('Fetch failed:', err)
+        if (!isMounted) {
+          return
+        }
+        setError(true)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadInitialAppointments()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   function switchTab(next: AppointmentTab) {
     setTab(next)

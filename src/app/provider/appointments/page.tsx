@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Search, Filter, Clock, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight } from 'lucide-react'
+import { CalendarDays, Search, Filter, Clock, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight, type LucideIcon } from 'lucide-react'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -12,7 +12,7 @@ const STATUS_STLYES: Record<string, string> = {
   cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
 }
 
-const VISIT_TYPE_ICONS: Record<string, any> = {
+const VISIT_TYPE_ICONS: Record<string, LucideIcon> = {
   in_clinic: Activity,
   home_visit: MapPin,
 }
