@@ -3,18 +3,15 @@ import { MetadataRoute } from 'next'
 // Base URL for the site
 const BASE_URL = 'https://bookphysio.in'
 
-// Static routes
-const staticRoutes = [
-  '',
-  '/about',
-  '/faq',
-  '/how-it-works',
-  '/privacy',
-  '/terms',
-  '/search',
-  '/login',
-  '/signup',
-  '/doctor-signup',
+// Static routes (auth/app routes excluded — noindex)
+const staticRoutes: Array<{ path: string; lastModified: string; priority: number }> = [
+  { path: '',              lastModified: '2026-03-15', priority: 1   },
+  { path: '/about',       lastModified: '2026-02-01', priority: 0.8 },
+  { path: '/faq',         lastModified: '2026-03-01', priority: 0.8 },
+  { path: '/how-it-works',lastModified: '2026-02-01', priority: 0.8 },
+  { path: '/privacy',     lastModified: '2026-01-01', priority: 0.4 },
+  { path: '/terms',       lastModified: '2026-01-01', priority: 0.4 },
+  { path: '/search',      lastModified: '2026-03-15', priority: 0.9 },
 ]
 
 // Cities from CITY_MAP in src/app/city/[slug]/page.tsx
@@ -44,25 +41,23 @@ const specialties = [
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
-
-  const staticMaps = staticRoutes.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified,
+  const staticMaps = staticRoutes.map(({ path, lastModified, priority }) => ({
+    url: `${BASE_URL}${path}`,
+    lastModified: new Date(lastModified),
     changeFrequency: 'monthly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority,
   }))
 
   const cityMaps = cities.map((city) => ({
     url: `${BASE_URL}/city/${city}`,
-    lastModified,
+    lastModified: new Date('2026-03-01'),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
 
   const specialtyMaps = specialties.map((specialty) => ({
     url: `${BASE_URL}/specialty/${specialty}`,
-    lastModified,
+    lastModified: new Date('2026-03-01'),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
