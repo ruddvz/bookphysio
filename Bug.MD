@@ -798,7 +798,7 @@ export default function robots() {
 
 ---
 
-## SESSION 2 — ARCHITECTURAL CHANGES (2026-04-02)
+## SESSION 2 ï¿½ ARCHITECTURAL CHANGES (2026-04-02)
 
 > Security hardening, payment archival, subscription model, SMS provider swap, branding fix, Vercel deployment setup.
 
@@ -808,28 +808,31 @@ export default function robots() {
 |------|--------|-------|
 | **Security** | Removed DEV_OTP 264200 bypass from client bundle | erify-otp/page.tsx |
 | **Security** | Removed isDemoAccessEnabled() escape from dev-signup | pi/auth/dev-signup/route.ts |
-| **Security** | Replaced x-real-ip fallback with equest.ip only in 4 routes | otp/send, otp/verify, magic-link, signup |
+| **Security** | Replaced x-real-ip fallback with 
+equest.ip only in 4 routes | otp/send, otp/verify, magic-link, signup |
 | **Security** | Removed Supabase error leak from OTP send | pi/auth/otp/send/route.ts |
 | **Security** | Provider onboard now sets provider_pending: true, no immediate role escalation | pi/providers/onboard/route.ts |
 | **Security** | dmin/users now returns explicit columns only | pi/admin/users/route.ts |
-| **Security** | azorpay.ts now uses timing-safe equal + lazy init, no dummy fallbacks | src/lib/razorpay.ts |
+| **Security** | 
+azorpay.ts now uses timing-safe equal + lazy init, no dummy fallbacks | src/lib/razorpay.ts |
 | **Security** | Added CSP, HSTS, X-Frame-Options, Referrer-Policy headers | 
 ext.config.ts |
 | **Security** | Created public/robots.txt (blocks /admin/, /api/) | public/robots.txt |
-| **Payments** | All 4 payment routes return 503 "not available yet" | payments/create-order, erify, webhook, efund |
+| **Payments** | All 4 payment routes return 503 "not available yet" | payments/create-order, erify, webhook, 
+efund |
 | **Subscriptions** | DB migration for provider_subscriptions table + RLS + trigger | supabase/migrations/013_provider_subscriptions.sql |
 | **Subscriptions** | GET/POST /api/subscriptions endpoint | src/app/api/subscriptions/route.ts |
 | **Subscriptions** | <SubscriptionPlans> UI component (Free/Pro ?100/Max ?200) | src/components/SubscriptionPlans.tsx |
 | **SMS** | Removed MSG91 from OTP send; created Textbelt client | src/lib/textbelt.ts |
-| **Branding** | BpLogo.tsx rewritten — green shield icon + "BookPhysio.in" text | src/components/BpLogo.tsx |
+| **Branding** | BpLogo.tsx rewritten ï¿½ green shield icon + "BookPhysio.in" text | src/components/BpLogo.tsx |
 | **Branding** | All BpLogo call sites updated to new invert prop API | Footer, Navbar, BpLogo.test, auth pages |
 | **Deploy** | Created ercel.json (Mumbai region bom1, API no-cache headers) | ercel.json |
 | **Deploy** | Removed public/CNAME (GitHub Pages artifact causing 404) | public/CNAME deleted |
-| **Env** | Updated .env.example — removed MSG91/Razorpay vars, added Textbelt, NEXT_PUBLIC_SITE_URL | .env.example |
+| **Env** | Updated .env.example ï¿½ removed MSG91/Razorpay vars, added Textbelt, NEXT_PUBLIC_SITE_URL | .env.example |
 
 ### Build Status
 
-pm run build — **PASSES** — full route tree renders, no TypeScript errors blocking build.
+pm run build ï¿½ **PASSES** ï¿½ full route tree renders, no TypeScript errors blocking build.
 
 ### Deployment Steps (Action Required)
 
@@ -853,7 +856,7 @@ pm run build — **PASSES** — full route tree renders, no TypeScript errors blocki
    NEXT_PUBLIC_MAPBOX_TOKEN=<mapbox token>
    `
 
-3. **Domain DNS** (at your registrar — remove all GitHub Pages A records):
+3. **Domain DNS** (at your registrar ï¿½ remove all GitHub Pages A records):
    - Add A record: ookphysio.in ? Vercel IP (from Vercel dashboard)
    - Add CNAME record: www ? cname.vercel-dns.com
    - Or use Vercel nameservers if your registrar supports it.
@@ -867,8 +870,9 @@ pm run build — **PASSES** — full route tree renders, no TypeScript errors blocki
    - Use Textbelt as a custom SMTP-style sender (DLT compliance not guaranteed)
 
 ### Open Security Issues (Not Fixed This Session)
-- **SEC-01**: Other service clients (supabase/server, upstash) may still have || 'dummy' fallbacks — verify
-- **SEC-02**: ignoreBuildErrors: true still set in next.config.ts — fix TypeScript errors and remove
-- **SEC-13**: Admin routes still have no rate limiting — add piRatelimit to all admin handlers
-- **SEC-15**: Magic link callback equest.nextUrl.origin fallback — set NEXT_PUBLIC_SITE_URL in prod
+- **SEC-01**: Other service clients (supabase/server, upstash) may still have || 'dummy' fallbacks ï¿½ verify
+- **SEC-02**: ignoreBuildErrors: true still set in next.config.ts ï¿½ fix TypeScript errors and remove
+- **SEC-13**: Admin routes still have no rate limiting ï¿½ add piRatelimit to all admin handlers
+- **SEC-15**: Magic link callback 
+equest.nextUrl.origin fallback ï¿½ set NEXT_PUBLIC_SITE_URL in prod
 

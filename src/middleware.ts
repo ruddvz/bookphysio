@@ -26,7 +26,7 @@ export default async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const demoSession = user ? null : parseDemoCookie(request.cookies.get('bp-demo-session')?.value)
+  const demoSession = user ? null : await parseDemoCookie(request.cookies.get('bp-demo-session')?.value)
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
   const rewrittenPathname = hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')

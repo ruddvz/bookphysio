@@ -22,7 +22,7 @@ export default function AboutPage() {
           
           <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
             <h1 className="text-[48px] sm:text-[64px] font-bold mb-6 tracking-tight leading-tight">
-              Our Mission
+              India&apos;s Premier Physiotherapy Booking Platform
             </h1>
             <p className="text-[20px] sm:text-[24px] leading-relaxed max-w-[800px] mx-auto opacity-90 font-medium">
               Making high-quality physiotherapy accessible and convenient across India. 

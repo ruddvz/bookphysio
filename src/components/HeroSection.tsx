@@ -131,7 +131,7 @@ export default function HeroSection() {
           </div>
 
           <h1 className="mx-auto max-w-4xl text-[54px] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary md:text-[82px] lg:text-[96px]">
-            Expert care for <br className="hidden md:block" />
+            Book verified physiotherapists in India for <br className="hidden md:block" />
             <span className="relative inline-flex min-h-[1.05em] items-end overflow-hidden align-baseline pb-[0.06em] text-bp-accent">
               <span key={currentIndex} className="animate-specialty inline-block">
                 {focusWords[currentIndex]}

@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest'
-import { resolvePostAuthRedirect, sanitizeReturnPath } from './session'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createDemoCookiePayload, encodeDemoCookie, parseDemoCookie, resolvePostAuthRedirect, sanitizeReturnPath } from './session'
+
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
 
 describe('sanitizeReturnPath', () => {
   it('preserves internal paths with search params', () => {
@@ -34,5 +38,26 @@ describe('resolvePostAuthRedirect', () => {
 
   it('defaults to the patient dashboard when the role is unknown', () => {
     expect(resolvePostAuthRedirect(undefined, '/admin')).toBe('/patient/dashboard')
+  })
+})
+
+describe('demo cookie signing', () => {
+  it('parses signed demo cookies in production', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const encodedCookie = await encodeDemoCookie(createDemoCookiePayload('provider'))
+    const parsedCookie = await parseDemoCookie(encodedCookie)
+
+    expect(parsedCookie?.role).toBe('provider')
+  })
+
+  it('rejects unsigned demo cookies in production', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const unsignedCookie = Buffer.from(JSON.stringify(createDemoCookiePayload('patient')), 'utf8').toString('base64url')
+
+    await expect(parseDemoCookie(unsignedCookie)).resolves.toBeNull()
   })
 })

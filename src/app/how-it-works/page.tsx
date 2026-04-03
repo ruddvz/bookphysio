@@ -67,7 +67,7 @@ export default function HowItWorksPage() {
           <div className="mx-auto max-w-[1142px] px-6 text-center">
             <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#00766C]">How it works</p>
             <h1 className="mt-4 text-[42px] font-bold tracking-tight text-[#333333] md:text-[56px]">
-              Simple, fast, transparent.
+              How to Book a Physiotherapist Online in India
             </h1>
             <p className="mx-auto mt-5 max-w-[640px] text-[18px] leading-8 text-[#666666] md:text-[20px]">
               Book a physio session in 4 clear steps - no calls, no waiting, and no guesswork about who to trust.

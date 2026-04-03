@@ -2,12 +2,21 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { launchDemoSession } from '@/lib/demo/client'
+import type { DemoRole } from '@/lib/demo/session'
 
 // Dev-only login page — only renders in development
-// Gives one-click access to patient / provider / admin test accounts
-// Calls /api/auth/dev-signup?role=X which creates stable test users + magic link auth
+// Gives one-click access to patient / provider / admin demo sessions
 
-const ACCOUNTS = [
+const ACCOUNTS: Array<{
+  role: DemoRole
+  label: string
+  email: string
+  phone: string
+  color: string
+  badge: string
+  emoji: string
+}> = [
   {
     role: 'patient',
     label: 'Patient',
@@ -53,13 +62,13 @@ export default function DevLoginPage() {
     )
   }
 
-  async function loginAs(role: string) {
+  async function loginAs(role: DemoRole) {
     setLoading(role)
     setError(null)
+
     try {
-      // The API route redirects through Supabase magic link → /auth/callback → dashboard
-      // window.location.href handles the redirect chain correctly
-      window.location.href = `/api/auth/dev-signup?role=${role}`
+      const redirectTo = await launchDemoSession(role)
+      router.push(redirectTo)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
       setLoading(null)
@@ -73,7 +82,7 @@ export default function DevLoginPage() {
           ⚠️ DEV ONLY — not visible in production
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mt-4">Dev Login</h1>
-        <p className="text-gray-500 text-sm">One-click login for testing. Stable accounts, same user every run.</p>
+        <p className="text-gray-500 text-sm">One-click demo access for testing patient, provider, and admin flows.</p>
       </div>
 
       <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -113,9 +122,9 @@ export default function DevLoginPage() {
       )}
 
       <div className="text-xs text-gray-400 text-center max-w-md space-y-1">
-        <p>First login per account creates the user in Supabase and sets the correct role.</p>
-        <p>Subsequent logins reuse the same stable user (email: dev-[role]@bookphysio.in).</p>
-        <p className="font-mono text-gray-300">GET /api/auth/dev-signup?role=[patient|provider|admin]</p>
+        <p>Each option launches a role-specific demo session without creating a new Supabase auth user.</p>
+        <p>The same role routing is used by the preview gate on the live site.</p>
+        <p className="font-mono text-gray-300">POST /api/auth/demo-session</p>
       </div>
     </div>
   )

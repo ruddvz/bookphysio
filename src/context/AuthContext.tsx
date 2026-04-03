@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { clearDemoSession } from '@/lib/demo/client'
-import { DEMO_LOCAL_STORAGE_KEY, isDemoAccessEnabled } from '@/lib/demo/session'
+import { DEMO_LOCAL_STORAGE_KEY } from '@/lib/demo/session'
 
 interface AuthContextValue {
   session: Session | null
@@ -20,12 +20,8 @@ const AuthContext = createContext<AuthContextValue>({
   signOut: () => {},
 })
 
-/** Try to load dev session from localStorage (used on static export / GitHub Pages) */
+/** Try to load a preview/demo session mirrored into localStorage by the demo-session route. */
 function loadDevSession(): Session | null {
-  if (!isDemoAccessEnabled()) {
-    return null
-  }
-
   try {
     const raw = localStorage.getItem(DEMO_LOCAL_STORAGE_KEY)
     if (!raw) return null
@@ -67,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.session) {
         setSession(data.session)
       } else {
-        // Fallback to dev session (for static export / GitHub Pages)
+        // Fallback to preview/demo session persisted client-side.
         const devSession = loadDevSession()
         if (devSession) setSession(devSession)
       }

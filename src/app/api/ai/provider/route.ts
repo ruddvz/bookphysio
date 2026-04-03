@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    const demoSession = !user ? parseDemoCookie(req.cookies.get('bp-demo-session')?.value) : null
+    const demoSession = !user ? await parseDemoCookie(req.cookies.get('bp-demo-session')?.value) : null
 
     if (!user && demoSession?.role !== 'provider') {
       return new NextResponse('Unauthorized', { status: 401 })

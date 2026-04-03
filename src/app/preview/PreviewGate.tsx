@@ -1,8 +1,18 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { clearDemoSession, launchDemoSession } from '@/lib/demo/client'
+import type { DemoRole } from '@/lib/demo/session'
 
-const ROLES = [
+const ROLES: Array<{
+  role: DemoRole
+  label: string
+  description: string
+  emoji: string
+  color: string
+  badge: string
+}> = [
   {
     role: 'patient',
     label: 'Patient',
@@ -43,10 +53,11 @@ function PasswordForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password }),
     })
+
     if (res.ok) {
       window.location.reload()
     } else {
-      const data = await res.json()
+      const data = await res.json().catch(() => ({} as { error?: string }))
       setError(data.error ?? 'Wrong password')
       setLoading(false)
     }
@@ -95,14 +106,25 @@ function PasswordForm() {
 }
 
 function RolePicker() {
-  const [loading, setLoading] = useState<string | null>(null)
+  const router = useRouter()
+  const [loading, setLoading] = useState<DemoRole | null>(null)
+  const [error, setError] = useState('')
 
-  function loginAs(role: string) {
+  async function loginAs(role: DemoRole) {
     setLoading(role)
-    window.location.href = `/api/auth/dev-signup?role=${role}`
+    setError('')
+
+    try {
+      const redirectTo = await launchDemoSession(role)
+      router.push(redirectTo)
+    } catch (launchError) {
+      setError(launchError instanceof Error ? launchError.message : 'Unable to start the preview session.')
+      setLoading(null)
+    }
   }
 
   async function logout() {
+    await clearDemoSession()
     await fetch('/api/auth/preview', { method: 'DELETE' })
     window.location.reload()
   }
@@ -147,8 +169,12 @@ function RolePicker() {
         ))}
       </div>
 
+      {error && (
+        <p className="text-sm text-red-600 text-center">{error}</p>
+      )}
+
       <p className="text-xs text-gray-400 text-center max-w-sm">
-        You&apos;re using a shared preview account. Changes you make in this session are real — they hit the actual database.
+        This preview opens a role-specific guided session so you can explore the product without creating a live auth account.
       </p>
 
       <button

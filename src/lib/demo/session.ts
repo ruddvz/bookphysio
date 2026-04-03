@@ -22,6 +22,11 @@ interface DemoProfileDefinition {
 
 const DAY_IN_SECONDS = 24 * 60 * 60
 const APP_ORIGIN = 'https://bookphysio.local'
+const encoder = new TextEncoder()
+const decoder = new TextDecoder()
+
+let cachedSigningSecret: string | null = null
+let cachedSigningKeyPromise: Promise<CryptoKey> | null = null
 
 const DEMO_PROFILES: Record<DemoRole, DemoProfileDefinition> = {
   patient: {
@@ -57,25 +62,75 @@ function isDemoRole(value: string): value is DemoRole {
   return value === 'patient' || value === 'provider' || value === 'admin'
 }
 
-function encodeBase64Url(value: string): string {
-  if (typeof window === 'undefined') {
-    return Buffer.from(value, 'utf8').toString('base64url')
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = ''
+
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte)
   }
 
-  return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+function base64UrlToBytes(value: string): Uint8Array {
+  const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (value.length % 4 || 4)) % 4)
+  const binary = atob(padded)
+
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0))
+}
+
+function encodeBase64Url(value: string): string {
+  return bytesToBase64Url(encoder.encode(value))
 }
 
 function decodeBase64Url(value: string): string {
-  if (typeof window === 'undefined') {
-    return Buffer.from(value, 'base64url').toString('utf8')
-  }
-
-  const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (value.length % 4 || 4)) % 4)
-  return atob(padded)
+  return decoder.decode(base64UrlToBytes(value))
 }
 
 export function isDemoAccessEnabled(): boolean {
   return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+}
+
+async function getDemoSigningKey(secret: string): Promise<CryptoKey> {
+  if (cachedSigningSecret === secret && cachedSigningKeyPromise) {
+    return cachedSigningKeyPromise
+  }
+
+  cachedSigningSecret = secret
+  cachedSigningKeyPromise = crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+
+  return cachedSigningKeyPromise
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  let difference = 0
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index)
+  }
+
+  return difference === 0
+}
+
+async function signDemoCookiePayload(payloadSegment: string): Promise<string | null> {
+  const secret = process.env.PREVIEW_PASSWORD
+  if (!secret) {
+    return null
+  }
+
+  const key = await getDemoSigningKey(secret)
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payloadSegment))
+
+  return bytesToBase64Url(new Uint8Array(signature))
 }
 
 function createDemoSessionId(): string {
@@ -185,21 +240,39 @@ export function createDemoCookiePayload(role: DemoRole): DemoCookiePayload {
   }
 }
 
-export function encodeDemoCookie(payload: DemoCookiePayload): string {
-  return encodeBase64Url(JSON.stringify(payload))
+export async function encodeDemoCookie(payload: DemoCookiePayload): Promise<string> {
+  const payloadSegment = encodeBase64Url(JSON.stringify(payload))
+  const signatureSegment = await signDemoCookiePayload(payloadSegment)
+
+  return signatureSegment ? `${payloadSegment}.${signatureSegment}` : payloadSegment
 }
 
-export function parseDemoCookie(value: string | null | undefined): DemoCookiePayload | null {
-  if (!isDemoAccessEnabled()) {
-    return null
-  }
-
+export async function parseDemoCookie(value: string | null | undefined): Promise<DemoCookiePayload | null> {
   if (!value) {
     return null
   }
 
   try {
-    const parsed = JSON.parse(decodeBase64Url(value)) as Partial<DemoCookiePayload>
+    const segments = value.split('.')
+    if (segments.length > 2) {
+      return null
+    }
+
+    const [payloadSegment, signatureSegment] = segments
+    if (!payloadSegment) {
+      return null
+    }
+
+    if (signatureSegment) {
+      const expectedSignature = await signDemoCookiePayload(payloadSegment)
+      if (!expectedSignature || !constantTimeEqual(signatureSegment, expectedSignature)) {
+        return null
+      }
+    } else if (process.env.NODE_ENV === 'production') {
+      return null
+    }
+
+    const parsed = JSON.parse(decodeBase64Url(payloadSegment)) as Partial<DemoCookiePayload>
     const profile = parsed.role && isDemoRole(parsed.role) ? getDemoProfile(parsed.role) : null
 
     if (

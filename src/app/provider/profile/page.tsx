@@ -1,187 +1,307 @@
 'use client'
 
-import { User, Briefcase, Award, Globe, ShieldCheck, Check, X } from 'lucide-react'
+import { User, Briefcase, Award, Globe, ShieldCheck, Check, X, MapPin, Navigation, Info, Search, Trash2, ArrowRight, Activity } from 'lucide-react'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 export default function ProviderProfile() {
-  return (
-    <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-8">
-        Practice Profile
-      </h1>
+  const [pincodes, setPincodes] = useState<string[]>(['110001', '110012', '110020'])
+  const [newPincode, setNewPincode] = useState('')
 
-      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-8">
-        {/* Avatar Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-[#E6F4F3] text-[#00766C] text-xl font-bold">
-            LP
+  const addPincode = () => {
+    if (newPincode.match(/^[1-9][0-9]{5}$/) && !pincodes.includes(newPincode)) {
+      setPincodes([...pincodes, newPincode])
+      setNewPincode('')
+    }
+  }
+
+  const removePincode = (code: string) => {
+    setPincodes(pincodes.filter(c => c !== code))
+  }
+
+  return (
+    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
+      
+      {/* ── Page Header ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b border-gray-100 pb-12">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <div className="w-12 h-12 rounded-2xl bg-[#00766C] flex items-center justify-center text-white shadow-xl shadow-[#00766C]/20 transform -rotate-3">
+                <Briefcase size={24} strokeWidth={2.5} />
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00766C]">Registry Management</span>
+                <div className="flex items-center gap-2">
+                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                   <span className="text-[11px] font-bold text-emerald-600">Active Listing</span>
+                </div>
+             </div>
           </div>
-          <div>
-            <h2 className="text-[20px] font-semibold text-[#333333]">lokistr</h2>
-            <p className="text-[15px] text-[#666666]">Provider Account</p>
-          </div>
+          <h1 className="text-[42px] lg:text-[48px] font-black text-[#333333] tracking-tighter leading-none">
+            Practice <span className="text-[#00766C]">Profile</span>
+          </h1>
+          <p className="text-[16px] font-medium text-[#666666] max-w-xl leading-relaxed">
+            Manage your professional presence, specialty credentials, and service area coverage.
+          </p>
         </div>
 
-        <form className="flex flex-col gap-6">
-          
-          {/* Display Name */}
-          <div>
-            <label className="block text-[14px] font-semibold text-[#333333] mb-2">
-              Display Name
-            </label>
-            <div className="relative">
-              <input 
-                type="text" 
-                defaultValue="lokistr"
-                className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-              />
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-            </div>
-          </div>
-
-          {/* Professional Bio */}
-          <div>
-            <label className="block text-[14px] font-semibold text-[#333333] mb-2">
-              Professional Bio
-            </label>
-            <textarea 
-              rows={4}
-              placeholder="Tell patients about your specific experience and approach to physiotherapy..."
-              className="w-full p-4 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] placeholder:text-[#9CA3AF] resize-y focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-            />
-          </div>
-
-          {/* Specializations */}
-          <div>
-            <label className="block text-[14px] font-semibold text-[#333333] mb-2">
-              Specializations
-            </label>
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="e.g. Sports Injuries, Post-Surgery Rehab"
-                className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] placeholder:text-[#9CA3AF] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-              />
-              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-            </div>
-          </div>
-
-          {/* ICP + Languages */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-[14px] font-semibold text-[#333333] mb-2">
-                ICP Registration Number
-              </label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="ICP-MH-XXXX-XXXXX"
-                  className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] placeholder:text-[#9CA3AF] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-                />
-                <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[14px] font-semibold text-[#333333] mb-2">
-                Languages Spoken
-              </label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="English, Hindi, Marathi"
-                  className="w-full pl-10 pr-4 py-3 border border-[#E5E5E5] rounded-[8px] bg-white text-[15px] text-[#333333] placeholder:text-[#9CA3AF] focus:border-[#00766C] focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
-                />
-                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-              </div>
-            </div>
-          </div>
-
-          <hr className="border-t border-[#E5E5E5] my-4" />
-
-          <div className="flex justify-end gap-3 mb-10">
-            <button type="button" className="flex items-center gap-2 px-6 py-4 border-2 border-gray-100 rounded-2xl text-[14px] font-black text-gray-400 hover:bg-gray-50 transition-all active:scale-95">
-              Discard Changes
-            </button>
-            <button type="submit" className="flex items-center gap-2 px-10 py-4 bg-[#333333] hover:bg-[#00766C] text-white rounded-2xl text-[14px] font-black transition-all shadow-xl shadow-gray-200 active:scale-95">
-              Save Practice Profile
-            </button>
-          </div>
-        </form>
+        <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-[24px] border border-gray-100">
+          <button className="px-6 py-3 text-[13px] font-black text-[#00766C] bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
+          <button className="px-6 py-3 text-[13px] font-black text-gray-500 hover:text-[#333333] transition-colors rounded-[18px]">Analytics</button>
+        </div>
       </div>
 
-      {/* Trust & Security Section */}
-      <div className="mt-12 bg-[#F8FAFC] rounded-[48px] p-10 border-2 border-dashed border-gray-200">
-        <div className="flex flex-col md:flex-row gap-10 items-start">
-           <div className="flex-1">
-              <div className="w-16 h-16 bg-teal-100 rounded-3xl flex items-center justify-center text-[#00766C] mb-6">
-                 <ShieldCheck size={32} strokeWidth={2.5} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        
+        {/* ── Left Column: Form ── */}
+        <div className="lg:col-span-2 space-y-12">
+          
+          <section className="bg-white rounded-[40px] border border-gray-100 shadow-sm p-10 group/section">
+            <h3 className="text-[22px] font-black text-[#333333] tracking-tight mb-8 flex items-center gap-3">
+              <User size={22} className="text-[#00766C]" />
+              Personal Details
+            </h3>
+            
+            <div className="space-y-8">
+              <div className="flex items-center gap-6 mb-4">
+                <div className="relative group/avatar">
+                  <div className="w-24 h-24 rounded-[32px] bg-[#E6F4F3] text-[#00766C] flex items-center justify-center text-2xl font-black border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
+                    LP
+                  </div>
+                  <button 
+                    className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#333333] text-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg hover:bg-black transition-colors"
+                    title="Change Avatar"
+                  >
+                    <User size={16} />
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-[18px] font-black text-[#333333]">Dr. Loki Strider</h4>
+                  <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">Senior Physiotherapist</p>
+                </div>
               </div>
-              <h3 className="text-2xl font-black text-[#333333] tracking-tighter mb-3">Clinical Verification</h3>
-              <p className="text-[15px] font-bold text-gray-400 leading-relaxed mb-8">
-                 Verified providers receive 4x more patient inquiries. Upload your medical registration or degree certificate to unlock the <span className="text-[#00766C]">Verified Badge</span>.
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label htmlFor="full-name" className="text-[12px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                  <input 
+                    id="full-name"
+                    type="text" 
+                    defaultValue="Loki Strider"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-[20px] text-[15px] font-bold text-[#333333] focus:bg-white focus:border-[#00766C] outline-none transition-all"
+                    placeholder="Enter full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="specialties" className="text-[12px] font-black text-gray-400 uppercase tracking-widest ml-1">Specialties</label>
+                  <input 
+                    id="specialties"
+                    type="text" 
+                    defaultValue="Sports Injuries, Rehab"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-[20px] text-[15px] font-bold text-[#333333] focus:bg-white focus:border-[#00766C] outline-none transition-all"
+                    placeholder="e.g. Sports Injuries, Rehab"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="professional-bio" className="text-[12px] font-black text-gray-400 uppercase tracking-widest ml-1">Professional Bio</label>
+                <textarea 
+                  id="professional-bio"
+                  rows={4}
+                  className="w-full p-6 bg-gray-50 border border-gray-100 rounded-[24px] text-[15px] font-medium text-[#333333] leading-relaxed focus:bg-white focus:border-[#00766C] outline-none transition-all resize-none"
+                  defaultValue="Specialized in orthopaedic recovery and sports-related injury management with over 8 years of clinical experience."
+                  placeholder="Tell patients about your specific experience and approach..."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ── Service Area (8.9 Target) ── */}
+          <section className="bg-[#333333] rounded-[48px] p-10 text-white relative overflow-hidden group/area">
+            <div className="absolute right-0 top-0 w-[400px] h-full bg-[#00766C] opacity-10 translate-x-1/2 rounded-full blur-[100px] group-hover/area:opacity-20 transition-opacity duration-1000" />
+            
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-xl text-emerald-400 border border-white/5 backdrop-blur-md">
+                    <Navigation size={14} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Service Boundary</span>
+                  </div>
+                  <h3 className="text-[28px] font-black tracking-tight leading-none">Coverage Area</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                   <div className="text-right mr-2 hidden sm:block">
+                      <p className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Efficiency</p>
+                      <p className="text-[14px] font-black text-emerald-400">High Density</p>
+                   </div>
+                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
+                      <MapPin size={22} className="text-emerald-400" />
+                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                  <p className="text-[15px] text-gray-400 font-medium leading-relaxed">
+                    Define the <span className="text-white font-bold">Pin Codes</span> where you provide home visit services. Patients will only see you if their address is within these zones.
+                  </p>
+                  
+                  <div className="relative">
+                    <label htmlFor="pincode-input" className="sr-only">Enter Pincode</label>
+                    <input 
+                      id="pincode-input"
+                      type="text" 
+                      placeholder="Enter 6-digit Pincode"
+                      value={newPincode}
+                      onChange={(e) => setNewPincode(e.target.value)}
+                      className="w-full pl-6 pr-32 py-5 bg-white/5 border border-white/10 rounded-[20px] text-white text-[16px] font-black placeholder:text-gray-600 focus:bg-white/10 focus:border-[#00766C] outline-none transition-all"
+                    />
+                    <button 
+                      onClick={addPincode}
+                      className="absolute right-2 top-2 bottom-2 px-6 bg-[#00766C] hover:bg-[#008F83] text-white text-[12px] font-black rounded-xl transition-all uppercase tracking-widest active:scale-95"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    {pincodes.map(code => (
+                      <div key={code} className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl border border-white/5 transition-colors group/tag">
+                        <span className="text-[14px] font-black tracking-tighter">{code}</span>
+                        <button 
+                          onClick={() => removePincode(code)} 
+                          className="text-gray-500 hover:text-rose-400 transition-colors"
+                          title={`Remove pincode ${code}`}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    {pincodes.length === 0 && (
+                      <p className="text-[12px] font-bold text-gray-600 text-center w-full py-4 border-2 border-dashed border-white/5 rounded-[24px]">No pincodes active for home visits</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                   <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 relative overflow-hidden group/metrics">
+                      <div className="flex items-center justify-between mb-8">
+                         <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Active Corridors</span>
+                         <Activity size={16} className="text-[#00766C]" />
+                      </div>
+                      <div className="space-y-6">
+                         <div className="flex justify-between items-end">
+                            <span className="text-[13px] font-bold text-gray-400">Delhi NCR Total</span>
+                            <span className="text-[18px] font-black">1.2k km²</span>
+                         </div>
+                         <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#00766C] w-[65%] rounded-full" />
+                         </div>
+                      </div>
+                      <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
+                         <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[12px] font-bold">Radius: 15km</span>
+                         </div>
+                         <span className="text-[10px] font-black uppercase text-[#00766C] tracking-widest">Optimized</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+
+              <div className="mt-12 flex items-center gap-4 p-5 bg-[#00766C]/20 rounded-[28px] border border-[#00766C]/30 backdrop-blur-sm">
+                <div className="w-10 h-10 bg-[#00766C] rounded-xl flex items-center justify-center shadow-lg"><Info size={20} /></div>
+                <p className="text-[13px] font-medium text-emerald-100/80 leading-snug">
+                  Adding pincodes outside <span className="text-white font-black text-[14px]">NCR (National Capital Region)</span> may require manual business verification from our regional operations team.
+                </p>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        {/* ── Right Column: Credentials & Help ── */}
+        <div className="space-y-8">
+           <section className="bg-white rounded-[40px] border border-gray-100 shadow-sm p-8 group/card">
+              <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center text-[#00766C] mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
+                <ShieldCheck size={28} strokeWidth={2.5} />
+              </div>
+              <h4 className="text-[20px] font-black text-[#333333] tracking-tight mb-3">Verification Hub</h4>
+              <p className="text-[14px] font-medium text-gray-400 leading-relaxed mb-8">
+                Your medical registration is the primary trust signal for patients.
               </p>
               
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 group/item transition-all hover:bg-white hover:shadow-lg">
+                  <Award size={20} className="text-[#00766C]" />
+                  <div className="flex flex-col">
+                    <span className="text-[13px] font-black text-[#333333]">ICP Medical ID</span>
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Verified ✓</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 p-4 bg-orange-50/50 rounded-2xl border border-orange-100 group/item transition-all">
+                  <Info size={20} className="text-orange-600" />
+                  <div className="flex flex-col">
+                    <span className="text-[13px] font-black text-orange-600">GST Registration</span>
+                    <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Required for Payouts</span>
+                  </div>
+                </div>
+              </div>
+
+              <button className="w-full py-4 bg-[#333333] hover:bg-black text-white text-[12px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
+                Update Documents <ArrowRight size={14} />
+              </button>
+           </section>
+
+           <section className="bg-emerald-50 rounded-[40px] p-8 border border-emerald-100">
+              <h4 className="text-[18px] font-black text-[#00766C] tracking-tight mb-4 flex items-center gap-2">
+                <Globe size={18} />
+                Global Status
+              </h4>
               <div className="space-y-4">
-                 <div className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center text-[#00766C]"><Award size={20} /></div>
-                    <div className="flex flex-col">
-                       <span className="text-[13px] font-black text-[#333333]">Degree Certificate</span>
-                       <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Mandatory for badge</span>
-                    </div>
-                    <button className="ml-auto text-[13px] font-black text-[#00766C] pr-2">Upload</button>
+                 <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
+                    <span className="text-[13px] font-bold text-[#00766C]/70">Profile Strength</span>
+                    <span className="text-[13px] font-black text-[#00766C]">85%</span>
                  </div>
-                 <div className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm opacity-60">
-                    <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400"><Award size={20} /></div>
-                    <div className="flex flex-col">
-                       <span className="text-[13px] font-black text-gray-400">Clinic Registration</span>
-                       <span className="text-[11px] font-bold text-gray-300 uppercase tracking-widest">Optional but recommended</span>
-                    </div>
-                    <button className="ml-auto text-[13px] font-black text-gray-300 pr-2">Upload</button>
+                 <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
+                    <span className="text-[13px] font-bold text-[#00766C]/70">Search Visibility</span>
+                    <span className="text-[13px] font-black text-[#00766C]">Tier-1</span>
+                 </div>
+                 <div className="flex justify-between items-center py-2">
+                    <span className="text-[13px] font-bold text-[#00766C]/70">City Hub</span>
+                    <span className="text-[13px] font-black text-[#00766C]">New Delhi</span>
                  </div>
               </div>
+              <button className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-[#00766C] text-[12px] font-black rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
+                View Public Profile
+              </button>
+           </section>
+        </div>
+      </div>
+
+      {/* ── Action Footer ── */}
+      <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-8 p-8 bg-white rounded-[40px] border border-gray-100 shadow-2xl shadow-gray-200/50">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <Check size={24} strokeWidth={3} />
            </div>
-
-           {/* Watermark Preview Simulation */}
-           <div className="w-full md:w-[320px] shrink-0 bg-white p-6 rounded-[32px] shadow-2xl shadow-slate-200 border border-slate-100 relative overflow-hidden group">
-              {/* Animated Watermark Overlay */}
-              <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center rotate-[-30deg] opacity-[0.03] select-none group-hover:opacity-[0.07] transition-opacity">
-                <span className="text-[60px] font-black text-[#00766C] whitespace-nowrap uppercase tracking-[0.2em]">VERIFIED</span>
-              </div>
-              <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center rotate-[-30deg] translate-y-24 opacity-[0.03] select-none group-hover:opacity-[0.07] transition-opacity">
-                <span className="text-[60px] font-black text-[#00766C] whitespace-nowrap uppercase tracking-[0.2em]">BOOKPHYSIO</span>
-              </div>
-
-              <div className="relative z-20">
-                 <div className="flex items-center justify-between mb-8">
-                    <div className="flex gap-1">
-                       <div className="w-2 h-2 rounded-full bg-[#00766C]" />
-                       <div className="w-2 h-2 rounded-full bg-gray-100" />
-                       <div className="w-2 h-2 rounded-full bg-gray-100" />
-                    </div>
-                    <span className="bg-teal-50 text-[#00766C] text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest">Trust Standard</span>
-                 </div>
-
-                 <div className="aspect-[3/4] bg-slate-50 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-slate-100 mb-6 group-hover:bg-teal-50/50 transition-colors">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-200 shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                       <Award size={32} />
-                    </div>
-                    <span className="text-[12px] font-black text-slate-300">Preview Watermarked Asset</span>
-                 </div>
-
-                 <div className="space-y-3">
-                    <div className="h-2 w-full bg-slate-50 rounded-full" />
-                    <div className="h-2 w-3/4 bg-slate-50 rounded-full" />
-                    <div className="h-2 w-1/2 bg-teal-100 rounded-full" />
-                 </div>
-
-                 <div className="mt-8 flex items-center gap-3 p-3 bg-[#00766C]/5 rounded-2xl border border-[#00766C]/10">
-                    <div className="w-8 h-8 bg-[#00766C] rounded-xl flex items-center justify-center text-white"><ShieldCheck size={16} /></div>
-                    <span className="text-[11px] font-black text-[#00766C] leading-none uppercase tracking-widest">Protected by Motio-Armor</span>
-                 </div>
-              </div>
+           <div>
+              <p className="text-[15px] font-black text-[#333333]">Draft Saved Successfully</p>
+              <p className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Last synced 2 minutes ago</p>
            </div>
+        </div>
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none px-10 py-5 border-2 border-gray-100 rounded-[24px] text-[14px] font-black text-gray-400 hover:bg-gray-50 transition-all active:scale-95">
+            Discard
+          </button>
+          <button className="flex-1 sm:flex-none px-12 py-5 bg-[#333333] hover:bg-[#00766C] text-white rounded-[24px] text-[14px] font-black transition-all shadow-2xl shadow-[#333333]/10 active:scale-95">
+            Push Updates Live
+          </button>
         </div>
       </div>
 
     </div>
   )
 }
+

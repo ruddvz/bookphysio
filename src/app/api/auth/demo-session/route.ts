@@ -8,6 +8,7 @@ import {
   isDemoAccessEnabled,
   resolvePostAuthRedirect,
 } from '@/lib/demo/session'
+import { hasValidPreviewCookie } from '@/lib/preview/token'
 
 const demoAccessSchema = z.object({
   role: z.enum(['patient', 'provider', 'admin']),
@@ -15,7 +16,9 @@ const demoAccessSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
-  if (!isDemoAccessEnabled()) {
+  const previewAccessAllowed = await hasValidPreviewCookie(request)
+
+  if (!isDemoAccessEnabled() && !previewAccessAllowed) {
     return NextResponse.json({ error: 'Demo access is disabled.' }, { status: 404 })
   }
 
@@ -33,7 +36,7 @@ export async function POST(request: NextRequest) {
     redirectTo,
   })
 
-  response.cookies.set(DEMO_SESSION_COOKIE, encodeDemoCookie(cookiePayload), {
+  response.cookies.set(DEMO_SESSION_COOKIE, await encodeDemoCookie(cookiePayload), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

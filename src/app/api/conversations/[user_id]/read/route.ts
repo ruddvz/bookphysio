@@ -11,7 +11,7 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser()
 
   const { user_id } = await params
-  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+  const demoSession = !user ? await parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
 
   if (!user && demoSession) {
     const targetUser = getDemoProfileById(user_id)

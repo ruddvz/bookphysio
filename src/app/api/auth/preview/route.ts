@@ -1,8 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import crypto from 'crypto'
+import { createPreviewToken } from '@/lib/preview/token'
 
-function makeToken(secret: string): string {
-  return crypto.createHmac('sha256', secret).update('bookphysio-preview').digest('hex')
+function constantTimeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  let difference = 0
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index)
+  }
+
+  return difference === 0
 }
 
 export async function POST(request: NextRequest) {
@@ -23,18 +32,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Password is required' }, { status: 400 })
   }
 
-  // Constant-time comparison to prevent timing attacks
-  const inputBuf = Buffer.from(password)
-  const secretBuf = Buffer.from(secret)
-  const match =
-    inputBuf.length === secretBuf.length &&
-    crypto.timingSafeEqual(inputBuf, secretBuf)
+  const match = constantTimeEqual(password, secret)
 
   if (!match) {
     return NextResponse.json({ error: 'Wrong password' }, { status: 401 })
   }
 
-  const token = makeToken(secret)
+  const token = await createPreviewToken(secret)
   const response = NextResponse.json({ ok: true })
   response.cookies.set('preview_token', token, {
     httpOnly: true,

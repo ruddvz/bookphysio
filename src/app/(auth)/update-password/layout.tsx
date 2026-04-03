@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Set a new password — BookPhysio',
   description: 'Complete your BookPhysio password recovery by setting a new password.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: '/update-password',
   },

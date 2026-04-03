@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { limit, offset } = parsed.data
-  const demoSession = !user ? parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+  const demoSession = !user ? await parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
 
   if (!user && demoSession) {
     const conversations = getDemoConversations(demoSession.sessionId, demoSession.userId)
