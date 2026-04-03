@@ -14,12 +14,8 @@ export interface Insurance {
 export interface ProviderLocation {
   id: string
   name: string
-  address: string
-  city: string
-  state: string
-  pincode: string
-  lat: number | null
-  lng: number | null
+  city: string | null
+  state: string | null
   visit_type: ('in_clinic' | 'home_visit')[]
 }
 
@@ -29,6 +25,7 @@ export interface ProviderCard {
   full_name: string
   title: 'Dr.' | 'PT' | 'BPT' | 'MPT' | null
   avatar_url: string | null
+  verified: boolean
   specialties: Specialty[]
   rating_avg: number
   rating_count: number
@@ -42,11 +39,17 @@ export interface ProviderCard {
   insurances: Insurance[]
 }
 
+export interface ProviderReview {
+  id: string
+  rating: number
+  comment: string | null
+  created_at: string
+}
+
 export interface ProviderProfile extends ProviderCard {
   bio: string | null
   icp_registration_no: string | null
   locations: ProviderLocation[]
-  verified: boolean
-  onboarding_step: 1 | 2 | 3 | 4
-  gstin: string | null
+  reviews?: ProviderReview[]
+  gallery_images?: string[]
 }

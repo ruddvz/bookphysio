@@ -5,20 +5,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Search, MessageSquare, Send, Paperclip, MoreVertical, Phone, Video, CheckCheck, Clock, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Conversation, Message } from '@/app/api/contracts/message'
+import {
+  formatConversationDateDivider,
+  formatConversationMessageTime,
+  formatConversationTimestamp,
+} from '@/lib/messaging/time'
 
 const EMPTY_MESSAGES: Message[] = []
-
-function formatTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffMins < 1440) return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
-  if (diffMins < 1440 * 2) return 'Yesterday'
-  return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
-}
 
 export default function ProviderMessages() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
@@ -79,6 +72,30 @@ export default function ProviderMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  useEffect(() => {
+    if (!selectedConversationId || !messagesData) {
+      return
+    }
+
+    queryClient.setQueryData<{ conversations: Conversation[]; total: number }>(
+      ['provider-conversations'],
+      (current) => {
+        if (!current) {
+          return current
+        }
+
+        return {
+          ...current,
+          conversations: current.conversations.map((conversation) => (
+            conversation.id === selectedConversationId
+              ? { ...conversation, unread_count: 0 }
+              : conversation
+          )),
+        }
+      },
+    )
+  }, [messagesData, queryClient, selectedConversationId])
+
   return (
     <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-8 h-[calc(100vh-100px)] flex flex-col animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -137,7 +154,7 @@ export default function ProviderMessages() {
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-[15px] font-black text-[#333333] truncate">{chat.other_user?.full_name || 'Unknown'}</span>
-                      <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap ml-2">{formatTime(chat.last_message_at || chat.created_at)}</span>
+                      <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap ml-2">{formatConversationTimestamp(chat.last_message_at || chat.created_at)}</span>
                     </div>
                     <p className="text-[13px] font-bold text-gray-400 truncate leading-tight mb-1">Patient</p>
                     <p className={cn(
@@ -205,7 +222,7 @@ export default function ProviderMessages() {
                   <>
                     <div className="text-center py-4">
                       <span className="px-4 py-1.5 bg-gray-100 rounded-full text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                        {new Date(messages[0]?.created_at || '').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                        {formatConversationDateDivider(messages[0]?.created_at || '')}
                       </span>
                     </div>
 
@@ -226,7 +243,7 @@ export default function ProviderMessages() {
                           </div>
                           <div className="flex items-center gap-2 mt-2 px-2">
                             <span className="text-[11px] font-bold text-gray-400">
-                              {new Date(msg.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                              {formatConversationMessageTime(msg.created_at)}
                             </span>
                             {isSent && (
                               msg.read_at ? <CheckCheck size={14} className="text-[#00766C]" /> : <Clock size={14} className="text-gray-300" />

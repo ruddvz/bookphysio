@@ -3,7 +3,7 @@ import { vi } from 'vitest'
 
 // Mock next/navigation
 vi.mock('next/navigation', async (importOriginal) => {
-  const actual = await importOriginal()
+  const actual = await importOriginal() as Record<string, unknown>
   return {
     ...actual,
     useRouter: () => ({

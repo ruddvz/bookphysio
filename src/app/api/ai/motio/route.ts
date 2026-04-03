@@ -3,6 +3,7 @@ import { streamText } from 'ai'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
+import { getRequestIpAddress } from '@/lib/server/runtime'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
 
 // Safely initialize the rate limiter if environment variables exist
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Optional Rate Limiting (The "Cap")
     if (ratelimit) {
-      const ip = req.ip ?? req.headers.get('x-real-ip') ?? 'anonymous'
+      const ip = getRequestIpAddress(req) ?? 'anonymous'
       const { success } = await ratelimit.limit(ip)
       
       if (!success) {

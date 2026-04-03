@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getDemoAdminStats } from '@/lib/demo/store'
-import { parseDemoCookie } from '@/lib/demo/session'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const demoSession = !user ? await parseDemoCookie(request.cookies.get('bp-demo-session')?.value) : null
+  const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
 
   if (!user && demoSession?.role === 'admin') {
     return NextResponse.json(getDemoAdminStats())
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     supabase.from('providers').select('*', { count: 'exact', head: true }).eq('verified', true),
     supabase.from('providers').select('*', { count: 'exact', head: true }).eq('verified', false),
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'patient'),
-    supabase.from('appointments').select('fee_inr, status').eq('status', 'completed')
+    supabaseAdmin.from('appointments').select('fee_inr, status').eq('status', 'completed')
   ])
 
   const gmv = appointments?.reduce((acc, curr) => acc + (curr.fee_inr || 0), 0) ?? 0

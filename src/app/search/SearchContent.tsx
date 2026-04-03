@@ -8,7 +8,7 @@ import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Map as MapIcon, List, Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles } from 'lucide-react'
+import { Map as MapIcon, List, Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
@@ -46,6 +46,8 @@ const DEMO_RESULTS = [
     nextSlot: 'Today · 6:30 PM',
     icon: Activity,
     href: '/search?city=Bangalore&specialty=Sports%20Physio',
+    coverage: 'Koramangala, Indiranagar',
+    availability: '94%'
   },
   {
     title: 'Back Pain Fast Track',
@@ -55,6 +57,8 @@ const DEMO_RESULTS = [
     nextSlot: 'Tomorrow · 10:30 AM',
     icon: MapPin,
     href: '/search?city=Delhi&specialty=Pain%20Management',
+    coverage: 'South Delhi, Saket',
+    availability: '88%'
   },
   {
     title: 'Home Visit Preview',
@@ -64,6 +68,8 @@ const DEMO_RESULTS = [
     nextSlot: 'Today · Evening',
     icon: Zap,
     href: '/search?visit_type=home_visit',
+    coverage: 'Bandra, Juhu, Andheri',
+    availability: '100%'
   },
   {
     title: 'Post-op Recovery',
@@ -73,8 +79,20 @@ const DEMO_RESULTS = [
     nextSlot: 'Soon',
     icon: Sparkles,
     href: '/search?specialty=Post-Surgery%20Rehab',
+    coverage: 'Kothrud, Baner',
+    availability: '76%'
   },
 ]
+
+async function fetchSearchResults(url: string): Promise<SearchResponse> {
+  const response = await fetch(url, { cache: 'no-store' })
+
+  if (!response.ok) {
+    throw new Error(`Provider search failed with status ${response.status}`)
+  }
+
+  return response.json() as Promise<SearchResponse>
+}
 
 function providerToDoctor(p: ProviderCard): Doctor {
   const nameWithTitle = p.full_name.startsWith('Dr.') ? p.full_name : `Dr. ${p.full_name}`
@@ -101,7 +119,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
       : 'Check availability',
     visitTypes: (p.visit_types ?? []).map((v) => VISIT_TYPE_LABELS[v] ?? v),
     fee: p.consultation_fee_inr ?? 0,
-    icpVerified: true, // Assuming high-quality from top-level results
+    icpVerified: p.verified,
   }
 }
 
@@ -155,9 +173,9 @@ export default function SearchContent() {
   }, [city, location, specialty, visit_type, max_fee, lat, lng])
 
   // Polling with SWR (Phase 11.5)
-  const { data, error: swrError, isLoading: swrLoading } = useSWR<SearchResponse>(
+  const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
     fetchUrl,
-    (url: string) => fetch(url, { cache: 'no-store' }).then(res => res.json()),
+    fetchSearchResults,
     { 
       refreshInterval: 30000, // 30 seconds poll
       revalidateOnFocus: true,
@@ -274,7 +292,9 @@ export default function SearchContent() {
                               </p>
                             </div>
                             <button
-                              onClick={() => fetchProviders()}
+                              onClick={() => {
+                                void mutate()
+                              }}
                               className="inline-flex items-center justify-center rounded-[22px] bg-[#333333] px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-[#00766C]"
                             >
                               Retry search
@@ -290,7 +310,7 @@ export default function SearchContent() {
                           <span>These cards show how live results will look once providers match.</span>
                         </div>
 
-                        <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-6 md:grid-cols-2">
                           {DEMO_RESULTS.map((result) => {
                             const ResultIcon = result.icon
 
@@ -298,39 +318,56 @@ export default function SearchContent() {
                               <Link
                                 key={result.title}
                                 href={result.href}
-                                className="group rounded-[30px] border border-gray-100 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-teal-100 hover:shadow-xl"
+                                className="group relative overflow-hidden rounded-[30px] border border-gray-100 bg-white p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-200/50 hover:shadow-2xl"
                               >
-                                <div className="flex items-start justify-between gap-4">
+                                {/* Decorative Gradient Blobs */}
+                                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-teal-50/50 blur-2xl transition-all group-hover:scale-150"></div>
+                                <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-orange-50/30 blur-2xl"></div>
+
+                                <div className="relative flex items-start justify-between gap-4">
                                   <div className="min-w-0 flex-1">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">
-                                      Preview result
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-teal-50 bg-teal-50/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-teal-700/70">
+                                      <Sparkles size={10} className="text-teal-500" />
+                                      Premium Preview
                                     </div>
-                                    <h3 className="mt-3 text-[18px] font-black tracking-tight text-[#333333]">{result.title}</h3>
-                                    <p className="mt-2 text-[13px] font-medium leading-relaxed text-gray-500">{result.specialty}</p>
+                                    <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-[#111111] group-hover:text-[#00766C] transition-colors">{result.title}</h3>
+                                    <p className="mt-2 text-[14px] font-medium leading-relaxed text-gray-500/90">{result.specialty}</p>
                                   </div>
-                                  <div className="flex h-12 w-12 items-center justify-center rounded-[20px] bg-[#E6F4F3] text-[#00766C] transition-transform group-hover:scale-105">
-                                    <ResultIcon size={22} strokeWidth={2.5} />
+                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-[#E6F4F3] text-[#00766C] shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-[#00766C] group-hover:text-white group-hover:shadow-teal-200">
+                                    <ResultIcon size={24} strokeWidth={2.5} />
                                   </div>
                                 </div>
 
-                                <div className="mt-5 flex flex-wrap items-center gap-2">
-                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
-                                    {result.city}
-                                  </span>
-                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
-                                    {result.fee}
-                                  </span>
-                                  <span className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
-                                    {result.nextSlot}
-                                  </span>
+                                <div className="relative mt-6 space-y-3">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-50 text-gray-400 group-hover:bg-teal-50 group-hover:text-teal-500 transition-colors">
+                                      <MapPin size={14} />
+                                    </div>
+                                    <span className="text-[13px] font-bold text-gray-600 truncate">{result.coverage}</span>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-50 text-gray-400 group-hover:bg-teal-50 group-hover:text-teal-500 transition-colors">
+                                      <Calendar size={14} />
+                                    </div>
+                                    <span className="text-[13px] font-bold text-gray-600">
+                                      Next: <span className="text-teal-600">{result.nextSlot}</span>
+                                    </span>
+                                  </div>
                                 </div>
 
-                                <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
-                                  <span className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">Preview search flow</span>
-                                  <span className="inline-flex items-center gap-2 text-[13px] font-black text-[#00766C]">
-                                    Open
-                                    <ArrowRight size={14} />
-                                  </span>
+                                <div className="relative mt-6 flex items-center justify-between border-t border-gray-100/80 pt-5">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse"></div>
+                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                      {result.availability} Match
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[16px] font-black text-[#111111]">{result.fee}</span>
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover:bg-[#FF6B35] group-hover:text-white transition-all duration-300">
+                                      <ArrowRight size={16} strokeWidth={3} />
+                                    </div>
+                                  </div>
                                 </div>
                               </Link>
                             )

@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useChat } from '@ai-sdk/react'
+import { TextStreamChatTransport, type UIMessage } from 'ai'
 import {
   type LucideIcon,
   Activity,
@@ -309,16 +310,70 @@ function renderMessageContent(content: string) {
   })
 }
 
+function getUIMessageText(message: UIMessage): string {
+  return message.parts.reduce((text, part) => {
+    return part.type === 'text' ? `${text}${part.text}` : text
+  }, '')
+}
+
+function toUIMessage(message: BookPhysioAIMessage): UIMessage {
+  return {
+    id: message.id,
+    role: message.role,
+    parts: [{ type: 'text', text: message.content }],
+  }
+}
+
 export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAIChatProps) {
   const copy = getVariantCopy(variant)
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const chatRef = useRef<HTMLDivElement>(null)
+  const [input, setInput] = useState('')
 
-  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading } = useChat({
-    api,
-    initialMessages,
+  const initialChatMessages = useMemo(() => initialMessages.map(toUIMessage), [initialMessages])
+  const transport = useMemo(
+    () => new TextStreamChatTransport<UIMessage>({
+      api,
+      prepareSendMessagesRequest: ({ messages }) => ({
+        body: {
+          messages: messages.flatMap((message) => {
+            if (message.role !== 'user' && message.role !== 'assistant') {
+              return []
+            }
+
+            const content = getUIMessageText(message).trim()
+
+            return content ? [{ role: message.role, content }] : []
+          }),
+        },
+      }),
+    }),
+    [api],
+  )
+  const { messages, sendMessage, status } = useChat<UIMessage>({
+    messages: initialChatMessages,
+    transport,
   })
+  const isLoading = status === 'submitted' || status === 'streaming'
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setInput(event.target.value)
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const nextInput = input.trim()
+    if (!nextInput || isLoading) {
+      return
+    }
+
+    setInput('')
+    void sendMessage({ text: nextInput }).catch(() => {
+      setInput(nextInput)
+    })
+  }
 
   // Determine current mascot expression
   const currentExpression: AceExpression = isLoading
@@ -333,7 +388,20 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
     }
   }, [messages])
 
-  const chatMessages = messages as BookPhysioAIMessage[]
+  const chatMessages = useMemo(
+    () => messages.flatMap((message) => {
+      if (message.role !== 'user' && message.role !== 'assistant') {
+        return []
+      }
+
+      return [{
+        id: message.id,
+        role: message.role,
+        content: getUIMessageText(message),
+      } satisfies BookPhysioAIMessage]
+    }),
+    [messages],
+  )
 
   return (
     <div className="min-h-[calc(100vh-100px)] bg-[radial-gradient(circle_at_top,_rgba(0,118,108,0.08),_transparent_40%),linear-gradient(180deg,_#f7f8f9_0%,_#fcfdfd_35%,_#ffffff_100%)] selection:bg-[#00766C]/10 selection:text-[#00766C]">

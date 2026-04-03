@@ -5,6 +5,7 @@ const adminFromMock = vi.fn()
 const adminUpdateUserByIdMock = vi.fn()
 const otpRateLimitMock = vi.fn()
 const apiRateLimitMock = vi.fn()
+const previewRateLimitMock = vi.fn()
 const sendOtpMock = vi.fn()
 const verifyOtpMock = vi.fn()
 
@@ -29,6 +30,9 @@ vi.mock('@/lib/upstash', () => ({
   },
   apiRatelimit: {
     limit: (...args: unknown[]) => apiRateLimitMock(...args),
+  },
+  previewRatelimit: {
+    limit: (...args: unknown[]) => previewRateLimitMock(...args),
   },
 }))
 
@@ -62,6 +66,7 @@ describe('Auth and admin hardening routes', () => {
     vi.clearAllMocks()
     otpRateLimitMock.mockResolvedValue({ success: true })
     apiRateLimitMock.mockResolvedValue({ success: true })
+    previewRateLimitMock.mockResolvedValue({ success: true })
     sendOtpMock.mockResolvedValue({ success: true })
     verifyOtpMock.mockResolvedValue({ success: true })
   })
@@ -212,6 +217,28 @@ describe('Auth and admin hardening routes', () => {
     expect(signInWithOtp).toHaveBeenCalledWith({
       phone: '+919876543210',
       options: { shouldCreateUser: true },
+    })
+  })
+
+  it('rate limits preview password attempts by trusted IP address', async () => {
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('VERCEL', '1')
+    previewRateLimitMock.mockResolvedValue({ success: false })
+
+    const { POST } = await import('../auth/preview/route')
+    const response = await POST(new Request('http://localhost/api/auth/preview', {
+      method: 'POST',
+      body: JSON.stringify({ password: 'preview-secret' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-real-ip': '203.0.113.18',
+      },
+    }) as never)
+
+    expect(response.status).toBe(429)
+    expect(previewRateLimitMock).toHaveBeenCalledWith('preview:ip:203.0.113.18')
+    await expect(response.json()).resolves.toEqual({
+      error: 'Too many preview access attempts. Try again later.',
     })
   })
 

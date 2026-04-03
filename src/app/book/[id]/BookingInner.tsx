@@ -8,8 +8,11 @@ import { StepConfirm } from './StepConfirm'
 import { StepPayment } from './StepPayment'
 import { StepSuccess } from './StepSuccess'
 import { Check, Calendar, Clock, MapPin, ShieldCheck, User, ArrowLeft, Phone, Mail, Award, Sparkles, Building2, ChevronRight, LayoutDashboard } from 'lucide-react'
+import { formatIndiaDateInput } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { getVisitTypeConsultationFee } from '@/lib/booking/policy'
+import { formatPublicProviderLocation } from '@/lib/providers/public'
 
 type Step = 1 | 2 | 3
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -27,6 +30,7 @@ interface PatientDetails {
   phone: string
   email: string
   reason: string
+  homeVisitAddress: string
 }
 
 interface BookingResult {
@@ -48,10 +52,11 @@ export default function BookingInner() {
   const searchParams = useSearchParams()
   const doctorId = params.id as string
 
-  const date = searchParams.get('date') ?? new Date().toISOString().split('T')[0]
+  const date = searchParams.get('date') ?? formatIndiaDateInput(new Date())
   const time = searchParams.get('time') ?? ''
   const visitType = searchParams.get('type') ?? 'in_clinic'
   const slotId = searchParams.get('slot_id') ?? ''
+  const locationId = searchParams.get('location_id') ?? ''
 
   const [step, setStep] = useState<Step>(1)
   const [patient, setPatient] = useState<PatientDetails | null>(null)
@@ -64,19 +69,19 @@ export default function BookingInner() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((data: any) => {
         const nameWithTitle = data.full_name?.startsWith('Dr.') ? data.full_name : `Dr. ${data.full_name ?? ''}`
-        const loc = data.locations?.[0]
+        const loc = data.locations?.find((location: { id?: string }) => location.id === locationId) ?? data.locations?.[0]
         setDoctor({
           name: nameWithTitle,
           specialty: data.specialties?.[0]?.name ?? 'Physiotherapist',
-          location: loc ? `${loc.address ?? ''}, ${loc.city ?? ''}`.replace(/^, /, '') : 'India',
-          fee: data.consultation_fee_inr ?? 0,
+          location: loc ? formatPublicProviderLocation(loc) : 'India',
+          fee: getVisitTypeConsultationFee(data.consultation_fee_inr ?? 0, visitType),
           avatar_url: data.avatar_url,
         })
       })
       .catch(() => {
         setDoctor({ name: 'Doctor', specialty: 'Physiotherapist', location: 'India', fee: 0 })
       })
-  }, [doctorId])
+  }, [doctorId, locationId, visitType])
 
   if (!doctor) {
     return (
@@ -97,8 +102,13 @@ export default function BookingInner() {
     )
   }
 
-  const displayDate = new Date(date).toLocaleDateString('en-IN', {
-    weekday: 'long', day: 'numeric', month: 'long',
+  const bookingLocation = visitType === 'home_visit'
+    ? patient?.homeVisitAddress || doctor.location
+    : doctor.location
+  const amountLabel = 'Amount Due'
+
+  const displayDate = new Date(`${date}T00:00:00+05:30`).toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata',
   })
 
   return (
@@ -113,18 +123,18 @@ export default function BookingInner() {
                   <div key={s.n} className="flex items-center">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-[12px] text-[13px] font-black transition-all duration-500 border-2",
-                        step === s.n ? "bg-[#00766C] text-white border-[#00766C] shadow-xl shadow-teal-900/10 scale-110" :
+                        "flex h-10 w-10 items-center justify-center rounded-[18px] text-[15px] font-black transition-all duration-700 border-2",
+                        step === s.n ? "bg-[#00766C] text-white border-[#00766C] shadow-[0_12px_24px_-8px_rgba(0,118,108,0.4)] scale-110" :
                         step > s.n ? "bg-[#00766C] text-white border-[#00766C]" :
-                        "bg-white text-gray-300 border-gray-100"
+                        "bg-white text-gray-200 border-gray-100"
                       )}>
                         {step > s.n ? (
-                          <Check size={16} strokeWidth={4} className="animate-in zoom-in duration-300" />
+                          <Check size={18} strokeWidth={4} className="animate-in zoom-in duration-500" />
                         ) : s.n}
                       </div>
                       <span className={cn(
-                        "text-[11px] font-black uppercase tracking-[0.2em] transition-colors",
-                        step >= s.n ? "text-[#333333]" : "text-gray-300"
+                        "text-[12px] font-black uppercase tracking-[0.25em] transition-all duration-700",
+                        step >= s.n ? "text-[#111111]" : "text-gray-200"
                       )}>
                         {s.label}
                       </span>
@@ -141,7 +151,7 @@ export default function BookingInner() {
             
             <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
                <ShieldCheck size={16} className="text-emerald-500" />
-               <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none">256-bit Secure Session</span>
+              <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none">Protected Booking Flow</span>
             </div>
          </div>
       </div>
@@ -180,6 +190,7 @@ export default function BookingInner() {
                   <StepPayment
                     doctorId={doctorId}
                     slotId={slotId}
+                    locationId={locationId || undefined}
                     visitType={visitType}
                     feeInr={doctor.fee}
                     patient={patient}
@@ -195,7 +206,7 @@ export default function BookingInner() {
                     date={date}
                     time={time}
                     visitType={visitType}
-                    location={doctor.location}
+                    location={bookingLocation}
                     totalPaid={bookingResult.totalPaid}
                     gstAmount={bookingResult.gstAmount}
                     paymentMethod={bookingResult.paymentMethod}
@@ -284,14 +295,27 @@ export default function BookingInner() {
                     {/* Patient Context Summary */}
                     {step === 2 && patient && (
                       <div className="pt-10 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <div className="flex items-center gap-5">
-                          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-[#00766C]">
-                             <User size={20} strokeWidth={3} />
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-[#00766C]">
+                               <User size={20} strokeWidth={3} />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-2">Patient Details</p>
+                               <p className="text-[16px] font-black text-[#333333] tracking-tight">{patient.fullName}</p>
+                            </div>
                           </div>
-                          <div>
-                             <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-2">Authenticated For</p>
-                             <p className="text-[16px] font-black text-[#333333] tracking-tight">{patient.fullName}</p>
-                          </div>
+                          {visitType === 'home_visit' && patient.homeVisitAddress ? (
+                            <div className="flex items-start gap-5">
+                              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
+                                 <MapPin size={20} strokeWidth={3} />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-2">Visit Address</p>
+                                <p className="text-[15px] font-black text-[#333333] tracking-tight leading-relaxed">{patient.homeVisitAddress}</p>
+                              </div>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     )}
@@ -311,14 +335,14 @@ export default function BookingInner() {
                           <span className="text-[13px] font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
                        </div>
                        <div className="flex justify-between items-center py-6 px-8 bg-[#333333] rounded-[28px] shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
-                          <span className="text-[14px] font-black text-white/40 uppercase tracking-widest">Pay Amount</span>
+                          <span className="text-[14px] font-black text-white/40 uppercase tracking-widest">{amountLabel}</span>
                           <span className="text-[26px] font-black text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
                        </div>
                     </div>
 
                     <div className="flex items-center justify-center gap-3 text-[11px] font-black text-gray-300 uppercase tracking-[0.2em] pt-4">
                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                       Encrypted Transaction
+                        Encrypted Booking Request
                     </div>
                   </div>
                 </div>

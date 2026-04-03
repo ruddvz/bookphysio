@@ -17,8 +17,8 @@ describe('RootLayout metadata regressions', () => {
     expect(metadata.metadataBase?.toString()).toBe('https://bookphysio.in/')
 
     expect(metadata.openGraph).toMatchObject({
-      title: 'BookPhysio — Book Physiotherapists',
-      description: 'Find and book physiotherapists near you.',
+      title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
+      description: "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
       siteName: 'BookPhysio',
       type: 'website',
       url: 'https://bookphysio.in',
@@ -27,23 +27,23 @@ describe('RootLayout metadata regressions', () => {
 
     expect(metadata.openGraph?.images).toEqual([
       {
-        url: '/icon.png',
-        width: 512,
-        height: 512,
-        alt: 'BookPhysio brand mark',
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'BookPhysio — Book Verified Physiotherapists in India',
       },
     ])
 
     expect(metadata.twitter).toEqual({
-      card: 'summary',
-      title: 'BookPhysio — Book Physiotherapists',
-      description: 'Find and book physiotherapists near you. In-clinic and home visits available across India.',
-      images: ['/icon.png'],
+      card: 'summary_large_image',
+      title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
+      description: "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      images: ['/opengraph-image'],
     })
   })
 
   it('avoids non-standard html scroll attributes', () => {
-    const tree = RootLayout({ children: <div>Homepage</div> }) as ReactElement
+    const tree = RootLayout({ children: <div>Homepage</div> }) as ReactElement<{ 'data-scroll-behavior'?: string }>
 
     expect(tree.props['data-scroll-behavior']).toBeUndefined()
   })

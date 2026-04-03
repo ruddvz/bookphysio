@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "reviews_patient_insert" ON reviews;

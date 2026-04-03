@@ -139,18 +139,18 @@ export default function LoginPage() {
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <BpLogo href="/" />
 
-      <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+      <h1 className="text-[32px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Welcome back
       </h1>
-      <p className="text-[15px] font-bold text-bp-body/40 mb-10">Access your recovery dashboard</p>
+      <p className="text-[16px] font-bold text-bp-body/40 mb-10">Access your recovery dashboard</p>
 
       {/* Segmented Control Mode Switcher */}
-      <div className="flex bg-bp-surface p-1.5 rounded-2xl mb-10 border border-bp-border">
+      <div className="flex bg-gray-50 p-1.5 rounded-3xl mb-10 border border-gray-100 shadow-inner">
         <button
           onClick={() => setLoginMode('phone')}
           className={cn(
-            "flex-1 py-3.5 text-[13px] font-black rounded-xl transition-all",
-            loginMode === 'phone' ? "bg-white text-bp-accent shadow-lg shadow-bp-primary/5" : "text-bp-body/40 hover:text-bp-primary"
+            "flex-1 py-4 text-[13px] font-black rounded-[20px] transition-all duration-300",
+            loginMode === 'phone' ? "bg-white text-teal-600 shadow-xl shadow-teal-900/5 ring-1 ring-black/5" : "text-gray-400 hover:text-gray-600"
           )}
         >
           Mobile OTP
@@ -158,8 +158,8 @@ export default function LoginPage() {
         <button
           onClick={() => setLoginMode('email')}
           className={cn(
-            "flex-1 py-3.5 text-[13px] font-black rounded-xl transition-all",
-            loginMode === 'email' ? "bg-white text-bp-accent shadow-lg shadow-bp-primary/5" : "text-bp-body/40 hover:text-bp-primary"
+            "flex-1 py-4 text-[13px] font-black rounded-[20px] transition-all duration-300",
+            loginMode === 'email' ? "bg-white text-teal-600 shadow-xl shadow-teal-900/5 ring-1 ring-black/5" : "text-gray-400 hover:text-gray-600"
           )}
         >
           Magic Link
@@ -167,20 +167,21 @@ export default function LoginPage() {
       </div>
 
       {errors.general && (
-        <div className="mb-6 rounded-2xl bg-red-50 border border-red-100 px-5 py-4 text-[13px] font-bold text-red-600">
+        <div className="mb-8 rounded-3xl bg-red-50 border border-red-100 p-5 text-[13px] font-bold text-red-600 flex items-center gap-3 animate-in fade-in zoom-in-95">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           {errors.general}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit} noValidate className="space-y-8">
         {loginMode === 'phone' ? (
-          <div className="mb-10">
-            <label htmlFor="phone" className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Mobile Number</label>
+          <div>
+            <label htmlFor="phone" className="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Mobile Number</label>
             <div className={cn(
-              "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
-              errors.phone ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-accent/5' : 'border-bp-border bg-bp-surface/30'
+              "flex border-2 rounded-[24px] overflow-hidden transition-all duration-500 group bg-gray-50/50",
+              errors.phone ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-teal-500 bg-white shadow-2xl shadow-teal-900/5' : 'border-gray-100 hover:border-gray-200'
             )}>
-              <span className="px-5 py-4 text-[15px] font-black text-bp-primary bg-bp-surface/50 border-r-2 border-bp-border flex items-center gap-2">
+              <span className="px-6 py-5 text-[17px] font-black text-[#111111] bg-gray-50 border-r-2 border-gray-100 flex items-center gap-2 group-focus-within:text-teal-600 transition-colors">
                 +91
               </span>
               <input
@@ -192,17 +193,17 @@ export default function LoginPage() {
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                className="flex-1 px-5 py-4 text-[15px] font-black text-bp-primary border-none outline-none bg-transparent placeholder:text-bp-body/20"
+                className="flex-1 px-6 py-5 text-[18px] font-black text-[#111111] border-none outline-none bg-transparent placeholder:text-gray-300 tracking-tight"
               />
             </div>
-            {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.phone}</p>}
+            {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-3 ml-2 animate-in slide-in-from-top-2">{errors.phone}</p>}
           </div>
         ) : (
-          <div className="mb-10">
-            <label htmlFor="email" className="block text-[10px] font-black text-bp-primary/40 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
+          <div>
+            <label htmlFor="email" className="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
             <div className={cn(
-              "flex border-2 rounded-2xl overflow-hidden transition-all duration-300",
-              errors.email ? 'border-red-200 bg-red-50/30' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-accent/5' : 'border-bp-border bg-bp-surface/30'
+              "flex border-2 rounded-[24px] overflow-hidden transition-all duration-500 group bg-gray-50/50",
+              errors.email ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-teal-500 bg-white shadow-2xl shadow-teal-900/5' : 'border-gray-100 hover:border-gray-200'
             )}>
               <input
                 id="email"
@@ -212,10 +213,10 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                className="flex-1 px-5 py-4 text-[15px] font-black text-bp-primary border-none outline-none bg-transparent placeholder:text-bp-body/20"
+                className="flex-1 px-6 py-5 text-[18px] font-black text-[#111111] border-none outline-none bg-transparent placeholder:text-gray-300"
               />
             </div>
-            {errors.email && <p className="text-[12px] font-bold text-red-500 mt-2 ml-1">{errors.email}</p>}
+            {errors.email && <p className="text-[12px] font-bold text-red-500 mt-3 ml-2 animate-in slide-in-from-top-2">{errors.email}</p>}
           </div>
         )}
 
@@ -223,14 +224,20 @@ export default function LoginPage() {
           type="submit"
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-10 transition-all active:scale-[0.98]",
-            loading ? 'bg-bp-border cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary/95 shadow-xl shadow-bp-primary/10'
+            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl",
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-[#00766C] shadow-teal-900/10'
           )}
         >
-          {loading ? 'Sending link...' : (
+          {loading ? (
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Authenticating...</span>
+            </div>
+          ) : (
             <>
-              {loginMode === 'phone' ? 'Send OTP' : 'Send Magic Link'}
-              <ArrowRight size={18} strokeWidth={3} className="text-bp-accent" />
+              <span className="relative z-10">{loginMode === 'phone' ? 'Secure Login' : 'Send Magic Link'}</span>
+              <ArrowRight size={18} strokeWidth={3} className="text-teal-400 group-hover:translate-x-1 transition-transform relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
           )}
         </button>

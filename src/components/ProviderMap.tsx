@@ -10,6 +10,23 @@ import { cn } from '@/lib/utils'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
+type ProviderFeature = {
+  properties: {
+    cluster_id?: number
+    doctor?: Doctor
+  }
+  geometry: {
+    coordinates: [number, number]
+  }
+  layer?: {
+    id?: string
+  }
+}
+
+type ProviderMapClickEvent = {
+  features?: ProviderFeature[]
+}
+
 const MapErrorFallback = () => (
   <div className="w-full h-full bg-[#f8fafc] flex flex-col items-center justify-center p-12 text-center gap-6 relative overflow-hidden">
      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#00766C_1px,transparent_1.5px)] [background-size:24px_24px]"></div>
@@ -52,7 +69,7 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
   [doctors])
 
   // Convert doctors to GeoJSON for clustering
-  const geojson: GeoJSON.FeatureCollection = useMemo(() => ({
+  const geojson = useMemo(() => ({
     type: 'FeatureCollection',
     features: doctorsWithCoords.map(d => ({
       type: 'Feature',
@@ -89,12 +106,25 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
     }
   }, [doctorsWithCoords])
 
-  const onClusterClick = (event: any) => {
-    const feature = event.features[0]
-    const clusterId = feature.properties.cluster_id
-    const mapboxSource = mapRef.current?.getSource('providers') as mapboxgl.GeoJSONSource
+  const onClusterClick = (event: ProviderMapClickEvent) => {
+    const feature = event.features?.[0]
+    if (!feature || feature.properties.cluster_id == null) {
+      return
+    }
 
-    mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
+    const clusterId = feature.properties.cluster_id
+    const mapboxSource = mapRef.current?.getSource('providers') as {
+      getClusterExpansionZoom: (
+        clusterId: number,
+        callback: (err: Error | null | undefined, zoom: number | undefined) => void,
+      ) => void
+    } | undefined
+
+    if (!mapboxSource) {
+      return
+    }
+
+    mapboxSource.getClusterExpansionZoom(clusterId, (err: Error | null | undefined, zoom: number | undefined) => {
       if (err) return
 
       mapRef.current?.easeTo({
@@ -105,9 +135,11 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
     })
   }
 
-  const onPointClick = (event: any) => {
-    const feature = event.features[0]
-    setSelectedDoctor(feature.properties.doctor)
+  const onPointClick = (event: ProviderMapClickEvent) => {
+    const feature = event.features?.[0]
+    if (feature?.properties.doctor) {
+      setSelectedDoctor(feature.properties.doctor)
+    }
   }
 
   if (!MAPBOX_TOKEN) {
@@ -134,7 +166,7 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
       mapStyle="mapbox://styles/mapbox/light-v11"
       mapboxAccessToken={MAPBOX_TOKEN}
       interactiveLayerIds={['clusters', 'unclustered-point']}
-      onClick={(e) => {
+      onClick={(e: ProviderMapClickEvent) => {
         const feature = e.features?.[0]
         if (!feature) {
           setSelectedDoctor(null)

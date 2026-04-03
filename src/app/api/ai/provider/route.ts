@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { createClient } from '@/lib/supabase/server'
-import { parseDemoCookie } from '@/lib/demo/session'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
 
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    const demoSession = !user ? await parseDemoCookie(req.cookies.get('bp-demo-session')?.value) : null
+    const demoSession = !user ? await getDemoSessionFromCookies(req.cookies) : null
 
     if (!user && demoSession?.role !== 'provider') {
       return new NextResponse('Unauthorized', { status: 401 })

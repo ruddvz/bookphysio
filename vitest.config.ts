@@ -18,7 +18,6 @@ export default defineConfig({
       '**/AdminDashboard.test.tsx',
       '**/SpecialtyPage.test.tsx',
       '**/CityPage.test.tsx',
-      '**/messages.test.ts',
     ],
   },
   resolve: {

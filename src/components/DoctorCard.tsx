@@ -2,6 +2,7 @@
 
 import { MouseEvent, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatIndiaDateInput } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import {
   ArrowRight,
@@ -81,7 +82,7 @@ function generateDeterministicSlots(id: string): SlotDay[] {
     days.push({
       label: index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : date.toLocaleDateString('en-IN', { weekday: 'short' }),
       dateLabel: date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-      iso: date.toISOString().split('T')[0],
+      iso: formatIndiaDateInput(date),
       slots,
     })
   }

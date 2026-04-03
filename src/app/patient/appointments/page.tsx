@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2, CalendarPlus } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
@@ -229,7 +229,7 @@ function PatientAppointmentsContent() {
                           {appt.availabilities?.starts_at ? formatApptDate(appt.availabilities.starts_at) : 'Review Pending'}
                        </div>
                        <div className="flex items-center gap-3">
-                          <span className="text-bp-body/20 text-[11px] font-black uppercase tracking-widest">Fee Paid</span>
+                          <span className="text-bp-body/20 text-[11px] font-black uppercase tracking-widest">Session Fee</span>
                           <span className="text-[18px] font-black text-bp-primary tracking-tighter">₹{appt.fee_inr}</span>
                        </div>
                     </div>

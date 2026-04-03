@@ -1,0 +1,164 @@
+import { NextRequest } from 'next/server'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { buildAppointmentNotes } from '@/lib/booking/policy'
+
+const createClientMock = vi.fn()
+const supabaseAdminFromMock = vi.fn()
+
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: (...args: unknown[]) => createClientMock(...args),
+}))
+
+vi.mock('@/lib/supabase/admin', () => ({
+  supabaseAdmin: {
+    from: (table: string) => supabaseAdminFromMock(table),
+  },
+}))
+
+function createAdminReadChain(result: unknown[] | Record<string, unknown>) {
+  const rows = Array.isArray(result) ? result : [result]
+  const chain = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    in: vi.fn().mockResolvedValue({
+      data: rows,
+      error: null,
+    }),
+    order: vi.fn().mockResolvedValue({
+      data: rows,
+      error: null,
+    }),
+    single: vi.fn().mockResolvedValue({
+      data: Array.isArray(result) ? (result[0] ?? null) : result,
+      error: null,
+    }),
+  }
+
+  return chain
+}
+
+function mockAdminTableRows(rowsByTable: Record<string, unknown[] | Record<string, unknown>>) {
+  supabaseAdminFromMock.mockImplementation((table: string) => createAdminReadChain(rowsByTable[table] ?? []))
+}
+
+describe('GET /api/appointments', () => {
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
+
+  it('sanitizes list responses so booking metadata is not returned in the notes field', async () => {
+    const userChain = {
+      select: vi.fn(() => userChain),
+      eq: vi.fn(() => userChain),
+      single: vi.fn().mockResolvedValue({ data: { role: 'patient' }, error: null }),
+    }
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'patient-1' } } }),
+      },
+      from: (table: string) => {
+        if (table === 'users') {
+          return userChain
+        }
+
+        throw new Error(`Unhandled table: ${table}`)
+      },
+    })
+
+    mockAdminTableRows({
+      appointments: [{
+        id: 'appt-1',
+        patient_id: 'patient-1',
+        provider_id: 'provider-1',
+        visit_type: 'home_visit',
+        status: 'confirmed',
+        fee_inr: 1560,
+        notes: buildAppointmentNotes({
+          visitType: 'home_visit',
+          patientAddress: '12 Palm Street, Bengaluru',
+          notes: 'Bring previous MRI report',
+        }),
+      }],
+      providers: [{
+        id: 'provider-1',
+        specialty_ids: ['sp-1'],
+        gstin: 'should-not-leak',
+        users: { full_name: 'Dr. Priya Sharma', avatar_url: null },
+      }],
+      specialties: [{ id: 'sp-1', name: 'Sports Physio' }],
+    })
+
+    const { GET } = await import('../appointments/route')
+    const response = await GET(new NextRequest('http://localhost/api/appointments'))
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    const body = await response.json()
+
+    expect(body).toMatchObject({
+      appointments: [
+        {
+          id: 'appt-1',
+          notes: null,
+          provider_notes: null,
+          providers: {
+            users: { full_name: 'Dr. Priya Sharma', avatar_url: null },
+            specialties: [{ name: 'Sports Physio' }],
+          },
+        },
+      ],
+    })
+    expect(body.appointments[0].providers).not.toHaveProperty('gstin')
+  })
+
+  it('returns provider appointments with patient summaries without relying on provider-scoped users joins', async () => {
+    const userChain = {
+      select: vi.fn(() => userChain),
+      eq: vi.fn(() => userChain),
+      single: vi.fn().mockResolvedValue({ data: { role: 'provider' }, error: null }),
+    }
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'provider-1' } } }),
+      },
+      from: (table: string) => {
+        if (table === 'users') {
+          return userChain
+        }
+
+        throw new Error(`Unhandled table: ${table}`)
+      },
+    })
+
+    mockAdminTableRows({
+      appointments: [{
+        id: 'appt-2',
+        patient_id: 'patient-2',
+        provider_id: 'provider-1',
+        visit_type: 'in_clinic',
+        status: 'confirmed',
+        fee_inr: 1200,
+        notes: 'Legacy note',
+      }],
+      users: [{ id: 'patient-2', full_name: 'Patient Two', phone: '+919999999999', avatar_url: null }],
+    })
+
+    const { GET } = await import('../appointments/route')
+    const response = await GET(new NextRequest('http://localhost/api/appointments'))
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({
+      appointments: [
+        {
+          id: 'appt-2',
+          notes: null,
+          provider_notes: null,
+          patient: { full_name: 'Patient Two', avatar_url: null },
+        },
+      ],
+    })
+  })
+})

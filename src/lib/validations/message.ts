@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const messageRequestSchema = z.object({
   receiver_id: z.string().uuid('Invalid receiver ID'),
   content: z.string()
+    .trim()
     .min(1, 'Message cannot be empty')
     .max(5000, 'Message is too long'),
 })
@@ -11,15 +12,19 @@ export const markConversationReadSchema = z.object({
   user_id: z.string().uuid('Invalid user ID'),
 })
 
+const conversationsLimitSchema = z.coerce.number().int().min(1).max(100).default(20)
+const messagesLimitSchema = z.coerce.number().int().min(1).max(200).default(50)
+const offsetSchema = z.coerce.number().int().min(0).default(0)
+
 export const getConversationsSchema = z.object({
-  limit: z.string().optional().default('20').pipe(z.coerce.number().min(1).max(100)),
-  offset: z.string().optional().default('0').pipe(z.coerce.number().min(0)),
+  limit: conversationsLimitSchema,
+  offset: offsetSchema,
 })
 
 export const getMessagesSchema = z.object({
   user_id: z.string().uuid('Invalid user ID'),
-  limit: z.string().optional().default('50').pipe(z.coerce.number().min(1).max(200)),
-  offset: z.string().optional().default('0').pipe(z.coerce.number().min(0)),
+  limit: messagesLimitSchema,
+  offset: offsetSchema,
 })
 
 export type MessageRequest = z.infer<typeof messageRequestSchema>

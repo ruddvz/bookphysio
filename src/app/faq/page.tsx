@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 
 const FAQS = [
   {
@@ -23,7 +23,7 @@ const FAQS = [
       },
       {
         question: 'How do I pay for my session?',
-        answer: 'You can pay online via UPI, Credit/Debit Cards, or Net Banking. Some clinics also allow "Pay at Clinic", which you can select during current checkout.',
+        answer: 'Right now sessions are reserved through BookPhysio and the consultation amount is collected during the visit. When online payments are enabled for a booking flow, that will be shown clearly during checkout.',
       },
        {
         question: 'Can I cancel or reschedule my booking?',
@@ -80,69 +80,110 @@ export default function FAQPage() {
       />
       <Navbar />
 
-      <main className="bg-[#F7F8F9] min-h-screen py-20">
-        <div className="max-w-[800px] mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#E6F4F3] flex items-center justify-center mb-6">
-              <HelpCircle className="w-8 h-8 text-[#00766C]" />
+      <main className="bg-white min-h-screen">
+        {/* Full-width Hero Section - Editorial Style */}
+        <section className="bg-[#111111] text-white py-32 sm:py-48 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-bp-primary/15 rounded-full blur-[140px] -mr-80 -mt-80 animate-pulse duration-[10s]"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500/5 rounded-full blur-[100px] -ml-40 -mb-40"></div>
+          
+          <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+               Clinical Support Desk
             </div>
-            <h1 className="text-[40px] font-bold text-[#333333] tracking-tight mb-4">
-              Frequently Asked Questions
+            <h1 className="text-[56px] sm:text-[88px] font-black mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+              How can we <span className="text-bp-primary italic">help?</span>
             </h1>
-            <p className="text-[18px] text-[#666666]">
-              Everything you need to know about using BookPhysio.in
+            <p className="text-[18px] sm:text-[24px] leading-relaxed max-w-[750px] mx-auto text-white/50 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+              Search our clinical protocols, booking policies, and provider verification standards for a seamless recovery journey.
             </p>
           </div>
+        </section>
 
-          <div className="flex flex-col gap-10">
-            {FAQS.map((category) => (
-              <div key={category.category}>
-                <h2 className="text-[24px] font-bold text-[#333333] mb-6 border-b border-[#E5E5E5] pb-2">
-                  {category.category}
-                </h2>
-                <div className="flex flex-col gap-3">
-                  {category.items.map((item, idx) => {
-                    const id = `${category.category}-${idx}`
-                    const isOpen = openIndex === id
-                    return (
-                      <div
-                        key={id}
-                        className={`bg-white rounded-[8px] border ${isOpen ? 'border-[#00766C] shadow-md' : 'border-[#E5E5E5]'} transition-all`}
-                      >
-                        <button
-                          onClick={() => toggle(id)}
-                          className="w-full text-left px-6 py-5 flex items-center justify-between group focus:outline-none"
-                        >
-                          <span className={`text-[17px] font-semibold ${isOpen ? 'text-[#00766C]' : 'text-[#333333]'} group-hover:text-[#00766C] transition-colors`}>
-                            {item.question}
-                          </span>
-                          {isOpen ? (
-                            <ChevronUp className="w-5 h-5 text-[#00766C]" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-[#9CA3AF] group-hover:text-[#00766C]" />
-                          )}
-                        </button>
-                        {isOpen && (
-                          <div className="px-6 pb-6 text-[16px] text-[#555555] leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                            {item.answer}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
+        {/* FAQ Content Section */}
+        <section className="py-24 sm:py-40 bg-white">
+          <div className="max-w-[1142px] mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
+              
+              {/* Sidebar Category List */}
+              <div className="lg:col-span-4 sticky top-32 group">
+                 <div className="space-y-16">
+                    <div>
+                       <h2 className="text-[12px] font-black text-bp-primary uppercase tracking-[0.4em] mb-12">Clinical Index</h2>
+                       <ul className="space-y-6">
+                          {FAQS.map((category) => (
+                             <li key={category.category}>
+                                <a 
+                                  href={`#${category.category.toLowerCase().replace(/\s+/g, '-')}`} 
+                                  className="text-[20px] font-black text-[#111111] hover:text-bp-primary transition-all flex items-center gap-4 group/item"
+                                >
+                                   {category.category}
+                                   <div className="w-1.5 h-1.5 rounded-full bg-bp-primary opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                                </a>
+                             </li>
+                          ))}
+                       </ul>
+                    </div>
+
+                    <div className="p-10 bg-bp-surface rounded-[40px] border border-bp-border/40 relative overflow-hidden group">
+                       <div className="absolute top-0 right-0 w-32 h-32 bg-bp-primary/5 rounded-full blur-2xl -mr-16 -mt-16"></div>
+                       <Sparkles className="w-10 h-10 text-bp-primary mb-8 animate-bounce duration-[3s]" />
+                       <h3 className="text-[24px] font-black text-[#111111] mb-5 tracking-tight">Need Booking Help?</h3>
+                       <p className="text-[17px] text-bp-body/60 font-medium leading-relaxed mb-8">
+                         Our support team can help with booking guidance, provider verification questions, and platform issues.
+                       </p>
+                       <button className="w-full py-5 bg-[#111111] text-white rounded-full font-black text-[14px] uppercase tracking-[0.2em] hover:bg-bp-primary hover:shadow-xl transition-all duration-500">
+                         Contact Support
+                       </button>
+                    </div>
+                 </div>
               </div>
-            ))}
+
+              {/* Main FAQ Accordion */}
+              <div className="lg:col-span-8 space-y-32">
+                {FAQS.map((category) => (
+                  <div key={category.category} id={category.category.toLowerCase().replace(/\s+/g, '-')} className="scroll-mt-32">
+                    <div className="flex items-center gap-5 mb-12">
+                       <div className="w-2.5 h-2.5 rounded-full bg-bp-accent shadow-[0_0_12px_rgba(255,107,53,0.4)]"></div>
+                       <h2 className="text-[36px] font-black text-[#111111] tracking-tighter leading-none">{category.category}</h2>
+                    </div>
+                    <div className="space-y-6">
+                      {category.items.map((item, idx) => {
+                        const id = `${category.category}-${idx}`
+                        const isOpen = openIndex === id
+                        return (
+                          <div
+                            key={id}
+                            className={`group border ${isOpen ? 'border-bp-primary/40 bg-bp-surface/30 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)]' : 'border-bp-border/40 bg-white hover:border-bp-primary/20 hover:shadow-lg'} rounded-[32px] overflow-hidden transition-all duration-700`}
+                          >
+                            <button
+                              onClick={() => toggle(id)}
+                              className="w-full text-left px-10 py-8 flex items-center justify-between group focus:outline-none"
+                            >
+                              <span className={`text-[21px] font-black tracking-tight ${isOpen ? 'text-[#111111]' : 'text-bp-body/80'} group-hover:text-bp-primary transition-all duration-500`}>
+                                {item.question}
+                              </span>
+                              <div className={`w-12 h-12 rounded-full border ${isOpen ? 'bg-bp-primary border-bp-primary' : 'border-bp-border/60'} flex items-center justify-center shrink-0 transition-all duration-500`}>
+                                <ChevronDown className={`w-6 h-6 ${isOpen ? 'text-white rotate-180' : 'text-bp-body/30'}`} />
+                              </div>
+                            </button>
+                            <div className={`grid transition-all duration-700 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                              <div className="overflow-hidden">
+                                <div className="px-10 pb-10 text-[18px] text-bp-body/60 font-medium leading-[1.8] border-t border-bp-border/10 mt-4 pt-8">
+                                  {item.answer}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
           </div>
-          
-          <div className="mt-20 p-8 bg-[#E6F4F3] rounded-[16px] text-center">
-             <h3 className="text-[20px] font-bold text-[#00766C] mb-2">Still have questions?</h3>
-             <p className="text-[#333333] opacity-80 mb-6">Our support team is here to help you 24/7.</p>
-             <button className="px-8 py-3 bg-[#00766C] text-white font-semibold rounded-[24px] hover:bg-[#005A52] transition-colors">
-               Contact Support
-             </button>
-          </div>
-        </div>
+        </section>
       </main>
 
       <Footer />

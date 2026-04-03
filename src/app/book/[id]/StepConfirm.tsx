@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Phone, Mail, FileText, ChevronRight, Info, ShieldCheck, Sparkles, Activity, CheckCircle2 } from 'lucide-react'
+import { User, Phone, Mail, FileText, ChevronRight, ShieldCheck, Sparkles, Activity, CheckCircle2, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PatientDetails {
@@ -9,6 +9,7 @@ interface PatientDetails {
   phone: string
   email: string
   reason: string
+  homeVisitAddress: string
 }
 
 interface StepConfirmProps {
@@ -19,18 +20,21 @@ interface StepConfirmProps {
   onNext: (patient: PatientDetails) => void
 }
 
-export function StepConfirm({ onNext }: StepConfirmProps) {
+export function StepConfirm({ booking, onNext }: StepConfirmProps) {
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [reason, setReason] = useState('')
+  const [homeVisitAddress, setHomeVisitAddress] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const requiresHomeVisitAddress = booking?.visitType === 'home_visit'
 
   function validate() {
     const e: Record<string, string> = {}
     if (!fullName.trim() || fullName.length < 3) e.fullName = 'Expert identification requires full name'
     if (!phone.match(/^[6-9]\d{9}$/)) e.phone = 'Verified mobile number required'
     if (email && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Secure email format required'
+    if (requiresHomeVisitAddress && homeVisitAddress.trim().length < 10) e.homeVisitAddress = 'A complete home visit address is required'
     return e
   }
 
@@ -38,7 +42,7 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-    onNext({ fullName, phone: `+91${phone}`, email, reason })
+    onNext({ fullName, phone: `+91${phone}`, email, reason, homeVisitAddress })
   }
 
   return (
@@ -109,10 +113,10 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
            <div className="space-y-3 group">
              <div className="flex items-center justify-between px-1">
                 <label className="text-[12px] font-black text-[#333333] uppercase tracking-widest block">
-                  Secure Contact <span className="text-[#00766C]">*</span>
+                  Contact Number <span className="text-[#00766C]">*</span>
                 </label>
                 <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                   OTP VERIFIED
+                   Used for updates
                 </div>
              </div>
              <div className="relative">
@@ -165,6 +169,36 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
           {errors.email && <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
         </div>
 
+        {requiresHomeVisitAddress ? (
+          <div className="space-y-4 group">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-[12px] font-black text-[#333333] uppercase tracking-widest block">
+                Visit Address <span className="text-[#00766C]">*</span>
+              </label>
+              <div className="w-10 h-6 bg-orange-50 rounded-full flex items-center justify-center text-[10px] font-black text-orange-500">REQ</div>
+            </div>
+            <div className="relative">
+              <div className="absolute top-6 left-6 pointer-events-none">
+                <MapPin size={20} className={cn('transition-all duration-500', errors.homeVisitAddress ? 'text-red-400' : 'text-gray-300 group-focus-within:text-orange-500')} />
+              </div>
+              <textarea
+                value={homeVisitAddress}
+                onChange={(e) => setHomeVisitAddress(e.target.value)}
+                placeholder="Enter the patient's full address for the home visit"
+                rows={3}
+                maxLength={250}
+                className={cn(
+                  'w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none placeholder:text-gray-200 leading-[1.7]',
+                  errors.homeVisitAddress
+                    ? 'border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]'
+                    : 'border-gray-100 focus:border-orange-400 focus:bg-orange-50/5 focus:shadow-[0_32px_64px_-16px_rgba(249,115,22,0.1)]'
+                )}
+              />
+            </div>
+            {errors.homeVisitAddress ? <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.homeVisitAddress}</p> : null}
+          </div>
+        ) : null}
+
         {/* Reason for visit (Luxury Area) */}
         <div className="space-y-4 group">
           <div className="flex items-center justify-between px-1">
@@ -178,6 +212,7 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
+              maxLength={500}
               placeholder="Detail your primary symptoms or goals for this session..."
               rows={4}
               className="w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none border-gray-100 focus:border-[#00766C] focus:bg-[#E6F4F3]/5 focus:shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)] placeholder:text-gray-200 leading-[1.8]"
@@ -208,7 +243,7 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
              className="w-full h-24 group relative bg-[#00766C] text-white rounded-[32px] shadow-2xl shadow-teal-900/10 hover:shadow-teal-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
            >
              <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
-                Authorize Session Details
+                Continue to Booking
                 <ChevronRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform duration-500" />
              </div>
              {/* Luxury Shine */}
@@ -216,9 +251,9 @@ export function StepConfirm({ onNext }: StepConfirmProps) {
            </button>
 
            <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-[12px] font-black text-gray-300 uppercase tracking-widest">
-              <div className="flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> Encrypted Connection</div>
+              <div className="flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> Encrypted Booking Request</div>
               <div className="hidden md:block w-1.5 h-1.5 bg-gray-100 rounded-full"></div>
-              <p>Continuing acknowledges our <span className="text-[#00766C] cursor-pointer hover:border-b border-[#00766C]">Global Terms</span></p>
+              <p>Payment collected during the <span className="text-[#00766C] font-black">visit</span></p>
            </div>
         </div>
       </form>

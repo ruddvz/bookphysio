@@ -1,5 +1,10 @@
 import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  createDemoCookiePayload,
+  DEMO_SESSION_COOKIE,
+  encodeDemoCookie,
+} from '@/lib/demo/session'
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(() => ({
@@ -11,33 +16,22 @@ vi.mock('@/lib/supabase/server', () => ({
   })),
 }))
 
-function buildDemoCookie(role: 'patient' | 'provider' | 'admin') {
-  const payload = {
-    sessionId: `session-${role}`,
-    userId: role === 'patient'
-      ? '00000000-0000-4000-8000-000000000001'
-      : role === 'provider'
-        ? '00000000-0000-4000-8000-000000000002'
-        : '00000000-0000-4000-8000-000000000003',
-    role,
-    fullName: role === 'provider' ? 'Dr. Meera Iyer' : role === 'admin' ? 'Ops Admin' : 'Aarav Kapoor',
-    phone: '+919876543210',
-    expiresAt: Math.floor(Date.now() / 1000) + 3600,
-  }
-
-  return Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url')
+async function buildDemoCookie(role: 'patient' | 'provider' | 'admin') {
+  return encodeDemoCookie(createDemoCookiePayload(role))
 }
 
 describe('GET /api/conversations demo access', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
   })
 
   it('returns demo conversations for the signed-in demo user', async () => {
     const { GET } = await import('../conversations/route')
+    const demoCookie = await buildDemoCookie('patient')
     const request = new NextRequest('http://localhost/api/conversations?limit=20', {
       headers: {
-        cookie: `bp-demo-session=${buildDemoCookie('patient')}`,
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}`,
       },
     })
 

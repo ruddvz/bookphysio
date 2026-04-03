@@ -71,15 +71,15 @@ function FilterDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all whitespace-nowrap active:scale-95",
+          "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all whitespace-nowrap active:scale-95 group",
           value 
-            ? "border-[#00766C]/40 bg-[#00766C]/5 text-[#00766C] shadow-sm shadow-teal-50" 
+            ? "border-teal-500/30 bg-teal-50/50 text-teal-700 shadow-sm shadow-teal-50" 
             : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50/50"
         )}
       >
-        {Icon && <Icon size={16} className={cn(value ? "text-[#00766C]" : "text-gray-400")} />}
-        {value || label}
-        <ChevronDown size={14} className={cn("transition-transform text-gray-400", isOpen && "rotate-180")} />
+        {Icon && <Icon size={16} className={cn("transition-colors", value ? "text-teal-600" : "text-gray-400 group-hover:text-gray-500")} />}
+        <span>{value || label}</span>
+        <ChevronDown size={14} className={cn("transition-all duration-300 text-gray-400 group-hover:text-gray-500", isOpen && "rotate-180 text-teal-600")} />
       </button>
 
       {isOpen && (
@@ -220,21 +220,24 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
           onClick={handleNearMe}
           disabled={geoLoading}
           className={cn(
-            "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all active:scale-95 group",
+            "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all active:scale-95 group relative overflow-hidden",
             currentLat 
-              ? "bg-[#00766C] border-[#00766C] text-white shadow-xl shadow-teal-50" 
-              : "border-gray-200 bg-white text-gray-600 hover:border-[#00766C]/30 hover:bg-[#00766C]/5 hover:text-[#00766C]"
+              ? "bg-[#00766C] border-[#00766C] text-white shadow-xl shadow-teal-100/50" 
+              : "border-gray-200 bg-white text-gray-600 hover:border-teal-100 hover:bg-teal-50/30 hover:text-teal-700"
           )}
         >
+          {currentLat && (
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-transparent opacity-50" />
+          )}
           {geoLoading ? (
-            <div className="w-4 h-4 rounded-full border-2 border-gray-100 border-t-transparent animate-spin" />
+            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
           ) : (
             <div className="relative">
-               {currentLat && <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-50" />}
-               <MapPin size={16} className={cn("relative z-10", currentLat ? "text-white" : "group-hover:text-[#00766C]")} />
+               {currentLat && <div className="absolute -inset-1 bg-white rounded-full animate-ping opacity-20" />}
+               <MapPin size={16} className={cn("relative z-10 transition-colors", currentLat ? "text-white" : "group-hover:text-teal-600")} />
             </div>
           )}
-          {currentLat ? 'Near Me Active' : 'Around Me'}
+          <span className="relative z-10">{currentLat ? 'Near Me Active' : 'Around Me'}</span>
         </button>
 
 

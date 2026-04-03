@@ -15,7 +15,7 @@ describe('How It Works page regressions', () => {
   it('renders a compact hero with a top CTA and patient flow by default', () => {
     render(<HowItWorksPage />)
 
-    expect(screen.getByRole('heading', { name: /simple, fast, transparent/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /how to book a physiotherapist online in india/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /start searching/i })).toHaveAttribute('href', '/search')
     expect(screen.getByText(/Book a physio session in 4 clear steps/i)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /choose provider/i })).toBeInTheDocument()
@@ -35,7 +35,7 @@ describe('How It Works page regressions', () => {
   })
 
   it('exports route metadata for the standalone page', () => {
-    expect(metadata.title).toBe('How BookPhysio Works')
+    expect(metadata.title).toBe('How to Book a Physiotherapist Online in India | BookPhysio.in')
     expect(metadata.alternates).toEqual({ canonical: '/how-it-works' })
   })
 })

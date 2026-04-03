@@ -95,7 +95,7 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /send otp/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send otp|secure login/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/verify-otp')
@@ -127,7 +127,7 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    fireEvent.click(screen.getByRole('button', { name: /create account|start your recovery/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/verify-otp')

@@ -210,6 +210,84 @@ export function getDemoAppointments(role: DemoRole) {
   return []
 }
 
+export function getDemoAppointmentDetail(role: DemoRole, appointmentId: string) {
+  const appointment = getDemoAppointments(role).find((entry) => entry.id === appointmentId)
+
+  if (!appointment) {
+    return null
+  }
+
+  const startsAt = appointment.availabilities?.starts_at ?? new Date().toISOString()
+  const endsAt = typeof appointment.availabilities === 'object' && appointment.availabilities && 'ends_at' in appointment.availabilities
+    ? appointment.availabilities.ends_at
+    : new Date(Date.parse(startsAt) + 45 * 60 * 1000).toISOString()
+  const createdAt = new Date(Date.parse(startsAt) - 24 * 60 * 60 * 1000).toISOString()
+  const patientName = 'patient' in appointment ? appointment.patient.full_name : 'Aarav Kapoor'
+  const providerName = 'providers' in appointment ? appointment.providers.users.full_name : 'Dr. Meera Iyer'
+  const providerSpecialties = 'providers' in appointment ? appointment.providers.specialties : []
+
+  if (role === 'provider') {
+    return {
+      ...appointment,
+      patient_id: '00000000-0000-4000-8000-000000000001',
+      notes: null,
+      provider_notes: null,
+      patient_reason: null,
+      home_visit_address: appointment.visit_type === 'home_visit' ? 'Bandra West, Mumbai' : null,
+      legacy_notes: null,
+      payment_status: null,
+      payment_amount_inr: null,
+      payment_gst_amount_inr: null,
+      created_at: createdAt,
+      availabilities: {
+        starts_at: startsAt,
+        ends_at: endsAt,
+        slot_duration_mins: 45,
+      },
+      locations: appointment.visit_type === 'home_visit'
+        ? null
+        : { name: 'Demo Care Center', city: appointment.locations?.city ?? 'Mumbai' },
+      patient_profile: {
+        full_name: patientName,
+        phone: '+919876543210',
+        avatar_url: null,
+      },
+    }
+  }
+
+  return {
+    ...appointment,
+    notes: null,
+    provider_notes: null,
+    patient_reason: null,
+    home_visit_address: appointment.visit_type === 'home_visit' ? 'Bandra West, Mumbai' : null,
+    legacy_notes: null,
+    payment_status: null,
+    payment_amount_inr: null,
+    payment_gst_amount_inr: null,
+    created_at: createdAt,
+    availabilities: {
+      starts_at: startsAt,
+      ends_at: endsAt,
+      slot_duration_mins: 45,
+    },
+    locations: appointment.visit_type === 'home_visit'
+      ? null
+      : {
+          name: 'Demo Care Center',
+          address: 'Linking Road, Mumbai',
+          city: appointment.locations?.city ?? 'Mumbai',
+        },
+    providers: {
+      users: {
+        full_name: providerName,
+        avatar_url: null,
+      },
+      specialties: providerSpecialties,
+    },
+  }
+}
+
 export function getDemoConversations(sessionId: string, userId: string): Conversation[] {
   const state = getSessionState(sessionId)
 

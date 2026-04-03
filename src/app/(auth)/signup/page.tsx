@@ -116,21 +116,22 @@ export default function SignupPage() {
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <BpLogo href="/" />
 
-      <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
-        Create your account
+      <h1 className="text-[32px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+        Join BookPhysio
       </h1>
-      <p className="text-[15px] font-bold text-bp-body/40 mb-10">Find and book physios near you</p>
+      <p className="text-[16px] font-bold text-bp-body/40 mb-10">India&apos;s recovery companion</p>
 
       {errors.general && (
-        <div className="mb-6 rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-[13px] font-bold text-red-600 animate-in fade-in zoom-in-95">
+        <div className="mb-6 rounded-[24px] bg-red-50 border border-red-100 p-5 text-[13px] font-bold text-red-600 animate-in fade-in zoom-in-95 flex items-start gap-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
           {errors.general}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Full Name */}
-        <div className="mb-6">
-          <label htmlFor="name" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
+        <div>
+          <label htmlFor="name" className="block text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2">
             Full Name
           </label>
           <div className="relative group">
@@ -139,62 +140,72 @@ export default function SignupPage() {
               type="text"
               placeholder="e.g. Rahul Sharma"
               className={cn(
-                "w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all",
-                errors.name ? "border-red-200 bg-red-50/30" : nameFocused ? "border-bp-accent bg-white shadow-xl shadow-bp-primary/5" : "border-transparent hover:border-bp-border"
+                "w-full pl-14 pr-6 py-5 text-[17px] font-black text-[#111111] bg-gray-50/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                errors.name 
+                  ? "border-red-100 bg-red-50/20" 
+                  : nameFocused 
+                    ? "border-teal-500 bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    : "border-gray-100 hover:border-gray-200"
               )}
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               onFocus={() => setNameFocused(true)}
               onBlur={() => { setNameFocused(false); handleBlur('name') }}
             />
-            <User className={cn("absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors", nameFocused ? "text-bp-accent" : "text-bp-body/20")} />
+            <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-500", nameFocused ? "text-teal-600" : "text-gray-300")} />
           </div>
-          {errors.name && (
-            <p className="text-[11px] font-bold text-red-500 mt-1.5 ml-1">{errors.name}</p>
-          )}
+          {errors.name && <p className="text-[12px] font-bold text-red-500 mt-3 ml-4 animate-in slide-in-from-top-2">{errors.name}</p>}
         </div>
 
         {/* Mobile Number */}
-        <div className="mb-10">
-          <label htmlFor="phone" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
+        <div>
+          <label htmlFor="phone" className="block text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2">
             Mobile Number
           </label>
           <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Smartphone className={cn("w-5 h-5 transition-colors", phoneFocused ? "text-bp-accent" : "text-bp-body/20")} />
-              <span className="text-[16px] font-bold text-bp-primary/40 border-r border-bp-border pr-2">+91</span>
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+              <Smartphone className={cn("w-5 h-5 transition-colors duration-500", phoneFocused ? "text-teal-600" : "text-gray-300")} />
+              <span className={cn("text-[17px] font-black transition-colors duration-500", phoneFocused ? "text-teal-700" : "text-gray-400")}>+91</span>
             </div>
             <input
               id="phone"
               type="tel"
               placeholder="98765 43210"
               className={cn(
-                "w-full pl-24 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all",
-                errors.phone ? "border-red-200 bg-red-50/30" : phoneFocused ? "border-bp-accent bg-white shadow-xl shadow-bp-primary/5" : "border-transparent hover:border-bp-border"
+                "w-full pl-28 pr-6 py-5 text-[18px] font-black text-[#111111] bg-gray-50/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                errors.phone 
+                  ? "border-red-100 bg-red-50/20" 
+                  : phoneFocused 
+                    ? "border-teal-500 bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    : "border-gray-100 hover:border-gray-200"
               )}
               value={form.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
+              onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
               onFocus={() => setPhoneFocused(true)}
               onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
             />
           </div>
-          {errors.phone && (
-            <p className="text-[11px] font-bold text-red-500 mt-1.5 ml-1">{errors.phone}</p>
-          )}
+          {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-3 ml-4 animate-in slide-in-from-top-2">{errors.phone}</p>}
         </div>
 
         <button
           type="submit"
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]",
-            loading ? "bg-bp-primary/40 cursor-not-allowed" : "bg-bp-primary hover:bg-bp-accent hover:shadow-bp-accent/20"
+            "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-black text-white rounded-[28px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-[#00766C] shadow-teal-900/10'
           )}
         >
-          {loading ? 'Creating account...' : (
+          {loading ? (
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Verifying...</span>
+            </div>
+          ) : (
             <>
-              Create Account
-              <ArrowRight className="w-5 h-5" />
+              <span className="relative z-10">Start Your Recovery</span>
+              <ArrowRight size={18} strokeWidth={4} className="text-teal-400 group-hover:translate-x-1 transition-transform relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
           )}
         </button>

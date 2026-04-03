@@ -4,7 +4,9 @@ import {
   createDemoCookiePayload,
   createDemoSession,
   DEMO_SESSION_COOKIE,
+  DEMO_SESSION_SUPPRESSION_COOKIE,
   encodeDemoCookie,
+  getDemoSessionFromCookies,
   isDemoAccessEnabled,
   resolvePostAuthRedirect,
 } from '@/lib/demo/session'
@@ -14,6 +16,26 @@ const demoAccessSchema = z.object({
   role: z.enum(['patient', 'provider', 'admin']),
   returnTo: z.string().optional(),
 })
+
+export async function GET(request: NextRequest) {
+  const demoSession = await getDemoSessionFromCookies(request.cookies)
+
+  if (!demoSession) {
+    return NextResponse.json({ error: 'No demo session found.' }, { status: 404 })
+  }
+
+  return NextResponse.json(
+    {
+      session: createDemoSession(demoSession.role, demoSession.expiresAt),
+      redirectTo: resolvePostAuthRedirect(demoSession.role, request.nextUrl.searchParams.get('returnTo')),
+    },
+    {
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    },
+  )
+}
 
 export async function POST(request: NextRequest) {
   const previewAccessAllowed = await hasValidPreviewCookie(request)
@@ -32,7 +54,7 @@ export async function POST(request: NextRequest) {
   const cookiePayload = createDemoCookiePayload(parsed.data.role)
   const redirectTo = resolvePostAuthRedirect(parsed.data.role, parsed.data.returnTo)
   const response = NextResponse.json({
-    session: createDemoSession(parsed.data.role),
+    session: createDemoSession(parsed.data.role, cookiePayload.expiresAt),
     redirectTo,
   })
 
@@ -42,6 +64,12 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     path: '/',
     expires: new Date(cookiePayload.expiresAt * 1000),
+  })
+  response.cookies.set(DEMO_SESSION_SUPPRESSION_COOKIE, '', {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    expires: new Date(0),
   })
 
   return response
@@ -56,6 +84,12 @@ export async function DELETE() {
     secure: process.env.NODE_ENV === 'production',
     path: '/',
     expires: new Date(0),
+  })
+  response.cookies.set(DEMO_SESSION_SUPPRESSION_COOKIE, '1', {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 30 * 24 * 60 * 60,
   })
 
   return response

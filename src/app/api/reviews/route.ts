@@ -11,9 +11,10 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { appointment_id, rating, comment } = parsed.data
+  const { supabaseAdmin } = await import('@/lib/supabase/admin')
 
   // Verify appointment belongs to this patient and is completed
-  const { data: appt } = await supabase
+  const { data: appt } = await supabaseAdmin
     .from('appointments')
     .select('id, patient_id, provider_id, status')
     .eq('id', appointment_id)
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   if (!appt) return NextResponse.json({ error: 'Appointment not found or not completed' }, { status: 404 })
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('reviews')
     .insert({ appointment_id, patient_id: user.id, provider_id: appt.provider_id, rating, comment: comment ?? null })
     .select()

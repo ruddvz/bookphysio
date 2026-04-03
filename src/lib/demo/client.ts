@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
 import type { DemoRole } from '@/lib/demo/session'
-import { DEMO_LOCAL_STORAGE_KEY } from '@/lib/demo/session'
+import { DEMO_LOCAL_STORAGE_KEY, DEMO_SESSION_SUPPRESSION_COOKIE } from '@/lib/demo/session'
 
 interface DemoSessionResponse {
   session: Session
@@ -8,7 +8,29 @@ interface DemoSessionResponse {
   error?: string
 }
 
+const DEMO_SESSION_SUPPRESSION_TTL_SECONDS = 30 * 24 * 60 * 60
+
+function clearPersistedDemoSession() {
+  try {
+    localStorage.removeItem(DEMO_LOCAL_STORAGE_KEY)
+  } catch {
+    // localStorage can be unavailable in some browser contexts.
+  }
+}
+
+function setDemoSessionSuppressed(suppressed: boolean) {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  document.cookie = suppressed
+    ? `${DEMO_SESSION_SUPPRESSION_COOKIE}=1; Max-Age=${DEMO_SESSION_SUPPRESSION_TTL_SECONDS}; Path=/; SameSite=Lax`
+    : `${DEMO_SESSION_SUPPRESSION_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax`
+}
+
 function persistDemoSession(session: Session) {
+  setDemoSessionSuppressed(false)
+
   try {
     localStorage.setItem(
       DEMO_LOCAL_STORAGE_KEY,
@@ -23,6 +45,34 @@ function persistDemoSession(session: Session) {
   }
 
   window.dispatchEvent(new Event('bp-dev-auth'))
+}
+
+export async function hydrateDemoSessionFromCookie(): Promise<Session | null> {
+  try {
+    const response = await fetch('/api/auth/demo-session', {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      clearPersistedDemoSession()
+      return null
+    }
+
+    const data = (await response.json()) as Partial<DemoSessionResponse>
+    if (!data.session) {
+      clearPersistedDemoSession()
+      return null
+    }
+
+    persistDemoSession(data.session)
+    return data.session
+  } catch {
+    return null
+  }
 }
 
 export async function launchDemoSession(role: DemoRole, returnTo?: string | null): Promise<string> {
@@ -45,14 +95,15 @@ export async function launchDemoSession(role: DemoRole, returnTo?: string | null
 }
 
 export async function clearDemoSession(): Promise<void> {
-  try {
-    localStorage.removeItem(DEMO_LOCAL_STORAGE_KEY)
-  } catch {
-    // localStorage can be unavailable in some browser contexts.
-  }
+  setDemoSessionSuppressed(true)
+  clearPersistedDemoSession()
 
   try {
-    await fetch('/api/auth/demo-session', { method: 'DELETE' })
+    await fetch('/api/auth/demo-session', {
+      method: 'DELETE',
+      cache: 'no-store',
+      keepalive: true,
+    })
   } catch {
     // Ignore demo session cleanup failures during sign-out.
   }

@@ -41,18 +41,17 @@ function VerifyOtpContent() {
   const allFilled = otp.every((digit) => digit !== '')
 
   const formatCountdown = (seconds: number) => {
-    const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
     const ss = String(seconds % 60).padStart(2, '0')
-    return `${mm}:${ss}`
+    return `00:${ss}`
   }
 
 
   if (!hasLoadedPendingOtp) {
     return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
         <BpLogo href="/" />
         <div className="mt-10 space-y-4">
-          <div className="h-8 w-44 rounded-full bg-bp-surface animate-pulse" />
+          <div className="h-10 w-48 rounded-2xl bg-bp-surface animate-pulse" />
           <div className="h-4 w-full rounded-full bg-bp-surface animate-pulse" />
           <div className="h-4 w-3/4 rounded-full bg-bp-surface animate-pulse" />
           <div className="grid grid-cols-6 gap-3 pt-6">
@@ -67,27 +66,27 @@ function VerifyOtpContent() {
 
   if (!pendingOtp) {
     return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
         <BpLogo href="/" />
 
-        <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+        <h1 className="text-[32px] font-black text-[#111111] mb-3 mt-10 tracking-tighter leading-none">
           OTP session expired
         </h1>
-        <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
+        <p className="text-[15px] font-bold text-gray-400 mb-10 leading-relaxed">
           Start over from login or password recovery to request a fresh verification code.
         </p>
 
         <div className="flex flex-col gap-4">
           <Link
             href="/login"
-            className="w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-primary hover:bg-bp-primary/95 shadow-xl shadow-bp-primary/10"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-[#00766C] hover:bg-[#005A52] shadow-xl shadow-teal-900/10"
           >
             Go to Login
             <ArrowRight className="w-5 h-5 text-bp-accent" />
           </Link>
           <Link
             href="/forgot-password"
-            className="w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-bp-primary rounded-2xl border border-bp-border bg-bp-surface/40 hover:bg-bp-surface transition-all active:scale-[0.98]"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-[#00766C] rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
           >
             Recover Access
           </Link>
@@ -131,6 +130,7 @@ function VerifyOtpContent() {
       }
       if (!res.ok) {
         setError(data.error ?? 'Invalid OTP. Please try again.')
+        setOtp(Array(OTP_LENGTH).fill(''))
         return
       }
       clearPendingOtp()
@@ -147,37 +147,43 @@ function VerifyOtpContent() {
     const phone = pendingOtp?.phone ?? ''
     const flow = pendingOtp?.flow ?? 'login'
 
-    setCountdown(COUNTDOWN_SECONDS)
-    setOtp(Array(OTP_LENGTH).fill(''))
-    setError('')
-
     if (!phone) {
       setError('Your verification session expired. Please request a fresh OTP.')
       return
     }
 
     try {
-      await fetch('/api/auth/otp/send', {
+      const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: '+' + phone, flow }),
       })
+
+      const data = await response.json().catch(() => ({})) as { error?: string }
+      if (!response.ok) {
+        setError(data.error ?? 'Unable to resend OTP right now. Please try again.')
+        return
+      }
+
+      setCountdown(COUNTDOWN_SECONDS)
+      setOtp(Array(OTP_LENGTH).fill(''))
+      setError('')
     } catch {
-      // silently ignore resend errors — user can retry countdown
+      setError('Unable to resend OTP right now. Please check your connection and retry.')
     }
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="relative">
       <BpLogo href="/" />
 
-      <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
-        Verify your number
+      <h1 className="text-[32px] font-black text-[#111111] mb-3 mt-10 tracking-tighter leading-none">
+        Verify Identity
       </h1>
-      <p className="text-[15px] font-bold text-bp-body/40 mb-10">
+      <p className="text-[15px] font-bold text-gray-400 mb-10 leading-relaxed">
         {deliveryLabel}{' '}
-        <span className="text-bp-primary">{displayPhone}</span>
+        <span className="text-[#00766C]">{displayPhone}</span>
       </p>
 
       {/* OTP digit inputs */}
@@ -193,29 +199,32 @@ function VerifyOtpContent() {
 
       {/* Error */}
       {error && (
-        <p className="text-[12px] font-bold text-red-500 text-center -mt-4 mb-6">
+        <p className="text-[13px] font-black text-red-500 text-center -mt-4 mb-6 animate-in shake duration-500">
           {error}
         </p>
       )}
 
       {/* Resend + countdown */}
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex justify-between items-center mb-10 px-1">
         {countdown > 0 ? (
-          <span className="text-[14px] font-bold text-bp-body/40">
+          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">
             Resend OTP
           </span>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            className="inline-flex items-center gap-2 text-[14px] text-bp-accent font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors"
+            className="inline-flex items-center gap-2 text-[14px] text-[#00766C] font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors uppercase tracking-widest"
           >
             <RefreshCw className="w-4 h-4" />
-            Resend OTP
+            Resend
           </button>
         )}
         <span
-          className={`text-[14px] font-bold tabular-nums ${countdown > 0 ? 'text-bp-body/40' : 'text-transparent'}`}
+          className={cn(
+            "text-[14px] font-black tabular-nums tracking-widest transition-opacity duration-300",
+            countdown > 0 ? 'text-gray-400' : 'opacity-0'
+          )}
         >
           {formatCountdown(countdown)}
         </span>
@@ -227,15 +236,27 @@ function VerifyOtpContent() {
         onClick={() => handleVerify()}
         disabled={!allFilled || loading}
         className={cn(
-          "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98]",
-          allFilled && !loading ? 'bg-bp-primary hover:bg-bp-primary/95 shadow-xl shadow-bp-primary/10 cursor-pointer' : 'bg-bp-border cursor-not-allowed text-white/50'
+          "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
+          allFilled && !loading 
+            ? 'bg-[#00766C] hover:bg-[#005A52] shadow-xl shadow-teal-900/10 cursor-pointer' 
+            : 'bg-bp-border cursor-not-allowed text-white/50'
         )}
       >
-        {loading ? 'Verifying…' : (
-          <>
-            Verify
-            <ArrowRight className="w-5 h-5 text-bp-accent" />
-          </>
+        <span className="relative z-10 flex items-center gap-3">
+          {loading ? (
+            <>
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              Verifying
+            </>
+          ) : (
+            <>
+              Verify & Continue
+              <ArrowRight className="w-5 h-5 text-bp-accent" />
+            </>
+          )}
+        </span>
+        {allFilled && !loading && (
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full hover:animate-shine" />
         )}
       </button>
 
@@ -244,7 +265,7 @@ function VerifyOtpContent() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-[14px] text-bp-body/40 hover:text-bp-primary font-bold bg-transparent border-none cursor-pointer no-underline outline-none transition-colors"
+          className="inline-flex items-center gap-2 text-[14px] text-gray-400 hover:text-[#00766C] font-black bg-transparent border-none cursor-pointer no-underline outline-none transition-colors uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
           Back

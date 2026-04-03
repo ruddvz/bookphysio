@@ -13,6 +13,15 @@ import {
   type ProviderAppointment,
 } from './provider-dashboard-utils'
 
+beforeEach(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(new Date('2026-04-15T12:00:00.000Z'))
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 // ---------------------------------------------------------------------------
 // Helpers to build appointments at relative times
 // ---------------------------------------------------------------------------

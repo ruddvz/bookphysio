@@ -4,7 +4,16 @@ import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const PLANS = [
+type Plan = {
+  tier: 'free' | 'pro' | 'max'
+  name: string
+  price: number
+  description: string
+  features: readonly string[]
+  recommended?: boolean
+}
+
+const PLANS: readonly Plan[] = [
   {
     tier: 'free',
     name: 'Free',
@@ -41,7 +50,7 @@ const PLANS = [
       'All Pro features',
     ],
   },
-] as const
+]
 
 interface SubscriptionPlansProps {
   currentTier?: string

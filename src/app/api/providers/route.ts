@@ -2,8 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { searchFiltersSchema } from '@/lib/validations/search'
 import { apiRatelimit } from '@/lib/upstash'
+import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
+import { getPublicProviderCoordinates } from '@/lib/providers/public'
 
 const SPECIALTY_ALIASES: Record<string, string> = {
   'Sports Physio': 'sports',
@@ -38,14 +40,14 @@ function resolveSpecialtySlug(input: string | null | undefined): string | null {
   return SPECIALTY_ALIASES[trimmed] ?? trimmed.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
-function getRequestIp(request: NextRequest): string {
-  return request.ip ?? request.headers.get('x-real-ip') ?? 'unknown'
-}
-
 export async function GET(request: NextRequest) {
-  const ip = getRequestIp(request)
-  const { success } = await apiRatelimit.limit(ip)
-  if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  const ip = getRequestIpAddress(request) ?? 'unknown'
+  try {
+    const { success } = await apiRatelimit.limit(`providers-search:${ip}`)
+    if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  } catch (error) {
+    console.error('[api/providers] Rate-limit check degraded:', error)
+  }
 
   const url = new URL(request.url)
   const params = Object.fromEntries(url.searchParams)
@@ -104,6 +106,7 @@ export async function GET(request: NextRequest) {
         .from('providers')
         .select(`
           id,
+          verified,
           specialties (*),
           availabilities (starts_at, is_booked, is_blocked),
           provider_insurances (insurances (*))
@@ -128,6 +131,11 @@ export async function GET(request: NextRequest) {
         (left: { starts_at: string }, right: { starts_at: string }) =>
           new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime()
       )[0]
+    const publicCoordinates = getPublicProviderCoordinates({
+      city: provider.city,
+      lat: provider.lat,
+      lng: provider.lng,
+    })
 
     return {
       id: provider.id,
@@ -135,6 +143,7 @@ export async function GET(request: NextRequest) {
       full_name: provider.full_name,
       title: provider.title,
       avatar_url: provider.avatar_url,
+      verified: details?.verified ?? false,
       specialties: details?.specialties ?? [],
       rating_avg: provider.rating_avg || 0,
       rating_count: provider.rating_count || 0,
@@ -143,8 +152,8 @@ export async function GET(request: NextRequest) {
       next_available_slot: nextAvailableSlot?.starts_at ?? null,
       visit_types: provider.visit_types ?? [],
       city: provider.city,
-      lat: provider.lat,
-      lng: provider.lng,
+      lat: publicCoordinates.lat,
+      lng: publicCoordinates.lng,
       insurances: (details?.provider_insurances ?? [])
         .map((entry: { insurances?: ProviderCard['insurances'][number] | null }) => entry.insurances)
         .filter(Boolean),

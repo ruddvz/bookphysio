@@ -5,6 +5,12 @@ import { useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import { CheckCircle2, Calendar, MapPin, Clock, CreditCard, Download, ExternalLink, ArrowRight, Share2, Sparkles, Building2, Check, LayoutDashboard, Fingerprint } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  buildIndiaCalendarEventRange,
+  escapeIcsText,
+  formatIndiaDate,
+  parseIndiaDate,
+} from '@/lib/india-date'
 
 interface StepSuccessProps {
   doctorName: string
@@ -26,34 +32,37 @@ function buildIcs(props: {
   description: string
 }): string {
   try {
-    const [year, month, day] = props.date.split('-').map(Number)
-    const [hourStr, minuteStr] = props.time.replace(/[ap]m/i, '').trim().split(':')
-    const isPm = /pm/i.test(props.time)
-    let hour = parseInt(hourStr, 10)
-    const minute = parseInt(minuteStr ?? '0', 10)
-    if (isPm && hour !== 12) hour += 12
-    if (!isPm && hour === 12) hour = 0
-
-    const pad = (n: number) => String(n).padStart(2, '0')
-    const dtStart = `${year}${pad(month)}${pad(day)}T${pad(hour)}${pad(minute)}00`
-    const dtEnd = `${year}${pad(month)}${pad(day)}T${pad(hour + 1)}${pad(minute)}00`
+    const { start, end } = buildIndiaCalendarEventRange({
+      date: props.date,
+      time: props.time,
+      durationMinutes: 60,
+    })
 
     return [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//BookPhysio//bookphysio.in//EN',
       'BEGIN:VEVENT',
-      `DTSTART:${dtStart}`,
-      `DTEND:${dtEnd}`,
-      `SUMMARY:${props.title}`,
-      `LOCATION:${props.location}`,
-      `DESCRIPTION:${props.description}`,
+      `DTSTART:${start}`,
+      `DTEND:${end}`,
+      `SUMMARY:${escapeIcsText(props.title)}`,
+      `LOCATION:${escapeIcsText(props.location)}`,
+      `DESCRIPTION:${escapeIcsText(props.description)}`,
       'END:VEVENT',
       'END:VCALENDAR',
     ].join('\r\n')
-  } catch (e) {
+  } catch {
     return ''
   }
+}
+
+function escapeReceiptHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 function downloadIcs(filename: string, content: string) {
@@ -97,18 +106,41 @@ export function StepSuccess({
   }, [])
 
   const baseFee = totalPaid - gstAmount
-  const displayDate = new Date(date).toLocaleDateString('en-IN', {
+  const isPayAtClinic = paymentMethod === 'pay_at_clinic'
+  const displayDate = formatIndiaDate(parseIndiaDate(date), {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
+  const locationLabel = visitType === 'home_visit' ? 'Visit Address' : 'Clinic Site'
+  const calendarLocation = visitType === 'home_visit' ? `Home visit address: ${location}` : location
+  const statusLabel = 'Confirmed'
+  const receiptTitle = isPayAtClinic ? 'Booking Confirmation' : 'Digital Receipt'
+  const amountLabel = isPayAtClinic ? 'Amount Due' : 'Total Paid'
+  const heroTitle = 'Confirmed.'
+  const heroCopy = isPayAtClinic
+    ? `Your session with ${doctorName} is confirmed. Payment will be collected during the visit.`
+    : `Your medical consultation with ${doctorName} has been confirmed.`
 
   const methodLabel: Record<string, string> = {
-    upi: 'UPI', card: 'Secured Card', netbanking: 'Net Banking', pay_at_clinic: 'Clinic Direct',
+    upi: 'UPI', card: 'Card', netbanking: 'Net Banking', pay_at_clinic: 'Pay at Clinic',
   }
 
   function handleDownloadReceipt() {
+    const receiptValues = {
+      receiptTitle: escapeReceiptHtml(receiptTitle),
+      refNumber: escapeReceiptHtml(refNumber),
+      statusLabel: escapeReceiptHtml(statusLabel),
+      doctorName: escapeReceiptHtml(doctorName),
+      displayDate: escapeReceiptHtml(displayDate),
+      time: escapeReceiptHtml(time),
+      visitType: escapeReceiptHtml(visitType.replace('_', ' ').toUpperCase()),
+      locationLabel: escapeReceiptHtml(locationLabel),
+      location: escapeReceiptHtml(location),
+      paymentMethod: escapeReceiptHtml(methodLabel[paymentMethod] ?? paymentMethod),
+      amountLabel: escapeReceiptHtml(amountLabel.toUpperCase()),
+    }
     const receiptHtml = `
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>BookPhysio Receipt - ${refNumber}</title>
+<html><head><meta charset="utf-8"><title>BookPhysio Receipt - ${receiptValues.refNumber}</title>
 <style>
   body { font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #333; }
   .header { text-align: center; border-bottom: 2px solid #00766C; padding-bottom: 20px; margin-bottom: 24px; }
@@ -128,22 +160,22 @@ export function StepSuccess({
 </style></head><body>
   <div class="header">
     <h1>BookPhysio.in</h1>
-    <p>Digital Receipt</p>
-    <div class="ref">${refNumber}</div>
-    <span class="status">Confirmed</span>
+    <p>${receiptValues.receiptTitle}</p>
+    <div class="ref">${receiptValues.refNumber}</div>
+    <span class="status">${receiptValues.statusLabel}</span>
   </div>
   <div class="details">
-    <div class="row"><span class="label">Doctor</span><span class="value">${doctorName}</span></div>
-    <div class="row"><span class="label">Date</span><span class="value">${displayDate}</span></div>
-    <div class="row"><span class="label">Time</span><span class="value">${time}</span></div>
-    <div class="row"><span class="label">Visit Type</span><span class="value">${visitType.replace('_', ' ').toUpperCase()}</span></div>
-    <div class="row"><span class="label">Location</span><span class="value">${location}</span></div>
-    <div class="row"><span class="label">Payment</span><span class="value">${methodLabel[paymentMethod] ?? paymentMethod}</span></div>
+    <div class="row"><span class="label">Doctor</span><span class="value">${receiptValues.doctorName}</span></div>
+    <div class="row"><span class="label">Date</span><span class="value">${receiptValues.displayDate}</span></div>
+    <div class="row"><span class="label">Time</span><span class="value">${receiptValues.time}</span></div>
+    <div class="row"><span class="label">Visit Type</span><span class="value">${receiptValues.visitType}</span></div>
+    <div class="row"><span class="label">${receiptValues.locationLabel}</span><span class="value">${receiptValues.location}</span></div>
+    <div class="row"><span class="label">Payment</span><span class="value">${receiptValues.paymentMethod}</span></div>
   </div>
   <div class="details">
     <div class="row"><span class="label">Consultation Fee</span><span class="value">₹${baseFee.toLocaleString('en-IN')}</span></div>
     <div class="row"><span class="label">GST (18%)</span><span class="value">₹${gstAmount.toLocaleString('en-IN')}</span></div>
-    <div class="total-row"><span class="label">TOTAL PAID</span><span class="value">₹${totalPaid.toLocaleString('en-IN')}</span></div>
+    <div class="total-row"><span class="label">${receiptValues.amountLabel}</span><span class="value">₹${totalPaid.toLocaleString('en-IN')}</span></div>
   </div>
   <div class="footer"><p>Thank you for choosing BookPhysio.in</p><p>For support: help@bookphysio.in</p></div>
 </body></html>`
@@ -161,7 +193,7 @@ export function StepSuccess({
       title: `Physiotherapy with ${doctorName}`,
       date,
       time,
-      location,
+      location: calendarLocation,
       description: `BookPhysio appointment. Ref: ${refNumber}. Visit Type: ${visitType}.`,
     })
     if (ics) downloadIcs(`appointment-${refNumber}.ics`, ics)
@@ -174,13 +206,13 @@ export function StepSuccess({
       <div className="relative mb-14 pt-8">
         <div className="absolute inset-0 bg-[#00766C] rounded-full scale-150 opacity-10 blur-3xl animate-pulse" />
         <div className="relative flex flex-col items-center">
-          <div className="w-32 h-32 bg-[#00766C] rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-teal-50 transform rotate-[10deg] animate-in slide-in-from-bottom-12 duration-1000 delay-200">
+          <div className="w-32 h-32 bg-[#00766C] rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-teal-50 transform rotate-[6deg] animate-in zoom-in duration-1000 ease-out">
              <Check size={64} className="text-white" strokeWidth={4} />
           </div>
           
           <div className="mt-12 space-y-3">
-             <h2 className="text-[42px] md:text-[56px] font-black text-[#333333] tracking-tighter leading-tight">Session Secured</h2>
-             <p className="text-[18px] text-gray-400 font-bold max-w-sm mx-auto">Your medical consultation with {doctorName} has been authorized.</p>
+             <h2 className="text-[48px] md:text-[64px] font-black text-[#111111] tracking-tighter leading-none">{heroTitle}</h2>
+             <p className="text-[18px] text-gray-400 font-bold max-w-sm mx-auto">{heroCopy}</p>
           </div>
         </div>
       </div>
@@ -198,8 +230,8 @@ export function StepSuccess({
                     <Fingerprint size={16} className="text-[#00766C]/30" />
                  </div>
                </div>
-               <div className="px-5 py-2 bg-emerald-50 text-[#059669] text-[12px] font-black rounded-2xl uppercase tracking-[0.1em] border border-emerald-100/50 shadow-sm shadow-emerald-900/5 pulse">
-                  Authorized
+              <div className="px-5 py-2 bg-emerald-50 text-[#059669] text-[12px] font-black rounded-2xl uppercase tracking-[0.1em] border border-emerald-100/50 shadow-sm shadow-emerald-900/5 pulse">
+                {statusLabel}
                </div>
             </div>
 
@@ -223,7 +255,7 @@ export function StepSuccess({
                <div className="flex items-center gap-5">
                   <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-gray-300 border border-gray-100 shadow-sm"><MapPin size={20} /></div>
                   <div>
-                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Clinic Site</p>
+                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">{locationLabel}</p>
                     <p className="text-[15px] font-black text-[#333333] tracking-tight truncate max-w-[150px]">{location.split(',')[0]}</p>
                   </div>
                </div>
@@ -252,7 +284,7 @@ export function StepSuccess({
                      <p className="text-[14px] font-black text-gray-400 tracking-widest uppercase">{methodLabel[paymentMethod] ?? paymentMethod}</p>
                   </div>
                   <div className="text-right">
-                     <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1 pr-1">Total Paid</p>
+                  <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1 pr-1">{amountLabel}</p>
                      <p className="text-[28px] font-black text-[#333333] tracking-tighter">₹{totalPaid.toLocaleString('en-IN')}</p>
                   </div>
                </div>
@@ -289,9 +321,49 @@ export function StepSuccess({
             <span className="text-[10px] text-gray-300 uppercase tracking-widest leading-none mb-1">Proof Of Booking</span>
             <div className="flex items-center gap-2">
                <Download size={18} className="text-[#00766C]" />
-               Digital Receipt
+            {isPayAtClinic ? 'Booking Summary' : 'Digital Receipt'}
             </div>
          </button>
+      </div>
+
+      {/* ── Governance & Next Steps ── */}
+      <div className="bg-[#111111] rounded-[48px] p-12 text-left relative overflow-hidden mb-12 group/protocol">
+         <div className="absolute top-0 right-0 p-12 opacity-10 text-white group-hover/protocol:scale-110 transition-transform duration-1000">
+            <Sparkles size={160} />
+         </div>
+         
+         <div className="relative z-10 space-y-10">
+            <div>
+               <p className="text-[10px] font-black text-teal-400 uppercase tracking-[0.3em] mb-4">Protocol Active</p>
+               <h3 className="text-[32px] font-black text-white tracking-tighter">What happens now?</h3>
+            </div>
+
+            <div className="space-y-6">
+               <div className="flex gap-6">
+                  <div className="w-10 h-10 rounded-2xl bg-[#00766C] flex items-center justify-center text-white shrink-0 font-black text-[14px]">01</div>
+                  <div>
+                  <h4 className="text-[16px] font-black text-white mb-1">Booking Recorded</h4>
+                  <p className="text-[14px] font-bold text-gray-400 leading-relaxed">Your appointment details are now saved and available from the patient dashboard below.</p>
+                  </div>
+               </div>
+               
+               <div className="flex gap-6">
+                  <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-black text-[14px]">02</div>
+                  <div>
+                <h4 className="text-[16px] font-black text-white mb-1">{isPayAtClinic ? 'Payment on Arrival' : 'Prepare for Arrival'}</h4>
+                <p className="text-[14px] font-bold text-gray-400 leading-relaxed">{isPayAtClinic ? 'Please settle the consultation amount directly with the provider during the visit and keep any previous reports, scans, or prescriptions handy.' : 'Please arrive a few minutes early and keep any previous reports, scans, or prescriptions handy for the clinician.'}</p>
+                  </div>
+               </div>
+
+               <div className="flex gap-6">
+                  <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-black text-[14px]">03</div>
+                  <div>
+                    <h4 className="text-[16px] font-black text-white mb-1">Session Dashboard</h4>
+                  <p className="text-[14px] font-bold text-gray-400 leading-relaxed">Use your patient portal anytime to review appointment details, reschedule within policy, or download your receipt.</p>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
 
       <div className="space-y-6">
@@ -321,8 +393,8 @@ export function StepSuccess({
       <div className="mt-16 flex flex-col items-center gap-4">
          <div className="w-12 h-1.5 bg-gray-100 rounded-full" />
          <p className="text-[11px] font-black text-gray-300 uppercase tracking-[0.3em] px-12 leading-loose text-center max-w-[400px]">
-           A confirmation has been dispatched to your identity credentials. 
-           <span className="text-emerald-500 ml-2">Clinical verification active.</span>
+           Appointment details are now available in your patient dashboard.
+           <span className="text-emerald-500 ml-2">Booking {statusLabel.toLowerCase()}.</span>
          </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server'
 
-const PREVIEW_TOKEN_MESSAGE = 'bookphysio-preview'
+const PREVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
 const encoder = new TextEncoder()
 
 function bytesToHex(bytes: Uint8Array): string {
@@ -24,11 +24,18 @@ async function createSigningKey(secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
 }
 
-export async function createPreviewToken(secret: string): Promise<string> {
+async function signPreviewPayload(secret: string, payload: string): Promise<string> {
   const key = await createSigningKey(secret)
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(PREVIEW_TOKEN_MESSAGE))
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
 
   return bytesToHex(new Uint8Array(signature))
+}
+
+export async function createPreviewToken(secret: string): Promise<string> {
+  const payload = `${Date.now()}:${crypto.randomUUID()}`
+  const signature = await signPreviewPayload(secret, payload)
+
+  return `${payload}.${signature}`
 }
 
 export async function isValidPreviewToken(
@@ -39,8 +46,26 @@ export async function isValidPreviewToken(
     return false
   }
 
-  const expectedToken = await createPreviewToken(secret)
-  return constantTimeEqual(token, expectedToken)
+  const separatorIndex = token.lastIndexOf('.')
+  if (separatorIndex <= 0) {
+    return false
+  }
+
+  const payload = token.slice(0, separatorIndex)
+  const signature = token.slice(separatorIndex + 1)
+  const expectedSignature = await signPreviewPayload(secret, payload)
+
+  if (!constantTimeEqual(signature, expectedSignature)) {
+    return false
+  }
+
+  const issuedAt = Number.parseInt(payload.split(':')[0] ?? '', 10)
+  if (!Number.isFinite(issuedAt)) {
+    return false
+  }
+
+  const now = Date.now()
+  return issuedAt <= now + 60_000 && now - issuedAt <= PREVIEW_TOKEN_TTL_MS
 }
 
 export async function hasValidPreviewCookie(request: NextRequest): Promise<boolean> {

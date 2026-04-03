@@ -1,7 +1,58 @@
 import { NextRequest } from 'next/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEMO_SESSION_COOKIE, parseDemoCookie } from '@/lib/demo/session'
+import { createDemoCookiePayload, DEMO_SESSION_COOKIE, DEMO_SESSION_SUPPRESSION_COOKIE, encodeDemoCookie, parseDemoCookie } from '@/lib/demo/session'
 import { createPreviewToken } from '@/lib/preview/token'
+
+describe('GET /api/auth/demo-session', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('returns the demo session derived from the signed cookie in production', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { GET } = await import('../auth/demo-session/route')
+    const cookiePayload = createDemoCookiePayload('patient')
+    const demoCookie = await encodeDemoCookie(cookiePayload)
+    const request = new NextRequest('http://localhost/api/auth/demo-session', {
+      headers: {
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}`,
+      },
+    })
+
+    const response = await GET(request)
+    const body = (await response.json()) as { session: { expires_at: number; user: { user_metadata: { role: string } } } }
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(body.session.expires_at).toBe(cookiePayload.expiresAt)
+    expect(body.session.user.user_metadata.role).toBe('patient')
+  })
+
+  it('returns 404 when demo access has been explicitly suppressed', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { GET } = await import('../auth/demo-session/route')
+    const cookiePayload = createDemoCookiePayload('patient')
+    const demoCookie = await encodeDemoCookie(cookiePayload)
+    const request = new NextRequest('http://localhost/api/auth/demo-session', {
+      headers: {
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}; ${DEMO_SESSION_SUPPRESSION_COOKIE}=1`,
+      },
+    })
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(404)
+    await expect(response.json()).resolves.toEqual({ error: 'No demo session found.' })
+  })
+})
 
 describe('POST /api/auth/demo-session', () => {
   beforeEach(() => {
@@ -54,5 +105,17 @@ describe('POST /api/auth/demo-session', () => {
 
     expect(response.status).toBe(404)
     await expect(response.json()).resolves.toEqual({ error: 'Demo access is disabled.' })
+  })
+
+  it('clears the demo cookie and sets a suppression cookie on delete', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+
+    const { DELETE } = await import('../auth/demo-session/route')
+    const response = await DELETE()
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({ success: true })
+    expect(response.cookies.get(DEMO_SESSION_COOKIE)?.value).toBe('')
+    expect(response.cookies.get(DEMO_SESSION_SUPPRESSION_COOKIE)?.value).toBe('1')
   })
 })
