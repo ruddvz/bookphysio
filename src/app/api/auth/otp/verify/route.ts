@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { verifyOtp } from '@/lib/msg91'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
@@ -47,11 +46,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
   }
 
-  // Primary verification via MSG91
-  const result = await verifyOtp(phone, otp)
-  if (!result.success) return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
-
-  // Bridging to Supabase session
   const supabase = await createClient()
   const { data, error } = await supabase.auth.verifyOtp({
     phone,
@@ -64,12 +58,25 @@ export async function POST(request: NextRequest) {
   // Update full name if provided (using admin to bypass RLS/protected field issues if any)
   if (full_name && data.user) {
     const { supabaseAdmin } = await import('@/lib/supabase/admin')
-    await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
+    const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
       user_metadata: { full_name }
     })
+
+    if (authUpdateError) {
+      console.error('OTP profile metadata update error:', authUpdateError)
+    }
+
+    const { error: userProfileError } = await supabaseAdmin
+      .from('users')
+      .update({ full_name })
+      .eq('id', data.user.id)
+
+    if (userProfileError) {
+      console.error('OTP user profile update error:', userProfileError)
+    }
   }
 
   const role = await resolveUserRole(supabase, data.user?.id)
 
-  return NextResponse.json({ user: data.user, session: data.session, role })
+  return NextResponse.json({ user: data.user, role })
 }

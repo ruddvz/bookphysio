@@ -100,9 +100,9 @@ describe('Homepage regressions', () => {
   it('matches navbar and footer regressions across mobile and desktop chrome', () => {
     const { rerender, container } = render(<Navbar />)
 
-    const navbarImage = within(screen.getByRole('banner')).getByAltText('BookPhysio')
-    expect(navbarImage.parentElement?.className).toContain('overflow-hidden')
-    expect(navbarImage.className).toContain('object-cover')
+    const brandLink = within(screen.getByRole('banner')).getByRole('link', { name: /bookphysio home/i })
+    expect(within(brandLink).getByText('BookPhysio')).toBeInTheDocument()
+    expect(brandLink.querySelector('img[aria-hidden="true"]')).toHaveAttribute('alt', '')
 
     fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }))
     const mobileMenu = screen.getByText('Browse Specialties').closest('nav')

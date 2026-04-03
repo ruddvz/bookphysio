@@ -83,7 +83,7 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone }),
+        body: JSON.stringify({ phone: cleanPhone, flow: 'signup' }),
       })
 
       if (!res.ok) {

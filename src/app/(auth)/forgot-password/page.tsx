@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
         const res = await fetch('/api/auth/otp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone }),
+          body: JSON.stringify({ phone: cleanPhone, flow: 'login' }),
         })
         
         if (!res.ok) {
@@ -87,8 +87,8 @@ export default function ForgotPasswordPage() {
       }
       
       setSubmitted(true)
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
     } finally {
       setLoading(false)
     }

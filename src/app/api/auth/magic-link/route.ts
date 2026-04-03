@@ -4,6 +4,8 @@ import { sanitizeReturnPath } from '@/lib/demo/session'
 import { buildConfiguredAppUrl, getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 
+const maskedMagicLinkResponse = { message: 'If an account exists, a magic link has been sent.' }
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
   const email = typeof body === 'object' && body && typeof (body as { email?: unknown }).email === 'string'
@@ -44,16 +46,15 @@ export async function POST(request: NextRequest) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      // shouldCreateUser: true allows new users to sign up via magic link
-      shouldCreateUser: true,
+      shouldCreateUser: false,
       emailRedirectTo: callbackUrl.toString(),
     },
   })
 
   if (error) {
     console.error('Magic link error:', error)
-    return NextResponse.json({ error: 'Unable to send magic link' }, { status: 400 })
+    return NextResponse.json(maskedMagicLinkResponse)
   }
 
-  return NextResponse.json({ message: 'Magic link sent' })
+  return NextResponse.json(maskedMagicLinkResponse)
 }

@@ -141,6 +141,31 @@ describe('Auth regressions', () => {
     })
   })
 
+  it('uses masked success copy for magic-link login requests', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          message: 'If an account exists, a magic link has been sent.',
+        }),
+      })
+    )
+
+    render(<LoginPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /magic link/i }))
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'person@example.com' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/if an account exists for/i)).toBeInTheDocument()
+    })
+  })
+
   it('exports route-specific metadata for login and doctor signup', () => {
     expect(loginMetadata.title).toBe("Log in to BookPhysio — India's Physiotherapy Network")
     expect(loginMetadata.alternates).toEqual({ canonical: '/login' })
@@ -192,6 +217,20 @@ describe('Auth regressions', () => {
     expect(screen.getByRole('link', { name: /go to login/i })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('link', { name: /recover access/i })).toHaveAttribute('href', '/forgot-password')
     expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
+  })
+
+  it('uses masked delivery copy on the verify screen for login OTP flows', async () => {
+    savePendingOtp({
+      phone: '919876543210',
+      flow: 'login',
+      returnTo: null,
+    })
+
+    render(<VerifyOtpPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/if an account exists, a code was sent to/i)).toBeInTheDocument()
+    })
   })
 
   it('submits 264200 through the server flow instead of opening the local dev role picker', async () => {

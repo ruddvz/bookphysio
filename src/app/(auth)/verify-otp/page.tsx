@@ -36,6 +36,7 @@ function VerifyOtpContent() {
   const displayPhone = pendingOtp?.phone
     ? `+${pendingOtp.phone.slice(0, 2)} ${pendingOtp.phone.slice(2, 7)} ${pendingOtp.phone.slice(7)}`
     : ''
+  const deliveryLabel = pendingOtp?.flow === 'login' ? 'If an account exists, a code was sent to' : 'Code sent to'
 
   const allFilled = otp.every((digit) => digit !== '')
 
@@ -144,6 +145,7 @@ function VerifyOtpContent() {
 
   async function handleResend() {
     const phone = pendingOtp?.phone ?? ''
+    const flow = pendingOtp?.flow ?? 'login'
 
     setCountdown(COUNTDOWN_SECONDS)
     setOtp(Array(OTP_LENGTH).fill(''))
@@ -158,7 +160,7 @@ function VerifyOtpContent() {
       await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: '+' + phone }),
+        body: JSON.stringify({ phone: '+' + phone, flow }),
       })
     } catch {
       // silently ignore resend errors — user can retry countdown
@@ -174,7 +176,7 @@ function VerifyOtpContent() {
         Verify your number
       </h1>
       <p className="text-[15px] font-bold text-bp-body/40 mb-10">
-        Code sent to{' '}
+        {deliveryLabel}{' '}
         <span className="text-bp-primary">{displayPhone}</span>
       </p>
 

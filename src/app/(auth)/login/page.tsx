@@ -68,7 +68,7 @@ export default function LoginPage() {
         const res = await fetch('/api/auth/otp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone }),
+          body: JSON.stringify({ phone: cleanPhone, flow: 'login' }),
         })
         
         if (!res.ok) {
@@ -108,8 +108,8 @@ export default function LoginPage() {
 
         setMagicLinkSent(true)
       }
-    } catch (err: any) {
-      setErrors({ general: err.message })
+    } catch (err: unknown) {
+      setErrors({ general: err instanceof Error ? err.message : 'Unable to continue right now.' })
     } finally {
       setLoading(false)
     }
@@ -123,7 +123,7 @@ export default function LoginPage() {
         </div>
         <h2 className="text-2xl font-black text-bp-primary mb-4 tracking-tight">Check your inbox</h2>
         <p className="text-bp-body/60 font-bold mb-8 leading-relaxed">
-          We've sent a magic login link to <span className="text-bp-accent">{email}</span>. Click the link to sign in instantly.
+          If an account exists for <span className="text-bp-accent">{email}</span>, a magic login link is on its way.
         </p>
         <button 
           onClick={() => setMagicLinkSent(false)}

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const createClientMock = vi.fn()
 const adminFromMock = vi.fn()
+const adminUpdateUserByIdMock = vi.fn()
 const otpRateLimitMock = vi.fn()
 const apiRateLimitMock = vi.fn()
 const sendOtpMock = vi.fn()
@@ -13,6 +14,11 @@ vi.mock('@/lib/supabase/server', () => ({
 
 vi.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
+    auth: {
+      admin: {
+        updateUserById: (...args: unknown[]) => adminUpdateUserByIdMock(...args),
+      },
+    },
     from: (...args: unknown[]) => adminFromMock(...args),
   },
 }))
@@ -36,6 +42,15 @@ function createSingleRowChain(result: unknown) {
     select: vi.fn(() => chain),
     eq: vi.fn(() => chain),
     single: vi.fn().mockResolvedValue(result),
+  }
+
+  return chain
+}
+
+function createUpdateChain(result: unknown) {
+  const chain = {
+    update: vi.fn(() => chain),
+    eq: vi.fn().mockResolvedValue(result),
   }
 
   return chain
@@ -69,12 +84,135 @@ describe('Auth and admin hardening routes', () => {
     const { POST } = await import('../auth/otp/send/route')
     const response = await POST(new Request('http://localhost/api/auth/otp/send', {
       method: 'POST',
-      body: JSON.stringify({ phone: '+919876543210' }),
+      body: JSON.stringify({ phone: '+919876543210', flow: 'login' }),
       headers: { 'Content-Type': 'application/json' },
     }) as never)
 
     expect(response.status).toBe(200)
-    expect(signInWithOtp).toHaveBeenCalledWith({ phone: '+919876543210' })
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      phone: '+919876543210',
+      options: { shouldCreateUser: false },
+    })
+    await expect(response.json()).resolves.toEqual({
+      message: 'If an account exists, an OTP has been sent.',
+    })
+  })
+
+  it('returns a uniform success response when a login OTP send targets a missing account', async () => {
+    const signInWithOtp = vi.fn().mockResolvedValue({
+      error: { message: 'Signups not allowed for otp' },
+    })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', flow: 'login' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      message: 'If an account exists, an OTP has been sent.',
+    })
+  })
+
+  it('extracts auth rate-limit IPs from forwarded headers when request.ip is unavailable', async () => {
+    vi.stubEnv('VERCEL', '1')
+
+    const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', flow: 'login' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-real-ip': '203.0.113.7',
+      },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    expect(otpRateLimitMock).toHaveBeenNthCalledWith(1, 'otp-send:ip:203.0.113.7')
+    expect(otpRateLimitMock).toHaveBeenNthCalledWith(2, 'send:+919876543210')
+  })
+
+  it('uses Cloudflare client IP headers instead of client-controlled forwarded headers', async () => {
+    vi.stubEnv('CF_PAGES', '1')
+
+    const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', flow: 'login' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-forwarded-for': '198.51.100.10',
+        'cf-connecting-ip': '203.0.113.9',
+      },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    expect(otpRateLimitMock).toHaveBeenNthCalledWith(1, 'otp-send:ip:203.0.113.9')
+  })
+
+  it('allows account creation only for signup OTP sends', async () => {
+    const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', flow: 'signup' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      phone: '+919876543210',
+      options: { shouldCreateUser: true },
+    })
+  })
+
+  it('allows account creation for provider signup OTP sends', async () => {
+    const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', flow: 'provider_signup' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      phone: '+919876543210',
+      options: { shouldCreateUser: true },
+    })
   })
 
   it('falls back to the patient role when OTP verification cannot resolve a stored profile role', async () => {
@@ -105,6 +243,41 @@ describe('Auth and admin hardening routes', () => {
     await expect(response.json()).resolves.toMatchObject({ role: 'patient' })
   })
 
+  it('keeps OTP verification successful when profile sync fails after auth succeeds', async () => {
+    adminUpdateUserByIdMock.mockResolvedValue({
+      error: { message: 'metadata unavailable' },
+    })
+    adminFromMock.mockReturnValue(createUpdateChain({ error: { message: 'profile unavailable' } }))
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        verifyOtp: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: 'user-2',
+            },
+            session: { access_token: 'token' },
+          },
+          error: null,
+        }),
+      },
+      from: vi.fn(() => createSingleRowChain({ data: { role: 'patient' } })),
+    })
+
+    const { POST } = await import('../auth/otp/verify/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/verify', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919876543210', otp: '123456', full_name: 'Rahul Sharma' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({ role: 'patient' })
+    expect(adminUpdateUserByIdMock).toHaveBeenCalledWith('user-2', {
+      user_metadata: { full_name: 'Rahul Sharma' },
+    })
+  })
+
   it('builds magic-link callbacks from configured site env only and strips hostile return targets', async () => {
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://bookphysio.in')
 
@@ -129,9 +302,57 @@ describe('Auth and admin hardening routes', () => {
     expect(signInWithOtp).toHaveBeenCalledWith({
       email: 'rahul@example.com',
       options: expect.objectContaining({
-        shouldCreateUser: true,
+        shouldCreateUser: false,
         emailRedirectTo: 'https://bookphysio.in/auth/callback',
       }),
+    })
+  })
+
+  it('returns a uniform success response when magic-link delivery fails', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://bookphysio.in')
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp: vi.fn().mockResolvedValue({
+          error: { message: 'User not found' },
+        }),
+      },
+    })
+
+    const { POST } = await import('../auth/magic-link/route')
+    const response = await POST(new Request('http://localhost/api/auth/magic-link', {
+      method: 'POST',
+      body: JSON.stringify({ email: 'unknown@example.com' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      message: 'If an account exists, a magic link has been sent.',
+    })
+  })
+
+  it('masks delivery failures for magic-link sends', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://bookphysio.in')
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp: vi.fn().mockResolvedValue({
+          error: { message: 'SMTP provider unavailable' },
+        }),
+      },
+    })
+
+    const { POST } = await import('../auth/magic-link/route')
+    const response = await POST(new Request('http://localhost/api/auth/magic-link', {
+      method: 'POST',
+      body: JSON.stringify({ email: 'known@example.com' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toEqual({
+      message: 'If an account exists, a magic link has been sent.',
     })
   })
 

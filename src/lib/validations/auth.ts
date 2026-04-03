@@ -31,6 +31,7 @@ export const loginSchema = z.object({
 
 export const otpSendSchema = z.object({
   phone: phoneSchema,
+  flow: z.enum(['login', 'signup', 'provider_signup']),
 })
 
 export const otpVerifySchema = z.object({

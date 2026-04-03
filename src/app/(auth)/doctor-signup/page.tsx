@@ -945,7 +945,7 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     fetch('/api/auth/otp/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: '+91' + phone }),
+      body: JSON.stringify({ phone: '+91' + phone, flow: 'provider_signup' }),
     })
   }
 
@@ -1068,7 +1068,7 @@ export default function DoctorSignupPage() {
       fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone }),
+        body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup' }),
       })
     }
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
