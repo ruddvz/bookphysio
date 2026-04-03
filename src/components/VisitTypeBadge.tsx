@@ -13,7 +13,7 @@ interface VisitTypeBadgeProps {
 }
 
 export function VisitTypeBadge({ type, className }: VisitTypeBadgeProps) {
-  const config = VISIT_CONFIG[type as VisitType] ?? { label: type, className: 'bg-gray-100 text-gray-600' }
+  const config = VISIT_CONFIG[type as VisitType] ?? { label: type, className: 'bg-bp-surface text-bp-body' }
   return (
     <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', config.className, className)}>
       {config.label}

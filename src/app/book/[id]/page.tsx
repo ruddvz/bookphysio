@@ -7,7 +7,7 @@ export function generateStaticParams() {
 
 export default function BookPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center"><div className="text-[#666666] text-[15px]">Loading…</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-bp-surface flex items-center justify-center"><div className="text-bp-body text-[15px]">Loading…</div></div>}>
       <BookingInner />
     </Suspense>
   )

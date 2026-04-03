@@ -20,8 +20,8 @@ const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
   confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
   completed: 'bg-blue-50 text-blue-700 border-blue-100',
-  cancelled: 'bg-gray-50 text-gray-400 border-gray-100',
-  no_show: 'bg-gray-50 text-gray-400 border-gray-100',
+  cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
+  no_show: 'bg-bp-surface text-bp-body/40 border-bp-border',
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -41,7 +41,7 @@ function AppointmentsSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-white rounded-[32px] border border-gray-100 p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div key={i} className="bg-white rounded-[32px] border border-bp-border p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex gap-6 flex-1 w-full">
             <Skeleton className="h-16 w-16 rounded-2xl shrink-0" />
             <div className="flex flex-col gap-2 flex-1 pt-1">
@@ -151,14 +151,14 @@ function PatientAppointmentsContent() {
         {loading ? (
           <AppointmentsSkeleton />
         ) : error ? (
-          <div className="bg-white border border-gray-100 rounded-[40px] shadow-sm py-20 px-10 text-center">
+          <div className="bg-white border border-bp-border rounded-[40px] shadow-sm py-20 px-10 text-center">
             <CircleAlert className="w-12 h-12 text-red-500 mx-auto mb-6 opacity-20" />
-            <h3 className="text-[20px] font-black text-[#333333] mb-2">Sync Interrupted</h3>
-            <p className="text-[15px] font-bold text-gray-400 mb-8">We couldn&apos;t retrieve your clinical records right now.</p>
+            <h3 className="text-[20px] font-black text-bp-primary mb-2">Sync Interrupted</h3>
+            <p className="text-[15px] font-bold text-bp-body/40 mb-8">We couldn&apos;t retrieve your clinical records right now.</p>
             <button
               type="button"
               onClick={fetchAppointments}
-              className="px-10 py-4 bg-[#00766C] text-white rounded-full text-[14px] font-black uppercase tracking-widest hover:bg-[#005A52] transition-colors shadow-lg active:scale-95 shadow-teal-900/10"
+              className="px-10 py-4 bg-bp-accent text-white rounded-full text-[14px] font-black uppercase tracking-widest hover:bg-bp-primary transition-colors shadow-lg active:scale-95 shadow-teal-900/10"
             >
               Retry Connection
             </button>
@@ -178,7 +178,7 @@ function PatientAppointmentsContent() {
                 tab === 'upcoming' && (
                   <Link
                     href="/search"
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-[#333333] text-white rounded-[24px] font-black text-[16px] hover:bg-[#00766C] transition-all hover:scale-[1.03] shadow-xl"
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-bp-primary text-white rounded-[24px] font-black text-[16px] hover:bg-bp-accent transition-all hover:scale-[1.03] shadow-xl"
                   >
                     Browse Specialists
                     <ArrowRight size={20} strokeWidth={3} />
@@ -192,7 +192,7 @@ function PatientAppointmentsContent() {
             {filtered.map((appt) => (
               <div
                 key={appt.id}
-                className="group bg-white rounded-[36px] border border-gray-100 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-xl hover:border-teal-500/10 hover:-translate-y-1"
+                className="group bg-white rounded-[36px] border border-bp-border p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 hover:shadow-xl hover:border-bp-accent/10 hover:-translate-y-1"
               >
                 <div className="flex flex-col md:flex-row md:items-center gap-6 flex-1 min-w-0">
                   {/* Provider Brand */}
@@ -252,13 +252,13 @@ function PatientAppointmentsContent() {
       {/* Quality Signifier */}
       <div className="mt-20 flex flex-wrap items-center justify-center gap-8 md:gap-12 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center"><CheckCircle2 size={18} /></div>
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-600">IAP Verified Care</span>
+            <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center"><CheckCircle2 size={18} /></div>
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">IAP Verified Care</span>
          </div>
          <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-teal-600 font-black">256</div>
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-600">AES Encrypted Data</span>
+            <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent font-black">256</div>
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">AES Encrypted Data</span>
          </div>
       </div>
     </div>

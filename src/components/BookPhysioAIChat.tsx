@@ -87,7 +87,7 @@ interface BookPhysioAIChatProps {
 }
 
 const TONE_STYLES: Record<Tone, { icon: string; badge: string; panel: string }> = {
-  teal: { icon: 'bg-teal-50 text-[#00766C]', badge: 'bg-teal-50 text-[#00766C] border-teal-100', panel: 'from-teal-50/80 to-white' },
+  teal: { icon: 'bg-bp-accent/10 text-bp-accent', badge: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20', panel: 'from-teal-50/80 to-white' },
   emerald: { icon: 'bg-emerald-50 text-emerald-600', badge: 'bg-emerald-50 text-emerald-700 border-emerald-100', panel: 'from-emerald-50/70 to-white' },
   amber: { icon: 'bg-amber-50 text-amber-600', badge: 'bg-amber-50 text-amber-700 border-amber-100', panel: 'from-amber-50/70 to-white' },
   slate: { icon: 'bg-slate-50 text-slate-700', badge: 'bg-slate-50 text-slate-700 border-slate-100', panel: 'from-slate-50/80 to-white' },
@@ -299,7 +299,7 @@ function renderMessageContent(content: string) {
       return (
         <span
           key={`${part}-${index}`}
-          className="mx-1 inline-flex items-center rounded-full border border-teal-100 bg-teal-50 px-2.5 py-0.5 text-[11px] font-black text-[#00766C]"
+          className="mx-1 inline-flex items-center rounded-full border border-bp-accent/20 bg-bp-accent/10 px-2.5 py-0.5 text-[11px] font-black text-bp-accent"
         >
           {part}
         </span>
@@ -404,36 +404,36 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
   )
 
   return (
-    <div className="min-h-[calc(100vh-100px)] bg-[radial-gradient(circle_at_top,_rgba(0,118,108,0.08),_transparent_40%),linear-gradient(180deg,_#f7f8f9_0%,_#fcfdfd_35%,_#ffffff_100%)] selection:bg-[#00766C]/10 selection:text-[#00766C]">
+    <div className="min-h-[calc(100vh-100px)] bg-[radial-gradient(circle_at_top,_rgba(0,118,108,0.08),_transparent_40%),linear-gradient(180deg,_#f7f8f9_0%,_#fcfdfd_35%,_#ffffff_100%)] selection:bg-bp-accent/10 selection:text-bp-accent">
       <div className="mx-auto max-w-[1680px] px-4 md:px-6 py-6 md:py-8">
         <div className="grid gap-6 xl:grid-cols-[290px_minmax(0,1fr)_320px]">
           <aside className="hidden xl:flex flex-col gap-6">
-            <div className="rounded-[36px] border border-gray-100 bg-white/90 p-6 shadow-[0_28px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+            <div className="rounded-[36px] border border-bp-border bg-white/90 p-6 shadow-[0_28px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-xl">
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00766C] text-white shadow-lg shadow-teal-100 overflow-hidden translate-z-0">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
                   <AceMascot expression={currentExpression} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">{copy.eyebrow}</p>
-                  <h1 className="text-[20px] font-black tracking-tight text-[#333333]">Ace</h1>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/40">{copy.eyebrow}</p>
+                  <h1 className="text-[20px] font-black tracking-tight text-bp-primary">Ace</h1>
                 </div>
               </div>
 
-              <div className="mt-5 rounded-[28px] border border-gray-100 bg-[#fafbfc] p-5">
-                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#00766C]">One AI for the platform</p>
-                <p className="mt-3 text-[14px] font-medium leading-relaxed text-[#666666]">{copy.description}</p>
+              <div className="mt-5 rounded-[28px] border border-bp-border bg-[#fafbfc] p-5">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-accent">One AI for the platform</p>
+                <p className="mt-3 text-[14px] font-medium leading-relaxed text-bp-body">{copy.description}</p>
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   {copy.metrics.map((metric) => {
                     const styles = toneClasses(metric.tone)
                     const MetricIcon = metric.icon
 
                     return (
-                      <div key={metric.label} className="rounded-[22px] border border-gray-100 bg-white p-3 shadow-sm">
+                      <div key={metric.label} className="rounded-[22px] border border-bp-border bg-white p-3 shadow-sm">
                         <div className={cn('mb-3 flex h-9 w-9 items-center justify-center rounded-2xl', styles.icon)}>
                           <MetricIcon size={18} strokeWidth={2.5} />
                         </div>
-                        <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">{metric.label}</p>
-                        <p className="mt-1 text-[16px] font-black tracking-tight text-[#333333]">{metric.value}</p>
+                        <p className="text-[11px] font-black uppercase tracking-widest text-bp-body/40">{metric.label}</p>
+                        <p className="mt-1 text-[16px] font-black tracking-tight text-bp-primary">{metric.value}</p>
                       </div>
                     )
                   })}
@@ -441,7 +441,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
               </div>
             </div>
 
-            <div className="rounded-[36px] bg-[#333333] p-6 text-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.5)]">
+            <div className="rounded-[36px] bg-bp-primary p-6 text-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.5)]">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
                 <ShieldCheck size={14} />
                 Safe by design
@@ -459,40 +459,40 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
           </aside>
 
           <main className="min-w-0 space-y-6">
-            <header className="overflow-hidden rounded-[40px] border border-gray-100 bg-white/90 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <header className="overflow-hidden rounded-[40px] border border-bp-border bg-white/90 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.35)] backdrop-blur-xl">
               <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
                 <div className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-gray-400">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-[#E6F4F3] px-3 py-1 text-[#00766C]">
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-bp-body/40">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1 text-bp-accent">
                       <Sparkles size={12} />
                       bookphysio.in/ai
                     </span>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-gray-50 px-3 py-1 text-[#333333]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-bp-primary">
                       <BadgeCheck size={12} />
                       {copy.modeLabel}
                     </span>
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#00766C]">{copy.eyebrow}</p>
-                    <h1 className="max-w-3xl text-[34px] font-black leading-[0.95] tracking-tight text-[#333333] md:text-[52px]">BookPhysio AI</h1>
-                    <p className="max-w-2xl text-[15px] font-medium leading-relaxed text-[#666666] md:text-[17px]">
+                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-bp-accent">{copy.eyebrow}</p>
+                    <h1 className="max-w-3xl text-[34px] font-black leading-[0.95] tracking-tight text-bp-primary md:text-[52px]">BookPhysio AI</h1>
+                    <p className="max-w-2xl text-[15px] font-medium leading-relaxed text-bp-body md:text-[17px]">
                       {copy.title}
                     </p>
-                    <p className="max-w-2xl text-[14px] font-medium leading-relaxed text-[#888888]">{copy.contextLabel}</p>
+                    <p className="max-w-2xl text-[14px] font-medium leading-relaxed text-bp-body/60">{copy.contextLabel}</p>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
                     <Link
                       href={copy.primaryHref}
-                      className="inline-flex items-center gap-3 rounded-[24px] bg-[#333333] px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-[#00766C]"
+                      className="inline-flex items-center gap-3 rounded-[24px] bg-bp-primary px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-bp-accent"
                     >
                       {copy.primaryLabel}
                       <ArrowRight size={16} strokeWidth={3} />
                     </Link>
                     <Link
                       href={copy.secondaryHref}
-                      className="inline-flex items-center gap-3 rounded-[24px] border border-gray-100 bg-white px-6 py-3.5 text-[14px] font-black text-[#333333] shadow-sm transition-all hover:border-teal-100 hover:text-[#00766C]"
+                      className="inline-flex items-center gap-3 rounded-[24px] border border-bp-border bg-white px-6 py-3.5 text-[14px] font-black text-bp-primary shadow-sm transition-all hover:border-bp-accent/20 hover:text-bp-accent"
                     >
                       {copy.secondaryLabel}
                       <ChevronRight size={16} strokeWidth={3} />
@@ -506,7 +506,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     const MetricIcon = metric.icon
 
                     return (
-                      <div key={metric.label} className="rounded-[28px] border border-gray-100 bg-[#fafbfc] p-4 shadow-sm">
+                      <div key={metric.label} className="rounded-[28px] border border-bp-border bg-[#fafbfc] p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-3">
                           <div className={cn('flex h-11 w-11 items-center justify-center rounded-2xl', styles.icon)}>
                             <MetricIcon size={20} strokeWidth={2.5} />
@@ -515,9 +515,9 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                             Live
                           </div>
                         </div>
-                        <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-gray-400">{metric.label}</p>
-                        <p className="mt-1 text-[18px] font-black tracking-tight text-[#333333]">{metric.value}</p>
-                        <p className="mt-2 text-[12px] font-medium leading-relaxed text-[#888888]">{metric.caption}</p>
+                        <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-bp-body/40">{metric.label}</p>
+                        <p className="mt-1 text-[18px] font-black tracking-tight text-bp-primary">{metric.value}</p>
+                        <p className="mt-2 text-[12px] font-medium leading-relaxed text-bp-body/60">{metric.caption}</p>
                       </div>
                     )
                   })}
@@ -526,21 +526,21 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
             </header>
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <section className="flex min-h-[760px] flex-col overflow-hidden rounded-[40px] border border-gray-100 bg-white shadow-[0_28px_80px_-42px_rgba(0,0,0,0.22)]">
-                <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 md:px-8">
+              <section className="flex min-h-[760px] flex-col overflow-hidden rounded-[40px] border border-bp-border bg-white shadow-[0_28px_80px_-42px_rgba(0,0,0,0.22)]">
+                <div className="flex items-center justify-between border-b border-bp-border px-6 py-5 md:px-8">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{copy.modeLabel}</p>
-                    <h2 className="text-[20px] font-black tracking-tight text-[#333333]">Conversation canvas</h2>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-bp-body/40">{copy.modeLabel}</p>
+                    <h2 className="text-[20px] font-black tracking-tight text-bp-primary">Conversation canvas</h2>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-[#E6F4F3] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-[#00766C]">
-                    <span className="h-2 w-2 rounded-full bg-[#00766C]" />
+                  <div className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-bp-accent">
+                    <span className="h-2 w-2 rounded-full bg-bp-accent" />
                     Live demo
                   </div>
                 </div>
 
                 <div ref={chatRef} className="flex-1 space-y-6 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
-                  <div className="rounded-[30px] border border-teal-100 bg-[linear-gradient(135deg,_rgba(230,244,243,0.95),_rgba(255,255,255,0.9))] p-5 shadow-sm">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#00766C]">
+                  <div className="rounded-[30px] border border-bp-accent/20 bg-[linear-gradient(135deg,_rgba(230,244,243,0.95),_rgba(255,255,255,0.9))] p-5 shadow-sm">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-bp-accent">
                       <Zap size={12} />
                       {copy.modeLabel}
                     </div>
@@ -567,7 +567,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                         <div
                           className={cn(
                             'flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] shadow-sm',
-                            isUser ? 'bg-[#333333] text-white' : 'bg-[#F3F4F6] text-[#00766C]'
+                            isUser ? 'bg-bp-primary text-white' : 'bg-[#F3F4F6] text-bp-accent'
                           )}
                         >
                           {isUser ? <Users size={24} /> : <Bot size={24} />}
@@ -577,8 +577,8 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                           className={cn(
                             'rounded-[30px] px-5 py-4 shadow-sm',
                             isUser
-                              ? 'rounded-tr-none border border-[#1f6f68] bg-[#00766C] text-white'
-                              : 'rounded-tl-none border border-gray-100 bg-white text-[#333333]'
+                              ? 'rounded-tr-none border border-[#1f6f68] bg-bp-accent text-white'
+                              : 'rounded-tl-none border border-bp-border bg-white text-bp-primary'
                           )}
                         >
                           <div className="text-[15px] font-medium leading-relaxed md:text-[16px]">
@@ -586,11 +586,11 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                           </div>
 
                           {citationIds.length > 0 && !isUser && (
-                            <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-50 pt-4">
+                            <div className="mt-4 flex flex-wrap gap-2 border-t border-bp-border/50 pt-4">
                               {citationIds.map((citationId) => (
                                 <span
                                   key={citationId}
-                                  className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-teal-50 px-3 py-1 text-[11px] font-black text-[#00766C]"
+                                  className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1 text-[11px] font-black text-bp-accent"
                                 >
                                   <CheckCircle2 size={12} />
                                   {citationId}
@@ -605,21 +605,21 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
 
                   {isLoading && (
                     <div className="mr-auto flex max-w-[92%] items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] bg-[#F3F4F6] text-[#00766C] shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] bg-[#F3F4F6] text-bp-accent shadow-sm">
                         <Bot size={24} className="animate-pulse" />
                       </div>
-                      <div className="rounded-[30px] rounded-tl-none border border-gray-100 bg-white px-5 py-4 shadow-sm">
+                      <div className="rounded-[30px] rounded-tl-none border border-bp-border bg-white px-5 py-4 shadow-sm">
                         <div className="flex items-center gap-2">
-                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#00766C]" />
-                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#00766C] [animation-delay:120ms]" />
-                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#00766C] [animation-delay:240ms]" />
+                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-bp-accent" />
+                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-bp-accent [animation-delay:120ms]" />
+                          <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-bp-accent [animation-delay:240ms]" />
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="border-t border-gray-100 bg-[#fafbfc] px-6 py-5 md:px-8 md:py-6">
+                <div className="border-t border-bp-border bg-[#fafbfc] px-6 py-5 md:px-8 md:py-6">
                   <div className="mb-4 flex flex-wrap gap-2">
                     {copy.quickPrompts.map((prompt) => (
                       <button
@@ -629,9 +629,9 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                           setInput(prompt)
                           inputRef.current?.focus()
                         }}
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-100 bg-white px-4 py-2 text-[12px] font-black text-[#333333] shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal-100 hover:text-[#00766C]"
+                        className="inline-flex items-center gap-2 rounded-full border border-bp-border bg-white px-4 py-2 text-[12px] font-black text-bp-primary shadow-sm transition-all hover:-translate-y-0.5 hover:border-bp-accent/20 hover:text-bp-accent"
                       >
-                        <Sparkles size={12} className="text-[#00766C]" />
+                        <Sparkles size={12} className="text-bp-accent" />
                         {prompt}
                       </button>
                     ))}
@@ -639,12 +639,12 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
 
                   <form
                     onSubmit={handleSubmit}
-                    className="flex items-center gap-3 rounded-[34px] border border-gray-100 bg-white p-2.5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.2)] transition-all focus-within:border-[#00766C]/30 focus-within:shadow-[0_24px_60px_-28px_rgba(0,118,108,0.2)]"
+                    className="flex items-center gap-3 rounded-[34px] border border-bp-border bg-white p-2.5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.2)] transition-all focus-within:border-bp-accent/30 focus-within:shadow-[0_24px_60px_-28px_rgba(0,118,108,0.2)]"
                   >
                     <label htmlFor={inputId} className="sr-only">
                       {variant === 'patient' ? 'Ask BookPhysio AI about symptoms and recovery' : 'Ask BookPhysio AI about a clinical case'}
                     </label>
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[26px] bg-[#00766C] text-white shadow-lg shadow-teal-100 overflow-hidden translate-z-0">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[26px] bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
                       <AceMascot expression={currentExpression} />
                     </div>
                     <input
@@ -653,7 +653,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       value={input}
                       onChange={handleInputChange}
                       placeholder={variant === 'patient' ? 'Describe what hurts, how long it has been going on, and what makes it worse...' : 'Summarize the case, findings, and what you want the AI to help with...'}
-                      className="min-w-0 flex-1 bg-transparent px-2 py-3 text-[15px] font-medium text-[#333333] outline-none placeholder:text-gray-400"
+                      className="min-w-0 flex-1 bg-transparent px-2 py-3 text-[15px] font-medium text-bp-primary outline-none placeholder:text-bp-body/40"
                       disabled={isLoading}
                     />
                     <button
@@ -663,20 +663,20 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       className={cn(
                         'flex h-14 w-14 shrink-0 items-center justify-center rounded-[26px] transition-all',
                         (input || '').trim() && !isLoading
-                          ? 'bg-[#333333] text-white shadow-lg hover:bg-[#00766C] active:scale-95'
+                          ? 'bg-bp-primary text-white shadow-lg hover:bg-bp-accent active:scale-95'
                           : 'cursor-not-allowed bg-gray-200 text-white'
                       )}
                     >
                       <Send size={22} />
                     </button>
                   </form>
-                  <p className="mt-4 text-center text-[10px] font-black uppercase tracking-[0.22em] text-gray-300">{copy.footerNote}</p>
+                  <p className="mt-4 text-center text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/30">{copy.footerNote}</p>
                 </div>
               </section>
 
               <aside className="hidden xl:flex flex-col gap-6">
-                <div className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.22)]">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">
+                <div className="rounded-[36px] border border-bp-border bg-white p-6 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.22)]">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/40">
                     <BookOpen size={14} />
                     {copy.railTitle}
                   </div>
@@ -695,14 +695,14 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                               <p className={cn('inline-flex rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em]', styles.badge)}>
                                 {card.label}
                               </p>
-                              <h3 className="mt-3 text-[15px] font-black tracking-tight text-[#333333]">{card.title}</h3>
-                              <p className="mt-1.5 text-[13px] leading-relaxed text-[#666666]">{card.detail}</p>
+                              <h3 className="mt-3 text-[15px] font-black tracking-tight text-bp-primary">{card.title}</h3>
+                              <p className="mt-1.5 text-[13px] leading-relaxed text-bp-body">{card.detail}</p>
                             </div>
                           </div>
                           {card.cta && (
-                            <div className="mt-4 flex items-center justify-between rounded-[20px] border border-gray-100 bg-[#fafbfc] px-4 py-3 text-[12px] font-black text-[#333333]">
+                            <div className="mt-4 flex items-center justify-between rounded-[20px] border border-bp-border bg-[#fafbfc] px-4 py-3 text-[12px] font-black text-bp-primary">
                               <span>{card.cta}</span>
-                              <ChevronRight size={14} className="text-[#00766C]" />
+                              <ChevronRight size={14} className="text-bp-accent" />
                             </div>
                           )}
                         </>
@@ -712,12 +712,12 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                         <Link
                           key={card.title}
                           href={card.href}
-                          className="group block rounded-[28px] border border-gray-100 bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4 transition-all hover:-translate-y-0.5 hover:border-teal-100 hover:shadow-lg"
+                          className="group block rounded-[28px] border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4 transition-all hover:-translate-y-0.5 hover:border-bp-accent/20 hover:shadow-lg"
                         >
                           {content}
                         </Link>
                       ) : (
-                        <div key={card.title} className="rounded-[28px] border border-gray-100 bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4">
+                        <div key={card.title} className="rounded-[28px] border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4">
                           {content}
                         </div>
                       )
@@ -725,7 +725,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                   </div>
                 </div>
 
-                <div className="rounded-[36px] bg-[#333333] p-6 text-white shadow-[0_24px_70px_-35px_rgba(0,0,0,0.45)]">
+                <div className="rounded-[36px] bg-bp-primary p-6 text-white shadow-[0_24px_70px_-35px_rgba(0,0,0,0.45)]">
                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
                     <Activity size={14} />
                     {copy.modeLabel}

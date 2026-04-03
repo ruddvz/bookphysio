@@ -131,7 +131,7 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Full Name */}
         <div>
-          <label htmlFor="name" className="block text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2">
+          <label htmlFor="name" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
             Full Name
           </label>
           <div className="relative group">
@@ -140,44 +140,44 @@ export default function SignupPage() {
               type="text"
               placeholder="e.g. Rahul Sharma"
               className={cn(
-                "w-full pl-14 pr-6 py-5 text-[17px] font-black text-[#111111] bg-gray-50/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                "w-full pl-14 pr-6 py-5 text-[17px] font-black text-bp-primary bg-bp-surface/50 rounded-[28px] outline-none border-2 transition-all duration-500",
                 errors.name 
                   ? "border-red-100 bg-red-50/20" 
                   : nameFocused 
-                    ? "border-teal-500 bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
-                    : "border-gray-100 hover:border-gray-200"
+                    ? "border-bp-accent bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    : "border-bp-border hover:border-bp-border"
               )}
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               onFocus={() => setNameFocused(true)}
               onBlur={() => { setNameFocused(false); handleBlur('name') }}
             />
-            <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-500", nameFocused ? "text-teal-600" : "text-gray-300")} />
+            <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-500", nameFocused ? "text-bp-accent" : "text-bp-body/30")} />
           </div>
           {errors.name && <p className="text-[12px] font-bold text-red-500 mt-3 ml-4 animate-in slide-in-from-top-2">{errors.name}</p>}
         </div>
 
         {/* Mobile Number */}
         <div>
-          <label htmlFor="phone" className="block text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2">
+          <label htmlFor="phone" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
             Mobile Number
           </label>
           <div className="relative group">
             <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
-              <Smartphone className={cn("w-5 h-5 transition-colors duration-500", phoneFocused ? "text-teal-600" : "text-gray-300")} />
-              <span className={cn("text-[17px] font-black transition-colors duration-500", phoneFocused ? "text-teal-700" : "text-gray-400")}>+91</span>
+              <Smartphone className={cn("w-5 h-5 transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-body/30")} />
+              <span className={cn("text-[17px] font-black transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-body/40")}>+91</span>
             </div>
             <input
               id="phone"
               type="tel"
               placeholder="98765 43210"
               className={cn(
-                "w-full pl-28 pr-6 py-5 text-[18px] font-black text-[#111111] bg-gray-50/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                "w-full pl-28 pr-6 py-5 text-[18px] font-black text-bp-primary bg-bp-surface/50 rounded-[28px] outline-none border-2 transition-all duration-500",
                 errors.phone 
                   ? "border-red-100 bg-red-50/20" 
                   : phoneFocused 
-                    ? "border-teal-500 bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
-                    : "border-gray-100 hover:border-gray-200"
+                    ? "border-bp-accent bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    : "border-bp-border hover:border-bp-border"
               )}
               value={form.phone}
               onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
@@ -193,7 +193,7 @@ export default function SignupPage() {
           disabled={loading}
           className={cn(
             "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-black text-white rounded-[28px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-[#00766C] shadow-teal-900/10'
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-teal-900/10'
           )}
         >
           {loading ? (
@@ -204,8 +204,8 @@ export default function SignupPage() {
           ) : (
             <>
               <span className="relative z-10">Start Your Recovery</span>
-              <ArrowRight size={18} strokeWidth={4} className="text-teal-400 group-hover:translate-x-1 transition-transform relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <ArrowRight size={18} strokeWidth={4} className="text-bp-accent/70 group-hover:translate-x-1 transition-transform relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
           )}
         </button>

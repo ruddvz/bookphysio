@@ -106,7 +106,7 @@ const CommonReasons = () => {
           style={{
             fontSize: '24px',
             fontWeight: 600,
-            color: '#333333',
+            color: 'var(--color-bp-primary)',
             marginBottom: '24px',
           }}
         >
@@ -131,7 +131,7 @@ const CommonReasons = () => {
                 onClick={() => setActiveCategory(category.name)}
                 style={{
                   backgroundColor: isActive ? '#333333' : '#FFFFFF',
-                  border: `1.5px solid ${isActive ? '#333333' : '#CCCCCC'}`,
+                  border: `1.5px solid ${isActive ? '#333333' : 'var(--color-bp-border)'}`,
                   borderRadius: '20px',
                   padding: '8px 20px',
                   fontSize: '15px',
@@ -142,12 +142,12 @@ const CommonReasons = () => {
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#333333';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-bp-primary)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#CCCCCC';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-bp-border)';
                   }
                 }}
               >
@@ -168,7 +168,7 @@ const CommonReasons = () => {
               href="#"
               style={{
                 fontSize: '14px',
-                color: '#333333',
+                color: 'var(--color-bp-primary)',
                 textDecoration: 'none',
                 padding: '8px 0',
                 borderBottom: '1px solid rgba(0,0,0,0.08)',

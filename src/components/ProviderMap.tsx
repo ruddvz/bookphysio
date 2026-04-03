@@ -31,19 +31,19 @@ const MapErrorFallback = () => (
   <div className="w-full h-full bg-[#f8fafc] flex flex-col items-center justify-center p-12 text-center gap-6 relative overflow-hidden">
      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#00766C_1px,transparent_1.5px)] [background-size:24px_24px]"></div>
      <div className="relative group">
-        <div className="absolute -inset-4 bg-teal-100/30 rounded-full blur-xl group-hover:opacity-100 opacity-0 transition-opacity"></div>
-        <div className="w-24 h-24 bg-white rounded-[40px] shadow-2xl flex items-center justify-center text-[#00766C] relative z-10 border border-gray-50">
+        <div className="absolute -inset-4 bg-bp-accent/15/30 rounded-full blur-xl group-hover:opacity-100 opacity-0 transition-opacity"></div>
+        <div className="w-24 h-24 bg-white rounded-[40px] shadow-2xl flex items-center justify-center text-bp-accent relative z-10 border border-bp-border/50">
            <MapPin size={48} strokeWidth={1} className="animate-bounce duration-[2000ms]" />
         </div>
      </div>
      <div className="max-w-[320px] space-y-3 relative z-10">
-        <h3 className="text-[20px] font-black text-[#333333] tracking-tighter">Map Discovery Offline</h3>
-        <p className="text-[14px] font-bold text-gray-400 leading-relaxed">
+        <h3 className="text-[20px] font-black text-bp-primary tracking-tighter">Map Discovery Offline</h3>
+        <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">
            We're having trouble reaching our map provider. Please use the list view to browse experts in the meantime.
         </p>
         <div className="pt-4 flex flex-col items-center gap-2">
            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-widest">Dev Check Required</span>
-           <p className="text-[10px] font-bold text-gray-300 italic">Error 401: Invalid Mapbox Token</p>
+           <p className="text-[10px] font-bold text-bp-body/30 italic">Error 401: Invalid Mapbox Token</p>
         </div>
      </div>
   </div>
@@ -144,14 +144,14 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
 
   if (!MAPBOX_TOKEN) {
     return (
-      <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-           <MapPin size={24} className="text-gray-300" />
+      <div className="w-full h-full bg-bp-surface flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
+        <div className="w-16 h-16 bg-bp-surface rounded-full flex items-center justify-center mb-4">
+           <MapPin size={24} className="text-bp-body/30" />
         </div>
         <div className="max-w-xs">
-          <p className="text-[15px] font-black text-[#333333] tracking-tight">Mapbox Token Missing</p>
-          <p className="text-[13px] font-bold text-gray-400 mt-2 leading-relaxed">
-            Please add <code className="text-[#00766C] bg-teal-50 px-1 rounded">NEXT_PUBLIC_MAPBOX_TOKEN</code> to enable the premium map experience.
+          <p className="text-[15px] font-black text-bp-primary tracking-tight">Mapbox Token Missing</p>
+          <p className="text-[13px] font-bold text-bp-body/40 mt-2 leading-relaxed">
+            Please add <code className="text-bp-accent bg-bp-accent/10 px-1 rounded">NEXT_PUBLIC_MAPBOX_TOKEN</code> to enable the premium map experience.
           </p>
         </div>
       </div>
@@ -293,41 +293,41 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
             offset={12}
           >
             <div className="p-1 flex flex-col gap-3">
-               <div className="aspect-video bg-[#f8fafc] rounded-2xl flex items-center justify-center text-[#00766C]/20 font-black text-3xl overflow-hidden relative">
+               <div className="aspect-video bg-[#f8fafc] rounded-2xl flex items-center justify-center text-bp-accent/20 font-black text-3xl overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-white"></div>
                   <span className="relative z-10">{doc.name.replace('Dr. ', '').charAt(0)}</span>
                </div>
                
                <div className="px-1 py-1">
                   <div className="flex justify-between items-start gap-2 mb-1">
-                     <h3 className="text-[17px] font-black text-[#333333] leading-none tracking-tight">
+                     <h3 className="text-[17px] font-black text-bp-primary leading-none tracking-tight">
                         {doc.name}
                      </h3>
                      <div className="flex items-center gap-1 bg-[#FDF9EA] px-2 py-0.5 rounded-lg border border-[#FEFAE6] shrink-0">
                         <Star className="w-3 h-3 fill-[#F59E0B] text-[#F59E0B]" />
-                        <span className="text-[11px] font-black text-[#333333]">{doc.rating.toFixed(1)}</span>
+                        <span className="text-[11px] font-black text-bp-primary">{doc.rating.toFixed(1)}</span>
                      </div>
                   </div>
                   
-                  <p className="text-[12px] font-bold text-gray-400 mb-4 line-clamp-1">
+                  <p className="text-[12px] font-bold text-bp-body/40 mb-4 line-clamp-1">
                      {doc.credentials} · {doc.specialty}
                   </p>
 
-                  <div className="flex items-center justify-between mb-4 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-4 bg-bp-surface p-2 rounded-xl border border-bp-border">
                      <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Next Available</span>
-                        <span className="text-[12px] font-black text-[#00766C] leading-none">{doc.nextSlot?.split(',')[0] || 'Today'}</span>
+                        <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest leading-none mb-1">Next Available</span>
+                        <span className="text-[12px] font-black text-bp-accent leading-none">{doc.nextSlot?.split(',')[0] || 'Today'}</span>
                      </div>
                      <div className="h-6 w-px bg-gray-200"></div>
                      <div className="flex flex-col text-right">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Fee</span>
-                        <span className="text-[12px] font-black text-[#333333] leading-none">₹{doc.fee}</span>
+                        <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest leading-none mb-1">Fee</span>
+                        <span className="text-[12px] font-black text-bp-primary leading-none">₹{doc.fee}</span>
                      </div>
                   </div>
 
                   <Link
                     href={`/doctor/${doc.id}`}
-                    className="group/btn w-full bg-[#333333] text-white text-[13px] font-black py-4 rounded-2xl hover:bg-[#00766C] transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
+                    className="group/btn w-full bg-bp-primary text-white text-[13px] font-black py-4 rounded-2xl hover:bg-bp-accent transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
                   >
                     Book Session
                     <ChevronRight size={16} strokeWidth={3} className="group-hover/btn:translate-x-0.5 transition-transform" />
@@ -346,8 +346,8 @@ export default function ProviderMap({ doctors, hoveredDoctorId }: ProviderMapPro
           anchor="bottom"
         >
            <div className="relative">
-              <div className="absolute -inset-4 bg-[#00766C]/20 rounded-full animate-ping"></div>
-              <div className="relative w-8 h-8 bg-[#00766C] border-4 border-white rounded-full shadow-2xl shadow-teal-900/40 flex items-center justify-center text-white">
+              <div className="absolute -inset-4 bg-bp-accent/20 rounded-full animate-ping"></div>
+              <div className="relative w-8 h-8 bg-bp-accent border-4 border-white rounded-full shadow-2xl shadow-teal-900/40 flex items-center justify-center text-white">
                  <MapPin size={16} strokeWidth={3} />
               </div>
            </div>

@@ -207,19 +207,19 @@ export default function ProviderDashboardHome() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
         
         {/* ── Schedule Timeline ── */}
-        <section className="bg-white rounded-[40px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
+        <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
            <div className="flex items-center justify-between mb-10">
               <div className="flex flex-col gap-1">
-                 <h2 className="text-[20px] font-black text-[#333333] tracking-tight flex items-center gap-3">
-                    <Target className="text-[#00766C]" size={20} strokeWidth={3} />
+                 <h2 className="text-[20px] font-black text-bp-primary tracking-tight flex items-center gap-3">
+                    <Target className="text-bp-accent" size={20} strokeWidth={3} />
                     Practice Agenda
                  </h2>
-                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Confirmed Patient Roadmap</p>
+                 <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">Confirmed Patient Roadmap</p>
               </div>
               <div className="flex gap-2">
                  {['Today', 'This Week'].map((lbl) => (
                     <button key={lbl} className={cn("px-4 py-2 rounded-xl text-[12px] font-black transition-all", 
-                       lbl === 'Today' ? "bg-[#00766C] text-white shadow-lg shadow-teal-900/10" : "text-gray-400 hover:text-gray-600 font-bold")}>
+                       lbl === 'Today' ? "bg-bp-accent text-white shadow-lg shadow-teal-900/10" : "text-bp-body/40 hover:text-bp-body font-bold")}>
                        {lbl}
                     </button>
                  ))}
@@ -231,12 +231,12 @@ export default function ProviderDashboardHome() {
                  title="Treatment calendar Clear"
                  description="No upcoming sessions found for this timeframe. Focus on your performance analytics."
                  icon={Calendar}
-                 className="py-16 border-0 bg-gray-50/50 rounded-[30px]"
+                 className="py-16 border-0 bg-bp-surface/50 rounded-[30px]"
               />
            ) : (
               <div className="space-y-4">
                  {timeline.map((appt) => (
-                    <div key={appt.id} className="group p-5 bg-white border border-gray-50 rounded-[30px] hover:border-teal-500/10 hover:shadow-xl transition-all duration-300 flex items-center gap-6">
+                    <div key={appt.id} className="group p-5 bg-white border border-bp-border/50 rounded-[30px] hover:border-bp-accent/10 hover:shadow-xl transition-all duration-300 flex items-center gap-6">
                        <div className="flex-shrink-0 w-20 flex flex-col items-center justify-center p-2 bg-bp-surface rounded-2xl group-hover:bg-bp-accent/5 transition-colors">
                           <span className="text-[15px] font-black text-bp-primary group-hover:text-bp-accent transition-colors">{formatSlotTime(appt.availabilities?.starts_at || '')}</span>
                        </div>
@@ -301,7 +301,7 @@ export default function ProviderDashboardHome() {
            </div>
 
            {/* Earnings Insight Preview */}
-           <div className="bg-[#333333] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
+           <div className="bg-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
               
               <div className="relative z-10">

@@ -41,6 +41,6 @@ describe('AdminDashboardHome', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: /View Report/i })).toBeInTheDocument())
     const viewReportBtn = screen.getByRole('button', { name: /View Report/i })
     expect(viewReportBtn).toHaveClass('rounded-[24px]')
-    expect(viewReportBtn).toHaveClass('text-[#00766C]')
+    expect(viewReportBtn).toHaveClass('text-bp-accent')
   })
 })

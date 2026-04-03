@@ -30,7 +30,7 @@ export function Avatar({ src, name, size = 48, className }: AvatarProps) {
   return (
     <div
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C] font-semibold',
+        'flex shrink-0 items-center justify-center rounded-full bg-bp-accent/10 text-bp-accent font-semibold',
         className
       )}
       style={{ width: size, height: size, fontSize: size * 0.35 }}

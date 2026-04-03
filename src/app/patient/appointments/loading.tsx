@@ -7,7 +7,7 @@ export default function AppointmentsLoading() {
       <Skeleton className="h-9 w-48 mb-8" />
 
       {/* Tabs skeleton */}
-      <div className="flex gap-8 mb-8 border-b border-[#E5E5E5] pt-1">
+      <div className="flex gap-8 mb-8 border-b border-bp-border pt-1">
         <Skeleton className="h-6 w-24 mb-4" />
         <Skeleton className="h-6 w-24 mb-4" />
       </div>
@@ -15,7 +15,7 @@ export default function AppointmentsLoading() {
       {/* List skeleton */}
       <div className="flex flex-col gap-3">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="bg-white rounded-[12px] border border-[#E5E5E5] p-5 flex items-center justify-between gap-4">
+          <div key={i} className="bg-white rounded-[12px] border border-bp-border p-5 flex items-center justify-between gap-4">
             <div className="flex-1 space-y-3">
               <Skeleton className="h-5 w-48" />
               <Skeleton className="h-4 w-32" />

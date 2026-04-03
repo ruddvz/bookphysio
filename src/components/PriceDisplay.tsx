@@ -15,9 +15,9 @@ export function PriceDisplay({ amountInr, suffix, size = 'md', className }: Pric
   }[size]
 
   return (
-    <span className={cn(sizeClass, 'text-[#333]', className)}>
+    <span className={cn(sizeClass, 'text-bp-primary', className)}>
       ₹{amountInr.toLocaleString('en-IN')}
-      {suffix && <span className="text-[#666] font-normal text-sm">{suffix}</span>}
+      {suffix && <span className="text-bp-body font-normal text-sm">{suffix}</span>}
     </span>
   )
 }

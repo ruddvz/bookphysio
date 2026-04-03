@@ -168,7 +168,7 @@ const styles = {
   heading: {
     fontSize: '24px',
     fontWeight: 600,
-    color: '#333333',
+    color: 'var(--color-bp-primary)',
     marginBottom: '32px',
   },
   citiesGrid: {
@@ -187,7 +187,7 @@ const styles = {
     cursor: 'pointer',
     fontSize: '15px',
     fontWeight: 500,
-    color: '#333333',
+    color: 'var(--color-bp-primary)',
     textAlign: 'left',
   },
   expandedContent: {
@@ -198,7 +198,7 @@ const styles = {
   },
   specialtyLink: {
     fontSize: '14px',
-    color: '#666666',
+    color: 'var(--color-bp-body)',
     textDecoration: 'none',
     lineHeight: 1.4,
     transition: 'color 0.15s ease',
@@ -237,7 +237,7 @@ function CityAccordion({ city, isOpen, onToggle }: CityAccordionProps) {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           style={{
-            color: '#666666',
+            color: 'var(--color-bp-body)',
             transition: 'transform 0.2s ease',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
             flexShrink: 0,

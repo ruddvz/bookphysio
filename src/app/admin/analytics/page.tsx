@@ -46,8 +46,8 @@ export default function AdminAnalytics() {
     ? [
         { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+12.5%' },
         { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-blue-600',    bg: 'bg-blue-50',    trend: '+8.2%'  },
-        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-[#00766C]',   bg: 'bg-[#E6F4F3]',  trend: '+2.4%'  },
-        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-orange-600',   bg: 'bg-orange-50',  trend: '+5.1%'  },
+        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-bp-accent',   bg: 'bg-bp-accent/10',  trend: '+2.4%'  },
+        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-bp-secondary',   bg: 'bg-bp-secondary/10',  trend: '+5.1%'  },
       ]
     : []
 
@@ -63,42 +63,42 @@ export default function AdminAnalytics() {
     <div className="flex flex-col gap-10 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000">
 
       {/* ── Header ── */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-gray-100 pb-10">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-bp-border pb-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#00766C] flex items-center justify-center text-white shadow-xl shadow-[#00766C]/20 transform -rotate-3 hover:rotate-0 transition-transform cursor-pointer group">
+            <div className="w-10 h-10 rounded-2xl bg-bp-accent flex items-center justify-center text-white shadow-xl shadow-bp-accent/20 transform -rotate-3 hover:rotate-0 transition-transform cursor-pointer group">
               <BarChart3 size={22} className="group-hover:scale-110 transition-transform" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00766C]">Intelligence Hub</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-bp-accent">Intelligence Hub</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[11px] font-bold text-emerald-600">Syncing live data</span>
               </div>
             </div>
           </div>
-          <h1 className="text-[42px] lg:text-[48px] font-black text-[#333333] tracking-tighter leading-none">
-            Business <span className="text-[#00766C]">Analytics</span>
+          <h1 className="text-[42px] lg:text-[48px] font-black text-bp-primary tracking-tighter leading-none">
+            Business <span className="text-bp-accent">Analytics</span>
           </h1>
-          <p className="text-[16px] font-medium text-[#666666] max-w-xl">
+          <p className="text-[16px] font-medium text-bp-body max-w-xl">
             Decision-support dashboard for platform growth, revenue distribution, and provider efficiency.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 p-1.5 bg-gray-100/80 backdrop-blur-sm rounded-[18px]">
-            <button className="px-5 py-2.5 text-[13px] font-black text-[#00766C] bg-white rounded-[14px] shadow-sm transform active:scale-95 transition-all">Real-time</button>
-            <button className="px-5 py-2.5 text-[13px] font-black text-gray-500 hover:text-[#333333] transition-colors rounded-[14px]">Historical</button>
+          <div className="flex items-center gap-2 p-1.5 bg-bp-surface/80 backdrop-blur-sm rounded-[18px]">
+            <button className="px-5 py-2.5 text-[13px] font-black text-bp-accent bg-white rounded-[14px] shadow-sm transform active:scale-95 transition-all">Real-time</button>
+            <button className="px-5 py-2.5 text-[13px] font-black text-bp-body hover:text-bp-primary transition-colors rounded-[14px]">Historical</button>
           </div>
           <div className="h-12 w-px bg-gray-200 mx-2 hidden sm:block" />
           <div className="flex items-center gap-2">
-            <button className="p-3.5 rounded-[18px] border border-gray-200 text-[#333333] hover:bg-white hover:shadow-lg transition-all active:scale-95">
+            <button className="p-3.5 rounded-[18px] border border-bp-border text-bp-primary hover:bg-white hover:shadow-lg transition-all active:scale-95">
               <Filter size={18} />
             </button>
-            <button className="p-3.5 rounded-[18px] border border-gray-200 text-[#333333] hover:bg-white hover:shadow-lg transition-all active:scale-95">
+            <button className="p-3.5 rounded-[18px] border border-bp-border text-bp-primary hover:bg-white hover:shadow-lg transition-all active:scale-95">
               <Download size={18} />
             </button>
-            <button className="p-3.5 rounded-[18px] bg-[#333333] text-white hover:bg-black hover:shadow-xl transition-all active:scale-95">
+            <button className="p-3.5 rounded-[18px] bg-bp-primary text-white hover:bg-black hover:shadow-xl transition-all active:scale-95">
               <Share2 size={18} />
             </button>
           </div>
@@ -109,13 +109,13 @@ export default function AdminAnalytics() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white p-8 rounded-[32px] border border-gray-100 h-44 animate-pulse" />
+            <div key={i} className="bg-white p-8 rounded-[32px] border border-bp-border h-44 animate-pulse" />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {kpis.map((stat) => (
-            <div key={stat.label} className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-2xl hover:border-[#00766C]/20 transition-all duration-500 group relative overflow-hidden">
+            <div key={stat.label} className="bg-white p-8 rounded-[32px] border border-bp-border shadow-sm hover:shadow-2xl hover:border-bp-accent/20 transition-all duration-500 group relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <stat.icon size={80} strokeWidth={1} />
               </div>
@@ -128,15 +128,15 @@ export default function AdminAnalytics() {
                     <ArrowUpRight size={14} strokeWidth={3} />
                     {stat.trend}
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-tighter">vs last month</span>
+                  <span className="text-[10px] font-bold text-bp-body/40 mt-1 uppercase tracking-tighter">vs last month</span>
                 </div>
               </div>
               <div className="relative z-10">
-                <p className="text-[13px] font-black text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                <p className="text-[13px] font-black text-bp-body/40 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                   {stat.label}
                   <Info size={12} className="cursor-help" />
                 </p>
-                <p className="text-[36px] font-black text-[#333333] tracking-tighter leading-none">{stat.value}</p>
+                <p className="text-[36px] font-black text-bp-primary tracking-tighter leading-none">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -147,34 +147,34 @@ export default function AdminAnalytics() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
         {/* Revenue Pulse */}
-        <div className="xl:col-span-2 bg-white rounded-[40px] border border-gray-100 shadow-sm p-10 min-h-[520px] flex flex-col group/chart">
+        <div className="xl:col-span-2 bg-white rounded-[40px] border border-bp-border shadow-sm p-10 min-h-[520px] flex flex-col group/chart">
           <div className="flex items-center justify-between mb-12">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-[24px] font-black text-[#333333] tracking-tight">Revenue Pulse</h2>
+                <h2 className="text-[24px] font-black text-bp-primary tracking-tight">Revenue Pulse</h2>
                 <div className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-md tracking-widest">+18% MoM</div>
               </div>
-              <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">Platform Earnings (Monthly Revenue in ₹)</p>
+              <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest">Platform Earnings (Monthly Revenue in ₹)</p>
             </div>
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-[#00766C]" />
-                  <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Actual</span>
+                  <div className="w-3 h-3 rounded-full bg-bp-accent" />
+                  <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Actual</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-gray-100 border border-gray-300" />
-                  <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Target</span>
+                  <div className="w-3 h-3 rounded-full bg-bp-surface border border-gray-300" />
+                  <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Target</span>
                 </div>
               </div>
-              {isLoading && <Loader2 size={16} className="animate-spin text-gray-400" />}
+              {isLoading && <Loader2 size={16} className="animate-spin text-bp-body/40" />}
               <div className="relative">
-                <select className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-100 bg-gray-50 text-[12px] font-black text-[#333333] cursor-pointer outline-none hover:bg-gray-100 transition-all uppercase tracking-widest">
+                <select className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-bp-border bg-bp-surface text-[12px] font-black text-bp-primary cursor-pointer outline-none hover:bg-bp-surface transition-all uppercase tracking-widest">
                   <option>Monthly</option>
                   <option>Quarterly</option>
                   <option>Yearly</option>
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#333333] pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-bp-primary pointer-events-none" />
               </div>
             </div>
           </div>
@@ -241,25 +241,25 @@ export default function AdminAnalytics() {
                 </g>
               ))}
             </svg>
-            <div className="flex justify-between mt-12 border-t border-gray-50 pt-6">
+            <div className="flex justify-between mt-12 border-t border-bp-border/50 pt-6">
               {xLabels.map(m => (
-                <span key={m} className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">{m}</span>
+                <span key={m} className="text-[11px] font-black text-bp-body/40 uppercase tracking-[0.2em]">{m}</span>
               ))}
             </div>
           </div>
         </div>
 
         {/* Acquisition Mix */}
-        <div className="bg-white rounded-[40px] border border-gray-100 shadow-sm p-10 flex flex-col group">
+        <div className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 flex flex-col group">
           <div className="flex items-center justify-between mb-10">
-            <h2 className="text-[22px] font-black text-[#333333] tracking-tight">Acquisition</h2>
-            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors cursor-pointer">
+            <h2 className="text-[22px] font-black text-bp-primary tracking-tight">Acquisition</h2>
+            <div className="w-8 h-8 rounded-full bg-bp-surface flex items-center justify-center text-bp-body/40 hover:text-bp-primary transition-colors cursor-pointer">
               <Info size={14} />
             </div>
           </div>
           <div className="flex-1 space-y-10">
             {[
-              { name: 'Organic Search', value: 65, color: 'bg-[#00766C]', change: '+12%' },
+              { name: 'Organic Search', value: 65, color: 'bg-bp-accent', change: '+12%' },
               { name: 'Direct Traffic', value: 42, color: 'bg-emerald-400', change: '+5%' },
               { name: 'Social Media', value: 28, color: 'bg-orange-400', change: '-2%' },
               { name: 'Partner Refs', value: 15, color: 'bg-blue-400', change: '+24%' },
@@ -267,17 +267,17 @@ export default function AdminAnalytics() {
               <div key={channel.name} className="space-y-4">
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="text-[14px] font-black text-[#333333] tracking-tight uppercase leading-none">{channel.name}</span>
+                    <span className="text-[14px] font-black text-bp-primary tracking-tight uppercase leading-none">{channel.name}</span>
                     <span className={cn("text-[10px] font-bold mt-1.5", channel.change.startsWith('+') ? "text-emerald-500" : "text-rose-500")}>
                       {channel.change} vs avg
                     </span>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-[20px] font-black text-[#333333] tracking-tighter">{channel.value}</span>
-                    <span className="text-[12px] font-bold text-gray-400">%</span>
+                    <span className="text-[20px] font-black text-bp-primary tracking-tighter">{channel.value}</span>
+                    <span className="text-[12px] font-bold text-bp-body/40">%</span>
                   </div>
                 </div>
-                <div className="h-4 w-full bg-gray-50 rounded-full overflow-hidden p-1 shadow-inner border border-gray-100">
+                <div className="h-4 w-full bg-bp-surface rounded-full overflow-hidden p-1 shadow-inner border border-bp-border">
                   <div 
                     className={cn('h-full rounded-full transition-all duration-1000 relative group-hover:brightness-110', channel.color)} 
                     style={{ width: `${channel.value}%` }}
@@ -288,7 +288,7 @@ export default function AdminAnalytics() {
               </div>
             ))}
           </div>
-          <button className="w-full py-5 mt-12 bg-[#333333] hover:bg-black text-white text-[13px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-[0.98]">
+          <button className="w-full py-5 mt-12 bg-bp-primary hover:bg-black text-white text-[13px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-[0.98]">
             Explore Growth Channels <ArrowUpRight size={16} />
           </button>
         </div>
@@ -296,7 +296,7 @@ export default function AdminAnalytics() {
 
       {/* ── Geographic Insights ── */}
       <div className="bg-[#1A1A1A] rounded-[50px] p-12 text-white relative overflow-hidden group">
-        <div className="absolute right-0 top-0 w-[600px] h-full bg-[#00766C] opacity-10 translate-x-1/3 rounded-full blur-[150px] group-hover:opacity-20 transition-opacity duration-1000" />
+        <div className="absolute right-0 top-0 w-[600px] h-full bg-bp-accent opacity-10 translate-x-1/3 rounded-full blur-[150px] group-hover:opacity-20 transition-opacity duration-1000" />
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-white/5 rounded-xl border border-white/10 text-emerald-400 mb-8 backdrop-blur-md">
@@ -304,24 +304,24 @@ export default function AdminAnalytics() {
               <span className="text-[11px] font-black uppercase tracking-[0.25em]">Regional Density</span>
             </div>
             <h2 className="text-[36px] md:text-[44px] lg:text-[56px] font-black tracking-tighter leading-[0.9] mb-8">
-              Geo-Spatial <br/><span className="text-[#00766C]">Performance</span>
+              Geo-Spatial <br/><span className="text-bp-accent">Performance</span>
             </h2>
             <div className="space-y-8 max-w-lg mb-12">
-              <p className="text-[18px] text-gray-400 font-medium leading-relaxed">
+              <p className="text-[18px] text-bp-body/40 font-medium leading-relaxed">
                 Platform load distribution across India's urban corridors. Visualizing the surge in home-visit demand within Tier-1 cities.
               </p>
               <div className="grid grid-cols-2 gap-10">
-                <div className="space-y-1 border-l-2 border-[#00766C] pl-6 font-black uppercase">
-                  <span className="text-gray-500 text-[10px] tracking-widest">Top Hub</span>
+                <div className="space-y-1 border-l-2 border-bp-accent pl-6 font-black uppercase">
+                  <span className="text-bp-body text-[10px] tracking-widest">Top Hub</span>
                   <p className="text-[20px] tracking-tight">New Delhi</p>
                 </div>
                 <div className="space-y-1 border-l-2 border-emerald-500 pl-6 font-black uppercase">
-                  <span className="text-gray-500 text-[10px] tracking-widest">Max Growth</span>
+                  <span className="text-bp-body text-[10px] tracking-widest">Max Growth</span>
                   <p className="text-[20px] tracking-tight">+42% Pune</p>
                 </div>
               </div>
             </div>
-            <button className="px-10 py-5 bg-[#00766C] hover:bg-[#008F83] text-white text-[14px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-[#00766C]/20 hover:-translate-y-1 active:scale-95">
+            <button className="px-10 py-5 bg-bp-accent hover:bg-[#008F83] text-white text-[14px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-bp-accent/20 hover:-translate-y-1 active:scale-95">
               Launch Global Map <MapPin size={18} />
             </button>
           </div>
@@ -339,8 +339,8 @@ export default function AdminAnalytics() {
                  ))}
                </div>
                <div className="absolute inset-0 flex items-center justify-center pointer-events-none mb-10">
-                  <div className="w-16 h-16 bg-[#00766C]/30 rounded-full blur-2xl animate-pulse" />
-                  <MapPin size={48} className="text-[#00766C] drop-shadow-[0_0_20px_rgba(0,118,108,0.5)]" />
+                  <div className="w-16 h-16 bg-bp-accent/30 rounded-full blur-2xl animate-pulse" />
+                  <MapPin size={48} className="text-bp-accent drop-shadow-[0_0_20px_rgba(0,118,108,0.5)]" />
                </div>
             </div>
           </div>

@@ -12,22 +12,22 @@ export default function AppSection() {
           
           {/* Content Column */}
           <div className="flex-1 text-center lg:text-left">
-             <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/20 rounded-full text-[12px] font-bold text-[#333333] uppercase tracking-wider mb-6">
+             <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/20 rounded-full text-[12px] font-bold text-bp-primary uppercase tracking-wider mb-6">
                 <Smartphone className="w-4 h-4" />
                 Mobile First
              </div>
              
-             <h2 className="text-[32px] md:text-[44px] font-bold text-[#333333] leading-tight mb-6 tracking-tight">
+             <h2 className="text-[32px] md:text-[44px] font-bold text-bp-primary leading-tight mb-6 tracking-tight">
                Thousands of physios. <br className="hidden md:block" /> One app.
              </h2>
              
-             <p className="text-[17px] md:text-[19px] text-[#333333] opacity-90 leading-relaxed mb-10 max-w-[500px] mx-auto lg:mx-0">
+             <p className="text-[17px] md:text-[19px] text-bp-primary opacity-90 leading-relaxed mb-10 max-w-[500px] mx-auto lg:mx-0">
                The BookPhysio app is the quickest, easiest way to book and keep track of your physiotherapy appointments, all in one place.
              </p>
 
              {/* QR Code - Hidden on Mobile */}
              <div className="hidden md:flex items-center gap-6 mb-10">
-                <div className="p-2 bg-white rounded-[16px] border border-gray-100 shadow-xl">
+                <div className="p-2 bg-white rounded-[16px] border border-bp-border shadow-xl">
                    <svg width="96" height="96" viewBox="0 0 100 100" className="opacity-90">
                       {/* Positional Squares */}
                       <path d="M10 10h30v30H10zM15 15h20v20H15zM20 20h10v10H20z" fill="#111" />
@@ -38,8 +38,8 @@ export default function AppSection() {
                    </svg>
                 </div>
                 <div className="text-left">
-                   <p className="text-[14px] font-bold text-[#333333]">Scan to download</p>
-                   <p className="text-[13px] text-[#333333] opacity-70">Point your camera at the QR code to get the app.</p>
+                   <p className="text-[14px] font-bold text-bp-primary">Scan to download</p>
+                   <p className="text-[13px] text-bp-primary opacity-70">Point your camera at the QR code to get the app.</p>
                 </div>
              </div>
 
@@ -64,13 +64,13 @@ export default function AppSection() {
 
           {/* Visual Column (Phone) */}
           <div className="flex-1 flex justify-center relative">
-             <div className="w-[260px] md:w-[300px] h-[520px] md:h-[600px] bg-white rounded-[40px] border-[8px] border-[#333333] shadow-2xl relative overflow-hidden flex flex-col">
+             <div className="w-[260px] md:w-[300px] h-[520px] md:h-[600px] bg-white rounded-[40px] border-[8px] border-bp-primary shadow-2xl relative overflow-hidden flex flex-col">
                 {/* Notch */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#333333] rounded-b-[18px]"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-bp-primary rounded-b-[18px]"></div>
                 
                 {/* App UI Placeholder */}
                 <div className="flex-1 bg-[#F9FBFB] p-6 pt-12">
-                   <div className="w-12 h-12 bg-[#00766C]/10 rounded-full mb-4"></div>
+                   <div className="w-12 h-12 bg-bp-accent/10 rounded-full mb-4"></div>
                    <div className="h-4 w-3/4 bg-[#E5E7EB] rounded-full mb-2"></div>
                    <div className="h-4 w-1/2 bg-[#E5E7EB] rounded-full mb-8"></div>
                    

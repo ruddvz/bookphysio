@@ -39,8 +39,8 @@ interface GroupedSlots {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any; iconColor: string; bgColor: string }> = {
-  in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-teal-600', bgColor: 'bg-teal-50' },
-  home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-orange-600', bgColor: 'bg-orange-50' },
+  in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-bp-accent', bgColor: 'bg-bp-accent/10' },
+  home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-bp-secondary', bgColor: 'bg-bp-secondary/10' },
 }
 
 // ---------------------------------------------------------------------------
@@ -113,7 +113,7 @@ function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGro
                 "relative py-5 rounded-[22px] text-[15px] font-black transition-all duration-500 border flex flex-col items-center justify-center gap-1 overflow-hidden active:scale-95 group",
                 isSelected
                   ? "bg-[#111111] text-white border-[#111111] shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] scale-[1.05] z-10"
-                  : "bg-white text-[#111111] border-bp-border/40 hover:border-bp-primary/60 hover:shadow-[0_8px_16px_-4px_rgba(0,118,108,0.08)]"
+                  : "bg-white text-bp-primary border-bp-border/40 hover:border-bp-primary/60 hover:shadow-[0_8px_16px_-4px_rgba(0,118,108,0.08)]"
               )}
             >
               <div className="flex items-center gap-1.5 transition-transform duration-500 group-hover:scale-110">
@@ -210,12 +210,12 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       
       {/* ── Background Glow ── */}
       <div className="absolute -top-32 -right-32 w-64 h-64 bg-bp-primary/10 rounded-full blur-[100px] -z-0 opacity-60"></div>
-      <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-teal-200/20 rounded-full blur-[100px] -z-0 opacity-50"></div>
+      <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-bp-accent/20/20 rounded-full blur-[100px] -z-0 opacity-50"></div>
 
       {/* ── Header ── */}
       <div className="flex flex-col gap-5 mb-10 relative z-10">
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2 px-3 py-1 bg-teal-50 border border-teal-100/50 rounded-lg text-[10px] font-black text-[#00766C] uppercase tracking-widest leading-none">
+           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20/50 rounded-lg text-[10px] font-black text-bp-accent uppercase tracking-widest leading-none">
               Secured Session
            </div>
            <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none">
@@ -226,7 +226,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
         <div className="flex items-end justify-between pt-2">
            <div>
               <div className="flex items-baseline gap-2 mb-1">
-                 <span className="text-[48px] font-black text-[#111111] tracking-tighter leading-none">₹{selectedFee.toLocaleString('en-IN')}</span>
+                 <span className="text-[48px] font-black text-bp-primary tracking-tighter leading-none">₹{selectedFee.toLocaleString('en-IN')}</span>
                  <span className="text-[14px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">/ Session</span>
               </div>
               <p className="text-[13px] font-bold text-bp-body/40 flex items-center gap-2 mt-3">

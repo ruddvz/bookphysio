@@ -31,8 +31,8 @@ const ACCOUNTS: Array<{
     label: 'Physiotherapist',
     email: 'dev-provider@bookphysio.in',
     phone: '+91 90000 00002',
-    color: 'bg-teal-50 border-teal-200 hover:border-teal-400',
-    badge: 'bg-teal-100 text-teal-700',
+    color: 'bg-bp-accent/10 border-bp-accent/30 hover:border-teal-400',
+    badge: 'bg-bp-accent/15 text-bp-accent',
     emoji: '🏥',
   },
   {
@@ -40,8 +40,8 @@ const ACCOUNTS: Array<{
     label: 'Admin',
     email: 'dev-admin@bookphysio.in',
     phone: '+91 90000 00003',
-    color: 'bg-orange-50 border-orange-200 hover:border-orange-400',
-    badge: 'bg-orange-100 text-orange-700',
+    color: 'bg-bp-secondary/10 border-bp-secondary/30 hover:border-orange-400',
+    badge: 'bg-orange-100 text-bp-secondary',
     emoji: '🔑',
   },
 ]
@@ -57,7 +57,7 @@ export default function DevLoginPage() {
   if (process.env.NODE_ENV !== 'development') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Not available in this environment.</p>
+        <p className="text-bp-body">Not available in this environment.</p>
       </div>
     )
   }
@@ -82,7 +82,7 @@ export default function DevLoginPage() {
           ⚠️ DEV ONLY — not visible in production
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mt-4">Dev Login</h1>
-        <p className="text-gray-500 text-sm">One-click demo access for testing patient, provider, and admin flows.</p>
+        <p className="text-bp-body text-sm">One-click demo access for testing patient, provider, and admin flows.</p>
       </div>
 
       <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -101,13 +101,13 @@ export default function DevLoginPage() {
                   {account.role}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 font-mono">{account.email}</p>
-              <p className="text-xs text-gray-400 font-mono">{account.phone}</p>
+              <p className="text-xs text-bp-body font-mono">{account.email}</p>
+              <p className="text-xs text-bp-body/40 font-mono">{account.phone}</p>
             </div>
             {loading === account.role ? (
-              <span className="text-xs text-gray-500 animate-pulse">Redirecting…</span>
+              <span className="text-xs text-bp-body animate-pulse">Redirecting…</span>
             ) : (
-              <span className="text-xs font-medium text-gray-600 mt-auto">
+              <span className="text-xs font-medium text-bp-body mt-auto">
                 Log in as {account.label} →
               </span>
             )}
@@ -121,10 +121,10 @@ export default function DevLoginPage() {
         </div>
       )}
 
-      <div className="text-xs text-gray-400 text-center max-w-md space-y-1">
+      <div className="text-xs text-bp-body/40 text-center max-w-md space-y-1">
         <p>Each option launches a role-specific demo session without creating a new Supabase auth user.</p>
         <p>The same role routing is used by the preview gate on the live site.</p>
-        <p className="font-mono text-gray-300">POST /api/auth/demo-session</p>
+        <p className="font-mono text-bp-body/30">POST /api/auth/demo-session</p>
       </div>
     </div>
   )

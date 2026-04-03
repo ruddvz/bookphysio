@@ -69,24 +69,24 @@ function VerifyOtpContent() {
       <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
         <BpLogo href="/" />
 
-        <h1 className="text-[32px] font-black text-[#111111] mb-3 mt-10 tracking-tighter leading-none">
+        <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
           OTP session expired
         </h1>
-        <p className="text-[15px] font-bold text-gray-400 mb-10 leading-relaxed">
+        <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
           Start over from login or password recovery to request a fresh verification code.
         </p>
 
         <div className="flex flex-col gap-4">
           <Link
             href="/login"
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-[#00766C] hover:bg-[#005A52] shadow-xl shadow-teal-900/10"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-teal-900/10"
           >
             Go to Login
             <ArrowRight className="w-5 h-5 text-bp-accent" />
           </Link>
           <Link
             href="/forgot-password"
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-[#00766C] rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-bp-accent rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
           >
             Recover Access
           </Link>
@@ -178,12 +178,12 @@ function VerifyOtpContent() {
       <div className="relative">
       <BpLogo href="/" />
 
-      <h1 className="text-[32px] font-black text-[#111111] mb-3 mt-10 tracking-tighter leading-none">
+      <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
         Verify Identity
       </h1>
-      <p className="text-[15px] font-bold text-gray-400 mb-10 leading-relaxed">
+      <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
         {deliveryLabel}{' '}
-        <span className="text-[#00766C]">{displayPhone}</span>
+        <span className="text-bp-accent">{displayPhone}</span>
       </p>
 
       {/* OTP digit inputs */}
@@ -207,14 +207,14 @@ function VerifyOtpContent() {
       {/* Resend + countdown */}
       <div className="flex justify-between items-center mb-10 px-1">
         {countdown > 0 ? (
-          <span className="text-[14px] font-black text-gray-300 uppercase tracking-widest">
+          <span className="text-[14px] font-black text-bp-body/30 uppercase tracking-widest">
             Resend OTP
           </span>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            className="inline-flex items-center gap-2 text-[14px] text-[#00766C] font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-[14px] text-bp-accent font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors uppercase tracking-widest"
           >
             <RefreshCw className="w-4 h-4" />
             Resend
@@ -223,7 +223,7 @@ function VerifyOtpContent() {
         <span
           className={cn(
             "text-[14px] font-black tabular-nums tracking-widest transition-opacity duration-300",
-            countdown > 0 ? 'text-gray-400' : 'opacity-0'
+            countdown > 0 ? 'text-bp-body/40' : 'opacity-0'
           )}
         >
           {formatCountdown(countdown)}
@@ -238,7 +238,7 @@ function VerifyOtpContent() {
         className={cn(
           "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
           allFilled && !loading 
-            ? 'bg-[#00766C] hover:bg-[#005A52] shadow-xl shadow-teal-900/10 cursor-pointer' 
+            ? 'bg-bp-accent hover:bg-bp-primary shadow-xl shadow-teal-900/10 cursor-pointer' 
             : 'bg-bp-border cursor-not-allowed text-white/50'
         )}
       >
@@ -265,7 +265,7 @@ function VerifyOtpContent() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-[14px] text-gray-400 hover:text-[#00766C] font-black bg-transparent border-none cursor-pointer no-underline outline-none transition-colors uppercase tracking-widest"
+          className="inline-flex items-center gap-2 text-[14px] text-bp-body/40 hover:text-bp-accent font-black bg-transparent border-none cursor-pointer no-underline outline-none transition-colors uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
           Back

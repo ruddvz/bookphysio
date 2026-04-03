@@ -18,7 +18,7 @@ export default function AboutPage() {
         {/* Full-width Hero Section */}
         <section className="bg-[#111111] text-white py-32 sm:py-48 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-bp-primary/20 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-bp-accent/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
           
           <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -39,7 +39,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center mb-32">
               <div className="relative">
                 <div className="w-1.5 h-12 bg-bp-accent rounded-full mb-8"></div>
-                <h2 className="text-[44px] font-black text-[#111111] mb-8 tracking-tighter leading-tight">A New Paradigm in Rehabilitation</h2>
+                <h2 className="text-[44px] font-black text-bp-primary mb-8 tracking-tighter leading-tight">A New Paradigm in Rehabilitation</h2>
                 <div className="space-y-6">
                   <p className="text-[19px] leading-[1.8] text-bp-body/70 font-medium">
                     BookPhysio.in is India&apos;s leading platform dedicated exclusively to physiotherapy.
@@ -63,7 +63,7 @@ export default function AboutPage() {
             <div className="mb-32">
               <div className="text-center max-w-2xl mx-auto mb-20">
                  <p className="text-[12px] font-black text-bp-accent uppercase tracking-[0.3em] mb-4">Precision Pillars</p>
-                 <h2 className="text-[40px] font-black text-[#111111] tracking-tighter leading-none">Why Experts Choose Us</h2>
+                 <h2 className="text-[40px] font-black text-bp-primary tracking-tighter leading-none">Why Experts Choose Us</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {benefits.map(({ title, text, icon: Icon }, idx) => (
@@ -71,7 +71,7 @@ export default function AboutPage() {
                     <div className="w-16 h-16 rounded-2xl bg-bp-surface flex items-center justify-center mb-8 group-hover:bg-bp-primary group-hover:text-white transition-all duration-500">
                       <Icon className="w-8 h-8" />
                     </div>
-                    <h3 className="text-[22px] font-black text-[#111111] mb-4 tracking-tight">{title}</h3>
+                    <h3 className="text-[22px] font-black text-bp-primary mb-4 tracking-tight">{title}</h3>
                     <p className="text-[16px] leading-relaxed text-bp-body/60 font-medium">{text}</p>
                   </div>
                 ))}

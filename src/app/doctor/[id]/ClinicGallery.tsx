@@ -22,26 +22,26 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
   const prev = () => setIndex((index - 1 + galleryImages.length) % galleryImages.length)
 
   return (
-    <section className="bg-white rounded-[32px] border border-gray-100 p-8 mb-8 shadow-sm group/gallery overflow-hidden">
+    <section className="bg-white rounded-[32px] border border-bp-border p-8 mb-8 shadow-sm group/gallery overflow-hidden">
       <div className="flex items-center justify-between mb-8 px-1">
          <div>
-            <h2 className="text-[24px] font-black text-[#333333] tracking-tight">Clinic Tour</h2>
-            <p className="text-[14px] text-gray-400 font-bold mt-1">High-fidelity preview of our treatment environment</p>
+            <h2 className="text-[24px] font-black text-bp-primary tracking-tight">Clinic Tour</h2>
+            <p className="text-[14px] text-bp-body/40 font-bold mt-1">High-fidelity preview of our treatment environment</p>
          </div>
          <div className="flex items-center gap-4">
             <div className="hidden md:flex gap-1">
                {galleryImages.map((_, i) => (
-                  <div key={i} className={cn("h-1 rounded-full transition-all duration-500", i === index ? "w-8 bg-[#00766C]" : "w-2 bg-gray-100")} />
+                  <div key={i} className={cn("h-1 rounded-full transition-all duration-500", i === index ? "w-8 bg-bp-accent" : "w-2 bg-bp-surface")} />
                ))}
             </div>
             <div className="flex gap-2">
-               <button onClick={prev} className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#00766C] transition-all"><ChevronLeft size={20} /></button>
-               <button onClick={next} className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-100 flex items-center justify-center text-[#333333] hover:bg-[#00766C] hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
+               <button onClick={prev} className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-all"><ChevronLeft size={20} /></button>
+               <button onClick={next} className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
             </div>
          </div>
       </div>
 
-      <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-[40px] overflow-hidden bg-gray-50 group-hover/gallery:shadow-2xl group-hover/gallery:shadow-teal-900/5 transition-all duration-700">
+      <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-[40px] overflow-hidden bg-bp-surface group-hover/gallery:shadow-2xl group-hover/gallery:shadow-teal-900/5 transition-all duration-700">
          {galleryImages.map((img, i) => (
            <img 
               key={i}
@@ -62,7 +62,7 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
                <ImageIcon size={18} />
                <span className="text-[13px] font-black uppercase tracking-widest">{index + 1} / {galleryImages.length} View</span>
             </div>
-            <button className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#333333] hover:bg-[#00766C] hover:text-white transition-all shadow-xl active:scale-90">
+            <button className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
                <Maximize2 size={20} />
             </button>
          </div>

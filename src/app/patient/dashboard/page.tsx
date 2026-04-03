@@ -31,7 +31,7 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
   in_clinic: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
-  home_visit: 'bg-[#FF6B35]/10 text-[#FF6B35] border-[#FF6B35]/20',
+  home_visit: 'bg-bp-secondary/10 text-bp-secondary border-bp-secondary/20',
 }
 
 export default function PatientDashboardHome() {
@@ -305,7 +305,7 @@ export default function PatientDashboardHome() {
           </section>
           
           {/* Growth & Referral Loop: Physio Journal */}
-          <section className="bg-gradient-to-br from-bp-primary to-[#005A52] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-bp-primary/20 text-white relative overflow-hidden group">
+          <section className="bg-gradient-to-br from-bp-primary to-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-bp-primary/20 text-white relative overflow-hidden group">
              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
              
              <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
@@ -321,7 +321,7 @@ export default function PatientDashboardHome() {
                       Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
                    </p>
                    
-                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-[#FF6B35] text-white text-[14px] font-bold rounded-2xl hover:bg-[#FF6B35]/90 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-[#FF6B35]/20 group/btn">
+                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-bp-secondary text-white text-[14px] font-bold rounded-2xl hover:bg-bp-secondary/90 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-[#FF6B35]/20 group/btn">
                       {referralCopied ? 'Referral Link Copied' : 'Copy My Referral Link'}
                       <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                    </button>

@@ -12,7 +12,7 @@ export function PageHeader({ title, subtitle, action, className }: PageHeaderPro
     <div className={cn('flex items-center justify-between mb-6', className)}>
       <div>
         <h1 className="text-2xl font-bold text-[#1A1A1A]">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-[#666]">{subtitle}</p>}
+        {subtitle && <p className="mt-1 text-sm text-bp-body">{subtitle}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

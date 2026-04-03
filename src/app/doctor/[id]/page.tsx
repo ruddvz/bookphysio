@@ -58,7 +58,7 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
   )
 }
 
-const cardClass = 'bg-white rounded-[32px] border border-gray-100 p-8 mb-8 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all duration-500 relative overflow-hidden'
+const cardClass = 'bg-white rounded-[32px] border border-bp-border p-8 mb-8 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all duration-500 relative overflow-hidden'
 
 // ---------------------------------------------------------------------------
 // Page component
@@ -193,10 +193,10 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                     <div className="flex-1 pb-2">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                         <div>
-                          <h1 className="text-[36px] md:text-[52px] font-black text-[#111111] tracking-tighter leading-none mb-3">
+                          <h1 className="text-[36px] md:text-[52px] font-black text-bp-primary tracking-tighter leading-none mb-3">
                             {nameWithTitle}
                           </h1>
-                          <p className="text-[#333333] font-bold text-[16px] flex items-center gap-2">
+                          <p className="text-bp-primary font-bold text-[16px] flex items-center gap-2">
                             <GraduationCap size={18} className="text-bp-accent" />
                             {provider.verified ? 'Verified physiotherapy provider' : provider.icp_registration_no ? 'ICP number listed on profile' : 'Physiotherapy provider'}
                           </p>
@@ -210,7 +210,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                         </div>
                         <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-bp-border/40 shadow-sm">
                           <StarRating rating={provider.rating_avg ?? 0} size={15} />
-                          <span className="text-[15px] font-black text-[#111111]">{(provider.rating_avg ?? 0).toFixed(1)}</span>
+                          <span className="text-[15px] font-black text-bp-primary">{(provider.rating_avg ?? 0).toFixed(1)}</span>
                           <span className="text-[12px] text-bp-body/40 font-black uppercase tracking-widest leading-none pt-0.5">({provider.rating_count ?? 0})</span>
                         </div>
                       </div>
@@ -223,17 +223,17 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Sparkles size={22} strokeWidth={2.5} /></div>
                       <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Experience</p>
-                      <p className="text-[22px] font-black text-[#111111] tracking-tighter leading-none">{provider.experience_years ?? 5}+ <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">Years</span></p>
+                      <p className="text-[22px] font-black text-bp-primary tracking-tighter leading-none">{provider.experience_years ?? 5}+ <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">Years</span></p>
                    </div>
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Building2 size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Patient Reviews</p>
-                     <p className="text-[22px] font-black text-[#111111] tracking-tighter leading-none">{provider.rating_count > 0 ? provider.rating_count : 'New'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.rating_count === 1 ? 'Review' : 'Reviews'}</span></p>
+                     <p className="text-[22px] font-black text-bp-primary tracking-tighter leading-none">{provider.rating_count > 0 ? provider.rating_count : 'New'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.rating_count === 1 ? 'Review' : 'Reviews'}</span></p>
                    </div>
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Star size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Verification</p>
-                     <p className="text-[22px] font-black text-[#111111] tracking-tighter leading-none">{provider.verified ? 'Profile' : provider.icp_registration_no ? 'ICP' : 'Profile'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : provider.icp_registration_no ? 'Listed' : 'Listed'}</span></p>
+                     <p className="text-[22px] font-black text-bp-primary tracking-tighter leading-none">{provider.verified ? 'Profile' : provider.icp_registration_no ? 'ICP' : 'Profile'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : provider.icp_registration_no ? 'Listed' : 'Listed'}</span></p>
                    </div>
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-5 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500"><Clock size={22} strokeWidth={2.5} /></div>
@@ -249,7 +249,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   <div className="absolute top-0 right-0 w-64 h-64 bg-bp-surface/50 rounded-bl-[120px] -z-0 pointer-events-none"></div>
                   <div className="absolute top-12 left-0 w-1 h-12 bg-bp-accent rounded-r-full"></div>
                   
-                  <h2 className="text-[28px] font-black text-[#111111] mb-8 flex items-center gap-4 relative z-10 tracking-tight">
+                  <h2 className="text-[28px] font-black text-bp-primary mb-8 flex items-center gap-4 relative z-10 tracking-tight">
                     Professional Biography
                   </h2>
                   <div className="prose prose-teal max-w-none relative z-10">
@@ -270,7 +270,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {provider.specialties.length > 0 && (
                   <section className={cn(cardClass, "mb-0 border-bp-border/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.02)]")}>
-                    <h2 className="text-[20px] font-black text-[#111111] mb-8 flex items-center gap-4 tracking-tight">
+                    <h2 className="text-[20px] font-black text-bp-primary mb-8 flex items-center gap-4 tracking-tight">
                        <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent">
                           <Activity size={20} strokeWidth={2.5} />
                        </div>
@@ -287,7 +287,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                 )}
 
                 <section className={cn(cardClass, "mb-0 border-bp-border/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.02)]")}>
-                  <h2 className="text-[20px] font-black text-[#111111] mb-8 flex items-center gap-4 tracking-tight">
+                  <h2 className="text-[20px] font-black text-bp-primary mb-8 flex items-center gap-4 tracking-tight">
                      <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent">
                         <GraduationCap size={20} strokeWidth={2.5} />
                      </div>
@@ -295,24 +295,24 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   </h2>
                   <div className="space-y-6">
                     {provider.icp_registration_no && (
-                      <div className="flex items-center gap-5 p-5 rounded-[24px] bg-[#FBFCFD] border border-bp-border/30 group hover:border-[#00766C]/40 transition-colors duration-500">
-                        <div className="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm group-hover:scale-110 transition-transform duration-500">
-                          <ShieldCheck size={24} className="text-[#00766C]" strokeWidth={3} />
+                      <div className="flex items-center gap-5 p-5 rounded-[24px] bg-[#FBFCFD] border border-bp-border/30 group hover:border-bp-accent/40 transition-colors duration-500">
+                        <div className="bg-white p-3.5 rounded-2xl border border-bp-border shadow-sm group-hover:scale-110 transition-transform duration-500">
+                          <ShieldCheck size={24} className="text-bp-accent" strokeWidth={3} />
                         </div>
                         <div>
                           <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-[0.2em] mb-1.5 leading-none">ICP Registration</p>
-                          <p className="text-[18px] font-black text-[#111111] tracking-tight">{provider.icp_registration_no}</p>
+                          <p className="text-[18px] font-black text-bp-primary tracking-tight">{provider.icp_registration_no}</p>
                         </div>
                       </div>
                     )}
                     <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-teal-50 p-2 rounded-xl text-[#00766C]">
+                      <div className="mt-1 bg-bp-accent/10 p-2 rounded-xl text-bp-accent">
                         <Awards size={20} strokeWidth={3} />
                       </div>
                       <div>
-                        <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">Listed Qualification</p>
-                        <p className="text-[16px] font-bold text-[#333333]">{provider.title ?? 'Physiotherapist'}</p>
-                        <p className="text-[14px] font-medium text-gray-400 mt-1 italic">Additional academic details may be shared by the provider during consultation.</p>
+                        <p className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest mb-1">Listed Qualification</p>
+                        <p className="text-[16px] font-bold text-bp-primary">{provider.title ?? 'Physiotherapist'}</p>
+                        <p className="text-[14px] font-medium text-bp-body/40 mt-1 italic">Additional academic details may be shared by the provider during consultation.</p>
                       </div>
                     </div>
                   </div>
@@ -323,7 +323,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               <section className={cn(cardClass, "border-bp-border/10 bg-[#FBFCFD] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.03)]")} aria-labelledby="reviews-heading">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 relative z-10 px-2 lg:px-4">
                   <div className="max-w-md">
-                    <h2 id="reviews-heading" className="text-[28px] font-black text-[#111111] mb-2 tracking-tight">
+                    <h2 id="reviews-heading" className="text-[28px] font-black text-bp-primary mb-2 tracking-tight">
                       Patient Transformations
                     </h2>
                     <p className="text-[15px] text-bp-body/50 font-bold leading-relaxed">
@@ -333,7 +333,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   <div className="flex items-center gap-8 p-6 bg-white rounded-[32px] border border-bp-border/30 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-bp-primary/[0.03] rounded-bl-[60px] -z-0"></div>
                     <div className="text-right relative z-10">
-                       <div className="text-[44px] font-black text-[#111111] leading-none tracking-tighter">{(provider.rating_avg ?? 0).toFixed(1)}</div>
+                       <div className="text-[44px] font-black text-bp-primary leading-none tracking-tighter">{(provider.rating_avg ?? 0).toFixed(1)}</div>
                        <div className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] mt-2 pr-1">Out of 5.0</div>
                     </div>
                     <div className="w-px h-12 bg-bp-border/60" />
@@ -354,7 +354,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                                {review.comment?.charAt(0).toUpperCase() || 'P'}
                             </div>
                             <div>
-                               <p className="text-[16px] font-black text-[#111111] tracking-tight mb-1">Verified Patient</p>
+                               <p className="text-[16px] font-black text-bp-primary tracking-tight mb-1">Verified Patient</p>
                                <div className="flex items-center gap-3">
                                   <StarRating rating={review.rating} size={14} />
                                   <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-100/50">Clinical Feedback</span>
@@ -367,7 +367,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                         </div>
                         
                         <blockquote className="relative z-10">
-                           <p className="text-[18px] text-[#111111]/80 leading-[1.8] font-medium italic opacity-90 max-w-2xl group-hover:text-[#111111] transition-colors duration-500">
+                           <p className="text-[18px] text-bp-primary/80 leading-[1.8] font-medium italic opacity-90 max-w-2xl group-hover:text-bp-primary transition-colors duration-500">
                              &quot;{review.comment}&quot;
                            </p>
                         </blockquote>
@@ -376,7 +376,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   ) : (
                     <div className="py-24 text-center bg-white rounded-[40px] border-2 border-dashed border-bp-border/40">
                        <div className="w-20 h-20 bg-bp-surface rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-bp-border/20"><Mail className="text-bp-border" size={32} /></div>
-                       <h3 className="text-[18px] font-black text-[#111111]/70 mb-2 tracking-tight">Clinical Outcomes Pending</h3>
+                       <h3 className="text-[18px] font-black text-bp-primary/70 mb-2 tracking-tight">Clinical Outcomes Pending</h3>
                        <p className="text-bp-body/40 text-[15px] font-bold max-w-sm mx-auto">Be among the first to document your professional recovery journey with {nameWithTitle}.</p>
                     </div>
                   )}

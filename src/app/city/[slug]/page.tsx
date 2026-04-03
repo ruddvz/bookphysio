@@ -94,9 +94,9 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="bg-[#F7F8F9] flex-grow">
+      <main className="bg-bp-surface flex-grow">
         {/* Hero banner */}
-        <section className="bg-gradient-to-br from-[#00766C] to-[#005A52]">
+        <section className="bg-gradient-to-br from-bp-accent to-bp-primary">
           <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-16">
             <div className="flex items-center gap-4 mb-4">
                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -116,12 +116,12 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         {/* Content area */}
         <section>
           <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-12">
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E5E5]">
-              <h2 className="text-[20px] font-bold text-[#333333]">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-bp-border">
+              <h2 className="text-[20px] font-bold text-bp-primary">
                 {filteredDoctors.length} {filteredDoctors.length === 1 ? 'physio' : 'physios'} available in {city.label}
               </h2>
-              <div className="text-[14px] text-[#666666]">
-                Verified by <span className="font-semibold text-[#00766C]">BookPhysio</span>
+              <div className="text-[14px] text-bp-body">
+                Verified by <span className="font-semibold text-bp-accent">BookPhysio</span>
               </div>
             </div>
 
@@ -132,16 +132,16 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-16 text-center shadow-sm">
+              <div className="bg-white rounded-[8px] border border-bp-border p-16 text-center shadow-sm">
                 <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-[#9CA3AF]" />
                 </div>
-                <h3 className="text-[18px] font-semibold text-[#333333] mb-2">No providers currently in {city.label}</h3>
-                <p className="text-[15px] text-[#666666] max-w-[400px] mx-auto">
+                <h3 className="text-[18px] font-semibold text-bp-primary mb-2">No providers currently in {city.label}</h3>
+                <p className="text-[15px] text-bp-body max-w-[400px] mx-auto">
                    We're currently onboarding specialists in {city.label}. Please try a nearby city or browse our other physiotherapy specialists.
                 </p>
                 <div className="mt-8">
-                   <button className="px-6 py-2.5 bg-[#00766C] text-white font-semibold rounded-[24px] hover:bg-[#005A52] transition-colors">
+                   <button className="px-6 py-2.5 bg-bp-accent text-white font-semibold rounded-[24px] hover:bg-bp-primary transition-colors">
                      Explore Other Cities
                    </button>
                 </div>

@@ -36,11 +36,11 @@ export default function BpLogo({
       <span
         className={cn(
           'font-semibold text-[15px] leading-none tracking-tight',
-          invert ? 'text-white' : 'text-[#005A52]'
+          invert ? 'text-white' : 'text-bp-primary'
         )}
       >
         BookPhysio
-        <span className={cn(invert ? 'text-white/70' : 'text-[#00766C]')}>.in</span>
+        <span className={cn(invert ? 'text-white/70' : 'text-bp-accent')}>.in</span>
       </span>
     </div>
   )

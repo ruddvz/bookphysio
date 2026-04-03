@@ -204,30 +204,30 @@ export function StepSuccess({
       
       {/* ── Celebration Iconography ── */}
       <div className="relative mb-14 pt-8">
-        <div className="absolute inset-0 bg-[#00766C] rounded-full scale-150 opacity-10 blur-3xl animate-pulse" />
+        <div className="absolute inset-0 bg-bp-accent rounded-full scale-150 opacity-10 blur-3xl animate-pulse" />
         <div className="relative flex flex-col items-center">
-          <div className="w-32 h-32 bg-[#00766C] rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-teal-50 transform rotate-[6deg] animate-in zoom-in duration-1000 ease-out">
+          <div className="w-32 h-32 bg-bp-accent rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-teal-50 transform rotate-[6deg] animate-in zoom-in duration-1000 ease-out">
              <Check size={64} className="text-white" strokeWidth={4} />
           </div>
           
           <div className="mt-12 space-y-3">
-             <h2 className="text-[48px] md:text-[64px] font-black text-[#111111] tracking-tighter leading-none">{heroTitle}</h2>
-             <p className="text-[18px] text-gray-400 font-bold max-w-sm mx-auto">{heroCopy}</p>
+             <h2 className="text-[48px] md:text-[64px] font-black text-bp-primary tracking-tighter leading-none">{heroTitle}</h2>
+             <p className="text-[18px] text-bp-body/40 font-bold max-w-sm mx-auto">{heroCopy}</p>
           </div>
         </div>
       </div>
 
       {/* ── High-Fidelity Clinical Receipt ── */}
-      <div className="relative bg-white rounded-[48px] border border-gray-100 shadow-[0_48px_80px_-32px_rgba(0,0,0,0.1)] overflow-hidden mb-12 transform hover:scale-[1.01] transition-transform duration-500 group">
+      <div className="relative bg-white rounded-[48px] border border-bp-border shadow-[0_48px_80px_-32px_rgba(0,0,0,0.1)] overflow-hidden mb-12 transform hover:scale-[1.01] transition-transform duration-500 group">
          
          {/* Receipt Top Section */}
-         <div className="bg-[#FCFDFD] p-10 space-y-10 text-left relative z-10">
+         <div className="bg-bp-surface p-10 space-y-10 text-left relative z-10">
             <div className="flex justify-between items-start">
                <div>
-                 <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.25em] mb-2">Verification Ref</p>
+                 <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.25em] mb-2">Verification Ref</p>
                  <div className="flex items-center gap-2">
-                    <p className="text-[22px] font-black text-[#333333] tracking-tighter uppercase">{refNumber}</p>
-                    <Fingerprint size={16} className="text-[#00766C]/30" />
+                    <p className="text-[22px] font-black text-bp-primary tracking-tighter uppercase">{refNumber}</p>
+                    <Fingerprint size={16} className="text-bp-accent/30" />
                  </div>
                </div>
               <div className="px-5 py-2 bg-emerald-50 text-[#059669] text-[12px] font-black rounded-2xl uppercase tracking-[0.1em] border border-emerald-100/50 shadow-sm shadow-emerald-900/5 pulse">
@@ -237,64 +237,64 @@ export function StepSuccess({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-gray-300 border border-gray-100 shadow-sm"><Calendar size={20} /></div>
+                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-bp-body/30 border border-bp-border shadow-sm"><Calendar size={20} /></div>
                   <div>
-                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Consult Date</p>
-                    <p className="text-[15px] font-black text-[#333333] tracking-tight">{displayDate.split(',')[1]}</p>
+                    <p className="text-[9px] font-black text-bp-body/30 uppercase tracking-widest leading-none mb-1.5">Consult Date</p>
+                    <p className="text-[15px] font-black text-bp-primary tracking-tight">{displayDate.split(',')[1]}</p>
                   </div>
                </div>
                
                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-gray-300 border border-gray-100 shadow-sm"><Clock size={20} /></div>
+                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-bp-body/30 border border-bp-border shadow-sm"><Clock size={20} /></div>
                   <div>
-                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Timeline</p>
-                    <p className="text-[15px] font-black text-[#333333] tracking-tight">{time}</p>
+                    <p className="text-[9px] font-black text-bp-body/30 uppercase tracking-widest leading-none mb-1.5">Timeline</p>
+                    <p className="text-[15px] font-black text-bp-primary tracking-tight">{time}</p>
                   </div>
                </div>
 
                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-gray-300 border border-gray-100 shadow-sm"><MapPin size={20} /></div>
+                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-bp-body/30 border border-bp-border shadow-sm"><MapPin size={20} /></div>
                   <div>
-                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">{locationLabel}</p>
-                    <p className="text-[15px] font-black text-[#333333] tracking-tight truncate max-w-[150px]">{location.split(',')[0]}</p>
+                    <p className="text-[9px] font-black text-bp-body/30 uppercase tracking-widest leading-none mb-1.5">{locationLabel}</p>
+                    <p className="text-[15px] font-black text-bp-primary tracking-tight truncate max-w-[150px]">{location.split(',')[0]}</p>
                   </div>
                </div>
 
                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-gray-300 border border-gray-100 shadow-sm"><Building2 size={20} /></div>
+                  <div className="w-12 h-12 bg-white rounded-[20px] flex items-center justify-center text-bp-body/30 border border-bp-border shadow-sm"><Building2 size={20} /></div>
                   <div>
-                    <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Consult Type</p>
-                    <p className="text-[15px] font-black text-[#333333] tracking-tight uppercase">{visitType.replace('_', ' ')}</p>
+                    <p className="text-[9px] font-black text-bp-body/30 uppercase tracking-widest leading-none mb-1.5">Consult Type</p>
+                    <p className="text-[15px] font-black text-bp-primary tracking-tight uppercase">{visitType.replace('_', ' ')}</p>
                   </div>
                </div>
             </div>
 
-            <div className="pt-8 border-t border-dashed border-gray-200 space-y-4">
+            <div className="pt-8 border-t border-dashed border-bp-border space-y-4">
                <div className="flex justify-between items-center px-2">
-                  <span className="text-[13px] font-black text-gray-300 uppercase tracking-widest">Consultation</span>
-                  <span className="text-[15px] font-black text-[#333333]">₹{baseFee.toLocaleString('en-IN')}</span>
+                  <span className="text-[13px] font-black text-bp-body/30 uppercase tracking-widest">Consultation</span>
+                  <span className="text-[15px] font-black text-bp-primary">₹{baseFee.toLocaleString('en-IN')}</span>
                </div>
                <div className="flex justify-between items-center px-2">
-                  <span className="text-[13px] font-black text-gray-300 uppercase tracking-widest">GST (18%)</span>
-                  <span className="text-[15px] font-black text-[#333333]">₹{gstAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-[13px] font-black text-bp-body/30 uppercase tracking-widest">GST (18%)</span>
+                  <span className="text-[15px] font-black text-bp-primary">₹{gstAmount.toLocaleString('en-IN')}</span>
                </div>
-               <div className="flex justify-between items-center bg-gray-50/50 p-6 rounded-[32px] border border-gray-100 mt-4">
+               <div className="flex justify-between items-center bg-bp-surface/50 p-6 rounded-[32px] border border-bp-border mt-4">
                   <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 border border-gray-100 shadow-sm"><CreditCard size={20} /></div>
-                     <p className="text-[14px] font-black text-gray-400 tracking-widest uppercase">{methodLabel[paymentMethod] ?? paymentMethod}</p>
+                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-body/40 border border-bp-border shadow-sm"><CreditCard size={20} /></div>
+                     <p className="text-[14px] font-black text-bp-body/40 tracking-widest uppercase">{methodLabel[paymentMethod] ?? paymentMethod}</p>
                   </div>
                   <div className="text-right">
-                  <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1 pr-1">{amountLabel}</p>
-                     <p className="text-[28px] font-black text-[#333333] tracking-tighter">₹{totalPaid.toLocaleString('en-IN')}</p>
+                  <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-widest mb-1 pr-1">{amountLabel}</p>
+                     <p className="text-[28px] font-black text-bp-primary tracking-tighter">₹{totalPaid.toLocaleString('en-IN')}</p>
                   </div>
                </div>
             </div>
          </div>
 
          {/* Ticket Cutouts & Perforation */}
-         <div className="absolute left-0 top-[38%] -translate-x-1/2 w-10 h-10 bg-[#FBFCFD] rounded-full border border-gray-50 shadow-inner z-20" />
-         <div className="absolute right-0 top-[38%] translate-x-1/2 w-10 h-10 bg-[#FBFCFD] rounded-full border border-gray-50 shadow-inner z-20" />
-         <div className="absolute left-10 right-10 top-[38%] translate-y-4 border-t-2 border-dashed border-gray-100/50 z-0 opacity-50" />
+         <div className="absolute left-0 top-[38%] -translate-x-1/2 w-10 h-10 bg-[#FBFCFD] rounded-full border border-bp-border/50 shadow-inner z-20" />
+         <div className="absolute right-0 top-[38%] translate-x-1/2 w-10 h-10 bg-[#FBFCFD] rounded-full border border-bp-border/50 shadow-inner z-20" />
+         <div className="absolute left-10 right-10 top-[38%] translate-y-4 border-t-2 border-dashed border-bp-border/50 z-0 opacity-50" />
          
          {/* Decorative Shine */}
          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-2000 pointer-events-none"></div>
@@ -304,11 +304,11 @@ export function StepSuccess({
       <div className="grid grid-cols-2 gap-6 mb-10 text-[14px]">
          <button 
           onClick={handleAddToCalendar}
-          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-gray-100 text-[#333333] font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-teal-100 active:scale-95 transition-all shadow-sm group/btn"
+          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
          >
-           <span className="text-[10px] text-gray-300 uppercase tracking-widest leading-none mb-1">Stay Notified</span>
+           <span className="text-[10px] text-bp-body/30 uppercase tracking-widest leading-none mb-1">Stay Notified</span>
            <div className="flex items-center gap-2">
-              <Calendar size={18} className="text-[#00766C]" />
+              <Calendar size={18} className="text-bp-accent" />
               Sync Calendar
            </div>
          </button>
@@ -316,11 +316,11 @@ export function StepSuccess({
          <button
           type="button"
           onClick={handleDownloadReceipt}
-          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-gray-100 text-[#333333] font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-teal-100 active:scale-95 transition-all shadow-sm group/btn"
+          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-black rounded-3xl hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
          >
-            <span className="text-[10px] text-gray-300 uppercase tracking-widest leading-none mb-1">Proof Of Booking</span>
+            <span className="text-[10px] text-bp-body/30 uppercase tracking-widest leading-none mb-1">Proof Of Booking</span>
             <div className="flex items-center gap-2">
-               <Download size={18} className="text-[#00766C]" />
+               <Download size={18} className="text-bp-accent" />
             {isPayAtClinic ? 'Booking Summary' : 'Digital Receipt'}
             </div>
          </button>
@@ -334,16 +334,16 @@ export function StepSuccess({
          
          <div className="relative z-10 space-y-10">
             <div>
-               <p className="text-[10px] font-black text-teal-400 uppercase tracking-[0.3em] mb-4">Protocol Active</p>
+               <p className="text-[10px] font-black text-bp-accent/70 uppercase tracking-[0.3em] mb-4">Protocol Active</p>
                <h3 className="text-[32px] font-black text-white tracking-tighter">What happens now?</h3>
             </div>
 
             <div className="space-y-6">
                <div className="flex gap-6">
-                  <div className="w-10 h-10 rounded-2xl bg-[#00766C] flex items-center justify-center text-white shrink-0 font-black text-[14px]">01</div>
+                  <div className="w-10 h-10 rounded-2xl bg-bp-accent flex items-center justify-center text-white shrink-0 font-black text-[14px]">01</div>
                   <div>
                   <h4 className="text-[16px] font-black text-white mb-1">Booking Recorded</h4>
-                  <p className="text-[14px] font-bold text-gray-400 leading-relaxed">Your appointment details are now saved and available from the patient dashboard below.</p>
+                  <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">Your appointment details are now saved and available from the patient dashboard below.</p>
                   </div>
                </div>
                
@@ -351,7 +351,7 @@ export function StepSuccess({
                   <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-black text-[14px]">02</div>
                   <div>
                 <h4 className="text-[16px] font-black text-white mb-1">{isPayAtClinic ? 'Payment on Arrival' : 'Prepare for Arrival'}</h4>
-                <p className="text-[14px] font-bold text-gray-400 leading-relaxed">{isPayAtClinic ? 'Please settle the consultation amount directly with the provider during the visit and keep any previous reports, scans, or prescriptions handy.' : 'Please arrive a few minutes early and keep any previous reports, scans, or prescriptions handy for the clinician.'}</p>
+                <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">{isPayAtClinic ? 'Please settle the consultation amount directly with the provider during the visit and keep any previous reports, scans, or prescriptions handy.' : 'Please arrive a few minutes early and keep any previous reports, scans, or prescriptions handy for the clinician.'}</p>
                   </div>
                </div>
 
@@ -359,7 +359,7 @@ export function StepSuccess({
                   <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-black text-[14px]">03</div>
                   <div>
                     <h4 className="text-[16px] font-black text-white mb-1">Session Dashboard</h4>
-                  <p className="text-[14px] font-bold text-gray-400 leading-relaxed">Use your patient portal anytime to review appointment details, reschedule within policy, or download your receipt.</p>
+                  <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">Use your patient portal anytime to review appointment details, reschedule within policy, or download your receipt.</p>
                   </div>
                </div>
             </div>
@@ -369,7 +369,7 @@ export function StepSuccess({
       <div className="space-y-6">
         <Link
           href="/patient/appointments"
-          className="group relative h-24 w-full flex items-center justify-center bg-[#00766C] text-white rounded-[32px] shadow-2xl shadow-teal-900/10 hover:shadow-teal-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
+          className="group relative h-24 w-full flex items-center justify-center bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-teal-900/10 hover:shadow-teal-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
         >
           <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
              Manage Appointment
@@ -379,20 +379,20 @@ export function StepSuccess({
         </Link>
         
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 pt-4">
-           <button className="flex items-center gap-3 text-[13px] font-black text-gray-400 hover:text-[#333333] transition-colors group/share">
-              <Share2 size={18} className="text-[#00766C] group-hover:scale-110 transition-transform" /> 
+           <button className="flex items-center gap-3 text-[13px] font-black text-bp-body/40 hover:text-bp-primary transition-colors group/share">
+              <Share2 size={18} className="text-bp-accent group-hover:scale-110 transition-transform" /> 
               Share with Family
            </button>
-           <Link href="/search" className="flex items-center gap-3 text-[13px] font-black text-gray-400 hover:text-[#333333] transition-colors group/find">
-              <ExternalLink size={18} className="text-[#00766C] group-hover:rotate-12 transition-transform" /> 
+           <Link href="/search" className="flex items-center gap-3 text-[13px] font-black text-bp-body/40 hover:text-bp-primary transition-colors group/find">
+              <ExternalLink size={18} className="text-bp-accent group-hover:rotate-12 transition-transform" /> 
               Find Extra Sessions
            </Link>
         </div>
       </div>
       
       <div className="mt-16 flex flex-col items-center gap-4">
-         <div className="w-12 h-1.5 bg-gray-100 rounded-full" />
-         <p className="text-[11px] font-black text-gray-300 uppercase tracking-[0.3em] px-12 leading-loose text-center max-w-[400px]">
+         <div className="w-12 h-1.5 bg-bp-surface rounded-full" />
+         <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-[0.3em] px-12 leading-loose text-center max-w-[400px]">
            Appointment details are now available in your patient dashboard.
            <span className="text-emerald-500 ml-2">Booking {statusLabel.toLowerCase()}.</span>
          </p>

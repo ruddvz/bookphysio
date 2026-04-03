@@ -37,7 +37,7 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> =
   confirmed: { label: 'Confirmed', cls: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
   cancelled: { label: 'Cancelled', cls: 'bg-red-50 border-red-100 text-red-700' },
   completed: { label: 'Completed', cls: 'bg-blue-50 border-blue-100 text-blue-700' },
-  no_show:   { label: 'No Show',   cls: 'bg-gray-50 border-gray-100 text-gray-600' },
+  no_show:   { label: 'No Show',   cls: 'bg-bp-surface border-bp-border text-bp-body' },
 }
 
 export default function ProviderAppointmentDetail() {
@@ -76,7 +76,7 @@ export default function ProviderAppointmentDetail() {
   if (isLoading) {
     return (
       <div className="max-w-[1000px] mx-auto px-6 py-16 flex items-center justify-center min-h-[300px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#00766C]" />
+        <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
       </div>
     )
   }
@@ -84,13 +84,13 @@ export default function ProviderAppointmentDetail() {
   if (isError || !appt) {
     return (
       <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10">
-        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-gray-400 hover:text-[#00766C] font-black text-[11px] uppercase tracking-[0.2em] transition-colors no-underline">
-          <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center">
+        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-bp-body/40 hover:text-bp-accent font-black text-[11px] uppercase tracking-[0.2em] transition-colors no-underline">
+          <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center">
             <ArrowLeft size={14} strokeWidth={3} />
           </div>
           Back to Registry
         </Link>
-        <p className="text-gray-400 mt-6">Appointment not found.</p>
+        <p className="text-bp-body/40 mt-6">Appointment not found.</p>
       </div>
     )
   }
@@ -135,8 +135,8 @@ export default function ProviderAppointmentDetail() {
   return (
     <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
       <div className="mb-10">
-        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-gray-400 hover:text-[#00766C] font-black text-[11px] uppercase tracking-[0.2em] transition-colors group no-underline">
-          <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-teal-100 group-hover:bg-teal-50 transition-all">
+        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-bp-body/40 hover:text-bp-accent font-black text-[11px] uppercase tracking-[0.2em] transition-colors group no-underline">
+          <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center group-hover:border-bp-accent/20 group-hover:bg-bp-accent/10 transition-all">
             <ArrowLeft size={14} strokeWidth={3} />
           </div>
           Back to Registry
@@ -149,10 +149,10 @@ export default function ProviderAppointmentDetail() {
             <ShieldCheck size={12} strokeWidth={3} />
             Verified Clinical Record
           </div>
-          <h1 className="text-[36px] md:text-[42px] font-black text-[#333333] leading-none tracking-tighter">
-            Consultation <span className="text-[#00766C]">Analysis</span>
+          <h1 className="text-[36px] md:text-[42px] font-black text-bp-primary leading-none tracking-tighter">
+            Consultation <span className="text-bp-accent">Analysis</span>
           </h1>
-          <p className="text-[15px] font-bold text-gray-400">{refCode}</p>
+          <p className="text-[15px] font-bold text-bp-body/40">{refCode}</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default function ProviderAppointmentDetail() {
             <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
             {statusCfg.label}
           </div>
-          <button aria-label="Appointment actions" title="Appointment actions" className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#333333] transition-colors shadow-sm">
+          <button aria-label="Appointment actions" title="Appointment actions" className="w-12 h-12 rounded-2xl bg-white border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-primary transition-colors shadow-sm">
             <MoreHorizontal size={20} />
           </button>
         </div>
@@ -169,20 +169,20 @@ export default function ProviderAppointmentDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
         <div className="space-y-8">
           {/* Patient Card */}
-          <div className="bg-white rounded-[44px] border border-gray-100 p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.06)] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50/30 rounded-full blur-[80px] -mr-32 -mt-32" />
+          <div className="bg-white rounded-[44px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.06)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-bp-accent/10/30 rounded-full blur-[80px] -mr-32 -mt-32" />
             <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-10 pb-10 border-b border-gray-50">
-                <div className="w-20 h-20 rounded-[32px] bg-teal-50 flex items-center justify-center text-[#00766C] text-[32px] font-black shadow-inner">
+              <div className="flex items-center gap-4 mb-10 pb-10 border-b border-bp-border/50">
+                <div className="w-20 h-20 rounded-[32px] bg-bp-accent/10 flex items-center justify-center text-bp-accent text-[32px] font-black shadow-inner">
                   {appt.patient_profile?.avatar_url
                     ? <Image src={appt.patient_profile.avatar_url} alt={patientName} width={80} height={80} className="w-full h-full rounded-[32px] object-cover" />
                     : patientInitials
                   }
                 </div>
                 <div className="flex-1">
-                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Patient Registry</p>
-                  <h2 className="text-[28px] font-black text-[#333333] tracking-tighter leading-none mb-2">{patientName}</h2>
-                  <div className="flex items-center gap-4 text-[13px] font-bold text-gray-400">
+                  <p className="text-[11px] font-black text-bp-body/40 uppercase tracking-[0.2em] mb-1">Patient Registry</p>
+                  <h2 className="text-[28px] font-black text-bp-primary tracking-tighter leading-none mb-2">{patientName}</h2>
+                  <div className="flex items-center gap-4 text-[13px] font-bold text-bp-body/40">
                     <span className="flex items-center gap-1.5">
                       <ShieldCheck size={14} className="text-emerald-500" />
                       Verified Patient
@@ -193,26 +193,26 @@ export default function ProviderAppointmentDetail() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
                 {appt.patient_profile?.phone && (
-                  <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
+                  <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border group hover:bg-white hover:shadow-xl transition-all duration-300">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-bp-accent shadow-sm">
                         <Phone size={18} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Contact</p>
-                        <p className="text-[15px] font-black text-[#333333]">{appt.patient_profile.phone}</p>
+                        <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-widest mb-0.5">Contact</p>
+                        <p className="text-[15px] font-black text-bp-primary">{appt.patient_profile.phone}</p>
                       </div>
                     </div>
                   </div>
                 )}
-                <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
+                <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border group hover:bg-white hover:shadow-xl transition-all duration-300">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-orange-500 shadow-sm">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-bp-secondary shadow-sm">
                       <MapPin size={18} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Session Type</p>
-                      <p className="text-[15px] font-black text-[#333333] capitalize">{appt.visit_type.replace('_', ' ')}</p>
+                      <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-widest mb-0.5">Session Type</p>
+                      <p className="text-[15px] font-black text-bp-primary capitalize">{appt.visit_type.replace('_', ' ')}</p>
                     </div>
                   </div>
                 </div>
@@ -221,28 +221,28 @@ export default function ProviderAppointmentDetail() {
               {(appt.patient_reason || appt.home_visit_address || legacyNotes) && (
                 <div className="space-y-4 mb-12">
                   <div className="flex items-center gap-3">
-                    <ClipboardList className="text-[#00766C]" size={18} strokeWidth={3} />
-                    <h3 className="text-[18px] font-black text-[#333333] tracking-tight">Patient Intake</h3>
+                    <ClipboardList className="text-bp-accent" size={18} strokeWidth={3} />
+                    <h3 className="text-[18px] font-black text-bp-primary tracking-tight">Patient Intake</h3>
                   </div>
 
                   {appt.home_visit_address && (
-                    <div className="p-6 bg-orange-50/60 rounded-3xl border border-orange-100">
-                      <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-2">Home Visit Address</p>
-                      <p className="text-[15px] font-bold text-[#333333] leading-relaxed">{appt.home_visit_address}</p>
+                    <div className="p-6 bg-bp-secondary/10/60 rounded-3xl border border-bp-secondary/20">
+                      <p className="text-[10px] font-black text-bp-secondary uppercase tracking-widest mb-2">Home Visit Address</p>
+                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{appt.home_visit_address}</p>
                     </div>
                   )}
 
                   {appt.patient_reason && (
-                    <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Patient Notes</p>
-                      <p className="text-[15px] font-bold text-[#333333] leading-relaxed">{appt.patient_reason}</p>
+                    <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border">
+                      <p className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest mb-2">Patient Notes</p>
+                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{appt.patient_reason}</p>
                     </div>
                   )}
 
                   {legacyNotes && (
                     <div className="p-6 bg-amber-50/80 rounded-3xl border border-amber-100">
                       <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">Legacy Booking Notes</p>
-                      <p className="text-[15px] font-bold text-[#333333] leading-relaxed">{legacyNotes}</p>
+                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{legacyNotes}</p>
                     </div>
                   )}
                 </div>
@@ -251,11 +251,11 @@ export default function ProviderAppointmentDetail() {
               {/* Clinical Notes */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[18px] font-black text-[#333333] flex items-center gap-3 tracking-tight">
-                    <ClipboardList className="text-[#00766C]" size={20} strokeWidth={3} />
+                  <h3 className="text-[18px] font-black text-bp-primary flex items-center gap-3 tracking-tight">
+                    <ClipboardList className="text-bp-accent" size={20} strokeWidth={3} />
                     Provider Notes
                   </h3>
-                  <span className="text-[11px] font-black text-gray-300 uppercase tracking-widest">
+                  <span className="text-[11px] font-black text-bp-body/30 uppercase tracking-widest">
                     {saved ? '✓ Saved' : 'Auto-Saving Enabled'}
                   </span>
                 </div>
@@ -265,13 +265,13 @@ export default function ProviderAppointmentDetail() {
                     value={notesDraft ?? providerNotes ?? ''}
                     onChange={e => setNotesDraft(e.target.value)}
                     placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
-                    className="w-full p-8 bg-gray-50/50 border border-gray-100 rounded-[32px] text-[16px] font-bold text-[#333333] leading-relaxed placeholder:text-gray-300 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-[#00766C]/20 outline-none transition-all resize-none shadow-inner"
+                    className="w-full p-8 bg-bp-surface/50 border border-bp-border rounded-[32px] text-[16px] font-bold text-bp-primary leading-relaxed placeholder:text-bp-body/30 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-bp-accent/20 outline-none transition-all resize-none shadow-inner"
                   />
                   <div className="absolute bottom-4 right-4">
                     <button
                       onClick={() => notesMut.mutate()}
                       disabled={notesMut.isPending}
-                      className="flex items-center gap-3 px-8 py-4 bg-[#333333] text-white rounded-[20px] text-[14px] font-black hover:bg-[#00766C] transition-all shadow-xl active:scale-[0.97] disabled:opacity-70"
+                      className="flex items-center gap-3 px-8 py-4 bg-bp-primary text-white rounded-[20px] text-[14px] font-black hover:bg-bp-accent transition-all shadow-xl active:scale-[0.97] disabled:opacity-70"
                     >
                       {notesMut.isPending ? 'Saving...' : 'Commit Record'}
                       <CheckCircle2 size={18} strokeWidth={3} />
@@ -285,13 +285,13 @@ export default function ProviderAppointmentDetail() {
 
         {/* Session Context Sidebar */}
         <aside className="space-y-8">
-          <div className="bg-[#333333] rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
+          <div className="bg-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110" />
             <div className="relative z-10 space-y-8">
               <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] leading-none">Session Context</p>
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
                     <Calendar size={22} strokeWidth={3} />
                   </div>
                   <div>
@@ -300,7 +300,7 @@ export default function ProviderAppointmentDetail() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
                     <Clock size={22} strokeWidth={3} />
                   </div>
                   <div>
@@ -311,7 +311,7 @@ export default function ProviderAppointmentDetail() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-teal-400 border border-white/5 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
                     <MapPin size={22} strokeWidth={3} />
                   </div>
                   <div>
@@ -335,8 +335,8 @@ export default function ProviderAppointmentDetail() {
                         : paymentStatus === 'failed'
                           ? 'bg-red-500 text-white shadow-red-500/20'
                           : paymentStatus === 'created'
-                            ? 'bg-yellow-300 text-[#333333] shadow-yellow-400/20'
-                            : 'bg-amber-400 text-[#333333] shadow-amber-500/20'
+                            ? 'bg-yellow-300 text-bp-primary shadow-yellow-400/20'
+                            : 'bg-amber-400 text-bp-primary shadow-amber-500/20'
                   )}>
                     {paymentLabel}
                   </div>
@@ -349,13 +349,13 @@ export default function ProviderAppointmentDetail() {
             </div>
           </div>
 
-          <div className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col gap-4">
-            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-gray-500 hover:bg-gray-50 hover:text-[#333333] transition-all border-none bg-transparent cursor-pointer">
-              <div className="w-10 h-10 rounded-xl border border-gray-100 flex items-center justify-center bg-white"><Zap size={18} /></div>
+          <div className="bg-white rounded-[40px] p-8 border border-bp-border flex flex-col gap-4">
+            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-bp-body hover:bg-bp-surface hover:text-bp-primary transition-all border-none bg-transparent cursor-pointer">
+              <div className="w-10 h-10 rounded-xl border border-bp-border flex items-center justify-center bg-white"><Zap size={18} /></div>
               Reschedule Session
             </button>
-            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-orange-50 transition-all border-none bg-transparent cursor-pointer">
-              <div className="w-10 h-10 rounded-xl border border-orange-100 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
+            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-bp-secondary/10 transition-all border-none bg-transparent cursor-pointer">
+              <div className="w-10 h-10 rounded-xl border border-bp-secondary/20 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
               Flag Issue
             </button>
           </div>

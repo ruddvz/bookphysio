@@ -167,11 +167,11 @@ function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, st
 const inputStyle: React.CSSProperties = {
   width: '100%',
   height: '44px',
-  border: '1px solid #E5E5E5',
+  border: '1px solid var(--color-bp-border)',
   borderRadius: '8px',
   padding: '0 12px',
   fontSize: '15px',
-  color: '#333333',
+  color: 'var(--color-bp-primary)',
   backgroundColor: '#FFFFFF',
   outline: 'none',
   boxSizing: 'border-box',
@@ -184,7 +184,7 @@ function FieldError({ msg }: { msg?: string }) {
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: '#333333', marginBottom: '6px' }}>
+    <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
       {children}
     </label>
   )
@@ -200,7 +200,7 @@ function PrimaryButton({ children, onClick, disabled }: {
       onClick={onClick}
       disabled={disabled}
       className={`w-full h-12 text-white border-none rounded-full text-[15px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
-        disabled ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-[#00766C] hover:bg-[#005A52] cursor-pointer'
+        disabled ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-bp-accent hover:bg-bp-primary cursor-pointer'
       }`}
     >
       {children}
@@ -212,7 +212,7 @@ function BackLink({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 text-[#666666] text-[14px] bg-transparent border-none cursor-pointer pt-3 mx-auto hover:text-[#333333] transition-colors outline-none"
+      className="flex items-center gap-1.5 text-bp-body text-[14px] bg-transparent border-none cursor-pointer pt-3 mx-auto hover:text-bp-primary transition-colors outline-none"
     >
       <ArrowLeft className="w-4 h-4" />
       Back
@@ -242,7 +242,7 @@ function FocusableInput({
       placeholder={placeholder}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      style={{ ...inputStyle, ...extraStyle, borderColor: focused ? '#00766C' : '#E5E5E5' }}
+      style={{ ...inputStyle, ...extraStyle, borderColor: focused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)' }}
     />
   )
 }
@@ -266,17 +266,17 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
                   aria-current={active ? 'step' : undefined}
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors ${
                     done
-                      ? 'bg-[#00766C] text-white'
+                      ? 'bg-bp-accent text-white'
                       : active
-                      ? 'border-2 border-[#00766C] bg-white text-[#00766C] ring-2 ring-[#00766C]/20'
-                      : 'border-2 border-[#BBBBBB] bg-white text-[#888888]'
+                      ? 'border-2 border-bp-accent bg-white text-bp-accent ring-2 ring-bp-accent/20'
+                      : 'border-2 border-[#BBBBBB] bg-white text-bp-body/60'
                   }`}
                 >
                   {done ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step}
                 </div>
                 <span
                   className={`text-[11px] whitespace-nowrap hidden sm:block ${
-                    active ? 'text-[#00766C] font-semibold' : done ? 'text-[#00766C]' : 'text-[#888888]'
+                    active ? 'text-bp-accent font-semibold' : done ? 'text-bp-accent' : 'text-bp-body/60'
                   }`}
                 >
                   {label}
@@ -287,7 +287,7 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
               {i < STEP_LABELS.length - 1 && (
                 <div className="mx-1.5 mb-4 h-[2px] flex-1">
                   <div
-                    className={`h-full transition-colors ${step < current ? 'bg-[#00766C]' : 'bg-[#CCCCCC]'}`}
+                    className={`h-full transition-colors ${step < current ? 'bg-bp-accent' : 'bg-bp-body/30'}`}
                   />
                 </div>
               )}
@@ -328,10 +328,10 @@ function Step1({ data, onChange, onNext }: Step1Props) {
 
   return (
     <div>
-      <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '6px' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Personal Details
       </h2>
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
         Let&apos;s start with your basic information
       </p>
 
@@ -352,14 +352,14 @@ function Step1({ data, onChange, onNext }: Step1Props) {
             style={{
               height: '44px',
               padding: '0 12px',
-              backgroundColor: '#F5F5F5',
-              border: '1px solid #E5E5E5',
+              backgroundColor: 'var(--color-bp-surface)',
+              border: '1px solid var(--color-bp-border)',
               borderRight: 'none',
               borderRadius: '8px 0 0 8px',
               display: 'flex',
               alignItems: 'center',
               fontSize: '15px',
-              color: '#666666',
+              color: 'var(--color-bp-body)',
               flexShrink: 0,
             }}
           >
@@ -376,7 +376,7 @@ function Step1({ data, onChange, onNext }: Step1Props) {
             style={{
               ...inputStyle,
               borderRadius: '0 8px 8px 0',
-              borderColor: phoneFocused ? '#00766C' : '#E5E5E5',
+              borderColor: phoneFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
             }}
           />
         </div>
@@ -384,7 +384,7 @@ function Step1({ data, onChange, onNext }: Step1Props) {
       </div>
 
       <div style={{ marginBottom: '24px' }}>
-        <Label>Email <span style={{ fontWeight: 400, color: '#999999' }}>(optional)</span></Label>
+        <Label>Email <span style={{ fontWeight: 400, color: 'var(--color-bp-body)' }}>(optional)</span></Label>
         <FocusableInput
           value={data.email}
           onChange={(v) => onChange({ ...data, email: v })}
@@ -442,17 +442,17 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
 
   return (
     <div>
-      <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '6px' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Professional Details
       </h2>
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
         Your credentials and expertise
       </p>
 
       {/* Registration Type Switcher */}
       <div style={{ marginBottom: '24px' }}>
         <Label>Registration Type</Label>
-        <div style={{ display: 'flex', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: '#F5F5F5' }}>
+        <div style={{ display: 'flex', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: 'var(--color-bp-surface)' }}>
           <button
             onClick={() => onChange({ ...data, registrationType: 'IAP' })}
             style={{
@@ -530,14 +530,14 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         <Label>Degree</Label>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {(['BPT', 'MPT', 'PhD'] as const).map((deg) => (
-            <label key={deg} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: '#333333' }}>
+            <label key={deg} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="radio"
                 name="degree"
                 value={deg}
                 checked={data.degree === deg}
                 onChange={() => onChange({ ...data, degree: deg })}
-                style={{ accentColor: '#00766C' }}
+                style={{ accentcolor: 'var(--color-bp-accent)' }}
               />
               {deg}
             </label>
@@ -562,12 +562,12 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         <Label>Specialties</Label>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {SPECIALTIES.map((s) => (
-            <label key={s} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '15px', color: '#333333' }}>
+            <label key={s} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="checkbox"
                 checked={data.specialties.includes(s)}
                 onChange={() => toggleSpecialty(s)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />
               {s}
             </label>
@@ -627,10 +627,10 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
 
   return (
     <div>
-      <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '6px' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Practice Details
       </h2>
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
         Where you see patients
       </p>
 
@@ -658,7 +658,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
             height: 'auto',
             padding: '10px 12px',
             resize: 'vertical',
-            borderColor: areaFocused ? '#00766C' : '#E5E5E5',
+            borderColor: areaFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
           }}
         />
         <FieldError msg={errors.address} />
@@ -671,7 +671,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
           onChange={(e) => onChange({ ...data, city: e.target.value })}
           onFocus={() => setCityFocused(true)}
           onBlur={() => setCityFocused(false)}
-          style={{ ...inputStyle, borderColor: cityFocused ? '#00766C' : '#E5E5E5' }}
+          style={{ ...inputStyle, borderColor: cityFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)' }}
         >
           <option value="">Select city</option>
           {CITIES.map((c) => (
@@ -696,12 +696,12 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         <Label>Visit Types Offered</Label>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {Object.entries(VISIT_LABELS).map(([vt, label]) => (
-            <label key={vt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '15px', color: '#333333' }}>
+            <label key={vt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="checkbox"
                 checked={data.visitTypes.includes(vt)}
                 onChange={() => toggleVisitType(vt)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />
               {label}
             </label>
@@ -764,16 +764,16 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
 
   return (
     <div>
-      <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '6px' }}>
+      <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Pricing &amp; Availability
       </h2>
-      <p style={{ fontSize: '14px', color: '#666666', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
         Set your fees and working hours
       </p>
 
       {/* Section A: Fees */}
       <div style={{ marginBottom: '20px' }}>
-        <p style={{ fontSize: '15px', fontWeight: 600, color: '#333333', marginBottom: '12px' }}>
+        <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-bp-primary)', marginBottom: '12px' }}>
           Consultation Fees
         </p>
         {allVisitTypes.map((vt) => {
@@ -784,10 +784,10 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
                 <div style={{
                   height: '44px', padding: '0 12px',
-                  backgroundColor: '#F5F5F5', border: '1px solid #E5E5E5',
+                  backgroundColor: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
                   borderRight: 'none', borderRadius: '8px 0 0 8px',
                   display: 'flex', alignItems: 'center',
-                  fontSize: '15px', color: '#666666', flexShrink: 0,
+                  fontSize: '15px', color: 'var(--color-bp-body)', flexShrink: 0,
                 }}>₹</div>
                 <input
                   type="text"
@@ -816,14 +816,14 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
         <Label>Session duration (applies to all slots)</Label>
         <div style={{ display: 'flex', gap: '16px' }}>
           {(['30', '45', '60'] as const).map((d) => (
-            <label key={d} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: '#333333' }}>
+            <label key={d} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="radio"
                 name="slotDuration"
                 value={d}
                 checked={data.slotDuration === d}
                 onChange={() => onChange({ ...data, slotDuration: d })}
-                style={{ accentColor: '#00766C' }}
+                style={{ accentcolor: 'var(--color-bp-accent)' }}
               />
               {d} min
             </label>
@@ -837,23 +837,23 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
         <Label>Weekly Availability</Label>
         <FieldError msg={errors.availability} />
         <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr 1fr 1fr', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
-          <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>Day</span>
-          <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>On?</span>
-          <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>From</span>
-          <span style={{ fontSize: '12px', color: '#666666', fontWeight: 600 }}>To</span>
+          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>Day</span>
+          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>On?</span>
+          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>From</span>
+          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>To</span>
           {DAYS.map((day) => {
             const av = data.availability[day]
             const dim = !av.enabled
             const timeKey = `time_${day}`
             return [
-              <span key={`${day}-label`} style={{ fontSize: '14px', color: '#333333', fontWeight: 500 }}>{day}</span>,
+              <span key={`${day}-label`} style={{ fontSize: '14px', color: 'var(--color-bp-primary)', fontWeight: 500 }}>{day}</span>,
               <input
                 key={`${day}-check`}
                 type="checkbox"
                 aria-label={`Enable ${day}`}
                 checked={av.enabled}
                 onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
-                style={{ accentColor: '#00766C', width: '16px', height: '16px' }}
+                style={{ accentcolor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
               />,
               <select
                 key={`${day}-start`}
@@ -984,10 +984,10 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
 
   return (
     <div className="text-center">
-      <h2 className="text-[22px] font-bold text-[#333333] mb-2">Almost there!</h2>
-      <p className="text-[15px] text-[#333333] mb-1">Verify your mobile number</p>
-      <p className="text-[14px] text-[#666666] mb-7">
-        Code sent to <span className="font-semibold text-[#333333]">{displayPhone}</span>
+      <h2 className="text-[22px] font-bold text-bp-primary mb-2">Almost there!</h2>
+      <p className="text-[15px] text-bp-primary mb-1">Verify your mobile number</p>
+      <p className="text-[14px] text-bp-body mb-7">
+        Code sent to <span className="font-semibold text-bp-primary">{displayPhone}</span>
       </p>
 
       <div className="mb-4">
@@ -1004,11 +1004,11 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
         <p className="text-[12px] text-[#DC2626] mb-3">{error}</p>
       )}
 
-      <p className="text-[14px] text-[#666666] mb-5">
+      <p className="text-[14px] text-bp-body mb-5">
         {canResend ? (
           <button
             onClick={handleResend}
-            className="bg-transparent border-none text-[#00766C] cursor-pointer text-[14px] font-semibold hover:text-[#005A52] transition-colors outline-none"
+            className="bg-transparent border-none text-bp-accent cursor-pointer text-[14px] font-semibold hover:text-bp-primary transition-colors outline-none"
           >
             Resend code
           </button>

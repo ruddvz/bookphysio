@@ -94,32 +94,32 @@ export function SubscriptionPlans({ currentTier = 'free' }: SubscriptionPlansPro
               className={cn(
                 'relative rounded-2xl border p-6 flex flex-col gap-4',
                 isCurrent
-                  ? 'border-[#00766C] bg-[#E6F4F3]'
-                  : 'border-gray-200 bg-white',
-                plan.recommended && !isCurrent && 'border-[#00766C]'
+                  ? 'border-bp-accent bg-bp-accent/10'
+                  : 'border-bp-border bg-white',
+                plan.recommended && !isCurrent && 'border-bp-accent'
               )}
             >
               {plan.recommended && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00766C] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-bp-accent text-white text-xs font-semibold px-3 py-1 rounded-full">
                   Recommended
                 </span>
               )}
               <div>
-                <h3 className="text-lg font-semibold text-[#333]">{plan.name}</h3>
-                <p className="text-sm text-[#666]">{plan.description}</p>
+                <h3 className="text-lg font-semibold text-bp-primary">{plan.name}</h3>
+                <p className="text-sm text-bp-body">{plan.description}</p>
               </div>
               <div className="flex items-end gap-1">
-                <span className="text-3xl font-bold text-[#333]">
+                <span className="text-3xl font-bold text-bp-primary">
                   {plan.price === 0 ? 'Free' : `₹${plan.price}`}
                 </span>
                 {plan.price > 0 && (
-                  <span className="text-sm text-[#666] mb-1">/month</span>
+                  <span className="text-sm text-bp-body mb-1">/month</span>
                 )}
               </div>
               <ul className="space-y-2 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-[#555]">
-                    <Check className="w-4 h-4 text-[#00766C] mt-0.5 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-bp-accent mt-0.5 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -130,10 +130,10 @@ export function SubscriptionPlans({ currentTier = 'free' }: SubscriptionPlansPro
                 className={cn(
                   'w-full py-2.5 rounded-full text-sm font-semibold transition-colors',
                   isCurrent
-                    ? 'bg-[#00766C] text-white cursor-default'
+                    ? 'bg-bp-accent text-white cursor-default'
                     : plan.price > 0
-                    ? 'bg-gray-100 text-[#666] hover:bg-gray-200'
-                    : 'bg-[#00766C] text-white hover:bg-[#005A52]'
+                    ? 'bg-bp-surface text-bp-body hover:bg-gray-200'
+                    : 'bg-bp-accent text-white hover:bg-bp-primary'
                 )}
               >
                 {isCurrent
@@ -149,7 +149,7 @@ export function SubscriptionPlans({ currentTier = 'free' }: SubscriptionPlansPro
         })}
       </div>
       {message && (
-        <p className="text-sm text-center text-[#00766C]">{message}</p>
+        <p className="text-sm text-center text-bp-accent">{message}</p>
       )}
     </div>
   )

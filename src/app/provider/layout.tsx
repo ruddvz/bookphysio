@@ -142,18 +142,18 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       {/* ── Mobile Navigation ── */}
       <header className={cn(
         "lg:hidden fixed top-0 inset-x-0 h-[72px] z-50 transition-all duration-300 border-b",
-        scrolled ? "bg-white/80 backdrop-blur-xl border-gray-100 shadow-sm" : "bg-white border-transparent"
+        scrolled ? "bg-white/80 backdrop-blur-xl border-bp-border shadow-sm" : "bg-white border-transparent"
       )}>
         <div className="px-6 h-full flex items-center justify-between">
            <Link href="/provider/dashboard" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+              <div className="w-8 h-8 bg-bp-accent rounded-lg flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
                  <Activity size={18} strokeWidth={3} />
               </div>
-              <span className="text-[18px] font-black text-[#333333] tracking-tighter">Practitioner</span>
+              <span className="text-[18px] font-black text-bp-primary tracking-tighter">Practitioner</span>
            </Link>
            <button 
              onClick={() => setSidebarOpen(!isSidebarOpen)}
-             className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[#333333] border border-gray-100"
+             className="w-10 h-10 rounded-xl bg-bp-surface flex items-center justify-center text-bp-primary border border-bp-border"
            >
               {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
            </button>
@@ -163,7 +163,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       {/* Mobile nav overlay */}
       {isSidebarOpen && (
          <div className="lg:hidden fixed inset-0 z-50 pt-[72px] animate-in fade-in duration-300">
-            <div className="absolute inset-0 bg-[#333333]/95 backdrop-blur-md"></div>
+            <div className="absolute inset-0 bg-bp-primary/95 backdrop-blur-md"></div>
             <nav className="relative p-8 space-y-4">
                {navItems.map(({ href, label, icon: Icon }) => {
                   const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -174,7 +174,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
                            "flex items-center gap-5 p-5 rounded-3xl text-[20px] font-black transition-all",
-                           isActive ? "bg-white text-[#333333] shadow-xl" : "text-white/60"
+                           isActive ? "bg-white text-bp-primary shadow-xl" : "text-white/60"
                         )}
                      >
                         <Icon size={24} strokeWidth={3} />
@@ -205,7 +205,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Mobile Persistent Floating Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-6 inset-x-6 h-[72px] bg-[#333333] rounded-[32px] shadow-2xl z-50 flex items-center justify-around px-6">
+      <nav className="lg:hidden fixed bottom-6 inset-x-6 h-[72px] bg-bp-primary rounded-[32px] shadow-2xl z-50 flex items-center justify-around px-6">
          {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/')
             return (
@@ -214,7 +214,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                   href={href} 
                   className={cn(
                      "flex flex-col items-center gap-1 transition-all",
-                     isActive ? "text-teal-400" : "text-white/30"
+                     isActive ? "text-bp-accent/70" : "text-white/30"
                   )}
                >
                   <div className={cn(
@@ -229,7 +229,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
          })}
       </nav>
 
-      <footer className="lg:ml-[240px] py-12 px-10 border-t border-gray-100 bg-[#FCFDFD]">
+      <footer className="lg:ml-[240px] py-12 px-10 border-t border-bp-border bg-bp-surface">
          <div className="flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 group">
             <div className="flex items-center gap-3">
                <Activity size={16} />
@@ -237,7 +237,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
             </div>
             <div className="flex gap-10">
                {['Security', 'Guidelines', 'Compliance', 'Help'].map((item) => (
-                  <span key={item} className="text-[11px] font-black tracking-[0.2em] uppercase hover:text-[#00766C] transition-colors cursor-pointer">{item}</span>
+                  <span key={item} className="text-[11px] font-black tracking-[0.2em] uppercase hover:text-bp-accent transition-colors cursor-pointer">{item}</span>
                ))}
             </div>
          </div>

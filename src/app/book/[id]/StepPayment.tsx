@@ -140,8 +140,8 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
               <Lock size={24} strokeWidth={2.5} />
            </div>
            <div>
-              <h2 className="text-[32px] md:text-[40px] font-black text-[#333333] tracking-tighter leading-none">Booking Checkout</h2>
-              <p className="text-[14px] text-gray-400 font-bold mt-1 tracking-widest uppercase">Clinic payment currently enabled</p>
+              <h2 className="text-[32px] md:text-[40px] font-black text-bp-primary tracking-tighter leading-none">Booking Checkout</h2>
+              <p className="text-[14px] text-bp-body/40 font-bold mt-1 tracking-widest uppercase">Clinic payment currently enabled</p>
            </div>
         </div>
       </div>
@@ -157,9 +157,9 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                 className={cn(
                   "group relative flex items-center gap-6 p-6 rounded-[32px] border-2 cursor-pointer transition-all duration-500 active:scale-[0.98] overflow-hidden",
                   isSelected 
-                    ? "bg-[#FCFDFD] border-[#00766C] shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)]" 
-                    : "bg-white border-gray-50 hover:bg-gray-50 hover:border-gray-200",
-                  !mode.available && !isSelected && "cursor-not-allowed bg-gray-50/70 opacity-65 hover:border-gray-50 hover:bg-gray-50/70"
+                    ? "bg-bp-surface border-bp-accent shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)]" 
+                    : "bg-white border-bp-border/50 hover:bg-bp-surface hover:border-bp-border",
+                  !mode.available && !isSelected && "cursor-not-allowed bg-bp-surface/70 opacity-65 hover:border-bp-border/50 hover:bg-bp-surface/70"
                 )}
               >
                 <input
@@ -180,40 +180,40 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                 <div className={cn(
                   "w-16 h-16 rounded-[22px] flex items-center justify-center transition-all duration-500",
                   isSelected 
-                    ? "bg-[#00766C] text-white rotate-[10deg] scale-110 shadow-xl shadow-teal-900/20" 
-                    : "bg-gray-50 text-gray-300 group-hover:text-gray-400",
-                  !mode.available && "group-hover:text-gray-300"
+                    ? "bg-bp-accent text-white rotate-[10deg] scale-110 shadow-xl shadow-teal-900/20" 
+                    : "bg-bp-surface text-bp-body/30 group-hover:text-bp-body/40",
+                  !mode.available && "group-hover:text-bp-body/30"
                 )}>
                   <Icon size={28} />
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
-                     <p className={cn("text-[18px] font-black tracking-tight transition-colors duration-500", isSelected ? "text-[#00766C]" : "text-[#333333]")}>
+                     <p className={cn("text-[18px] font-black tracking-tight transition-colors duration-500", isSelected ? "text-bp-accent" : "text-bp-primary")}>
                        {mode.label}
                      </p>
                      {mode.badge && (
                        <span className={cn(
                          "text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
-                         mode.available && isSelected ? "bg-teal-100/50 text-[#00766C]" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-400"
+                         mode.available && isSelected ? "bg-bp-accent/15/50 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
                        )}>
                          {mode.badge}
                        </span>
                      )}
                   </div>
-                  <p className="text-[14px] font-bold text-gray-400">{mode.description}</p>
+                  <p className="text-[14px] font-bold text-bp-body/40">{mode.description}</p>
                 </div>
 
                 <div className={cn(
                    "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500",
-                   isSelected ? "bg-[#00766C] border-[#00766C]" : "border-gray-100"
+                   isSelected ? "bg-bp-accent border-bp-accent" : "border-bp-border"
                 )}>
                     {isSelected && <CheckCircle2 size={16} strokeWidth={4} className="text-white animate-in zoom-in" />}
                 </div>
 
                 {/* Micro Backdrop Glow */}
                 {isSelected && (
-                  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-teal-50 rounded-full blur-3xl opacity-50"></div>
+                  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-bp-accent/10 rounded-full blur-3xl opacity-50"></div>
                 )}
               </label>
             )
@@ -237,7 +237,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
             type="submit"
             disabled={!canPay}
             className={cn(
-               "w-full group relative h-24 bg-[#FF6B35] text-white rounded-[32px] shadow-2xl shadow-orange-900/10 hover:shadow-orange-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden",
+               "w-full group relative h-24 bg-bp-secondary text-white rounded-[32px] shadow-2xl shadow-orange-900/10 hover:shadow-orange-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden",
                loading && "opacity-80 cursor-not-allowed"
             )}
           >
@@ -265,16 +265,16 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
 
            <div className="mt-8 flex flex-col items-center gap-4">
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+              <div className="flex items-center gap-2.5 px-4 py-2 bg-bp-surface rounded-full border border-bp-border">
                 <ShieldCheck size={14} className="text-emerald-500" />
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Encrypted Booking Request</span>
+                <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest">Encrypted Booking Request</span>
               </div>
-              <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-                <Lock size={14} className="text-[#00766C]" />
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pay During Visit</span>
+              <div className="flex items-center gap-2.5 px-4 py-2 bg-bp-surface rounded-full border border-bp-border">
+                <Lock size={14} className="text-bp-accent" />
+                <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest">Pay During Visit</span>
               </div>
             </div>
-            <p className="text-center text-[12px] font-bold text-gray-400 max-w-md">
+            <p className="text-center text-[12px] font-bold text-bp-body/40 max-w-md">
               Online payments are not available yet. Reserve the session now and settle the consultation amount directly with the provider.
             </p>
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import Link from 'next/link'
@@ -8,28 +8,9 @@ import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Map as MapIcon, List, Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
+import { Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
-import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
-
-const CustomIndiaMap = dynamic(() => import('@/components/CustomIndiaMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-6 relative overflow-hidden">
-       {/* Background Animated Dots */}
-       <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#00766C_1px,transparent_1.5px)] [background-size:24px_24px]"></div>
-       <div className="w-16 h-16 rounded-full border-2 border-gray-100 border-t-[#00766C] animate-spin" />
-       <div>
-          <p className="text-[14px] font-black tracking-widest text-[#00766C] uppercase">Projecting Geography</p>
-          <div className="w-24 h-1 bg-gray-100 rounded-full mt-2 relative overflow-hidden">
-             <div className="absolute inset-y-0 left-0 bg-[#00766C] animate-progress-indeterminate"></div>
-          </div>
-       </div>
-    </div>
-  )
-})
-
 import type { SearchResponse } from '@/app/api/contracts/search'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
@@ -123,6 +104,19 @@ function providerToDoctor(p: ProviderCard): Doctor {
   }
 }
 
+const POPULAR_CITIES = [
+  { name: 'Mumbai', icon: '🏙️' },
+  { name: 'Delhi', icon: '🏛️' },
+  { name: 'Bangalore', icon: '💻' },
+  { name: 'Chennai', icon: '🌊' },
+  { name: 'Hyderabad', icon: '🕌' },
+  { name: 'Pune', icon: '📚' },
+  { name: 'Kolkata', icon: '🎭' },
+  { name: 'Ahmedabad', icon: '🏗️' },
+  { name: 'Jaipur', icon: '🏰' },
+  { name: 'Surat', icon: '💎' },
+]
+
 export default function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -130,29 +124,23 @@ export default function SearchContent() {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [showMap, setShowMap] = useState(true)
-  const [mobileView, setMobileView] = useState<'list' | 'map'>('list')
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
 
-  const condition = searchParams.get('condition')
   const location = searchParams.get('location')
   const city = searchParams.get('city')
 
-  // Handle city selection from map
+  // Handle city selection from chips
   const handleCitySelect = (selectedCity: string) => {
     const params = new URLSearchParams(searchParams)
-    params.set('city', selectedCity)
-    params.delete('location') // Remove location param when city is selected
+    if (selectedCity === city) {
+      params.delete('city')
+    } else {
+      params.set('city', selectedCity)
+    }
+    params.delete('location')
     router.push(`/search?${params.toString()}`)
   }
 
-  // Handle provider selection from map
-  const handleProviderSelect = (providerId: string) => {
-    setHoveredDoctorId(providerId)
-    // Scroll to provider in list (optional enhancement)
-    const element = document.getElementById(`doctor-${providerId}`)
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
   const specialty = searchParams.get('specialty')
   const visit_type = searchParams.get('visit_type')
   const max_fee = searchParams.get('max_fee')
@@ -202,11 +190,11 @@ export default function SearchContent() {
 
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-bp-surface selection:bg-bp-accent/10 selection:text-bp-accent">
+    <div className="flex flex-col min-h-screen bg-bp-surface selection:bg-bp-accent/10 selection:text-bp-accent">
       
-      {/* ── Search Header (Premium) ── */}
-      <header className="z-30 bg-white border-b border-bp-border flex-shrink-0 relative">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-6 md:py-8">
+      {/* ── Search Header ── */}
+      <header className="z-30 bg-white border-b border-bp-border flex-shrink-0">
+        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-6 md:py-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-bp-body/60">
@@ -226,268 +214,194 @@ export default function SearchContent() {
               </h1>
               <p className="text-[15px] font-medium text-bp-body/70 tracking-tight leading-relaxed">Verified physiotherapy clinic & home-visit experts available in {displayLocation}.</p>
             </div>
-
-            {/* Desktop Map Interaction Tooltip */}
-            <div className="hidden md:flex items-center gap-5 p-2 bg-bp-surface/50 border border-bp-border rounded-[24px]">
-               <div className="flex flex-col text-right">
-                  <span className="text-[14px] font-bold text-bp-primary leading-none mb-1">Live Map View</span>
-                  <span className="text-[11px] font-bold text-bp-body/40 tracking-widest uppercase">Toggle on/off</span>
-               </div>
-               <button
-                onClick={() => setShowMap(!showMap)}
-                aria-label={showMap ? 'Hide map view' : 'Show map view'}
-                title={showMap ? 'Hide map view' : 'Show map view'}
-                className={cn(
-                  "relative w-16 h-8 rounded-full transition-all duration-500 shadow-inner active:scale-95 group overflow-hidden",
-                  showMap ? "bg-bp-primary shadow-bp-primary/10" : "bg-bp-border/50"
-                )}
-              >
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-r from-bp-primary to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity",
-                  showMap ? "opacity-100" : "opacity-0"
-                )}></div>
-                <div className={cn(
-                  "absolute top-1.5 left-1.5 w-5 h-5 bg-white rounded-full transition-all duration-500 shadow-md relative z-10",
-                  showMap ? "translate-x-8" : "translate-x-0"
-                )} />
-              </button>
-            </div>
           </div>
           
           <SearchFilters total={total} />
         </div>
       </header>
 
-      {/* ── Main Results Viewport ── */}
-      <main className="flex-1 overflow-hidden relative">
-        <div className="flex h-full w-full">
-          
-          {/* Results column (Smooth Scroll) */}
-          <div className={cn(
-            "h-full overflow-y-auto transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] scroll-smooth custom-scrollbar",
-            showMap ? "md:w-[60%] lg:w-[65%]" : "w-full",
-            mobileView === 'map' ? "hidden md:block" : "block"
-          )}>
-            <div className="max-w-[850px] mx-auto py-10 px-6 md:px-10">
-              {loading ? (
-                <div className="flex flex-col gap-10">
-                  {[...Array(3)].map((_, i) => (
-                    <DoctorCardSkeleton key={i} />
-                  ))}
-                </div>
-              ) : doctors.length === 0 ? (
-                <div className="pt-16 pb-32">
-                  <EmptyState
-                    title="No exact matches found"
-                    description={`We couldn't locate any verified physios matching your criteria in ${displayLocation}. Here is a premium demo preview of how BookPhysio surfaces nearby care.`}
-                    icon={SearchIcon}
-                    action={
-                      <div className="w-full max-w-5xl space-y-6">
-                        {error && (
-                          <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
-                            <div>
-                              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
-                              <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
-                                Live results could not be loaded just now, but the demo preview below still shows the intended result flow.
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                void mutate()
-                              }}
-                              className="inline-flex items-center justify-center rounded-[22px] bg-[#333333] px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-[#00766C]"
-                            >
-                              Retry search
-                            </button>
-                          </div>
-                        )}
+      {/* ── City Chips Bar ── */}
+      <div className="bg-white border-b border-bp-border">
+        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-4">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+            <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest whitespace-nowrap mr-2">
+              <MapPin size={12} className="inline -mt-0.5 mr-1" />
+              Cities
+            </span>
+            {POPULAR_CITIES.map((c) => (
+              <button
+                key={c.name}
+                onClick={() => handleCitySelect(c.name)}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold whitespace-nowrap transition-all active:scale-95 border",
+                  city === c.name
+                    ? "bg-bp-primary text-white border-bp-primary shadow-lg shadow-bp-primary/10"
+                    : "bg-bp-surface text-bp-body border-bp-border hover:border-bp-accent/30 hover:bg-bp-accent/5 hover:text-bp-primary"
+                )}
+              >
+                <span className="text-[14px]">{c.icon}</span>
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-                        <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-gray-400">
-                          <span className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-[#E6F4F3] px-3 py-1 text-[#00766C]">
-                            <Sparkles size={12} />
-                            Demo preview
-                          </span>
-                          <span>These cards show how live results will look once providers match.</span>
+      {/* ── Main Results ── */}
+      <main className="flex-1">
+        <div className="max-w-[1142px] mx-auto py-10 px-6 md:px-10">
+          {loading ? (
+            <div className="flex flex-col gap-10">
+              {[...Array(3)].map((_, i) => (
+                <DoctorCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : doctors.length === 0 ? (
+            <div className="pt-8 pb-32">
+              <EmptyState
+                title="No exact matches found"
+                description={`We couldn't locate any verified physios matching your criteria in ${displayLocation}. Here is a preview of how BookPhysio surfaces nearby care.`}
+                icon={SearchIcon}
+                action={
+                  <div className="w-full max-w-5xl space-y-6">
+                    {error && (
+                      <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
+                          <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
+                            Live results could not be loaded just now, but the demo preview below still shows the intended result flow.
+                          </p>
                         </div>
-
-                        <div className="grid gap-6 md:grid-cols-2">
-                          {DEMO_RESULTS.map((result) => {
-                            const ResultIcon = result.icon
-
-                            return (
-                              <Link
-                                key={result.title}
-                                href={result.href}
-                                className="group relative overflow-hidden rounded-[30px] border border-gray-100 bg-white p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-200/50 hover:shadow-2xl"
-                              >
-                                {/* Decorative Gradient Blobs */}
-                                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-teal-50/50 blur-2xl transition-all group-hover:scale-150"></div>
-                                <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-orange-50/30 blur-2xl"></div>
-
-                                <div className="relative flex items-start justify-between gap-4">
-                                  <div className="min-w-0 flex-1">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-teal-50 bg-teal-50/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-teal-700/70">
-                                      <Sparkles size={10} className="text-teal-500" />
-                                      Premium Preview
-                                    </div>
-                                    <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-[#111111] group-hover:text-[#00766C] transition-colors">{result.title}</h3>
-                                    <p className="mt-2 text-[14px] font-medium leading-relaxed text-gray-500/90">{result.specialty}</p>
-                                  </div>
-                                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-[#E6F4F3] text-[#00766C] shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-[#00766C] group-hover:text-white group-hover:shadow-teal-200">
-                                    <ResultIcon size={24} strokeWidth={2.5} />
-                                  </div>
-                                </div>
-
-                                <div className="relative mt-6 space-y-3">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-50 text-gray-400 group-hover:bg-teal-50 group-hover:text-teal-500 transition-colors">
-                                      <MapPin size={14} />
-                                    </div>
-                                    <span className="text-[13px] font-bold text-gray-600 truncate">{result.coverage}</span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-50 text-gray-400 group-hover:bg-teal-50 group-hover:text-teal-500 transition-colors">
-                                      <Calendar size={14} />
-                                    </div>
-                                    <span className="text-[13px] font-bold text-gray-600">
-                                      Next: <span className="text-teal-600">{result.nextSlot}</span>
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="relative mt-6 flex items-center justify-between border-t border-gray-100/80 pt-5">
-                                  <div className="flex items-center gap-1.5">
-                                    <div className="h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse"></div>
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
-                                      {result.availability} Match
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-[16px] font-black text-[#111111]">{result.fee}</span>
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover:bg-[#FF6B35] group-hover:text-white transition-all duration-300">
-                                      <ArrowRight size={16} strokeWidth={3} />
-                                    </div>
-                                  </div>
-                                </div>
-                              </Link>
-                            )
-                          })}
-                        </div>
-
-                        <div className="flex flex-col items-center gap-4">
-                          <button
-                            onClick={() => router.push('/search')}
-                            className="px-12 py-5 bg-[#333333] text-white text-[16px] font-black rounded-[24px] hover:bg-[#00766C] shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
-                          >
-                            Clear All Filters
-                          </button>
-                          <div className="flex items-center gap-10 px-8 py-4 bg-gray-50 rounded-[28px] border border-gray-100 opacity-70">
-                             <div className="flex flex-col items-center">
-                                <Activity size={24} className="text-[#00766C] mb-1" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Global Filter</span>
-                             </div>
-                             <div className="h-8 w-px bg-gray-200" />
-                             <div className="flex flex-col items-center">
-                                <Zap size={24} className="text-[#FF6B35] mb-1" />
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Instant Reach</span>
-                             </div>
-                          </div>
-                        </div>
+                        <button
+                          onClick={() => {
+                            void mutate()
+                          }}
+                          className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
+                        >
+                          Retry search
+                        </button>
                       </div>
-                    }
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col gap-8 pb-32 animate-in fade-in duration-1000">
-                  <div className="flex items-center justify-between px-2 mb-2">
-                    <div className="flex items-center gap-3">
-                       <div className="p-1.5 bg-teal-50 rounded-lg text-[#00766C]"><Zap size={16} strokeWidth={3} /></div>
-                       <p className="text-[13px] font-black text-[#333333] uppercase tracking-[0.15em]">Verified Professionals</p>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/40">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/5 px-3 py-1 text-bp-accent">
+                        <Sparkles size={12} />
+                        Demo preview
+                      </span>
+                      <span>These cards show how live results will look once providers match.</span>
                     </div>
-                    <div className="md:hidden">
-                      <button className="flex items-center gap-2 text-[14px] font-black text-[#00766C] px-4 py-2 bg-[#E6F4F3] rounded-xl border border-teal-100">
-                         <SlidersHorizontal size={14} strokeWidth={3} />
-                         Sort
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {DEMO_RESULTS.map((result) => {
+                        const ResultIcon = result.icon
+
+                        return (
+                          <Link
+                            key={result.title}
+                            href={result.href}
+                            className="group relative overflow-hidden rounded-[30px] border border-bp-border bg-white p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-bp-accent/30 hover:shadow-2xl"
+                          >
+                            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-bp-accent/5 blur-2xl transition-all group-hover:scale-150" />
+                            <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-bp-secondary/5 blur-2xl" />
+
+                            <div className="relative flex items-start justify-between gap-4">
+                              <div className="min-w-0 flex-1">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-bp-accent/10 bg-bp-accent/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-bp-accent">
+                                  <Sparkles size={10} />
+                                  Preview
+                                </div>
+                                <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-bp-primary group-hover:text-bp-accent transition-colors">{result.title}</h3>
+                                <p className="mt-2 text-[14px] font-medium leading-relaxed text-bp-body/80">{result.specialty}</p>
+                              </div>
+                              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-bp-accent/10 text-bp-accent shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-bp-accent group-hover:text-white group-hover:shadow-bp-accent/20">
+                                <ResultIcon size={24} strokeWidth={2.5} />
+                              </div>
+                            </div>
+
+                            <div className="relative mt-6 space-y-3">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent/10 group-hover:text-bp-accent transition-colors">
+                                  <MapPin size={14} />
+                                </div>
+                                <span className="text-[13px] font-bold text-bp-body truncate">{result.coverage}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent/10 group-hover:text-bp-accent transition-colors">
+                                  <Calendar size={14} />
+                                </div>
+                                <span className="text-[13px] font-bold text-bp-body">
+                                  Next: <span className="text-bp-accent">{result.nextSlot}</span>
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="relative mt-6 flex items-center justify-between border-t border-bp-border/60 pt-5">
+                              <div className="flex items-center gap-1.5">
+                                <div className="h-1.5 w-1.5 rounded-full bg-bp-accent animate-pulse" />
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40">
+                                  {result.availability} Match
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-[16px] font-black text-bp-primary">{result.fee}</span>
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bp-surface text-bp-body/40 group-hover:bg-bp-secondary group-hover:text-white transition-all duration-300">
+                                  <ArrowRight size={16} strokeWidth={3} />
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => router.push('/search')}
+                        className="px-12 py-5 bg-bp-primary text-white text-[16px] font-black rounded-btn hover:bg-bp-accent shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
+                      >
+                        Clear All Filters
                       </button>
                     </div>
                   </div>
-                  {doctors.map((doctor) => (
-                    <div key={doctor.id} id={`doctor-${doctor.id}`}>
-                      <DoctorCard
-                        doctor={doctor}
-                        isHovered={hoveredDoctorId === doctor.id}
-                        onMouseEnter={() => setHoveredDoctorId(doctor.id)}
-                        onMouseLeave={() => setHoveredDoctorId(null)}
-                      />
-                    </div>
-                  ))}
-                  
-                  {/* Strategic End of List Content */}
-                  <div className="py-20 text-center border-t border-gray-100 mt-12 bg-gray-50/50 rounded-[40px] px-8">
-                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-100 rounded-full text-[10px] font-black uppercase text-gray-400 tracking-widest">
-                       Safety Verified
-                    </div>
-                    <p className="text-[18px] font-bold text-gray-400 italic max-w-[500px] mx-auto leading-relaxed">
-                      "Connecting with the right therapist is the first step towards pain-free living. Let us help you find your specialist today."
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Interactive Map column (Premium) */}
-          <div className={cn(
-            "h-full border-l border-gray-100 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-2xl relative z-20",
-            showMap ? "md:w-[40%] lg:w-[35%]" : "w-0 border-none opacity-0 overflow-hidden",
-            mobileView === 'map' ? "fixed inset-0 z-40 md:relative" : "hidden md:block"
-          )}>
-            <div className="h-full w-full relative bg-white">
-              <CustomIndiaMap
-                doctors={doctors}
-                hoveredDoctorId={hoveredDoctorId}
-                selectedCity={city}
-                onCitySelect={handleCitySelect}
-                onProviderSelect={handleProviderSelect}
+                }
               />
-
-              
-              {/* Mobile Back Button */}
-              <button
-                onClick={() => setMobileView('list')}
-                className="md:hidden absolute top-10 left-10 z-50 bg-white p-5 rounded-[24px] shadow-2xl border border-gray-100 text-[#333333] active:scale-95 transition-all flex items-center gap-3 font-black"
-              >
-                <List size={24} strokeWidth={3} className="text-[#00766C]" />
-                Show List
-              </button>
             </div>
-          </div>
-        </div>
-
-        {/* Floating Toggle (Mobile Segmented Control) */}
-        <div className="md:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
-          <div className="bg-[#333333] p-1.5 rounded-[30px] flex items-center shadow-[0_24px_48px_rgba(0,0,0,0.3)]">
-             <button
-               onClick={() => setMobileView('list')}
-               className={cn(
-                  "px-8 py-3.5 rounded-[24px] flex items-center gap-3 font-black text-[15px] transition-all",
-                  mobileView === 'list' ? "bg-white text-[#333333]" : "text-white/60"
-               )}
-             >
-                <List size={18} />
-                List
-             </button>
-             <button
-               onClick={() => setMobileView('map')}
-               className={cn(
-                  "px-8 py-3.5 rounded-[24px] flex items-center gap-3 font-black text-[15px] transition-all",
-                  mobileView === 'map' ? "bg-white text-[#333333]" : "text-white/60"
-               )}
-             >
-                <MapIcon size={18} />
-                Map
-             </button>
-          </div>
+          ) : (
+            <div className="flex flex-col gap-8 pb-32 animate-in fade-in duration-1000">
+              <div className="flex items-center justify-between px-2 mb-2">
+                <div className="flex items-center gap-3">
+                   <div className="p-1.5 bg-bp-accent/10 rounded-lg text-bp-accent"><Zap size={16} strokeWidth={3} /></div>
+                   <p className="text-[13px] font-black text-bp-primary uppercase tracking-[0.15em]">Verified Professionals</p>
+                </div>
+                <div className="md:hidden">
+                  <button className="flex items-center gap-2 text-[14px] font-black text-bp-accent px-4 py-2 bg-bp-accent/10 rounded-xl border border-bp-accent/20">
+                     <SlidersHorizontal size={14} strokeWidth={3} />
+                     Sort
+                  </button>
+                </div>
+              </div>
+              {doctors.map((doctor) => (
+                <div key={doctor.id} id={`doctor-${doctor.id}`}>
+                  <DoctorCard
+                    doctor={doctor}
+                    isHovered={hoveredDoctorId === doctor.id}
+                    onMouseEnter={() => setHoveredDoctorId(doctor.id)}
+                    onMouseLeave={() => setHoveredDoctorId(null)}
+                  />
+                </div>
+              ))}
+              
+              {/* End of List */}
+              <div className="py-16 text-center border-t border-bp-border mt-8 bg-bp-surface/50 rounded-[32px] px-8">
+                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-black uppercase text-bp-body/40 tracking-widest">
+                   Safety Verified
+                </div>
+                <p className="text-[18px] font-bold text-bp-body/60 italic max-w-[500px] mx-auto leading-relaxed">
+                  &ldquo;Connecting with the right therapist is the first step towards pain-free living.&rdquo;
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -61,7 +61,7 @@ describe('ProviderAvailability', () => {
     const durationBtn = await screen.findByText(/60 mins/i, {}, { timeout: 10000 })
     fireEvent.click(durationBtn)
     
-    expect(durationBtn).toHaveClass('bg-[#00766C]')
+    expect(durationBtn).toHaveClass('bg-bp-accent')
     expect(await screen.findByRole('button', { name: /Save Availability/i }, { timeout: 10000 })).toBeEnabled()
   }, 15000)
 })

@@ -79,35 +79,35 @@ export default function ProviderAvailability() {
   return (
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="mb-8">
-        <h1 className="text-[32px] font-bold text-[#333333] tracking-tight mb-2">
+        <h1 className="text-[32px] font-bold text-bp-primary tracking-tight mb-2">
           Availability Settings
         </h1>
-        <p className="text-[16px] text-[#666666]">
+        <p className="text-[16px] text-bp-body">
           Set your recurring weekly working hours and session duration.
         </p>
       </div>
 
       {/* Save banner */}
       {saved && (
-        <div className="flex items-center gap-3 bg-[#E6F4F3] border border-[#00766C]/20 rounded-[12px] px-5 py-4 mb-6">
-          <CheckCircle className="w-5 h-5 text-[#00766C] shrink-0" />
-          <p className="text-[15px] font-medium text-[#00766C]">Availability saved successfully.</p>
+        <div className="flex items-center gap-3 bg-bp-accent/10 border border-bp-accent/20 rounded-[12px] px-5 py-4 mb-6">
+          <CheckCircle className="w-5 h-5 text-bp-accent shrink-0" />
+          <p className="text-[15px] font-medium text-bp-accent">Availability saved successfully.</p>
         </div>
       )}
 
-      <div className="bg-white rounded-[12px] border border-[#E5E5E5] shadow-sm p-8">
+      <div className="bg-white rounded-[12px] border border-bp-border shadow-sm p-8">
 
         {/* Weekly Schedule */}
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-[#E6F4F3] text-[#00766C] rounded-lg">
+          <div className="p-2 bg-bp-accent/10 text-bp-accent rounded-lg">
             <Clock className="w-5 h-5" />
           </div>
-          <h2 className="text-[20px] font-semibold text-[#333333]">Weekly Schedule</h2>
+          <h2 className="text-[20px] font-semibold text-bp-primary">Weekly Schedule</h2>
         </div>
-        <p className="text-[15px] text-[#666666] mb-1 ml-[52px]">
+        <p className="text-[15px] text-bp-body mb-1 ml-[52px]">
           Toggle the days you are available and set your working hours.
         </p>
-        <p className="text-[13px] text-[#999999] mb-8 ml-[52px]">
+        <p className="text-[13px] text-bp-body/60 mb-8 ml-[52px]">
           {enabledCount} of 7 days active
         </p>
 
@@ -119,7 +119,7 @@ export default function ProviderAvailability() {
               <div key={day}>
                 <div
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-lg border transition-colors ${
-                    enabled ? 'bg-white border-[#E5E5E5]' : 'bg-[#F9FAFB] border-[#F3F4F6]'
+                    enabled ? 'bg-white border-bp-border' : 'bg-[#F9FAFB] border-[#F3F4F6]'
                   }`}
                 >
                   {/* Toggle + day name */}
@@ -131,7 +131,7 @@ export default function ProviderAvailability() {
                       aria-label={`Toggle ${day}`}
                       onClick={() => toggleDay(day)}
                       className={`relative w-10 h-6 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] cursor-pointer ${
-                        enabled ? 'bg-[#00766C]' : 'bg-[#D1D5DB]'
+                        enabled ? 'bg-bp-accent' : 'bg-[#D1D5DB]'
                       }`}
                     >
                       <span
@@ -140,7 +140,7 @@ export default function ProviderAvailability() {
                         }`}
                       />
                     </button>
-                    <span className={`text-[15px] font-medium ${enabled ? 'text-[#333333]' : 'text-[#9CA3AF]'}`}>
+                    <span className={`text-[15px] font-medium ${enabled ? 'text-bp-primary' : 'text-[#9CA3AF]'}`}>
                       {day}
                     </span>
                   </label>
@@ -156,10 +156,10 @@ export default function ProviderAvailability() {
                       className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
                         error
                           ? 'border-[#CC3300] focus:border-[#CC3300]'
-                          : 'border-[#E5E5E5] focus:border-[#00766C]'
-                      } text-[#333333] bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
+                          : 'border-bp-border focus:border-bp-accent'
+                      } text-bp-primary bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
                     />
-                    <span className="text-[#999999] font-medium text-[14px]">to</span>
+                    <span className="text-bp-body/60 font-medium text-[14px]">to</span>
                     <input
                       type="time"
                       value={end}
@@ -169,8 +169,8 @@ export default function ProviderAvailability() {
                       className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
                         error
                           ? 'border-[#CC3300] focus:border-[#CC3300]'
-                          : 'border-[#E5E5E5] focus:border-[#00766C]'
-                      } text-[#333333] bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
+                          : 'border-bp-border focus:border-bp-accent'
+                      } text-bp-primary bg-white disabled:bg-transparent disabled:text-[#9CA3AF]`}
                     />
                   </div>
                 </div>
@@ -183,14 +183,14 @@ export default function ProviderAvailability() {
         </div>
 
         {/* Slot Duration */}
-        <div className="pt-8 border-t border-[#E5E5E5]">
+        <div className="pt-8 border-t border-bp-border">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-[#E6F4F3] text-[#00766C] rounded-lg">
+            <div className="p-2 bg-bp-accent/10 text-bp-accent rounded-lg">
               <Settings className="w-5 h-5" />
             </div>
-            <h2 className="text-[20px] font-semibold text-[#333333]">Slot Duration</h2>
+            <h2 className="text-[20px] font-semibold text-bp-primary">Slot Duration</h2>
           </div>
-          <p className="text-[15px] text-[#666666] mb-6 ml-[52px]">
+          <p className="text-[15px] text-bp-body mb-6 ml-[52px]">
             How long is each appointment slot?
           </p>
 
@@ -202,8 +202,8 @@ export default function ProviderAvailability() {
                 onClick={() => { setDuration(mins); setSaved(false); setHasChanges(true) }}
                 className={`px-5 py-2.5 rounded-full text-[14px] font-semibold border transition-colors cursor-pointer outline-none ${
                   duration === mins
-                    ? 'bg-[#00766C] text-white border-[#00766C]'
-                    : 'bg-white text-[#333333] border-[#E5E5E5] hover:border-[#00766C] hover:text-[#00766C]'
+                    ? 'bg-bp-accent text-white border-bp-accent'
+                    : 'bg-white text-bp-primary border-bp-border hover:border-bp-accent hover:text-bp-accent'
                 }`}
               >
                 {mins} mins
@@ -220,8 +220,8 @@ export default function ProviderAvailability() {
             disabled={!hasChanges}
             className={`flex items-center gap-2 px-8 py-3 rounded-[24px] text-[16px] font-semibold transition-all outline-none ${
               hasChanges 
-                ? 'bg-[#00766C] hover:bg-[#005A52] text-white cursor-pointer' 
-                : 'bg-[#F2F2F2] text-[#999999] cursor-not-allowed'
+                ? 'bg-bp-accent hover:bg-bp-primary text-white cursor-pointer' 
+                : 'bg-[#F2F2F2] text-bp-body/60 cursor-not-allowed'
             }`}
           >
             <Check className="w-5 h-5" />

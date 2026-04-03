@@ -14,7 +14,7 @@ export default function ProviderCTA() {
   return (
     <section className="py-16 md:py-24 bg-[#004D40] relative overflow-hidden">
       {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-600/20 rounded-full blur-[120px] -mr-32 -mt-32 opacity-60"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-bp-accent/20 rounded-full blur-[120px] -mr-32 -mt-32 opacity-60"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/20 rounded-full blur-[100px] -ml-20 -mb-20 opacity-40"></div>
       
       <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] relative z-10">

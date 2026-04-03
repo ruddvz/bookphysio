@@ -121,9 +121,9 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="bg-[#F7F8F9] flex-grow">
+      <main className="bg-bp-surface flex-grow">
         {/* Hero banner */}
-        <section className="bg-gradient-to-br from-[#00766C] to-[#005A52]">
+        <section className="bg-gradient-to-br from-bp-accent to-bp-primary">
           <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-16">
             <div className="flex items-center gap-4 mb-4">
                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -143,12 +143,12 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
         {/* Content area */}
         <section>
           <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-12">
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#E5E5E5]">
-              <h2 className="text-[20px] font-bold text-[#333333]">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-bp-border">
+              <h2 className="text-[20px] font-bold text-bp-primary">
                 {filteredDoctors.length} {specialty.label} available
               </h2>
-              <div className="text-[14px] text-[#666666]">
-                Showing results for <span className="font-semibold text-[#00766C]">India</span>
+              <div className="text-[14px] text-bp-body">
+                Showing results for <span className="font-semibold text-bp-accent">India</span>
               </div>
             </div>
 
@@ -159,12 +159,12 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-[8px] border border-[#E5E5E5] p-16 text-center shadow-sm">
+              <div className="bg-white rounded-[8px] border border-bp-border p-16 text-center shadow-sm">
                 <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Stethoscope className="w-8 h-8 text-[#9CA3AF]" />
                 </div>
-                <h3 className="text-[18px] font-semibold text-[#333333] mb-2">No providers found</h3>
-                <p className="text-[15px] text-[#666666] max-w-[400px] mx-auto">
+                <h3 className="text-[18px] font-semibold text-bp-primary mb-2">No providers found</h3>
+                <p className="text-[15px] text-bp-body max-w-[400px] mx-auto">
                   We couldn't find any {specialty.label.toLowerCase()} matching your criteria. Try adjusting your filters or searching in a different area.
                 </p>
               </div>

@@ -14,9 +14,9 @@ export function StarRating({ rating, reviewCount, size = 'md', className }: Star
   return (
     <span className={cn('inline-flex items-center gap-1', className)}>
       <span className={cn('text-yellow-400', starSize)}>★</span>
-      <span className={cn('font-semibold text-[#333]', textSize)}>{rating.toFixed(1)}</span>
+      <span className={cn('font-semibold text-bp-primary', textSize)}>{rating.toFixed(1)}</span>
       {reviewCount !== undefined && (
-        <span className={cn('text-[#666]', textSize)}>· {reviewCount} reviews</span>
+        <span className={cn('text-bp-body', textSize)}>· {reviewCount} reviews</span>
       )}
     </span>
   )

@@ -179,7 +179,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
               className="w-11 h-11 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-primary transition-colors relative"
             >
                <Bell size={20} />
-               <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-orange-500 border-2 border-white rounded-full"></div>
+               <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-bp-secondary border-2 border-white rounded-full"></div>
             </button>
             <div className="h-8 w-px bg-bp-border"></div>
             <button className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-bp-surface transition-colors">

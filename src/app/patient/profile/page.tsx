@@ -66,7 +66,7 @@ export default function PatientProfile() {
   if (isLoading) {
     return (
       <div className="max-w-[800px] mx-auto px-6 py-12 flex items-center justify-center min-h-[300px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#00766C]" />
+        <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
       </div>
     )
   }
@@ -75,7 +75,7 @@ export default function PatientProfile() {
     return (
       <div className="max-w-[800px] mx-auto px-6 py-12 flex flex-col items-center gap-4">
         <AlertCircle className="w-10 h-10 text-red-400" />
-        <p className="text-[15px] text-[#666666]">Could not load your profile. Please try again.</p>
+        <p className="text-[15px] text-bp-body">Could not load your profile. Please try again.</p>
       </div>
     )
   }
@@ -93,7 +93,7 @@ export default function PatientProfile() {
         <h1 className="text-[32px] md:text-[40px] font-black text-bp-primary tracking-tighter leading-none">
           Patient Profile
         </h1>
-        <p className="text-[17px] text-[#666666] font-medium tracking-tight">
+        <p className="text-[17px] text-bp-body font-medium tracking-tight">
           Manage your account settings, payments, and personal preferences.
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function PatientProfile() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar Navigation */}
         <aside className="lg:col-span-4 space-y-4">
-          <div className="bg-white rounded-[24px] md:rounded-[32px] border border-[#E5E5E5] shadow-sm overflow-hidden p-2">
+          <div className="bg-white rounded-[24px] md:rounded-[32px] border border-bp-border shadow-sm overflow-hidden p-2">
             <div className="flex flex-col">
               {[
                 { icon: User, label: 'Personal Details', active: true },
@@ -114,15 +114,15 @@ export default function PatientProfile() {
                   key={idx}
                   className={`flex items-center justify-between px-6 py-4 rounded-[20px] md:rounded-[24px] transition-all duration-200 ${
                     item.active 
-                      ? 'bg-[#E6F4F3] text-[#00766C]' 
-                      : 'text-[#666666] hover:bg-[#F7F8F9] hover:text-[#333333]'
+                      ? 'bg-bp-accent/10 text-bp-accent' 
+                      : 'text-bp-body hover:bg-bp-surface hover:text-bp-primary'
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <item.icon className={`w-5 h-5 ${item.active ? 'text-[#00766C]' : 'text-[#9CA3AF]'}`} />
+                    <item.icon className={`w-5 h-5 ${item.active ? 'text-bp-accent' : 'text-[#9CA3AF]'}`} />
                     <span className="text-[16px] font-semibold tracking-tight">{item.label}</span>
                   </div>
-                  {item.active && <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]" />}
+                  {item.active && <div className="w-1.5 h-1.5 rounded-full bg-bp-accent" />}
                   {!item.active && <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />}
                 </button>
               ))}
@@ -136,13 +136,13 @@ export default function PatientProfile() {
             </div>
           </div>
 
-          <div className="bg-[#00766C] text-white rounded-[24px] md:rounded-[32px] p-8 relative overflow-hidden group">
+          <div className="bg-bp-accent text-white rounded-[24px] md:rounded-[32px] p-8 relative overflow-hidden group">
             <div className="relative z-10">
               <h3 className="text-[20px] font-bold mb-2">Need help?</h3>
               <p className="text-[14px] text-white/80 mb-4 leading-relaxed">
                 Our support team is available 24/7 to help you with any questions.
               </p>
-              <button className="bg-white text-[#00766C] px-6 py-2.5 rounded-full text-[14px] font-bold hover:bg-opacity-90 transition-all">
+              <button className="bg-white text-bp-accent px-6 py-2.5 rounded-full text-[14px] font-bold hover:bg-opacity-90 transition-all">
                 Contact Support
               </button>
             </div>
@@ -152,17 +152,17 @@ export default function PatientProfile() {
 
         {/* Main Content Area */}
         <div className="lg:col-span-8 space-y-8">
-          <div className="bg-white rounded-[24px] md:rounded-[40px] border border-[#E5E5E5] shadow-sm overflow-hidden p-6 md:p-10">
+          <div className="bg-white rounded-[24px] md:rounded-[40px] border border-bp-border shadow-sm overflow-hidden p-6 md:p-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-[#F0F0F0]">
               <div className="flex items-center gap-6">
                 <div className="relative group">
-                  <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-teal-50 text-[#00766C] text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
+                  <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-bp-accent/10 text-bp-accent text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
                     {profile.avatar_url
                       ? <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
                       : initials
                     }
                   </div>
-                  <button className="absolute bottom-0 right-0 w-8 h-8 md:w-10 md:h-10 bg-[#00766C] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform ring-4 ring-white">
+                  <button className="absolute bottom-0 right-0 w-8 h-8 md:w-10 md:h-10 bg-bp-accent text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform ring-4 ring-white">
                     <Camera className="w-4 h-4 md:w-5 h-5" />
                   </button>
                 </div>
@@ -171,10 +171,10 @@ export default function PatientProfile() {
                     {profile.full_name}
                   </h2>
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 bg-[#E6F4F3] text-[#00766C] text-[12px] font-black uppercase tracking-wider rounded-full">
+                    <span className="px-3 py-1 bg-bp-accent/10 text-bp-accent text-[12px] font-black uppercase tracking-wider rounded-full">
                       {profile.role} account
                     </span>
-                    <span className="text-[14px] text-[#666666]">Member since 2024</span>
+                    <span className="text-[14px] text-bp-body">Member since 2024</span>
                   </div>
                 </div>
               </div>
@@ -196,11 +196,11 @@ export default function PatientProfile() {
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Enter your full name"
-                      className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-white text-[16px] text-[#333333] font-medium focus:border-[#00766C] focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all duration-300 placeholder:text-[#9CA3AF]"
+                      className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-white text-[16px] text-bp-primary font-medium focus:border-bp-accent focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all duration-300 placeholder:text-[#9CA3AF]"
                     />
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF] transition-colors group-focus-within:text-[#00766C]" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF] transition-colors group-focus-within:text-bp-accent" />
                   </div>
-                  <p className="text-[13px] text-[#666666] ml-1">
+                  <p className="text-[13px] text-bp-body ml-1">
                     This is how your name will appear on official booking confirmations.
                   </p>
                 </div>
@@ -216,7 +216,7 @@ export default function PatientProfile() {
                         type="text"
                         value={profile.phone ?? '—'}
                         disabled
-                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-[#F7F8F9] text-[16px] text-[#333333] font-medium cursor-not-allowed outline-none opacity-80"
+                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
                       />
                       <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-black uppercase">
@@ -235,12 +235,12 @@ export default function PatientProfile() {
                         type="email"
                         value={profile.email ?? '—'}
                         disabled
-                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-[#F7F8F9] text-[16px] text-[#333333] font-medium cursor-not-allowed outline-none opacity-80"
+                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
                       />
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
                     </div>
                     {!profile.email && (
-                      <button type="button" className="text-[13px] text-[#00766C] font-bold hover:underline ml-1">
+                      <button type="button" className="text-[13px] text-bp-accent font-bold hover:underline ml-1">
                         + Add email address
                       </button>
                     )}
@@ -266,7 +266,7 @@ export default function PatientProfile() {
                   <button
                     type="submit"
                     disabled={saveMut.isPending || name.trim() === profile.full_name}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-[#00766C] hover:bg-[#005A52] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-teal-900/10"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-bp-accent hover:bg-bp-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-teal-900/10"
                   >
                     {saveMut.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -283,7 +283,7 @@ export default function PatientProfile() {
           <div className="bg-[#FFF4ED] border border-[#FFD8C2] rounded-[24px] md:rounded-[32px] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex gap-4">
               <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                <Shield className="w-6 h-6 text-[#FF6B35]" />
+                <Shield className="w-6 h-6 text-bp-secondary" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-[16px] font-black text-[#853C1D] uppercase text-[12px]">Data Privacy</h4>
@@ -292,7 +292,7 @@ export default function PatientProfile() {
                 </p>
               </div>
             </div>
-            <button className="text-[14px] font-black text-[#FF6B35] hover:underline whitespace-nowrap">
+            <button className="text-[14px] font-black text-bp-secondary hover:underline whitespace-nowrap">
               Learn More
             </button>
           </div>

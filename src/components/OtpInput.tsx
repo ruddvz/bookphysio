@@ -128,11 +128,11 @@ export default function OtpInput({
           className={`
             w-12 h-14 sm:w-14 sm:h-16 text-center text-[24px] font-bold 
             rounded-[8px] border-2 transition-all outline-none
-            ${disabled ? 'bg-[#F9FAFB] text-[#9CA3AF] border-[#E5E5E5] cursor-not-allowed' : 'bg-white text-[#333333]'}
-            ${focusedIndex === i ? 'border-[#00766C] ring-4 ring-[#00766C]/10' : 'border-[#E5E5E5]'}
-            ${value[i] && focusedIndex !== i ? 'border-[#00766C]/50' : ''}
+            ${disabled ? 'bg-[#F9FAFB] text-[#9CA3AF] border-bp-border cursor-not-allowed' : 'bg-white text-bp-primary'}
+            ${focusedIndex === i ? 'border-bp-accent ring-4 ring-[#00766C]/10' : 'border-bp-border'}
+            ${value[i] && focusedIndex !== i ? 'border-bp-accent/50' : ''}
             ${error ? 'border-[#DC2626] ring-[#DC2626]/10' : ''}
-            focus:border-[#00766C]
+            focus:border-bp-accent
           `}
         />
       ))}
