@@ -31,7 +31,7 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
   in_clinic: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
-  home_visit: 'bg-bp-secondary/10 text-bp-secondary border-bp-secondary/20',
+  home_visit: 'bg-[#FF6B35]/10 text-[#FF6B35] border-[#FF6B35]/20',
 }
 
 export default function PatientDashboardHome() {
@@ -160,10 +160,10 @@ export default function PatientDashboardHome() {
                </Link>
                <Link
                   href="/patient/motio"
-                  className="flex items-center gap-4 px-8 py-5 bg-white border border-bp-border text-bp-primary text-[16px] font-bold rounded-[24px] hover:border-bp-accent/20 hover:text-bp-accent transition-all hover:scale-[1.02] active:scale-[0.97] shadow-sm"
+                  className="flex items-center gap-4 px-8 py-5 bg-white border-2 border-bp-accent/30 text-bp-accent text-[16px] font-bold rounded-[24px] hover:bg-bp-accent/5 hover:border-bp-accent transition-all hover:scale-[1.02] active:scale-[0.97] shadow-lg shadow-bp-accent/5"
                >
                   Ask BookPhysio AI
-                  <div className="w-8 h-8 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent">
+                  <div className="w-8 h-8 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent group-hover:scale-110 transition-transform">
                       <MessageSquare size={18} strokeWidth={3} />
                   </div>
                </Link>
@@ -321,7 +321,7 @@ export default function PatientDashboardHome() {
                       Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
                    </p>
                    
-                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-white text-bp-primary text-[14px] font-bold rounded-2xl hover:bg-bp-surface transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl group/btn">
+                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-[#FF6B35] text-white text-[14px] font-bold rounded-2xl hover:bg-[#FF6B35]/90 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-[#FF6B35]/20 group/btn">
                       {referralCopied ? 'Referral Link Copied' : 'Copy My Referral Link'}
                       <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                    </button>
@@ -329,11 +329,15 @@ export default function PatientDashboardHome() {
                 
                 <div className="hidden md:flex w-[240px] h-[180px] bg-white/5 backdrop-blur-md rounded-[32px] border border-white/10 items-center justify-center relative shadow-inner">
                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                   <div className="flex flex-col items-center gap-3 animate-bounce duration-[2000ms]">
-                      <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-bp-accent shadow-2xl">
-                         <Zap size={32} strokeWidth={3} fill="currentColor" />
+                   <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-bp-accent shadow-2xl relative overflow-hidden group/star">
+                         <div className="absolute inset-0 bg-white/20 scale-0 group-hover/star:scale-150 transition-transform duration-700 rounded-full"></div>
+                         <Zap size={32} strokeWidth={3} fill="currentColor" className="relative z-10" />
                       </div>
-                      <span className="text-[12px] font-bold tracking-widest uppercase text-white/80">Verified Gift</span>
+                      <div className="text-center md:text-left">
+                         <p className="text-[20px] font-black leading-none">₹500 Credit</p>
+                         <p className="text-[12px] font-bold tracking-widest uppercase text-white/40 mt-1">Verified Gift</p>
+                      </div>
                    </div>
                 </div>
              </div>
