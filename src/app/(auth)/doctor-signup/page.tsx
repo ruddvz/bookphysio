@@ -452,7 +452,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
       {/* Registration Type Switcher */}
       <div style={{ marginBottom: '24px' }}>
         <Label>Registration Type</Label>
-        <div style={{ display: 'flex', bg: '#F5F5F5', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: '#F5F5F5' }}>
+        <div style={{ display: 'flex', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: '#F5F5F5' }}>
           <button
             onClick={() => onChange({ ...data, registrationType: 'IAP' })}
             style={{
@@ -1079,11 +1079,18 @@ export default function DoctorSignupPage() {
   async function handleSubmit() {
     // Send all data to onboarding API
     try {
+      const step4Payload = {
+        ...step4,
+        fees: {
+          in_clinic: parseInt(step4.fees.in_clinic, 10) || 0,
+          home_visit: parseInt(step4.fees.home_visit, 10) || 0,
+        },
+      }
       const res = await fetch('/api/providers/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          step1, step2, step3, step4
+          step1, step2, step3, step4: step4Payload
         })
       })
       if (res.ok) {

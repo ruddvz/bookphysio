@@ -2,8 +2,9 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import { clearDemoSession } from '@/lib/demo/client'
+import { clearDemoSession, hydrateDemoSessionFromCookie } from '@/lib/demo/client'
 import { DEMO_LOCAL_STORAGE_KEY } from '@/lib/demo/session'
 
 interface AuthContextValue {
@@ -46,9 +47,11 @@ function loadDevSession(): Session | null {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
 
   function signOut() {
     setSession(null)
+    queryClient.clear()
     clearDemoSession().catch(() => {
       // Ignore demo cleanup failures during sign-out.
     })
@@ -58,30 +61,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setSession(data.session)
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!isMounted) {
+        return
+      }
+
+      if (data.user) {
+        // User is server-validated — get the full session for the access token
+        const { data: sessionData } = await supabase.auth.getSession()
+        if (sessionData.session) {
+          setSession(sessionData.session)
+        }
+        clearDemoSession().catch(() => {
+          // Ignore demo cleanup failures once a real auth session exists.
+        })
       } else {
-        // Fallback to preview/demo session persisted client-side.
-        const devSession = loadDevSession()
+        // Revalidate demo access against the server-side cookie before trusting any local mirror.
+        const devSession = await hydrateDemoSessionFromCookie()
         if (devSession) setSession(devSession)
       }
-      setLoading(false)
+
+      if (isMounted) {
+        setLoading(false)
+      }
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession ?? loadDevSession())
+      queryClient.clear()
+      setSession(newSession ?? null)
+
+      if (newSession) {
+        clearDemoSession().catch(() => {
+          // Ignore demo cleanup failures once a real auth session exists.
+        })
+      }
     })
 
     // Listen for dev auth events (fired from verify-otp page)
     function handleDevAuth() {
+      queryClient.clear()
       const devSession = loadDevSession()
       setSession(devSession)
     }
     window.addEventListener('bp-dev-auth', handleDevAuth)
 
     return () => {
+      isMounted = false
       subscription.unsubscribe()
       window.removeEventListener('bp-dev-auth', handleDevAuth)
     }

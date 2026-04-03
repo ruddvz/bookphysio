@@ -6,7 +6,7 @@ if (typeof window !== 'undefined') {
 }
 
 export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy_key',
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set') })(),
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? (() => { throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set') })(),
   { auth: { autoRefreshToken: false, persistSession: false } }
 )

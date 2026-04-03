@@ -21,7 +21,7 @@ interface DemoProfileDefinition {
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60
-const APP_ORIGIN = 'https://bookphysio.local'
+const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
@@ -56,7 +56,13 @@ const DEMO_PROFILES: Record<DemoRole, DemoProfileDefinition> = {
 }
 
 export const DEMO_SESSION_COOKIE = 'bp-demo-session'
+export const DEMO_SESSION_SUPPRESSION_COOKIE = 'bp-demo-disabled'
 export const DEMO_LOCAL_STORAGE_KEY = 'bp-dev-session'
+const DEMO_SESSION_SUPPRESSION_VALUE = '1'
+
+interface DemoCookieReader {
+  get: (name: string) => { value: string } | undefined
+}
 
 function isDemoRole(value: string): value is DemoRole {
   return value === 'patient' || value === 'provider' || value === 'admin'
@@ -122,7 +128,7 @@ function constantTimeEqual(left: string, right: string): boolean {
 }
 
 async function signDemoCookiePayload(payloadSegment: string): Promise<string | null> {
-  const secret = process.env.PREVIEW_PASSWORD
+  const secret = process.env.DEMO_COOKIE_SECRET ?? process.env.PREVIEW_PASSWORD
   if (!secret) {
     return null
   }
@@ -244,7 +250,11 @@ export async function encodeDemoCookie(payload: DemoCookiePayload): Promise<stri
   const payloadSegment = encodeBase64Url(JSON.stringify(payload))
   const signatureSegment = await signDemoCookiePayload(payloadSegment)
 
-  return signatureSegment ? `${payloadSegment}.${signatureSegment}` : payloadSegment
+  if (!signatureSegment) {
+    throw new Error('DEMO_COOKIE_SECRET (or PREVIEW_PASSWORD) is not set — cannot issue signed demo cookie')
+  }
+
+  return `${payloadSegment}.${signatureSegment}`
 }
 
 export async function parseDemoCookie(value: string | null | undefined): Promise<DemoCookiePayload | null> {
@@ -263,12 +273,12 @@ export async function parseDemoCookie(value: string | null | undefined): Promise
       return null
     }
 
-    if (signatureSegment) {
-      const expectedSignature = await signDemoCookiePayload(payloadSegment)
-      if (!expectedSignature || !constantTimeEqual(signatureSegment, expectedSignature)) {
-        return null
-      }
-    } else if (process.env.NODE_ENV === 'production') {
+    if (!signatureSegment) {
+      return null
+    }
+
+    const expectedSignature = await signDemoCookiePayload(payloadSegment)
+    if (!expectedSignature || !constantTimeEqual(signatureSegment, expectedSignature)) {
       return null
     }
 
@@ -302,14 +312,13 @@ export async function parseDemoCookie(value: string | null | undefined): Promise
   }
 }
 
-export function createDemoSession(role: DemoRole): Session {
+export function createDemoSession(role: DemoRole, expiresAt = Math.floor(Date.now() / 1000) + DAY_IN_SECONDS): Session {
   const profile = getDemoProfile(role)
-  const expiresAt = Math.floor(Date.now() / 1000) + DAY_IN_SECONDS
 
   return {
     access_token: `demo-${role}-${Date.now()}`,
     refresh_token: '',
-    expires_in: DAY_IN_SECONDS,
+    expires_in: Math.max(0, expiresAt - Math.floor(Date.now() / 1000)),
     expires_at: expiresAt,
     token_type: 'bearer',
     user: {
@@ -343,4 +352,16 @@ export function serializeDemoSessionForStorage(session: Session): string {
     access_token: session.access_token,
     expires_at: session.expires_at,
   })
+}
+
+export function isDemoSessionSuppressed(value: string | null | undefined): boolean {
+  return value === DEMO_SESSION_SUPPRESSION_VALUE
+}
+
+export async function getDemoSessionFromCookies(cookies: DemoCookieReader): Promise<DemoCookiePayload | null> {
+  if (isDemoSessionSuppressed(cookies.get(DEMO_SESSION_SUPPRESSION_COOKIE)?.value)) {
+    return null
+  }
+
+  return parseDemoCookie(cookies.get(DEMO_SESSION_COOKIE)?.value)
 }

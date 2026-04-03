@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { getRequestIpAddress } from '@/lib/server/runtime'
 import { createClient } from '@/lib/supabase/server'
 import { signupPatientSchema, signupProviderSchema } from '@/lib/validations/auth'
 import { otpRatelimit } from '@/lib/upstash'
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const ip = request.ip ?? 'unknown'
+  const ip = getRequestIpAddress(request) ?? 'unknown'
   const sourceLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
   if (!sourceLimit.success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
 
@@ -38,5 +39,7 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: 'Unable to complete signup' }, { status: 400 })
 
-  return NextResponse.json({ user: data.user }, { status: 201 })
+  return NextResponse.json({
+    user: { id: data.user?.id, email: data.user?.email, phone: data.user?.phone },
+  }, { status: 201 })
 }

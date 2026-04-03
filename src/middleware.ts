@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { getDemoRedirectPath, parseDemoCookie, resolvePostAuthRedirect } from '@/lib/demo/session'
+import { getDemoRedirectPath, getDemoSessionFromCookies, resolvePostAuthRedirect } from '@/lib/demo/session'
+import { canRoleAccessPath, isAdminPath, isPatientPath, isProviderPath } from '@/lib/auth/access'
 
 const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
@@ -9,8 +10,8 @@ export default async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy_key',
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set') })(),
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is not set') })(),
     {
       cookies: {
         getAll() { return request.cookies.getAll() },
@@ -26,7 +27,7 @@ export default async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const demoSession = user ? null : await parseDemoCookie(request.cookies.get('bp-demo-session')?.value)
+  const demoSession = user ? null : await getDemoSessionFromCookies(request.cookies)
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
   const rewrittenPathname = hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')
@@ -38,8 +39,8 @@ export default async function middleware(request: NextRequest) {
 
   const isProtected = PROTECTED_PREFIXES.some((prefix) => rewrittenPathname.startsWith(prefix))
   const isAdmin = rewrittenPathname.startsWith(ADMIN_PREFIX)
-  const isProviderRoute = rewrittenPathname.startsWith('/provider')
-  const isPatientRoute = rewrittenPathname.startsWith('/patient')
+  const isProviderRoute = isProviderPath(rewrittenPathname)
+  const isPatientRoute = isPatientPath(rewrittenPathname)
 
   if (!user && !demoSession && (isProtected || isAdmin)) {
     const url = request.nextUrl.clone()
@@ -50,15 +51,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   if (!user && demoSession) {
-    if (isAdmin && demoSession.role !== 'admin') {
-      return NextResponse.redirect(new URL(getDemoRedirectPath(demoSession.role), request.url))
-    }
-
-    if (isProviderRoute && demoSession.role !== 'provider') {
-      return NextResponse.redirect(new URL(getDemoRedirectPath(demoSession.role), request.url))
-    }
-
-    if (isPatientRoute && demoSession.role !== 'patient') {
+    if (!canRoleAccessPath(demoSession.role, rewrittenPathname)) {
       return NextResponse.redirect(new URL(getDemoRedirectPath(demoSession.role), request.url))
     }
 
@@ -80,15 +73,7 @@ export default async function middleware(request: NextRequest) {
 
     const roleHomeUrl = new URL(resolvePostAuthRedirect(profile?.role, null), request.url)
 
-    if (isProviderRoute && profile?.role !== 'provider') {
-      return NextResponse.redirect(roleHomeUrl)
-    }
-
-    if (isPatientRoute && profile?.role !== 'patient') {
-      return NextResponse.redirect(roleHomeUrl)
-    }
-
-    if (isAdmin && profile?.role !== 'admin') {
+    if (!canRoleAccessPath(profile?.role, rewrittenPathname)) {
       return NextResponse.redirect(roleHomeUrl)
     }
   }

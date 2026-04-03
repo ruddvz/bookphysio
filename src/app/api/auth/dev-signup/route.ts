@@ -2,21 +2,19 @@ import { NextResponse, type NextRequest } from 'next/server'
 import {
   createDemoCookiePayload,
   DEMO_SESSION_COOKIE,
+  DEMO_SESSION_SUPPRESSION_COOKIE,
   encodeDemoCookie,
   getDemoRedirectPath,
   resolvePostAuthRedirect,
   type DemoRole,
 } from '@/lib/demo/session'
-import { hasValidPreviewCookie } from '@/lib/preview/token'
-
 function isDemoRole(value: string | null): value is DemoRole {
   return value === 'patient' || value === 'provider' || value === 'admin'
 }
 
 export async function GET(request: NextRequest) {
-  // Allow in local dev OR if the user has a valid preview cookie (for live-site preview access)
-  const isLocalDev = process.env.NODE_ENV === 'development'
-  if (!isLocalDev && !(await hasValidPreviewCookie(request))) {
+  // Only available in local development — not for production preview deploys
+  if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
@@ -25,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
   }
 
-  const role = roleParam ?? 'patient'
+  const role: DemoRole = roleParam && isDemoRole(roleParam) ? roleParam : 'patient'
   const requestedReturn =
     request.nextUrl.searchParams.get('returnTo') ?? request.nextUrl.searchParams.get('next') ?? getDemoRedirectPath(role)
   const redirectTo = resolvePostAuthRedirect(role, requestedReturn)
@@ -38,6 +36,12 @@ export async function GET(request: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     path: '/',
     expires: new Date(cookiePayload.expiresAt * 1000),
+  })
+  response.cookies.set(DEMO_SESSION_SUPPRESSION_COOKIE, '', {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    expires: new Date(0),
   })
 
   return response

@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createPreviewToken } from '@/lib/preview/token'
+import { getRequestIpAddress } from '@/lib/server/runtime'
+import { previewRatelimit } from '@/lib/upstash'
 
 function constantTimeEqual(left: string, right: string): boolean {
   if (left.length !== right.length) {
@@ -18,6 +20,16 @@ export async function POST(request: NextRequest) {
   const secret = process.env.PREVIEW_PASSWORD
   if (!secret) {
     return NextResponse.json({ error: 'Preview access is not configured' }, { status: 404 })
+  }
+
+  const ip = getRequestIpAddress(request) ?? 'anonymous'
+  try {
+    const attemptLimit = await previewRatelimit.limit(`preview:ip:${ip}`)
+    if (!attemptLimit.success) {
+      return NextResponse.json({ error: 'Too many preview access attempts. Try again later.' }, { status: 429 })
+    }
+  } catch {
+    return NextResponse.json({ error: 'Service temporarily unavailable. Please try again.' }, { status: 503 })
   }
 
   let password: string

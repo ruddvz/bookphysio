@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, CreditCard, Smartphone, Building2, Wallet, ShieldCheck, ChevronRight, CheckCircle2, X, Lock, Sparkles, MoveRight } from 'lucide-react'
+import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -11,6 +11,7 @@ interface PatientDetails {
   phone: string
   email: string
   reason: string
+  homeVisitAddress: string
 }
 
 interface BookingResult {
@@ -24,6 +25,7 @@ interface BookingResult {
 interface StepPaymentProps {
   doctorId: string
   slotId: string
+  locationId?: string
   visitType: string
   feeInr: number
   patient: PatientDetails
@@ -32,20 +34,58 @@ interface StepPaymentProps {
 }
 
 const PAYMENT_MODES = [
-  { id: 'upi' as const, label: 'Instant UPI', icon: Smartphone, description: 'GPay, PhonePe, Paytm', badge: 'Fastest' },
-  { id: 'card' as const, label: 'Secured Cards', icon: CreditCard, description: 'Visa, Mastercard, RuPay', badge: 'High Limit' },
-  { id: 'netbanking' as const, label: 'Net Banking', icon: Building2, description: 'All major Indian banks', badge: null },
-  { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', icon: Wallet, description: 'Direct settlement', badge: 'Manual' },
+  { id: 'pay_at_clinic' as const, label: 'Pay at Clinic', icon: Wallet, description: 'Reserve now and settle during the visit', badge: 'Available', available: true },
+  { id: 'upi' as const, label: 'UPI Payments', icon: Smartphone, description: 'Online checkout will open soon', badge: 'Soon', available: false },
+  { id: 'card' as const, label: 'Cards', icon: CreditCard, description: 'Visa, Mastercard, RuPay', badge: 'Soon', available: false },
+  { id: 'netbanking' as const, label: 'Net Banking', icon: Building2, description: 'All major Indian banks', badge: 'Soon', available: false },
 ]
 
-export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
-  const [method, setMethod] = useState<PaymentMethod>('upi')
+export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
+  const [method, setMethod] = useState<PaymentMethod>('pay_at_clinic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const gstAmount = Math.round(feeInr * 0.18)
   const total = feeInr + gstAmount
-  const canPay = !loading
+  const canPay = !loading && method === 'pay_at_clinic'
+
+  function extractApiError(errorPayload: unknown): string {
+    if (typeof errorPayload === 'string') {
+      return errorPayload
+    }
+
+    if (
+      typeof errorPayload === 'object' &&
+      errorPayload !== null &&
+      'fieldErrors' in errorPayload &&
+      typeof (errorPayload as { fieldErrors?: unknown }).fieldErrors === 'object'
+    ) {
+      const fieldErrors = Object.values((errorPayload as { fieldErrors: Record<string, string[] | undefined> }).fieldErrors)
+        .flat()
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+
+      if (fieldErrors.length > 0) {
+        return fieldErrors[0]
+      }
+    }
+
+    if (
+      typeof errorPayload === 'object' &&
+      errorPayload !== null &&
+      'formErrors' in errorPayload &&
+      Array.isArray((errorPayload as { formErrors?: unknown }).formErrors)
+    ) {
+      const formError = (errorPayload as { formErrors: unknown[] }).formErrors.find(
+        (value): value is string => typeof value === 'string' && value.length > 0,
+      )
+
+      if (formError) {
+        return formError
+      }
+    }
+
+    return 'Unable to complete this booking right now.'
+  }
 
   async function handlePay(e: React.FormEvent) {
     e.preventDefault()
@@ -59,19 +99,20 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
         body: JSON.stringify({
           provider_id: doctorId,
           availability_id: slotId,
+          ...(locationId ? { location_id: locationId } : {}),
           visit_type: visitType,
-          notes: patient.reason || null,
+          patient_address: visitType === 'home_visit' ? patient.homeVisitAddress : undefined,
+          ...(patient.reason.trim() ? { notes: patient.reason.trim() } : {}),
         }),
       })
 
       if (!apptRes.ok) {
-        const data = await apptRes.json() as { error?: string }
+        const data = await apptRes.json() as { error?: unknown }
         if (apptRes.status === 401) {
-          const guestRef = `BP-${Date.now().toString().slice(-6)}`
-          onSuccess({ appointmentId: '', refNumber: guestRef, totalPaid: total, gstAmount, paymentMethod: method })
+          setError('Please sign in to confirm this booking.')
           return
         }
-        setError(data.error ?? 'Connection failed. Please retrying.')
+        setError(extractApiError(data.error))
         return
       }
 
@@ -83,39 +124,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
         return
       }
 
-      const orderRes = await fetch('/api/payments/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointment_id: appt.id }),
-      })
-
-      if (!orderRes.ok) {
-        const data = await orderRes.json() as { error?: string }
-        setError(data.error ?? 'Payment gateway offline. Please use Clinic Pay.')
-        return
-      }
-
-      const orderData = await orderRes.json() as {
-        razorpay_order_id: string
-        amount_paise: number
-        key_id: string
-        payment: { id: string }
-      }
-
-      await openRazorpay({
-        orderId: orderData.razorpay_order_id,
-        amountPaise: orderData.amount_paise,
-        keyId: orderData.key_id,
-        appointmentId: appt.id,
-        patientName: patient.fullName,
-        patientPhone: patient.phone,
-        patientEmail: patient.email,
-        onSuccess: () => {
-          const refNumber = `BP-${appt.id.slice(0, 6).toUpperCase()}`
-          onSuccess({ appointmentId: appt.id, refNumber, totalPaid: total, gstAmount, paymentMethod: method })
-        },
-        onFailure: (msg: string) => setError(msg),
-      })
+      setError('Online payments are not available yet. Please use Pay at Clinic.')
     } catch {
       setError('Unstable network connection detected.')
     } finally {
@@ -131,8 +140,8 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
               <Lock size={24} strokeWidth={2.5} />
            </div>
            <div>
-              <h2 className="text-[32px] md:text-[40px] font-black text-[#333333] tracking-tighter leading-none">Global Checkout</h2>
-              <p className="text-[14px] text-gray-400 font-bold mt-1 tracking-widest uppercase">Verified Gateway Selection</p>
+              <h2 className="text-[32px] md:text-[40px] font-black text-[#333333] tracking-tighter leading-none">Booking Checkout</h2>
+              <p className="text-[14px] text-gray-400 font-bold mt-1 tracking-widest uppercase">Clinic payment currently enabled</p>
            </div>
         </div>
       </div>
@@ -149,7 +158,8 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                   "group relative flex items-center gap-6 p-6 rounded-[32px] border-2 cursor-pointer transition-all duration-500 active:scale-[0.98] overflow-hidden",
                   isSelected 
                     ? "bg-[#FCFDFD] border-[#00766C] shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)]" 
-                    : "bg-white border-gray-50 hover:bg-gray-50 hover:border-gray-200"
+                    : "bg-white border-gray-50 hover:bg-gray-50 hover:border-gray-200",
+                  !mode.available && !isSelected && "cursor-not-allowed bg-gray-50/70 opacity-65 hover:border-gray-50 hover:bg-gray-50/70"
                 )}
               >
                 <input
@@ -157,8 +167,13 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                   name="payment"
                   value={mode.id}
                   checked={isSelected}
-                  onChange={() => setMethod(mode.id)}
-                  className="hidden"
+                  onChange={() => {
+                    if (mode.available) {
+                      setMethod(mode.id)
+                    }
+                  }}
+                  disabled={!mode.available}
+                  className="sr-only"
                 />
                 
                 {/* Visual Indicator */}
@@ -166,7 +181,8 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                   "w-16 h-16 rounded-[22px] flex items-center justify-center transition-all duration-500",
                   isSelected 
                     ? "bg-[#00766C] text-white rotate-[10deg] scale-110 shadow-xl shadow-teal-900/20" 
-                    : "bg-gray-50 text-gray-300 group-hover:text-gray-400"
+                    : "bg-gray-50 text-gray-300 group-hover:text-gray-400",
+                  !mode.available && "group-hover:text-gray-300"
                 )}>
                   <Icon size={28} />
                 </div>
@@ -179,7 +195,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                      {mode.badge && (
                        <span className={cn(
                          "text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
-                         isSelected ? "bg-teal-100/50 text-[#00766C]" : "bg-gray-100 text-gray-300"
+                         mode.available && isSelected ? "bg-teal-100/50 text-[#00766C]" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-400"
                        )}>
                          {mode.badge}
                        </span>
@@ -210,7 +226,7 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                <X className="w-5 h-5 text-red-500" strokeWidth={3} />
             </div>
             <div>
-               <p className="text-[15px] font-black text-red-600">Verification Failure</p>
+              <p className="text-[15px] font-black text-red-600">Booking could not be completed</p>
                <p className="text-[13px] font-bold text-red-400 mt-1">{error}</p>
             </div>
           </div>
@@ -229,13 +245,13 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
                {loading ? (
                  <>
                    <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-                   Authorizing Payment
+                   Reserving Slot
                  </>
                ) : (
                  <>
                    <div className="flex flex-col items-start leading-none gap-1">
-                      <span className="text-[12px] font-black text-white/50 uppercase tracking-[0.2em]">{method === 'pay_at_clinic' ? 'Finalize' : 'Instant Pay'}</span>
-                      <span className="text-[20px]">{method === 'pay_at_clinic' ? 'Confirm Booking' : `Settle ₹${total.toLocaleString('en-IN')}`}</span>
+                      <span className="text-[12px] font-black text-white/50 uppercase tracking-[0.2em]">Reserve</span>
+                      <span className="text-[20px]">Confirm Booking</span>
                    </div>
                    <MoveRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform duration-500" />
                  </>
@@ -247,24 +263,20 @@ export function StepPayment({ doctorId, slotId, visitType, feeInr, patient, onSu
             )}
           </button>
 
-          <div className="mt-8 flex flex-col items-center gap-6">
-            <div className="flex items-center gap-8 grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
-               <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="UPI" className="h-4" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" className="h-3" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/RuPay-Logo.png" alt="RuPay" className="h-3" />
+           <div className="mt-8 flex flex-col items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+                <ShieldCheck size={14} className="text-emerald-500" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Encrypted Booking Request</span>
+              </div>
+              <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
+                <Lock size={14} className="text-[#00766C]" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pay During Visit</span>
+              </div>
             </div>
-            
-            <div className="flex items-center gap-6">
-               <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-                  <ShieldCheck size={14} className="text-emerald-500" />
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">PCI-DSS Compliant</span>
-               </div>
-               <div className="flex items-center gap-2.5 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
-                  <Lock size={14} className="text-[#00766C]" />
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Razorpay Vaulted</span>
-               </div>
-            </div>
+            <p className="text-center text-[12px] font-bold text-gray-400 max-w-md">
+              Online payments are not available yet. Reserve the session now and settle the consultation amount directly with the provider.
+            </p>
           </div>
         </div>
       </form>
