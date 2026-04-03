@@ -125,12 +125,9 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
   const currentVisitType: VisitType = (VISIT_TYPE_LABEL[currentVisitTypeRaw] as VisitType) ?? 'Any'
   const currentMaxFee = Number(searchParams.get('max_fee') ?? DEFAULT_MAX_FEE)
   const currentSpecialty = searchParams.get('specialty') ?? ''
-  const currentLat = searchParams.get('lat')
-  const currentLng = searchParams.get('lng')
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [localMaxFee, setLocalMaxFee] = useState(currentMaxFee)
-  const [geoLoading, setGeoLoading] = useState(false)
 
   useEffect(() => {
     setLocalMaxFee(currentMaxFee)
@@ -140,8 +137,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
     currentCity !== DEFAULT_CITY ||
     currentVisitType !== 'Any' ||
     currentMaxFee !== DEFAULT_MAX_FEE ||
-    currentSpecialty !== '' ||
-    currentLat !== null
+    currentSpecialty !== ''
 
   const pushParams = useCallback(
     (updates: Record<string, string | null>, options?: { replace?: boolean }) => {
@@ -152,11 +148,6 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         } else {
           next.set(key, value)
         }
-      }
-      // If we select a city, remove lat/lng
-      if (updates.city) {
-        next.delete('lat')
-        next.delete('lng')
       }
       const nextUrl = `/search?${next.toString()}`
       if (options?.replace) {
@@ -169,26 +160,6 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
     [router, searchParams]
   )
 
-  const handleNearMe = () => {
-    if (!navigator.geolocation) return
-    setGeoLoading(true)
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        pushParams({
-          lat: pos.coords.latitude.toString(),
-          lng: pos.coords.longitude.toString(),
-          city: null
-        })
-        setGeoLoading(false)
-        setDrawerOpen(false)
-      },
-      () => {
-        setGeoLoading(false)
-        alert("Location access denied. Please enable it in your browser settings.")
-      }
-    )
-  }
-
   const clearAll = () => {
     setLocalMaxFee(DEFAULT_MAX_FEE)
     const next = new URLSearchParams(searchParams.toString())
@@ -196,8 +167,6 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
     next.delete('visit_type')
     next.delete('max_fee')
     next.delete('specialty')
-    next.delete('lat')
-    next.delete('lng')
     router.push(`/search?${next.toString()}`)
     setDrawerOpen(false)
   }
@@ -214,32 +183,6 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
           icon={MapPin}
           onChange={(val) => pushParams({ city: val })}
         />
-
-        {/* Near Me Button (Premium) */}
-        <button
-          onClick={handleNearMe}
-          disabled={geoLoading}
-          className={cn(
-            "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all active:scale-95 group relative overflow-hidden",
-            currentLat 
-              ? "bg-bp-accent border-bp-accent text-white shadow-xl shadow-bp-accent/20/50" 
-              : "border-bp-border bg-white text-bp-body hover:border-bp-accent/20 hover:bg-bp-accent/10/30 hover:text-bp-accent"
-          )}
-        >
-          {currentLat && (
-            <div className="absolute inset-0 bg-gradient-to-r from-bp-accent/10 to-transparent opacity-50" />
-          )}
-          {geoLoading ? (
-            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-          ) : (
-            <div className="relative">
-               {currentLat && <div className="absolute -inset-1 bg-white rounded-full animate-ping opacity-20" />}
-               <MapPin size={16} className={cn("relative z-10 transition-colors", currentLat ? "text-white" : "group-hover:text-bp-accent")} />
-            </div>
-          )}
-          <span className="relative z-10">{currentLat ? 'Near Me Active' : 'Around Me'}</span>
-        </button>
-
 
         <FilterDropdown 
           label="Specialty"
@@ -366,36 +309,9 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
                 <div className="flex items-center gap-3 mb-6">
 
 
-                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600"><MapPin size={20} /></div>
+                   <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><MapPin size={20} /></div>
                    <label className="text-[13px] font-black text-bp-primary uppercase tracking-[0.1em]">Location</label>
                 </div>
-
-                {/* Mobile Near Me Action */}
-                <button
-                  onClick={handleNearMe}
-                  disabled={geoLoading}
-                  className={cn(
-                    "w-full mb-6 py-6 rounded-[28px] border-2 transition-all flex items-center justify-center gap-4 active:scale-[0.98]",
-                    currentLat 
-                      ? "bg-bp-accent border-bp-accent text-white shadow-2xl shadow-bp-accent/20" 
-                      : "bg-white border-blue-50 text-blue-600 shadow-sm"
-                  )}
-                >
-                  {geoLoading ? (
-                    <div className="w-6 h-6 rounded-full border-2 border-blue-100 border-t-transparent animate-spin" />
-                  ) : (
-                    <div className="relative">
-                      {currentLat && <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-50" />}
-                      <MapPin size={24} strokeWidth={3} className="relative z-10" />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-start translate-y-[-1px]">
-                     <span className="text-[16px] font-black leading-none mb-1">{currentLat ? 'Using Current Location' : 'Near My Location'}</span>
-                     <span className={cn("text-[11px] font-bold uppercase tracking-widest leading-none", currentLat ? "text-white/60" : "text-blue-400")}>
-                        {currentLat ? 'High Precision GPS Active' : 'Sort experts by distance'}
-                     </span>
-                  </div>
-                </button>
 
                 <div className="grid grid-cols-2 gap-3">
 

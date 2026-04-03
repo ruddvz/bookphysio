@@ -1,0 +1,53 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "verify targeted messaging and date regressions",
+			"type": "shell",
+			"command": "rtk proxy npm exec -- vitest run src/app/api/__tests__/messages.test.ts src/app/api/__tests__/conversations-demo-access.test.ts src/lib/india-date.test.ts",
+			"isBackground": false
+		},
+		{
+			"label": "verify full tests after review fixes",
+			"type": "shell",
+			"command": "rtk npm test",
+			"isBackground": false
+		},
+		{
+			"label": "verify build after review fixes",
+			"type": "shell",
+			"command": "rtk npm run build",
+			"isBackground": false
+		},
+		{
+			"label": "verify typecheck after review fixes",
+			"type": "shell",
+			"command": "rtk npm run type-check",
+			"isBackground": false
+		},
+		{
+			"label": "verify final typecheck",
+			"type": "shell",
+			"command": "rtk npm run type-check",
+			"isBackground": false
+		},
+		{
+			"label": "verify final tests",
+			"type": "shell",
+			"command": "rtk npm test",
+			"isBackground": false
+		},
+		{
+			"label": "verify final build",
+			"type": "shell",
+			"command": "rtk npm run build",
+			"isBackground": false
+		},
+		{
+			"label": "verify provider privacy and India time regressions",
+			"type": "shell",
+			"command": "rtk proxy npm exec -- vitest run src/app/api/__tests__/providers.test.ts src/app/api/__tests__/provider-detail-route.test.ts src/app/api/__tests__/provider-availability-route.test.ts src/lib/india-date.test.ts src/app/book/[id]/StepSuccess.test.tsx",
+			"isBackground": false
+		}
+	]
+}
