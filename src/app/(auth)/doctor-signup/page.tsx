@@ -464,7 +464,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
               border: 'none',
               cursor: 'pointer',
               backgroundColor: data.registrationType === 'IAP' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'IAP' ? '#00766C' : '#999999',
+              color: data.registrationType === 'IAP' ? 'var(--color-bp-accent)' : 'var(--color-bp-body)',
               boxShadow: data.registrationType === 'IAP' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
               transition: 'all 0.2s'
             }}
@@ -482,7 +482,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
               border: 'none',
               cursor: 'pointer',
               backgroundColor: data.registrationType === 'STATE' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'STATE' ? '#00766C' : '#999999',
+              color: data.registrationType === 'STATE' ? 'var(--color-bp-accent)' : 'var(--color-bp-body)',
               boxShadow: data.registrationType === 'STATE' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
               transition: 'all 0.2s'
             }}
@@ -800,7 +800,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                   style={{
                     ...inputStyle,
                     borderRadius: '0 8px 8px 0',
-                    borderColor: focusedFee === vt ? '#00766C' : '#E5E5E5',
+                    borderColor: focusedFee === vt ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
                     cursor: active ? 'text' : 'not-allowed',
                   }}
                 />
@@ -870,7 +870,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                   padding: '0 8px',
                   opacity: dim ? 0.4 : 1,
                   pointerEvents: dim ? 'none' : 'auto',
-                  borderColor: focusedTimes === `${day}-start` ? '#00766C' : '#E5E5E5',
+                  borderColor: focusedTimes === `${day}-start` ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
                 }}
               >
                 {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -890,7 +890,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
                     padding: '0 8px',
                     opacity: dim ? 0.4 : 1,
                     pointerEvents: dim ? 'none' : 'auto',
-                    borderColor: focusedTimes === `${day}-end` ? '#00766C' : '#E5E5E5',
+                    borderColor: focusedTimes === `${day}-end` ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
                   }}
                 >
                   {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}

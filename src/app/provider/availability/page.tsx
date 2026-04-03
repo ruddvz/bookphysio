@@ -130,7 +130,7 @@ export default function ProviderAvailability() {
                       aria-checked={enabled ? 'true' : 'false'}
                       aria-label={`Toggle ${day}`}
                       onClick={() => toggleDay(day)}
-                      className={`relative w-10 h-6 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] cursor-pointer ${
+                      className={`relative w-10 h-6 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-bp-accent cursor-pointer ${
                         enabled ? 'bg-bp-accent' : 'bg-[#D1D5DB]'
                       }`}
                     >

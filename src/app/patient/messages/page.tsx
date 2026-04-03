@@ -133,7 +133,7 @@ export default function PatientMessages() {
               <input 
                 type="search" 
                 placeholder="Search conversations..." 
-                className="w-full pl-12 pr-4 py-3.5 bg-bp-surface border border-bp-border rounded-[18px] text-[14px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3.5 bg-bp-surface border border-bp-border rounded-[18px] text-[14px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/40 group-focus-within:text-bp-accent" />
             </div>
@@ -293,7 +293,7 @@ export default function PatientMessages() {
                          }
                        }}
                        disabled={sendMessageMutation.isPending}
-                       className="w-full pl-6 pr-16 py-4 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all resize-none disabled:bg-bp-surface disabled:text-bp-body/40"
+                       className="w-full pl-6 pr-16 py-4 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all resize-none disabled:bg-bp-surface disabled:text-bp-body/40"
                      />
                      <button
                        onClick={() => {

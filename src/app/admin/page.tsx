@@ -258,7 +258,7 @@ export default function AdminDashboardHome() {
               <div key={index} className="flex flex-col gap-3">
                 <div className="flex h-[240px] items-end rounded-[26px] border border-bp-border bg-[linear-gradient(180deg,_#fafbfc,_white)] p-3 shadow-inner">
                   <div
-                    className={cn('w-full rounded-[18px] bg-[linear-gradient(180deg,_#00766C,_#56c2b8)] shadow-[0_20px_40px_-18px_rgba(0,118,108,0.55)]', bar.heightClass)}
+                    className={cn('w-full rounded-[18px] bg-[linear-gradient(180deg,_var(--color-bp-primary),_var(--color-bp-accent))] shadow-[0_20px_40px_-18px_var(--color-bp-accent)]', bar.heightClass)}
                   />
                 </div>
                 <p className="text-center text-[11px] font-black uppercase tracking-widest text-bp-body/40">W{index + 1}</p>

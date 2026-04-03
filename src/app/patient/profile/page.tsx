@@ -119,11 +119,11 @@ export default function PatientProfile() {
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <item.icon className={`w-5 h-5 ${item.active ? 'text-bp-accent' : 'text-[#9CA3AF]'}`} />
+                    <item.icon className={`w-5 h-5 ${item.active ? 'text-bp-accent' : 'text-bp-body/50'}`} />
                     <span className="text-[16px] font-semibold tracking-tight">{item.label}</span>
                   </div>
                   {item.active && <div className="w-1.5 h-1.5 rounded-full bg-bp-accent" />}
-                  {!item.active && <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />}
+                  {!item.active && <ChevronRight className="w-4 h-4 text-bp-body/50" />}
                 </button>
               ))}
               
@@ -153,7 +153,7 @@ export default function PatientProfile() {
         {/* Main Content Area */}
         <div className="lg:col-span-8 space-y-8">
           <div className="bg-white rounded-[24px] md:rounded-[40px] border border-bp-border shadow-sm overflow-hidden p-6 md:p-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-[#F0F0F0]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-bp-border">
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-bp-accent/10 text-bp-accent text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
@@ -196,9 +196,9 @@ export default function PatientProfile() {
                       value={name}
                       onChange={e => setName(e.target.value)}
                       placeholder="Enter your full name"
-                      className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-white text-[16px] text-bp-primary font-medium focus:border-bp-accent focus:ring-4 focus:ring-[#00766C]/5 outline-none transition-all duration-300 placeholder:text-[#9CA3AF]"
+                      className="w-full pl-12 pr-6 py-4 border-2 border-bp-border rounded-[20px] md:rounded-[24px] bg-white text-[16px] text-bp-primary font-medium focus:border-bp-accent focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all duration-300 placeholder:text-bp-body/50"
                     />
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF] transition-colors group-focus-within:text-bp-accent" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/50 transition-colors group-focus-within:text-bp-accent" />
                   </div>
                   <p className="text-[13px] text-bp-body ml-1">
                     This is how your name will appear on official booking confirmations.
@@ -216,9 +216,9 @@ export default function PatientProfile() {
                         type="text"
                         value={profile.phone ?? '—'}
                         disabled
-                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
+                        className="w-full pl-12 pr-6 py-4 border-2 border-bp-border rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
                       />
-                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/50" />
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-black uppercase">
                         <Check className="w-3 h-3" /> Verified
                       </div>
@@ -235,9 +235,9 @@ export default function PatientProfile() {
                         type="email"
                         value={profile.email ?? '—'}
                         disabled
-                        className="w-full pl-12 pr-6 py-4 border-2 border-[#F0F0F0] rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
+                        className="w-full pl-12 pr-6 py-4 border-2 border-bp-border rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
                       />
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/50" />
                     </div>
                     {!profile.email && (
                       <button type="button" className="text-[13px] text-bp-accent font-bold hover:underline ml-1">
@@ -248,7 +248,7 @@ export default function PatientProfile() {
                 </div>
               </div>
 
-              <div className="pt-10 border-t border-[#F0F0F0]">
+              <div className="pt-10 border-t border-bp-border">
                 <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     {saveMut.isSuccess && (

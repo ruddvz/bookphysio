@@ -86,7 +86,7 @@ function PasswordForm() {
               placeholder="Access password"
               autoFocus
               required
-              className="w-full px-4 py-3 border border-bp-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00766C]/30 focus:border-bp-accent bg-white"
+              className="w-full px-4 py-3 border border-bp-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-bp-accent/30 focus:border-bp-accent bg-white"
             />
           </div>
           {error && (

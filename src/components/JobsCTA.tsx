@@ -18,7 +18,7 @@ const JobsCTA = () => {
             style={{
               fontSize: '14px',
               fontWeight: 600,
-              color: '#00766C',
+              color: 'var(--color-bp-accent)',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
               marginBottom: '16px',
@@ -31,7 +31,7 @@ const JobsCTA = () => {
               fontSize: '36px',
               lineHeight: '48px',
               fontWeight: 700,
-              color: '#333333',
+              color: 'var(--color-bp-primary)',
               marginBottom: '32px',
               maxWidth: '480px',
             }}
@@ -41,7 +41,7 @@ const JobsCTA = () => {
           <a
             href="#"
             style={{
-              backgroundColor: '#00766C',
+              backgroundColor: 'var(--color-bp-accent)',
               color: '#FFFFFF',
               fontSize: '16px',
               fontWeight: 600,
@@ -54,10 +54,10 @@ const JobsCTA = () => {
               transition: 'background-color 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#005A52';
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'var(--color-bp-primary)';
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#00766C';
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'var(--color-bp-accent)';
             }}
           >
             View job openings

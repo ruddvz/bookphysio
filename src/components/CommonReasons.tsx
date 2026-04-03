@@ -130,13 +130,14 @@ const CommonReasons = () => {
                 key={category.name}
                 onClick={() => setActiveCategory(category.name)}
                 style={{
-                  backgroundColor: isActive ? '#333333' : '#FFFFFF',
-                  border: `1.5px solid ${isActive ? '#333333' : 'var(--color-bp-border)'}`,
+                  backgroundColor: isActive ? 'var(--color-bp-primary)' : '#FFFFFF',
+                  border: `1.5px solid ${isActive ? 'var(--color-bp-primary)' : 'var(--color-bp-border)'}`,
+
                   borderRadius: '20px',
                   padding: '8px 20px',
                   fontSize: '15px',
                   fontWeight: 500,
-                  color: isActive ? '#FFFFFF' : '#333333',
+                  color: isActive ? '#FFFFFF' : 'var(--color-bp-primary)',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
@@ -177,12 +178,12 @@ const CommonReasons = () => {
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLAnchorElement;
-                el.style.color = '#00766C';
+                el.style.color = 'var(--color-bp-accent)';
                 el.style.textDecoration = 'underline';
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLAnchorElement;
-                el.style.color = '#333333';
+                el.style.color = 'var(--color-bp-primary)';
                 el.style.textDecoration = 'none';
               }}
             >

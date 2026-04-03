@@ -102,7 +102,7 @@ const TONE_STYLES: Record<Tone, { icon: string; badge: string; panel: string }> 
 function AceMascot({ expression = 'neutral', className }: { expression?: AceExpression; className?: string }) {
   return (
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-      <circle cx="24" cy="24" r="24" fill="#00766C"/>
+      <circle cx="24" cy="24" r="24" fill="currentColor"/>
       
       <defs>
         <radialGradient id="ace-depth" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 24) rotate(90) scale(24)">
@@ -131,30 +131,30 @@ function AceMascot({ expression = 'neutral', className }: { expression?: AceExpr
         <g transform="translate(12, 11.5)">
           {expression === 'thinking' && (
             <g transform="translate(-4, -1)">
-              <circle cx="0.5" cy="0" r="1.2" fill="#00766C" />
-              <circle cx="7.5" cy="0" r="1.2" fill="#00766C" />
-              <path d="M2.5 4 Q4 5 5.5 4" stroke="#00766C" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+              <circle cx="0.5" cy="0" r="1.2" fill="currentColor" />
+              <circle cx="7.5" cy="0" r="1.2" fill="currentColor" />
+              <path d="M2.5 4 Q4 5 5.5 4" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
             </g>
           )}
           {expression === 'happy' && (
             <g transform="translate(-4, -1)">
-              <path d="M-0.5 -1 Q1.5 -3 3.5 -1" stroke="#00766C" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M4.5 -1 Q6.5 -3 8.5 -1" stroke="#00766C" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M1 4 Q4 7 7 4" stroke="#00766C" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <path d="M-0.5 -1 Q1.5 -3 3.5 -1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              <path d="M4.5 -1 Q6.5 -3 8.5 -1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              <path d="M1 4 Q4 7 7 4" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
             </g>
           )}
           {expression === 'caring' && (
             <g transform="translate(-4, -1)">
-              <circle cx="0.5" cy="0" r="1.5" fill="#00766C" opacity="0.9" />
-              <circle cx="7.5" cy="0" r="1.5" fill="#00766C" opacity="0.9" />
-              <path d="M1 5 Q4 8 7 5" stroke="#00766C" strokeWidth="2" fill="none" strokeLinecap="round" />
+              <circle cx="0.5" cy="0" r="1.5" fill="currentColor" opacity="0.9" />
+              <circle cx="7.5" cy="0" r="1.5" fill="currentColor" opacity="0.9" />
+              <path d="M1 5 Q4 8 7 5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
             </g>
           )}
           {expression === 'neutral' && (
             <g transform="translate(-4, -1)">
-              <circle cx="0.5" cy="0" r="1.2" fill="#00766C" />
-              <circle cx="7.5" cy="0" r="1.2" fill="#00766C" />
-              <path d="M2.5 5 L5.5 5" stroke="#00766C" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="0.5" cy="0" r="1.2" fill="currentColor" />
+              <circle cx="7.5" cy="0" r="1.2" fill="currentColor" />
+              <path d="M2.5 5 L5.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </g>
           )}
         </g>

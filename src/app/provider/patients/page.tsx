@@ -14,7 +14,7 @@ export default function ProviderPatients() {
           <input 
             type="search" 
             placeholder="Search patients..." 
-            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-bp-primary focus:border-bp-accent focus:ring-1 focus:ring-[#00766C] outline-none transition-shadow"
+            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-bp-primary focus:border-bp-accent focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
         </div>

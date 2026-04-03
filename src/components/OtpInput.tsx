@@ -129,7 +129,7 @@ export default function OtpInput({
             w-12 h-14 sm:w-14 sm:h-16 text-center text-[24px] font-bold 
             rounded-[8px] border-2 transition-all outline-none
             ${disabled ? 'bg-[#F9FAFB] text-[#9CA3AF] border-bp-border cursor-not-allowed' : 'bg-white text-bp-primary'}
-            ${focusedIndex === i ? 'border-bp-accent ring-4 ring-[#00766C]/10' : 'border-bp-border'}
+            ${focusedIndex === i ? 'border-bp-accent ring-4 ring-bp-accent/10' : 'border-bp-border'}
             ${value[i] && focusedIndex !== i ? 'border-bp-accent/50' : ''}
             ${error ? 'border-[#DC2626] ring-[#DC2626]/10' : ''}
             focus:border-bp-accent

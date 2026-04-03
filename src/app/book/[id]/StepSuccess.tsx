@@ -88,14 +88,14 @@ export function StepSuccess({
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ['#00766C', '#059669', '#FEED5A', '#FFC794']
+        colors: ['#12b3a0', '#059669', '#FEED5A', '#FFC794']
       })
       confetti({
         particleCount: 6,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ['#00766C', '#059669', '#FEED5A', '#FFC794']
+        colors: ['#12b3a0', '#059669', '#FEED5A', '#FFC794']
       })
 
       if (Date.now() < end) {
@@ -143,8 +143,8 @@ export function StepSuccess({
 <html><head><meta charset="utf-8"><title>BookPhysio Receipt - ${receiptValues.refNumber}</title>
 <style>
   body { font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #333; }
-  .header { text-align: center; border-bottom: 2px solid #00766C; padding-bottom: 20px; margin-bottom: 24px; }
-  .header h1 { color: #00766C; font-size: 24px; margin: 0 0 4px; }
+  .header { text-align: center; border-bottom: 2px solid #0b3b32; padding-bottom: 20px; margin-bottom: 24px; }
+  .header h1 { color: #12b3a0; font-size: 24px; margin: 0 0 4px; }
   .header p { color: #666; font-size: 13px; margin: 0; }
   .ref { font-size: 18px; font-weight: 700; letter-spacing: 1px; margin: 12px 0; }
   .status { display: inline-block; background: #ecfdf5; color: #059669; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }

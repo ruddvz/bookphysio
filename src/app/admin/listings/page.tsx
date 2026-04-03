@@ -151,13 +151,13 @@ export default function AdminListings() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => setActionMessage('Opened Dr. Arun K. credential checklist for document review.')} aria-label="View provider documents" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-bp-accent/10 hover:text-bp-accent" title="View Documents">
+                    <button onClick={() => setActionMessage('Opened Dr. Arun K. credential checklist for document review.')} aria-label="View provider documents" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 cursor-pointer hover:bg-bp-accent/10 hover:text-bp-accent" title="View Documents">
                       <Eye className="h-5 w-5" />
                     </button>
-                    <button onClick={() => { setReviewState('approved'); setActionMessage('Dr. Arun K. has been approved and moved live.'); }} aria-label="Approve provider" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#F0FDF4] hover:text-[#059669]" title="Approve">
+                    <button onClick={() => { setReviewState('approved'); setActionMessage('Dr. Arun K. has been approved and moved live.'); }} aria-label="Approve provider" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 cursor-pointer hover:bg-[#F0FDF4] hover:text-[#059669]" title="Approve">
                       <CheckCircle className="h-5 w-5" />
                     </button>
-                    <button onClick={() => { setReviewState('rejected'); setActionMessage('Dr. Arun K. has been returned for document corrections.'); }} aria-label="Reject provider" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]" title="Reject">
+                    <button onClick={() => { setReviewState('rejected'); setActionMessage('Dr. Arun K. has been returned for document corrections.'); }} aria-label="Reject provider" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]" title="Reject">
                       <XCircle className="h-5 w-5" />
                     </button>
                   </div>

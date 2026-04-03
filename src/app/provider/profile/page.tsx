@@ -295,7 +295,7 @@ export default function ProviderProfile() {
           <button className="flex-1 sm:flex-none px-10 py-5 border-2 border-bp-border rounded-[24px] text-[14px] font-black text-bp-body/40 hover:bg-bp-surface transition-all active:scale-95">
             Discard
           </button>
-          <button className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-bp-accent text-white rounded-[24px] text-[14px] font-black transition-all shadow-2xl shadow-[#333333]/10 active:scale-95">
+          <button className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-bp-accent text-white rounded-[24px] text-[14px] font-black transition-all shadow-2xl shadow-bp-primary/10 active:scale-95">
             Push Updates Live
           </button>
         </div>

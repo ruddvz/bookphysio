@@ -343,7 +343,7 @@ async function openRazorpay(opts: RazorpayOptions): Promise<void> {
       contact: opts.patientPhone,
       email: opts.patientEmail,
     },
-    theme: { color: '#00766C' },
+    theme: { color: '#12b3a0' },
     handler: async (response: RazorpayResponse) => {
       try {
         const verifyRes = await fetch('/api/payments/verify', {

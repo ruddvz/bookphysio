@@ -223,10 +223,10 @@ function CityAccordion({ city, isOpen, onToggle }: CityAccordionProps) {
         onClick={() => onToggle(city.name)}
         aria-expanded={isOpen}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = '#00766C';
+          (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-bp-accent)';
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = '#333333';
+          (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-bp-primary)';
         }}
       >
         <span>{city.name}</span>
@@ -263,12 +263,12 @@ function CityAccordion({ city, isOpen, onToggle }: CityAccordionProps) {
               style={styles.specialtyLink}
               onMouseEnter={(e) => {
                 const target = e.currentTarget as HTMLAnchorElement;
-                target.style.color = '#00766C';
+                target.style.color = 'var(--color-bp-accent)';
                 target.style.textDecoration = 'underline';
               }}
               onMouseLeave={(e) => {
                 const target = e.currentTarget as HTMLAnchorElement;
-                target.style.color = '#666666';
+                target.style.color = 'var(--color-bp-body)';
                 target.style.textDecoration = 'none';
               }}
             >

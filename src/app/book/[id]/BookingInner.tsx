@@ -89,7 +89,7 @@ export default function BookingInner() {
         <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
            <div className="relative">
-              <div className="w-16 h-16 rounded-full border-4 border-bp-border border-t-[#00766C] animate-spin" />
+              <div className="w-16 h-16 rounded-full border-4 border-bp-border border-t-bp-accent animate-spin" />
               <div className="absolute inset-0 flex items-center justify-center text-bp-accent/20"><Activity size={24} /></div>
            </div>
            <div className="text-center">
@@ -239,7 +239,7 @@ export default function BookingInner() {
                          {doctor.avatar_url ? (
                            <img src={doctor.avatar_url} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
-                           <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-[#E6F4F3] to-[#C7E9E6] text-bp-accent flex items-center justify-center font-black text-2xl border-4 border-white shadow-xl">
+                           <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-black text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}
                            </div>
                          )}

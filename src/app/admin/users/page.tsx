@@ -98,7 +98,7 @@ export default function AdminUsers() {
             {overviewCards.map((card) => {
               const CardIcon = card.icon
               return (
-                <div key={card.title} className="rounded-[28px] border border-bp-border bg-[#fafbfc] p-4 shadow-sm">
+                <div key={card.title} className="rounded-[28px] border border-bp-border bg-bp-surface/50 p-4 shadow-sm">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent">
                       <CardIcon size={20} strokeWidth={2.5} />
@@ -129,7 +129,7 @@ export default function AdminUsers() {
               type="search"
               placeholder="Search phone, name or ID..."
               aria-label="Search users"
-              className="w-full rounded-[24px] border border-bp-border bg-[#fafbfc] py-3.5 pl-12 pr-4 text-[14px] font-medium text-bp-primary outline-none transition-all placeholder:text-[#6B7280] focus:border-bp-accent/30 focus:bg-white focus:ring-4 focus:ring-[#00766C]/5 md:w-[360px]"
+              className="w-full rounded-[24px] border border-bp-border bg-bp-surface/50 py-3.5 pl-12 pr-4 text-[14px] font-medium text-bp-primary outline-none transition-all placeholder:text-[#6B7280] focus:border-bp-accent/30 focus:bg-white focus:ring-4 focus:ring-bp-accent/5 md:w-[360px]"
             />
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
           </div>
@@ -153,7 +153,7 @@ export default function AdminUsers() {
                   onClick={() => setActiveTab(tab)}
                   aria-pressed="true"
                   className={cn(
-                    'border-b-2 py-4 text-[15px] capitalize transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+                    'border-b-2 py-4 text-[15px] capitalize transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
                     'border-bp-accent font-black text-bp-accent'
                   )}
                 >
@@ -166,7 +166,7 @@ export default function AdminUsers() {
                   onClick={() => setActiveTab(tab)}
                   aria-pressed="false"
                   className={cn(
-                    'border-b-2 py-4 text-[15px] capitalize transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+                    'border-b-2 py-4 text-[15px] capitalize transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
                     'border-transparent font-medium text-bp-body hover:border-bp-border hover:text-bp-primary'
                   )}
                 >
@@ -179,7 +179,7 @@ export default function AdminUsers() {
 
         <div className="overflow-x-auto p-2 md:p-6">
           <table className="w-full text-left whitespace-nowrap">
-            <thead className="bg-[#fafbfc] border-b border-bp-border">
+            <thead className="bg-bp-surface/50 border-b border-bp-border">
               <tr>
                 <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">User</th>
                 <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Contact</th>
@@ -189,7 +189,7 @@ export default function AdminUsers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-bp-border/50">
-              <tr className="transition-colors hover:bg-[#fafbfc]">
+              <tr className="transition-colors hover:bg-bp-surface/50">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bp-accent/10 font-bold text-bp-accent">{currentRow.initials}</div>
@@ -218,10 +218,10 @@ export default function AdminUsers() {
                 <td className="px-6 py-4 text-[14px] text-bp-body">{currentRow.lastActive}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => setActionMessage(`Opened ${currentRow.name} for a detailed profile review.`)} aria-label="View user details" title="View Details" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-bp-accent/10 hover:text-bp-accent">
+                    <button onClick={() => setActionMessage(`Opened ${currentRow.name} for a detailed profile review.`)} aria-label="View user details" title="View Details" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 cursor-pointer hover:bg-bp-accent/10 hover:text-bp-accent">
                       <Eye className="h-5 w-5" />
                     </button>
-                    <button onClick={() => setActionMessage(`${currentRow.name} has been moved into the suspension review queue.`)} aria-label="Suspend user" title="Suspend User" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]">
+                    <button onClick={() => setActionMessage(`${currentRow.name} has been moved into the suspension review queue.`)} aria-label="Suspend user" title="Suspend User" className="rounded-lg p-2 text-bp-body transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 cursor-pointer hover:bg-[#FEF2F2] hover:text-[#DC2626]">
                       <Ban className="h-5 w-5" />
                     </button>
                   </div>
@@ -237,7 +237,7 @@ export default function AdminUsers() {
           </p>
           <div className="flex gap-2">
             <button disabled className="cursor-not-allowed rounded-lg border border-bp-border bg-[#F8FAFC] px-4 py-2 text-[14px] font-medium text-[#64748B]">Previous</button>
-            <button onClick={cycleTab} className="rounded-lg border border-bp-border px-4 py-2 text-[14px] font-medium text-bp-primary transition-colors cursor-pointer hover:bg-[#fafbfc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white">Next</button>
+            <button onClick={cycleTab} className="rounded-lg border border-bp-border px-4 py-2 text-[14px] font-medium text-bp-primary transition-colors cursor-pointer hover:bg-bp-surface/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white">Next</button>
           </div>
         </div>
       </section>
