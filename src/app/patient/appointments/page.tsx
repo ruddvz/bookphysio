@@ -19,7 +19,7 @@ import {
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
   confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  completed: 'bg-blue-50 text-blue-700 border-blue-100',
+  completed: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
   cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
   no_show: 'bg-bp-surface text-bp-body/40 border-bp-border',
 }
@@ -158,7 +158,7 @@ function PatientAppointmentsContent() {
             <button
               type="button"
               onClick={fetchAppointments}
-              className="px-10 py-4 bg-bp-accent text-white rounded-full text-[14px] font-black uppercase tracking-widest hover:bg-bp-primary transition-colors shadow-lg active:scale-95 shadow-teal-900/10"
+              className="px-10 py-4 bg-bp-accent text-white rounded-full text-[14px] font-black uppercase tracking-widest hover:bg-bp-primary transition-colors shadow-lg active:scale-95 shadow-bp-primary/10"
             >
               Retry Connection
             </button>
@@ -255,7 +255,7 @@ function PatientAppointmentsContent() {
             <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center"><CheckCircle2 size={18} /></div>
             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">IAP Verified Care</span>
          </div>
-         <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
+         <div className="h-6 w-px bg-bp-border hidden md:block"></div>
          <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent font-black">256</div>
             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">AES Encrypted Data</span>

@@ -79,7 +79,7 @@ function VerifyOtpContent() {
         <div className="flex flex-col gap-4">
           <Link
             href="/login"
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-teal-900/10"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10"
           >
             Go to Login
             <ArrowRight className="w-5 h-5 text-bp-accent" />
@@ -238,7 +238,7 @@ function VerifyOtpContent() {
         className={cn(
           "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
           allFilled && !loading 
-            ? 'bg-bp-accent hover:bg-bp-primary shadow-xl shadow-teal-900/10 cursor-pointer' 
+            ? 'bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10 cursor-pointer' 
             : 'bg-bp-border cursor-not-allowed text-white/50'
         )}
       >

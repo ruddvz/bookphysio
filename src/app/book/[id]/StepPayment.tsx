@@ -180,7 +180,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                 <div className={cn(
                   "w-16 h-16 rounded-[22px] flex items-center justify-center transition-all duration-500",
                   isSelected 
-                    ? "bg-bp-accent text-white rotate-[10deg] scale-110 shadow-xl shadow-teal-900/20" 
+                    ? "bg-bp-accent text-white rotate-[10deg] scale-110 shadow-xl shadow-bp-primary/20" 
                     : "bg-bp-surface text-bp-body/30 group-hover:text-bp-body/40",
                   !mode.available && "group-hover:text-bp-body/30"
                 )}>

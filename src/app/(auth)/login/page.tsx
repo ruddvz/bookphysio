@@ -150,7 +150,7 @@ export default function LoginPage() {
           onClick={() => setLoginMode('phone')}
           className={cn(
             "flex-1 py-4 text-[13px] font-black rounded-[20px] transition-all duration-300",
-            loginMode === 'phone' ? "bg-white text-bp-accent shadow-xl shadow-teal-900/5 ring-1 ring-black/5" : "text-bp-body/40 hover:text-bp-body"
+            loginMode === 'phone' ? "bg-white text-bp-accent shadow-xl shadow-bp-primary/5 ring-1 ring-black/5" : "text-bp-body/40 hover:text-bp-body"
           )}
         >
           Mobile OTP
@@ -159,7 +159,7 @@ export default function LoginPage() {
           onClick={() => setLoginMode('email')}
           className={cn(
             "flex-1 py-4 text-[13px] font-black rounded-[20px] transition-all duration-300",
-            loginMode === 'email' ? "bg-white text-bp-accent shadow-xl shadow-teal-900/5 ring-1 ring-black/5" : "text-bp-body/40 hover:text-bp-body"
+            loginMode === 'email' ? "bg-white text-bp-accent shadow-xl shadow-bp-primary/5 ring-1 ring-black/5" : "text-bp-body/40 hover:text-bp-body"
           )}
         >
           Magic Link
@@ -179,7 +179,7 @@ export default function LoginPage() {
             <label htmlFor="phone" className="block text-[11px] font-black text-bp-body/40 uppercase tracking-[0.2em] mb-3 ml-1">Mobile Number</label>
             <div className={cn(
               "flex border-2 rounded-[24px] overflow-hidden transition-all duration-500 group bg-bp-surface/50",
-              errors.phone ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-bp-accent bg-white shadow-2xl shadow-teal-900/5' : 'border-bp-border hover:border-bp-border'
+              errors.phone ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-bp-accent bg-white shadow-2xl shadow-bp-primary/5' : 'border-bp-border hover:border-bp-border'
             )}>
               <span className="px-6 py-5 text-[17px] font-black text-bp-primary bg-bp-surface border-r-2 border-bp-border flex items-center gap-2 group-focus-within:text-bp-accent transition-colors">
                 +91
@@ -203,7 +203,7 @@ export default function LoginPage() {
             <label htmlFor="email" className="block text-[11px] font-black text-bp-body/40 uppercase tracking-[0.2em] mb-3 ml-1">Email Address</label>
             <div className={cn(
               "flex border-2 rounded-[24px] overflow-hidden transition-all duration-500 group bg-bp-surface/50",
-              errors.email ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-bp-accent bg-white shadow-2xl shadow-teal-900/5' : 'border-bp-border hover:border-bp-border'
+              errors.email ? 'border-red-100 bg-red-50/30' : inputFocused ? 'border-bp-accent bg-white shadow-2xl shadow-bp-primary/5' : 'border-bp-border hover:border-bp-border'
             )}>
               <input
                 id="email"
@@ -225,7 +225,7 @@ export default function LoginPage() {
           disabled={loading}
           className={cn(
             "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-teal-900/10'
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-bp-primary/10'
           )}
         >
           {loading ? (
@@ -237,7 +237,7 @@ export default function LoginPage() {
             <>
               <span className="relative z-10">{loginMode === 'phone' ? 'Secure Login' : 'Send Magic Link'}</span>
               <ArrowRight size={18} strokeWidth={3} className="text-bp-accent/70 group-hover:translate-x-1 transition-transform relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
           )}
         </button>

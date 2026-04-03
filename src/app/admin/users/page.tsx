@@ -188,7 +188,7 @@ export default function AdminUsers() {
                 <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-bp-border/50">
               <tr className="transition-colors hover:bg-[#fafbfc]">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -210,7 +210,7 @@ export default function AdminUsers() {
                       ? 'bg-bp-accent/10 text-bp-accent'
                       : activeTab === 'suspended'
                         ? 'bg-rose-50 text-rose-700'
-                        : 'bg-blue-50 text-blue-700'
+                        : 'bg-bp-accent/10 text-bp-accent'
                   )}>
                     {currentRow.role}
                   </span>

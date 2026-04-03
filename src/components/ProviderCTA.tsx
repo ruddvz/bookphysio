@@ -24,11 +24,11 @@ export default function ProviderCTA() {
           <div className="w-full lg:w-1/2 group">
              <div className="relative">
                 {/* Glow Effect */}
-                <div className="absolute -inset-4 bg-teal-400/20 rounded-[48px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div className="absolute -inset-4 bg-bp-accent/20 rounded-[48px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
-                <div className="relative bg-teal-900/40 p-4 rounded-[42px] border border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden scale-100 group-hover:scale-[1.02] transition-transform duration-700 ease-out">
+                <div className="relative bg-bp-primary/40 p-4 rounded-[42px] border border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden scale-100 group-hover:scale-[1.02] transition-transform duration-700 ease-out">
                    {/* CSS Dashboard Mockup — no image needed */}
-                   <div className="w-full rounded-[28px] bg-gradient-to-br from-teal-900 to-[#003830] p-6 flex flex-col gap-4">
+                   <div className="w-full rounded-[28px] bg-gradient-to-br from-bp-primary to-[#003830] p-6 flex flex-col gap-4">
                       <div className="flex items-center justify-between mb-1">
                          <div className="flex gap-2">
                             <div className="w-3 h-3 rounded-full bg-red-400/60"></div>
@@ -85,7 +85,7 @@ export default function ProviderCTA() {
             <div className="space-y-6 mb-12">
               {bullets.map((bullet, i) => (
                 <div key={i} className="flex items-start gap-4 group/item">
-                  <div className="mt-1 p-2 bg-teal-900/50 rounded-xl text-emerald-400 group-hover/item:bg-emerald-400 group-hover/item:text-[#004D40] transition-all">
+                  <div className="mt-1 p-2 bg-bp-primary/50 rounded-xl text-emerald-400 group-hover/item:bg-emerald-400 group-hover/item:text-[#004D40] transition-all">
                     <bullet.icon size={20} strokeWidth={2.5} />
                   </div>
                   <p className="text-[17px] font-black text-white/90 leading-snug pt-1">{bullet.text}</p>
@@ -96,7 +96,7 @@ export default function ProviderCTA() {
             <div className="flex flex-col sm:flex-row items-center gap-6">
                <Link
                 href="/auth/register/provider"
-                className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-black rounded-2xl shadow-xl shadow-teal-950/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
+                className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-black rounded-2xl shadow-xl shadow-bp-primary/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
                >
                  Get Started
                  <ArrowUpRight size={22} className="stroke-[3]" />

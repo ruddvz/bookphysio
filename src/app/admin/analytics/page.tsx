@@ -45,7 +45,7 @@ export default function AdminAnalytics() {
   const kpis = data
     ? [
         { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+12.5%' },
-        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-blue-600',    bg: 'bg-blue-50',    trend: '+8.2%'  },
+        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-bp-accent',   bg: 'bg-bp-accent/10', trend: '+8.2%'  },
         { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-bp-accent',   bg: 'bg-bp-accent/10',  trend: '+2.4%'  },
         { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-bp-secondary',   bg: 'bg-bp-secondary/10',  trend: '+5.1%'  },
       ]
@@ -90,7 +90,7 @@ export default function AdminAnalytics() {
             <button className="px-5 py-2.5 text-[13px] font-black text-bp-accent bg-white rounded-[14px] shadow-sm transform active:scale-95 transition-all">Real-time</button>
             <button className="px-5 py-2.5 text-[13px] font-black text-bp-body hover:text-bp-primary transition-colors rounded-[14px]">Historical</button>
           </div>
-          <div className="h-12 w-px bg-gray-200 mx-2 hidden sm:block" />
+          <div className="h-12 w-px bg-bp-border mx-2 hidden sm:block" />
           <div className="flex items-center gap-2">
             <button className="p-3.5 rounded-[18px] border border-bp-border text-bp-primary hover:bg-white hover:shadow-lg transition-all active:scale-95">
               <Filter size={18} />
@@ -163,7 +163,7 @@ export default function AdminAnalytics() {
                   <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Actual</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-bp-surface border border-gray-300" />
+                  <div className="w-3 h-3 rounded-full bg-bp-surface border border-bp-border" />
                   <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Target</span>
                 </div>
               </div>
@@ -183,8 +183,8 @@ export default function AdminAnalytics() {
             <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 350" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00766C" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#00766C" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--color-bp-accent)" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="var(--color-bp-accent)" stopOpacity="0" />
                 </linearGradient>
                 <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
@@ -210,7 +210,7 @@ export default function AdminAnalytics() {
                 <path 
                   d={chartLine} 
                   fill="none" 
-                  stroke="#00766C" 
+                  stroke="var(--color-bp-accent)" 
                   strokeWidth="8" 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
@@ -227,14 +227,14 @@ export default function AdminAnalytics() {
                     cy={dot.y} 
                     r="6" 
                     fill="white" 
-                    stroke="#00766C" 
+                    stroke="var(--color-bp-accent)" 
                     strokeWidth="3" 
                   />
                   <circle 
                     cx={dot.x} 
                     cy={dot.y} 
                     r="14" 
-                    fill="#00766C" 
+                    fill="var(--color-bp-accent)" 
                     fillOpacity="0"
                     className="group-hover/dot:fill-opacity-10 transition-all duration-300"
                   />
@@ -262,7 +262,7 @@ export default function AdminAnalytics() {
               { name: 'Organic Search', value: 65, color: 'bg-bp-accent', change: '+12%' },
               { name: 'Direct Traffic', value: 42, color: 'bg-emerald-400', change: '+5%' },
               { name: 'Social Media', value: 28, color: 'bg-orange-400', change: '-2%' },
-              { name: 'Partner Refs', value: 15, color: 'bg-blue-400', change: '+24%' },
+              { name: 'Partner Refs', value: 15, color: 'bg-bp-accent/60', change: '+24%' },
             ].map(channel => (
               <div key={channel.name} className="space-y-4">
                 <div className="flex justify-between items-end">

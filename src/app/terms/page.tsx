@@ -98,7 +98,7 @@ export default function TermsPage() {
 
                   <section id="responsibilities" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
-                       <div className="w-2.5 h-2.5 rounded-full bg-teal-400"></div>
+                       <div className="w-2.5 h-2.5 rounded-full bg-bp-accent"></div>
                        <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">3.0 User Responsibilities</h2>
                     </div>
                     <ul className="list-none p-0 space-y-6">
@@ -120,7 +120,7 @@ export default function TermsPage() {
 
                   <section id="verification" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
-                       <div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
+                       <div className="w-2.5 h-2.5 rounded-full bg-bp-secondary"></div>
                        <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">4.0 Provider Verification</h2>
                     </div>
                     <p className="text-[18px] leading-relaxed">

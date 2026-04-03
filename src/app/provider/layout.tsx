@@ -146,7 +146,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       )}>
         <div className="px-6 h-full flex items-center justify-between">
            <Link href="/provider/dashboard" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-bp-accent rounded-lg flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+              <div className="w-8 h-8 bg-bp-accent rounded-lg flex items-center justify-center text-white shadow-lg shadow-bp-accent/20">
                  <Activity size={18} strokeWidth={3} />
               </div>
               <span className="text-[18px] font-black text-bp-primary tracking-tighter">Practitioner</span>

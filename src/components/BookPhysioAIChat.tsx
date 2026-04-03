@@ -87,7 +87,7 @@ interface BookPhysioAIChatProps {
 }
 
 const TONE_STYLES: Record<Tone, { icon: string; badge: string; panel: string }> = {
-  teal: { icon: 'bg-bp-accent/10 text-bp-accent', badge: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20', panel: 'from-teal-50/80 to-white' },
+  teal: { icon: 'bg-bp-accent/10 text-bp-accent', badge: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20', panel: 'from-bp-accent/5 to-white' },
   emerald: { icon: 'bg-emerald-50 text-emerald-600', badge: 'bg-emerald-50 text-emerald-700 border-emerald-100', panel: 'from-emerald-50/70 to-white' },
   amber: { icon: 'bg-amber-50 text-amber-600', badge: 'bg-amber-50 text-amber-700 border-amber-100', panel: 'from-amber-50/70 to-white' },
   slate: { icon: 'bg-slate-50 text-slate-700', badge: 'bg-slate-50 text-slate-700 border-slate-100', panel: 'from-slate-50/80 to-white' },

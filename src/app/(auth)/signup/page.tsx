@@ -144,7 +144,7 @@ export default function SignupPage() {
                 errors.name 
                   ? "border-red-100 bg-red-50/20" 
                   : nameFocused 
-                    ? "border-bp-accent bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    ? "border-bp-accent bg-white shadow-2xl shadow-bp-primary/5 ring-4 ring-bp-accent/5" 
                     : "border-bp-border hover:border-bp-border"
               )}
               value={form.name}
@@ -176,7 +176,7 @@ export default function SignupPage() {
                 errors.phone 
                   ? "border-red-100 bg-red-50/20" 
                   : phoneFocused 
-                    ? "border-bp-accent bg-white shadow-2xl shadow-teal-900/5 ring-4 ring-teal-500/5" 
+                    ? "border-bp-accent bg-white shadow-2xl shadow-bp-primary/5 ring-4 ring-bp-accent/5" 
                     : "border-bp-border hover:border-bp-border"
               )}
               value={form.phone}
@@ -193,7 +193,7 @@ export default function SignupPage() {
           disabled={loading}
           className={cn(
             "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-black text-white rounded-[28px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-teal-900/10'
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-bp-primary/10'
           )}
         >
           {loading ? (
@@ -205,7 +205,7 @@ export default function SignupPage() {
             <>
               <span className="relative z-10">Start Your Recovery</span>
               <ArrowRight size={18} strokeWidth={4} className="text-bp-accent/70 group-hover:translate-x-1 transition-transform relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
           )}
         </button>

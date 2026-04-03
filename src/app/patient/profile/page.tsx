@@ -266,7 +266,7 @@ export default function PatientProfile() {
                   <button
                     type="submit"
                     disabled={saveMut.isPending || name.trim() === profile.full_name}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-bp-accent hover:bg-bp-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-teal-900/10"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-bp-accent hover:bg-bp-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-bp-primary/10"
                   >
                     {saveMut.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin" />

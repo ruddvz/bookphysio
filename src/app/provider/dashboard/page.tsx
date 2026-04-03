@@ -219,7 +219,7 @@ export default function ProviderDashboardHome() {
               <div className="flex gap-2">
                  {['Today', 'This Week'].map((lbl) => (
                     <button key={lbl} className={cn("px-4 py-2 rounded-xl text-[12px] font-black transition-all", 
-                       lbl === 'Today' ? "bg-bp-accent text-white shadow-lg shadow-teal-900/10" : "text-bp-body/40 hover:text-bp-body font-bold")}>
+                       lbl === 'Today' ? "bg-bp-accent text-white shadow-lg shadow-bp-primary/10" : "text-bp-body/40 hover:text-bp-body font-bold")}>
                        {lbl}
                     </button>
                  ))}

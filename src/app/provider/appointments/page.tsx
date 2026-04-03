@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const STATUS_STLYES: Record<string, string> = {
   confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
-  completed: 'bg-blue-50 text-blue-700 border-blue-100',
+  completed: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
   cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
 }
 
@@ -48,7 +48,7 @@ function ProviderAppointmentsContent() {
              <input 
                type="text" 
                placeholder="Search registry..." 
-               className="w-full sm:w-[280px] pl-12 pr-6 py-4 rounded-[22px] border border-bp-border bg-white font-bold text-[14px] text-bp-primary placeholder:text-bp-body/40 focus:border-bp-accent/20 focus:ring-4 focus:ring-teal-500/5 outline-none transition-all shadow-sm"
+               className="w-full sm:w-[280px] pl-12 pr-6 py-4 rounded-[22px] border border-bp-border bg-white font-bold text-[14px] text-bp-primary placeholder:text-bp-body/40 focus:border-bp-accent/20 focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all shadow-sm"
              />
           </div>
           <button className="h-[58px] px-8 bg-white border border-bp-border rounded-[22px] flex items-center gap-3 text-[14px] font-black text-bp-primary hover:bg-bp-surface transition-all shadow-sm">
@@ -107,7 +107,7 @@ function ProviderAppointmentsContent() {
                              <p className="text-[17px] font-black text-bp-primary tracking-tight leading-none mb-1.5">{appt.patient}</p>
                              <div className="flex items-center gap-2">
                                 <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">{appt.age}yrs Member</span>
-                                <div className="w-1 h-1 bg-gray-200 rounded-full"></div>
+                                <div className="w-1 h-1 bg-bp-border rounded-full"></div>
                                 <div className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border shadow-sm", STATUS_STLYES[appt.status])}>
                                    {appt.status}
                                 </div>

@@ -140,7 +140,7 @@ export default function ProviderMessages() {
                   onClick={() => setSelectedConversationId(chat.id)}
                   className={cn(
                     "w-full p-4 rounded-[24px] flex items-center gap-4 transition-all duration-300 group",
-                    selectedConversationId === chat.id ? "bg-white shadow-xl shadow-teal-900/5 translate-x-2 border border-bp-accent/10" : "hover:bg-white/60"
+                    selectedConversationId === chat.id ? "bg-white shadow-xl shadow-bp-primary/5 translate-x-2 border border-bp-accent/10" : "hover:bg-white/60"
                   )}
                 >
                   <div className="relative shrink-0">
@@ -194,7 +194,7 @@ export default function ProviderMessages() {
                   <div>
                     <h3 className="text-[17px] font-black text-bp-primary leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
                     <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                       <div className="w-1.5 h-1.5 rounded-full bg-bp-border" />
                        <span className="text-[12px] font-bold text-bp-body/40 tracking-tight">
                          Away
                        </span>

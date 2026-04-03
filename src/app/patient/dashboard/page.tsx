@@ -317,7 +317,7 @@ export default function PatientDashboardHome() {
                    <h2 className="text-[28px] md:text-[32px] font-black leading-none tracking-tighter">
                       Share the progress, <br />get ₹500 off.
                    </h2>
-                   <p className="text-[15px] font-bold text-teal-100/60 leading-relaxed max-w-[400px]">
+                   <p className="text-[15px] font-bold text-white/60 leading-relaxed max-w-[400px]">
                       Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
                    </p>
                    

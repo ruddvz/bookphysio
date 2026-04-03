@@ -32,7 +32,7 @@ interface AppointmentDetail {
 
 const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> = {
   pending:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-700' },
-  confirmed: { label: 'Confirmed', cls: 'bg-blue-100 text-blue-700'    },
+  confirmed: { label: 'Confirmed', cls: 'bg-bp-accent/10 text-bp-accent'    },
   cancelled: { label: 'Cancelled', cls: 'bg-red-100 text-red-700'      },
   completed: { label: 'Completed', cls: 'bg-green-100 text-green-700'  },
   no_show:   { label: 'No Show',   cls: 'bg-bp-surface text-bp-body'    },

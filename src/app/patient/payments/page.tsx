@@ -22,7 +22,7 @@ const STATUS_CONFIG = {
   paid:      { label: 'Paid',      cls: 'bg-green-100 text-green-700',  icon: CheckCircle2 },
   created:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-700', icon: Clock       },
   failed:    { label: 'Failed',    cls: 'bg-red-100 text-red-700',      icon: XCircle     },
-  refunded:  { label: 'Refunded', cls: 'bg-blue-100 text-blue-700',    icon: Download    },
+  refunded:  { label: 'Refunded', cls: 'bg-bp-accent/10 text-bp-accent',    icon: Download    },
 } as const
 
 export default function PatientPayments() {

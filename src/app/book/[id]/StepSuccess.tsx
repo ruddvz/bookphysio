@@ -206,7 +206,7 @@ export function StepSuccess({
       <div className="relative mb-14 pt-8">
         <div className="absolute inset-0 bg-bp-accent rounded-full scale-150 opacity-10 blur-3xl animate-pulse" />
         <div className="relative flex flex-col items-center">
-          <div className="w-32 h-32 bg-bp-accent rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-teal-50 transform rotate-[6deg] animate-in zoom-in duration-1000 ease-out">
+          <div className="w-32 h-32 bg-bp-accent rounded-[48px] flex items-center justify-center shadow-[0_32px_64px_-16px_rgba(0,118,108,0.4)] ring-[16px] ring-bp-accent/10 transform rotate-[6deg] animate-in zoom-in duration-1000 ease-out">
              <Check size={64} className="text-white" strokeWidth={4} />
           </div>
           
@@ -369,7 +369,7 @@ export function StepSuccess({
       <div className="space-y-6">
         <Link
           href="/patient/appointments"
-          className="group relative h-24 w-full flex items-center justify-center bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-teal-900/10 hover:shadow-teal-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
+          className="group relative h-24 w-full flex items-center justify-center bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-bp-primary/10 hover:shadow-bp-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
         >
           <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
              Manage Appointment

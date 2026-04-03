@@ -229,7 +229,7 @@ export default function BookingInner() {
                        <h3 className="text-[20px] font-black tracking-tight uppercase">Order Review</h3>
                        <LayoutDashboard size={20} className="opacity-30" />
                     </div>
-                    <p className="text-[13px] text-teal-100/60 font-bold tracking-widest uppercase">Summary of your session</p>
+                    <p className="text-[13px] text-white/60 font-bold tracking-widest uppercase">Summary of your session</p>
                   </div>
                   
                   <div className="p-8 space-y-10 relative z-10">
@@ -237,7 +237,7 @@ export default function BookingInner() {
                     <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-[32px] border border-bp-border">
                        <div className="relative">
                          {doctor.avatar_url ? (
-                           <img src={doctor.avatar_url} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-teal-900/5 transition-transform group-hover/sidebar:scale-105" alt="" />
+                           <img src={doctor.avatar_url} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
                            <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-[#E6F4F3] to-[#C7E9E6] text-bp-accent flex items-center justify-center font-black text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}
@@ -282,7 +282,7 @@ export default function BookingInner() {
                        </div>
 
                        <div className="flex items-center gap-5 group/item">
-                          <div className="w-12 h-12 bg-bp-surface rounded-2xl flex items-center justify-center text-bp-body/30 group-hover/item:text-blue-500 group-hover/item:bg-blue-50 transition-all duration-300">
+                          <div className="w-12 h-12 bg-bp-surface rounded-2xl flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
                              <MapPin size={20} />
                           </div>
                           <div>

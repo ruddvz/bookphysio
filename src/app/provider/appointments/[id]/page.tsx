@@ -36,7 +36,7 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> =
   pending:   { label: 'Pending',   cls: 'bg-yellow-50 border-yellow-100 text-yellow-700' },
   confirmed: { label: 'Confirmed', cls: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
   cancelled: { label: 'Cancelled', cls: 'bg-red-50 border-red-100 text-red-700' },
-  completed: { label: 'Completed', cls: 'bg-blue-50 border-blue-100 text-blue-700' },
+  completed: { label: 'Completed', cls: 'bg-bp-accent/10 border-bp-accent/20 text-bp-accent' },
   no_show:   { label: 'No Show',   cls: 'bg-bp-surface border-bp-border text-bp-body' },
 }
 
@@ -145,7 +145,7 @@ export default function ProviderAppointmentDetail() {
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#EEF2FF] border border-blue-100 rounded-full text-[10px] font-black uppercase text-blue-600 tracking-widest shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-full text-[10px] font-black uppercase text-bp-accent tracking-widest shadow-sm">
             <ShieldCheck size={12} strokeWidth={3} />
             Verified Clinical Record
           </div>
@@ -265,7 +265,7 @@ export default function ProviderAppointmentDetail() {
                     value={notesDraft ?? providerNotes ?? ''}
                     onChange={e => setNotesDraft(e.target.value)}
                     placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
-                    className="w-full p-8 bg-bp-surface/50 border border-bp-border rounded-[32px] text-[16px] font-bold text-bp-primary leading-relaxed placeholder:text-bp-body/30 focus:bg-white focus:ring-4 focus:ring-teal-500/5 focus:border-bp-accent/20 outline-none transition-all resize-none shadow-inner"
+                    className="w-full p-8 bg-bp-surface/50 border border-bp-border rounded-[32px] text-[16px] font-bold text-bp-primary leading-relaxed placeholder:text-bp-body/30 focus:bg-white focus:ring-4 focus:ring-bp-accent/5 focus:border-bp-accent/20 outline-none transition-all resize-none shadow-inner"
                   />
                   <div className="absolute bottom-4 right-4">
                     <button
@@ -331,7 +331,7 @@ export default function ProviderAppointmentDetail() {
                     paymentStatus === 'paid'
                       ? 'bg-emerald-500 text-white shadow-emerald-500/20'
                       : paymentStatus === 'refunded'
-                        ? 'bg-blue-500 text-white shadow-blue-500/20'
+                        ? 'bg-bp-accent text-white shadow-bp-accent/20'
                         : paymentStatus === 'failed'
                           ? 'bg-red-500 text-white shadow-red-500/20'
                           : paymentStatus === 'created'

@@ -240,7 +240,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
         <div className="pt-8">
            <button
              type="submit"
-             className="w-full h-24 group relative bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-teal-900/10 hover:shadow-teal-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
+             className="w-full h-24 group relative bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-bp-primary/10 hover:shadow-bp-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
            >
              <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
                 Continue to Booking

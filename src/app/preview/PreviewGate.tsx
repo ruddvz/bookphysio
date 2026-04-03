@@ -18,15 +18,15 @@ const ROLES: Array<{
     label: 'Patient',
     description: 'Book sessions, view appointments, manage profile',
     emoji: '🧑‍⚕️',
-    color: 'border-blue-200 hover:border-blue-400 bg-blue-50/50',
-    badge: 'bg-blue-100 text-blue-700',
+    color: 'border-bp-accent/20 hover:border-bp-accent bg-bp-accent/10',
+    badge: 'bg-bp-accent/10 text-bp-accent',
   },
   {
     role: 'provider',
     label: 'Physiotherapist',
     description: 'Manage availability, view bookings, track earnings',
     emoji: '🏥',
-    color: 'border-bp-accent/30 hover:border-teal-400 bg-bp-accent/10/50',
+    color: 'border-bp-accent/30 hover:border-bp-accent bg-bp-accent/10',
     badge: 'bg-bp-accent/15 text-bp-accent',
   },
   {
