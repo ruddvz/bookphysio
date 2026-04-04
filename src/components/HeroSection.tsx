@@ -119,9 +119,9 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-bp-border bg-bp-surface/40" aria-label="Hero">
+    <section className="relative border-b border-bp-border bg-bp-surface/40 pb-[env(safe-area-inset-bottom)]" aria-label="Hero">
       <div className="absolute left-1/2 top-0 h-[500px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.08),transparent_70%)]" />
-      <div className="bp-shell relative flex min-h-[calc(100vh-5rem)] flex-col justify-center py-16 md:py-24 lg:py-32">
+      <div className="bp-shell relative flex min-h-[100svh] flex-col justify-center py-16 md:py-24 lg:py-32">
         <div className="mx-auto max-w-5xl text-center">
           <div className="mx-auto mb-8 inline-flex">
             <div className="rounded-full border border-bp-border bg-white/60 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent backdrop-blur-sm">
@@ -130,7 +130,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <h1 className="mx-auto max-w-4xl text-[54px] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary md:text-[82px] lg:text-[96px]">
+          <h1 className="mx-auto max-w-4xl text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary">
             Book verified physiotherapists in India for <br className="hidden md:block" />
             <span className="relative inline-flex min-h-[1.05em] items-end overflow-hidden align-baseline pb-[0.06em] text-bp-accent">
               <span key={currentIndex} className="animate-specialty inline-block">
