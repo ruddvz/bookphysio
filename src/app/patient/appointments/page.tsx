@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Search, ChevronRight, Activity, Filter, CheckCircle2, CalendarPlus } from 'lucide-react'
+import { CalendarDays, ArrowRight, CircleAlert, Calendar, Clock, MapPin, Activity, Filter, CheckCircle2, CalendarPlus } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'

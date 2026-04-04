@@ -11,6 +11,11 @@ const staticRoutes: Array<{ path: string; lastModified: string; priority: number
   { path: '/how-it-works',lastModified: '2026-02-01', priority: 0.8 },
   { path: '/privacy',     lastModified: '2026-01-01', priority: 0.4 },
   { path: '/terms',       lastModified: '2026-01-01', priority: 0.4 },
+  { path: '/hi/about',       lastModified: '2026-04-03', priority: 0.7 },
+  { path: '/hi/faq',         lastModified: '2026-04-03', priority: 0.7 },
+  { path: '/hi/how-it-works',lastModified: '2026-04-03', priority: 0.7 },
+  { path: '/hi/privacy',     lastModified: '2026-04-03', priority: 0.3 },
+  { path: '/hi/terms',       lastModified: '2026-04-03', priority: 0.3 },
   { path: '/search',      lastModified: '2026-03-15', priority: 0.9 },
 ]
 

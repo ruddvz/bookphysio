@@ -12,7 +12,9 @@ import Testimonials from './Testimonials'
 import TopSpecialties from './TopSpecialties'
 
 vi.mock('next/image', () => ({
-  default: ({ alt = '', priority: _priority, ...props }: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) => (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: ({ alt = '', fill, priority, ...props }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; priority?: boolean }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} {...props} />
   ),
 }))
@@ -48,7 +50,8 @@ describe('Homepage regressions', () => {
     const animatedWordFrame = screen.getByText('sports rehab').parentElement
     const statsRow = screen.getByText('5,000+').closest('div')?.parentElement
 
-    expect(shell?.className).toContain('min-h-[calc(100vh-5rem)]')
+    expect(shell?.className).toContain('min-h-[100svh]')
+    expect(shell?.className).not.toContain('calc(100vh-5rem)')
     expect(shell?.className).toContain('justify-center')
     expect(animatedWordFrame?.className).toContain('align-baseline')
     expect(animatedWordFrame?.className).not.toContain('align-top')
@@ -101,8 +104,8 @@ describe('Homepage regressions', () => {
     const { rerender, container } = render(<Navbar />)
 
     const brandLink = within(screen.getByRole('banner')).getByRole('link', { name: /bookphysio home/i })
-    expect(within(brandLink).getByText('BookPhysio')).toBeInTheDocument()
-    expect(brandLink.querySelector('img[aria-hidden="true"]')).toHaveAttribute('alt', '')
+    expect(within(brandLink).getByRole('img', { name: 'BookPhysio.in' })).toBeInTheDocument()
+    expect(brandLink.querySelector('img[alt="BookPhysio.in"]')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }))
     const mobileMenu = screen.getByText('Browse Specialties').closest('nav')

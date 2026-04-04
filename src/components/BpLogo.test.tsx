@@ -4,26 +4,29 @@ import { describe, expect, it, vi } from 'vitest'
 import BpLogo from './BpLogo'
 
 vi.mock('next/image', () => ({
-  default: ({ alt = '', priority: _priority, ...props }: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) => (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: ({ alt = '', fill, priority, ...props }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; priority?: boolean }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} {...props} />
   ),
 }))
 
 describe('BpLogo', () => {
-  it('renders an icon and brand text', () => {
+  it('renders the wordmark logo image', () => {
     render(<BpLogo />)
-    expect(screen.getByText('BookPhysio')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'BookPhysio.in' })).toHaveAttribute('src', '/logo.png')
   })
 
   it('renders as a link when href is provided', () => {
-    render(<BpLogo href="/" />)
+    render(<BpLogo href="/" linkClassName="mx-auto" />)
     const link = screen.getByRole('link', { name: /bookphysio home/i })
     expect(link).toHaveAttribute('href', '/')
+    expect(link.className).toContain('mx-auto')
   })
 
   it('applies invert style for dark backgrounds', () => {
     render(<BpLogo invert />)
-    const text = screen.getByText('BookPhysio')
-    expect(text.className).toContain('text-white')
+    const img = screen.getByRole('img', { name: 'BookPhysio.in' })
+    expect(img.className).toContain('invert')
   })
 })

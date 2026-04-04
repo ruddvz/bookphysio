@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { signupPatientSchema, signupProviderSchema, otpVerifySchema } from '../auth'
+import { signupPatientSchema, otpVerifySchema } from '../auth'
 
 describe('signupPatientSchema', () => {
   it('accepts valid patient signup', () => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, ArrowUpRight, DollarSign, Calendar, Activity, Download, Loader2, Filter, Share2, Info } from 'lucide-react'
+import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, ArrowUpRight, DollarSign, Activity, Download, Loader2, Filter, Share2, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AnalyticsData {

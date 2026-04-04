@@ -90,10 +90,11 @@ describe('AuthProvider', () => {
       expires_at: staleSession.expires_at,
     }))
 
+    const jsonMock = vi.fn()
     const fetchMock = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 404,
-      json: async () => ({ error: 'No demo session found.' }),
+      ok: true,
+      status: 204,
+      json: jsonMock,
     })
 
     vi.stubGlobal('fetch', fetchMock)
@@ -111,5 +112,6 @@ describe('AuthProvider', () => {
     })
 
     expect(localStorage.getItem(DEMO_LOCAL_STORAGE_KEY)).toBeNull()
+    expect(jsonMock).not.toHaveBeenCalled()
   })
 })

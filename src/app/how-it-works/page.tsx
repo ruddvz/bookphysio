@@ -60,7 +60,7 @@ export default function HowItWorksPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar locale="en" localeSwitchPath="/how-it-works" />
 
       <main className="min-h-screen bg-white">
         <section className="border-b border-[#D9E7E5] bg-[#F9FBFB] py-16 md:py-20">
@@ -87,20 +87,44 @@ export default function HowItWorksPage() {
             </div>
 
             <div className="mx-auto mt-10 inline-flex rounded-[32px] bg-bp-accent/10 p-1 shadow-inner">
-              <button
-                onClick={() => setActiveTab('patient')}
-                aria-pressed={activeTab === 'patient'}
-                className={`px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all ${activeTab === 'patient' ? 'bg-bp-accent text-white shadow-lg' : 'text-bp-accent hover:bg-white/50'}`}
-              >
-                For Patients
-              </button>
-              <button
-                onClick={() => setActiveTab('provider')}
-                aria-pressed={activeTab === 'provider'}
-                className={`px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all ${activeTab === 'provider' ? 'bg-bp-accent text-white shadow-lg' : 'text-bp-accent hover:bg-white/50'}`}
-              >
-                For Physiotherapists
-              </button>
+              {activeTab === 'patient' ? (
+                <button
+                  onClick={() => setActiveTab('patient')}
+                  type="button"
+                  aria-pressed="true"
+                  className="px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all bg-bp-accent text-white shadow-lg"
+                >
+                  For Patients
+                </button>
+              ) : (
+                <button
+                  onClick={() => setActiveTab('patient')}
+                  type="button"
+                  aria-pressed="false"
+                  className="px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all text-bp-accent hover:bg-white/50"
+                >
+                  For Patients
+                </button>
+              )}
+              {activeTab === 'provider' ? (
+                <button
+                  onClick={() => setActiveTab('provider')}
+                  type="button"
+                  aria-pressed="true"
+                  className="px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all bg-bp-accent text-white shadow-lg"
+                >
+                  For Physiotherapists
+                </button>
+              ) : (
+                <button
+                  onClick={() => setActiveTab('provider')}
+                  type="button"
+                  aria-pressed="false"
+                  className="px-8 py-3 rounded-[28px] font-bold text-[16px] transition-all text-bp-accent hover:bg-white/50"
+                >
+                  For Physiotherapists
+                </button>
+              )}
             </div>
           </div>
         </section>
@@ -129,7 +153,7 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        <section className="bg-bp-accent/10/30 py-16 md:py-20">
+        <section className="bg-bp-accent/10 py-16 md:py-20">
           <div className="mx-auto max-w-[1142px] px-6">
              <div className="relative overflow-hidden rounded-[24px] border border-bp-border bg-white p-10 shadow-sm md:flex md:items-center md:justify-between md:gap-10 md:p-16">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-bp-accent/10 rounded-bl-full opacity-50"></div>
@@ -169,7 +193,7 @@ export default function HowItWorksPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer locale="en" localeSwitchPath="/how-it-works" />
     </>
   )
 }

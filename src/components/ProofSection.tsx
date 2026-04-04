@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock3, Home, ShieldCheck, Stethoscope } from 'lucide-react'
+import { Clock3, Home, ShieldCheck } from 'lucide-react'
 
 const previewRows = [
   {

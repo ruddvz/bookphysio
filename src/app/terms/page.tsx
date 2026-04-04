@@ -1,11 +1,11 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { FileText, ShieldCheck, AlertCircle, Scale, Sparkles, CheckCircle2 } from 'lucide-react'
+import { FileText, AlertCircle, Scale, CheckCircle2 } from 'lucide-react'
 
 export default function TermsPage() {
   return (
     <>
-      <Navbar />
+      <Navbar locale="en" localeSwitchPath="/terms" />
 
       <main className="bg-white min-h-screen">
         {/* Full-width Title Section - Clinical Legal Style */}
@@ -161,7 +161,7 @@ export default function TermsPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer locale="en" localeSwitchPath="/terms" />
     </>
   )
 }

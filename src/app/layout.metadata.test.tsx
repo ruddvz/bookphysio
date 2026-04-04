@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from 'react'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next/font/google', () => ({
@@ -8,6 +9,14 @@ vi.mock('next/font/google', () => ({
 
 vi.mock('@/app/providers', () => ({
   Providers: ({ children }: { children: ReactNode }) => children,
+}))
+
+vi.mock('@/components/CookieConsent', () => ({
+  CookieConsent: () => <div data-testid="cookie-consent" />,
+}))
+
+vi.mock('@/components/PublicAnalytics', () => ({
+  PublicAnalytics: () => <div data-testid="vercel-analytics" />,
 }))
 
 import RootLayout, { metadata } from './layout'
@@ -46,5 +55,14 @@ describe('RootLayout metadata regressions', () => {
     const tree = RootLayout({ children: <div>Homepage</div> }) as ReactElement<{ 'data-scroll-behavior'?: string }>
 
     expect(tree.props['data-scroll-behavior']).toBeUndefined()
+  })
+
+  it('renders Vercel analytics exactly once in the body', () => {
+    const tree = RootLayout({ children: <div>Homepage</div> }) as ReactElement<{ children: ReactNode }>
+    const body = tree.props.children as ReactElement<{ children: ReactNode }>
+
+    render(<>{body.props.children}</>)
+
+    expect(screen.getAllByTestId('vercel-analytics')).toHaveLength(1)
   })
 })

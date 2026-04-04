@@ -3,8 +3,7 @@
 import Link from 'next/link'
 import { useEffect } from 'react'
 import confetti from 'canvas-confetti'
-import { CheckCircle2, Calendar, MapPin, Clock, CreditCard, Download, ExternalLink, ArrowRight, Share2, Sparkles, Building2, Check, LayoutDashboard, Fingerprint } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Calendar, MapPin, Clock, CreditCard, Download, ExternalLink, Share2, Sparkles, Building2, Check, LayoutDashboard, Fingerprint } from 'lucide-react'
 import {
   buildIndiaCalendarEventRange,
   escapeIcsText,

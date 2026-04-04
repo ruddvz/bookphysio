@@ -4,14 +4,13 @@ import BookingCard from './BookingCard'
 import ClinicGallery from './ClinicGallery'
 import RecoveryBundles from './RecoveryBundles'
 import MobileBookingBar from './MobileBookingBar'
-import { MapPin, ShieldCheck, GraduationCap, Languages, Star, ChevronRight, Award, CheckCircle2, Calendar, Clock, Sparkles, Building2, UserCheck, PhoneCall, Activity, Mail } from 'lucide-react'
+import { ShieldCheck, GraduationCap, Star, ChevronRight, Award, CheckCircle2, Clock, Sparkles, Building2, UserCheck, Activity, Mail } from 'lucide-react'
 import type { ProviderProfile, ProviderReview } from '@/app/api/contracts/provider'
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatIndiaDate } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import { getVisitTypeConsultationFee, isVisitType, type VisitType } from '@/lib/booking/policy'
-import { formatPublicProviderLocation } from '@/lib/providers/public'
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
   return [{ id: 'placeholder' }]
@@ -96,11 +95,6 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
     .map((w: string) => w[0])
     .join('')
     .toUpperCase()
-
-  const primaryLocation = provider.locations?.[0]
-  const locationLabel = primaryLocation
-    ? formatPublicProviderLocation(primaryLocation)
-    : (provider.city ?? 'India')
 
   const visitTypes: VisitType[] = (provider.visit_types ?? []).filter(
     (visitType): visitType is VisitType => isVisitType(visitType)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Phone, Mail, FileText, ChevronRight, ShieldCheck, Sparkles, Activity, CheckCircle2, MapPin } from 'lucide-react'
+import { User, Mail, FileText, ChevronRight, ShieldCheck, Sparkles, Activity, CheckCircle2, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface PatientDetails {

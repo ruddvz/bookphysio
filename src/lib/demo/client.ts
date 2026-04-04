@@ -57,6 +57,11 @@ export async function hydrateDemoSessionFromCookie(): Promise<Session | null> {
       },
     })
 
+    if (response.status === 204) {
+      clearPersistedDemoSession()
+      return null
+    }
+
     if (!response.ok) {
       clearPersistedDemoSession()
       return null

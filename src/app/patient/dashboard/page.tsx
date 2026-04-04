@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Heart, Search, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
+import { Heart, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'
 import { DashboardSkeleton } from './DashboardSkeleton'
-import { cn } from '@/lib/utils'
 
 type VisitType = 'in_clinic' | 'home_visit'
 
@@ -29,10 +28,7 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
   home_visit: 'Home Visit',
 }
 
-const VISIT_TYPE_COLORS: Record<VisitType, string> = {
-  in_clinic: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
-  home_visit: 'bg-bp-secondary/10 text-bp-secondary border-bp-secondary/20',
-}
+
 
 export default function PatientDashboardHome() {
   const { user } = useAuth()

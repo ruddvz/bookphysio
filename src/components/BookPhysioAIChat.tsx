@@ -22,7 +22,6 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
-  Stethoscope,
   Users,
   Zap,
   BrainCircuit,

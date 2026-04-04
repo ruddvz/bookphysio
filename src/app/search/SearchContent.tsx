@@ -87,7 +87,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     location: p.city ?? 'India',
     lat: p.lat,
     lng: p.lng,
-    distance: '',
+    distance: p.distance ?? '',
     isLive: !!p.next_available_slot, // Mark as live if there is a detected slot
     nextSlot: p.next_available_slot
       ? new Date(p.next_available_slot).toLocaleString('en-IN', {

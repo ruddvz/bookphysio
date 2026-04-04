@@ -1,4 +1,4 @@
-import { Search, Users, Eye } from 'lucide-react'
+import { Search, Users } from 'lucide-react'
 
 export default function ProviderPatients() {
   return (

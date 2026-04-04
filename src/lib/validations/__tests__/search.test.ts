@@ -21,4 +21,9 @@ describe('searchFiltersSchema', () => {
     const result = searchFiltersSchema.safeParse({ limit: '100' })
     expect(result.success).toBe(false)
   })
+
+  it('rejects deprecated insurance filters', () => {
+    const result = searchFiltersSchema.safeParse({ insurance_id: 'legacy-plan' })
+    expect(result.success).toBe(false)
+  })
 })

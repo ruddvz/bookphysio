@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { HelpCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
+import { ChevronDown, Sparkles } from 'lucide-react'
 
 const FAQS = [
   {
@@ -78,7 +78,7 @@ export default function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Navbar />
+      <Navbar locale="en" localeSwitchPath="/faq" />
 
       <main className="bg-white min-h-screen">
         {/* Full-width Hero Section - Editorial Style */}
@@ -131,9 +131,12 @@ export default function FAQPage() {
                        <p className="text-[17px] text-bp-body/60 font-medium leading-relaxed mb-8">
                          Our support team can help with booking guidance, provider verification questions, and platform issues.
                        </p>
-                       <button className="w-full py-5 bg-[#111111] text-white rounded-full font-black text-[14px] uppercase tracking-[0.2em] hover:bg-bp-primary hover:shadow-xl transition-all duration-500">
+                       <a
+                         href="mailto:support@bookphysio.in"
+                         className="block w-full py-5 bg-[#111111] text-white rounded-full font-black text-[14px] uppercase tracking-[0.2em] text-center hover:bg-bp-primary hover:shadow-xl transition-all duration-500"
+                       >
                          Contact Support
-                       </button>
+                       </a>
                     </div>
                  </div>
               </div>
@@ -186,7 +189,7 @@ export default function FAQPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer locale="en" localeSwitchPath="/faq" />
     </>
   )
 }

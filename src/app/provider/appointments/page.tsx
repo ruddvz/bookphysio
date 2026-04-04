@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarDays, Search, Filter, Clock, MapPin, Activity, UserCircle as User, MoreHorizontal, ChevronRight, CheckCircle2, CircleAlert, ArrowUpRight, type LucideIcon } from 'lucide-react'
+import { CalendarDays, Search, Filter, Clock, MapPin, Activity, MoreHorizontal, CheckCircle2, CircleAlert, ArrowUpRight, type LucideIcon } from 'lucide-react'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'

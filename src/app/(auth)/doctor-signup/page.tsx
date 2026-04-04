@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
@@ -1105,7 +1105,9 @@ export default function DoctorSignupPage() {
 
   return (
     <div className="bg-white rounded-[24px] border border-bp-border p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-xl shadow-bp-primary/5 animate-in fade-in duration-500">
-      <BpLogo href="/" />
+      <div className="flex justify-center">
+        <BpLogo href="/" size="auth" linkClassName="mx-auto" />
+      </div>
       <ProgressIndicator current={currentStep} />
 
       {currentStep === 1 && (

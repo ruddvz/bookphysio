@@ -1,7 +1,6 @@
 'use client'
 
 import { Package, CheckCircle2, ChevronRight, Zap } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 const MOCK_BUNDLES = [
   {

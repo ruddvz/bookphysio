@@ -5,12 +5,6 @@ export interface Specialty {
   icon_url: string | null
 }
 
-export interface Insurance {
-  id: string
-  name: string
-  logo_url: string | null
-}
-
 export interface ProviderLocation {
   id: string
   name: string
@@ -34,9 +28,9 @@ export interface ProviderCard {
   next_available_slot: string | null
   visit_types: ('in_clinic' | 'home_visit')[]
   city: string | null
+  distance?: string
   lat: number | null
   lng: number | null
-  insurances: Insurance[]
 }
 
 export interface ProviderReview {

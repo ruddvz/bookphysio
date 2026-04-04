@@ -7,10 +7,10 @@ import Footer from '@/components/Footer'
 import { StepConfirm } from './StepConfirm'
 import { StepPayment } from './StepPayment'
 import { StepSuccess } from './StepSuccess'
-import { Check, Calendar, Clock, MapPin, ShieldCheck, User, ArrowLeft, Phone, Mail, Award, Sparkles, Building2, ChevronRight, LayoutDashboard } from 'lucide-react'
+import { Check, Calendar, Clock, MapPin, ShieldCheck, User, ArrowLeft, Award, Sparkles, LayoutDashboard } from 'lucide-react'
+import Image from 'next/image'
 import { formatIndiaDateInput } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
 import { getVisitTypeConsultationFee } from '@/lib/booking/policy'
 import { formatPublicProviderLocation } from '@/lib/providers/public'
 
@@ -237,7 +237,7 @@ export default function BookingInner() {
                     <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-[32px] border border-bp-border">
                        <div className="relative">
                          {doctor.avatar_url ? (
-                           <img src={doctor.avatar_url} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
+                           <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
                            <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-black text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}

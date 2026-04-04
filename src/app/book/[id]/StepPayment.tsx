@@ -324,6 +324,7 @@ function loadRazorpayScript(): Promise<boolean> {
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function openRazorpay(opts: RazorpayOptions): Promise<void> {
   const loaded = await loadRazorpayScript()
   if (!loaded || !window.Razorpay) {

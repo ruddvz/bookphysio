@@ -14,7 +14,7 @@ const organizationSchema = {
   '@id': 'https://bookphysio.in/#organization',
   name: 'BookPhysio',
   url: 'https://bookphysio.in',
-  logo: 'https://bookphysio.in/icon.png',
+  logo: 'https://bookphysio.in/logo.png',
   description: 'India\'s first physiotherapy-only booking platform connecting patients with ICP-verified physiotherapists for in-clinic and home visit sessions.',
   foundingDate: '2024',
   areaServed: {

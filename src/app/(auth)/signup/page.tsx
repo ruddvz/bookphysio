@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { ArrowRight, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
-import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 
@@ -114,7 +113,9 @@ export default function SignupPage() {
 
   return (
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <BpLogo href="/" />
+      <div className="flex justify-center">
+        <BpLogo href="/" size="auth" linkClassName="mx-auto" />
+      </div>
 
       <h1 className="text-[32px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
         Join BookPhysio

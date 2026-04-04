@@ -2,8 +2,8 @@
  * 8.7 Patient Dashboard Polish — Vitest unit tests
  * Tests: date formatting, mock data shape, skeleton render
  */
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
 
 // ---------------------------------------------------------------------------
 // Isolate the pure helper: formatApptDate

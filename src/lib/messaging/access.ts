@@ -18,6 +18,8 @@ interface SupabaseAdminLike {
   }
 }
 
+export type { SupabaseAdminLike }
+
 export async function hasMessagingCareRelationship(
   supabaseAdmin: SupabaseAdminLike,
   currentUserId: string,

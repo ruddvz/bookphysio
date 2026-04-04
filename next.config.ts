@@ -4,10 +4,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  transpilePackages: ["gleo"],
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   async headers() {
     return [
       {
@@ -22,11 +18,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://textbelt.com https://api.mapbox.com https://events.mapbox.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://textbelt.com",
               "worker-src 'self' blob:",
               "frame-ancestors 'none'",
             ].join('; '),

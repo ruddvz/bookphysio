@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Maximize2, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -43,7 +44,8 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
 
       <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-[40px] overflow-hidden bg-bp-surface group-hover/gallery:shadow-2xl group-hover/gallery:shadow-bp-primary/5 transition-all duration-700">
          {galleryImages.map((img, i) => (
-           <img 
+            <Image
+               fill
               key={i}
               src={img}
               alt={`Clinic view ${i + 1}`}

@@ -17,11 +17,20 @@ const demoAccessSchema = z.object({
   returnTo: z.string().optional(),
 })
 
+function createEmptyDemoSessionResponse() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+  })
+}
+
 export async function GET(request: NextRequest) {
   const demoSession = await getDemoSessionFromCookies(request.cookies)
 
   if (!demoSession) {
-    return NextResponse.json({ error: 'No demo session found.' }, { status: 404 })
+    return createEmptyDemoSessionResponse()
   }
 
   return NextResponse.json(

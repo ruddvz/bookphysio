@@ -6,7 +6,6 @@ import { Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   type SlotStatus,
   type Slot,
-  type WeekGrid,
   HOURS,
   formatHour,
   getWeekDates,
@@ -28,7 +27,8 @@ const SLOT_STYLES: Record<SlotStatus, string> = {
   empty: 'bg-white',
 }
 
-function SlotCell({ slot, hour }: { slot: Slot; hour: number }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function SlotCell({ slot, hour: _hour }: { slot: Slot; hour: number }) {
   if (slot.status === 'empty') {
     return <div className="h-14 border border-dashed border-bp-border rounded-lg" />
   }

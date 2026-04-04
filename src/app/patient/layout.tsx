@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Footer from '@/components/Footer'
 import { ReactNode, useState, useEffect } from 'react'
-import { Home, CalendarDays, MessageSquare, LogOut, Bell, User, Menu, X, ChevronRight, Activity } from 'lucide-react'
+import { Home, CalendarDays, MessageSquare, LogOut, Bell, Menu, X, ChevronRight, Activity } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 
@@ -17,7 +17,7 @@ const navItems = [
 export default function PatientLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, loading, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 

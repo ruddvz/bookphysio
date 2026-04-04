@@ -1,8 +1,7 @@
 'use client'
 
-import { User, Briefcase, Award, Globe, ShieldCheck, Check, X, MapPin, Navigation, Info, Search, Trash2, ArrowRight, Activity } from 'lucide-react'
+import { User, Briefcase, Award, Globe, ShieldCheck, Check, MapPin, Navigation, Info, Trash2, ArrowRight, Activity } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
 
 export default function ProviderProfile() {
   const [pincodes, setPincodes] = useState<string[]>(['110001', '110012', '110020'])

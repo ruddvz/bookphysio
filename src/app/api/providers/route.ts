@@ -5,7 +5,7 @@ import { apiRatelimit } from '@/lib/upstash'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
-import { getPublicProviderCoordinates } from '@/lib/providers/public'
+import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
 
 const SPECIALTY_ALIASES: Record<string, string> = {
   'Sports Physio': 'sports',
@@ -26,6 +26,8 @@ const SPECIALTY_ALIASES: Record<string, string> = {
   'Spine & Back Pain': 'spine',
   'Home Visit Physio': 'home-visit',
 }
+
+const FALLBACK_PROVIDER_SCAN_LIMIT = 250
 
 interface SearchProviderRpcRow {
   id: string
@@ -51,16 +53,37 @@ interface ProviderAvailabilityRow {
   is_blocked?: boolean | null
 }
 
-interface ProviderInsuranceJoinRow {
-  insurances: ProviderCard['insurances'][number] | ProviderCard['insurances'] | null
-}
-
 interface ProviderDetailRow {
   id: string
   verified: boolean | null
   specialties: ProviderCard['specialties']
   availabilities: ProviderAvailabilityRow[] | null
-  provider_insurances: ProviderInsuranceJoinRow[] | null
+}
+
+interface FallbackProviderUserRow {
+  full_name: string
+  avatar_url: string | null
+}
+
+interface FallbackProviderLocationRow {
+  id: string
+  city: string | null
+  lat: number | null
+  lng: number | null
+  visit_type: ProviderCard['visit_types'] | null
+}
+
+interface FallbackProviderRow {
+  id: string
+  slug: string
+  title: ProviderCard['title']
+  rating_avg: number | null
+  rating_count: number | null
+  experience_years: number | null
+  consultation_fee_inr: number | null
+  specialty_ids: string[] | null
+  users: FallbackProviderUserRow | FallbackProviderUserRow[] | null
+  locations: FallbackProviderLocationRow[] | null
 }
 
 function resolveSpecialtySlug(input: string | null | undefined): string | null {
@@ -74,6 +97,198 @@ function resolveSpecialtySlug(input: string | null | undefined): string | null {
   }
 
   return SPECIALTY_ALIASES[trimmed] ?? trimmed.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}
+
+function toArray<T>(value: T | T[] | null | undefined): T[] {
+  if (!value) {
+    return []
+  }
+
+  return Array.isArray(value) ? value : [value]
+}
+
+function calculateDistanceKm(
+  sourceLat: number | null | undefined,
+  sourceLng: number | null | undefined,
+  targetLat: number | null | undefined,
+  targetLng: number | null | undefined,
+): number | null {
+  if (
+    typeof sourceLat !== 'number'
+    || typeof sourceLng !== 'number'
+    || typeof targetLat !== 'number'
+    || typeof targetLng !== 'number'
+  ) {
+    return null
+  }
+
+  const toRadians = (value: number) => value * (Math.PI / 180)
+  const latitudeDelta = toRadians(targetLat - sourceLat)
+  const longitudeDelta = toRadians(targetLng - sourceLng)
+  const latitudeA = toRadians(sourceLat)
+  const latitudeB = toRadians(targetLat)
+  const haversine = Math.sin(latitudeDelta / 2) ** 2
+    + Math.cos(latitudeA) * Math.cos(latitudeB) * Math.sin(longitudeDelta / 2) ** 2
+
+  return 6371 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+}
+
+function selectBestLocation(
+  locations: FallbackProviderLocationRow[],
+  searchLat: number | null | undefined,
+  searchLng: number | null | undefined,
+): FallbackProviderLocationRow {
+  if (typeof searchLat !== 'number' || typeof searchLng !== 'number') {
+    return locations[0]
+  }
+
+  return [...locations].sort((left, right) => {
+    const leftDistance = calculateDistanceKm(searchLat, searchLng, left.lat, left.lng) ?? Number.MAX_SAFE_INTEGER
+    const rightDistance = calculateDistanceKm(searchLat, searchLng, right.lat, right.lng) ?? Number.MAX_SAFE_INTEGER
+
+    return leftDistance - rightDistance
+  })[0]
+}
+
+async function searchProvidersWithoutRpc({
+  supabase,
+  city,
+  resolvedSpecialtyId,
+  visit_type,
+  min_rating,
+  max_fee_inr,
+  page,
+  limit,
+  lat,
+  lng,
+  radius_km,
+}: {
+  supabase: Awaited<ReturnType<typeof createClient>>
+  city: string | null
+  resolvedSpecialtyId: string | null
+  visit_type: ProviderCard['visit_types'][number] | null
+  min_rating: number | undefined
+  max_fee_inr: number | undefined
+  page: number
+  limit: number
+  lat: number | undefined
+  lng: number | undefined
+  radius_km: number
+}): Promise<{ data: SearchProviderRpcRow[]; error: unknown }> {
+  const maximumFee = max_fee_inr ?? 2000000
+  let fallbackQuery = supabase
+    .from('providers')
+    .select(`
+      id,
+      slug,
+      title,
+      rating_avg,
+      rating_count,
+      experience_years,
+      consultation_fee_inr,
+      specialty_ids,
+      users!inner (full_name, avatar_url),
+      locations (id, city, lat, lng, visit_type)
+    `)
+    .eq('verified', true)
+    .eq('active', true)
+    .gte('rating_avg', min_rating ?? 0)
+    .lte('consultation_fee_inr', maximumFee)
+    .order('rating_avg', { ascending: false })
+    .limit(FALLBACK_PROVIDER_SCAN_LIMIT)
+
+  if (resolvedSpecialtyId) {
+    fallbackQuery = fallbackQuery.contains('specialty_ids', [resolvedSpecialtyId])
+  }
+
+  const { data: fallbackProviderData, error: fallbackProviderError } = await fallbackQuery
+
+  if (fallbackProviderError) {
+    return { data: [], error: fallbackProviderError }
+  }
+
+  const normalizedCity = city?.trim().toLowerCase() ?? null
+  const filteredProviders = ((fallbackProviderData ?? []) as FallbackProviderRow[])
+    .flatMap((provider) => {
+      const user = toArray(provider.users)[0]
+      const locations = toArray(provider.locations)
+
+      if (!user || locations.length === 0) {
+        return []
+      }
+
+      if (resolvedSpecialtyId && !(provider.specialty_ids ?? []).includes(resolvedSpecialtyId)) {
+        return []
+      }
+
+      if ((provider.rating_avg ?? 0) < (min_rating ?? 0)) {
+        return []
+      }
+
+      if ((provider.consultation_fee_inr ?? Number.MAX_SAFE_INTEGER) > maximumFee) {
+        return []
+      }
+
+      const matchingLocations = locations.filter((location) => {
+        const cityMatches = !normalizedCity || location.city?.toLowerCase().includes(normalizedCity)
+        const visitTypeMatches = !visit_type || (location.visit_type ?? []).includes(visit_type)
+
+        return cityMatches && visitTypeMatches
+      })
+
+      if (matchingLocations.length === 0) {
+        return []
+      }
+
+      const selectedLocation = selectBestLocation(matchingLocations, lat ?? null, lng ?? null)
+      const distanceKm = calculateDistanceKm(lat ?? null, lng ?? null, selectedLocation.lat, selectedLocation.lng)
+
+      if (typeof distanceKm === 'number' && distanceKm > radius_km) {
+        return []
+      }
+
+      return [
+        {
+          id: provider.id,
+          slug: provider.slug,
+          full_name: user.full_name,
+          title: provider.title,
+          avatar_url: user.avatar_url,
+          rating_avg: provider.rating_avg,
+          rating_count: provider.rating_count,
+          experience_years: provider.experience_years,
+          consultation_fee_inr: provider.consultation_fee_inr,
+          visit_types: selectedLocation.visit_type ?? [],
+          city: selectedLocation.city,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng,
+          distance_km: distanceKm,
+          total_count: null,
+        },
+      ]
+    })
+    .sort((left, right) => {
+      const leftDistance = left.distance_km ?? Number.MAX_SAFE_INTEGER
+      const rightDistance = right.distance_km ?? Number.MAX_SAFE_INTEGER
+
+      if (leftDistance !== rightDistance) {
+        return leftDistance - rightDistance
+      }
+
+      return (right.rating_avg ?? 0) - (left.rating_avg ?? 0)
+    })
+
+  const total = filteredProviders.length
+  const pageStart = (page - 1) * limit
+  const pageEnd = pageStart + limit
+
+  return {
+    data: filteredProviders.slice(pageStart, pageEnd).map((provider) => ({
+      ...provider,
+      total_count: total,
+    })),
+    error: null,
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -114,7 +329,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const { data, error } = await supabase.rpc('search_providers_v2', {
+  let { data, error } = await supabase.rpc('search_providers_v2', {
     p_lat: lat ?? null,
     p_lng: lng ?? null,
     p_radius_km: Number(radius_km),
@@ -127,9 +342,28 @@ export async function GET(request: NextRequest) {
     p_limit: limit
   })
 
-
   if (error) {
     console.error('Supabase RPC error:', error)
+
+    const fallbackSearch = await searchProvidersWithoutRpc({
+      supabase,
+      city: city ?? null,
+      resolvedSpecialtyId,
+      visit_type: visit_type ?? null,
+      min_rating,
+      max_fee_inr,
+      page,
+      limit,
+      lat,
+      lng,
+      radius_km: Number(radius_km),
+    })
+
+    data = fallbackSearch.data
+    error = fallbackSearch.error as typeof error
+  }
+
+  if (error) {
     return NextResponse.json({ error: 'Failed to fetch providers' }, { status: 500 })
   }
 
@@ -144,8 +378,7 @@ export async function GET(request: NextRequest) {
           id,
           verified,
           specialties (*),
-          availabilities (starts_at, is_booked, is_blocked),
-          provider_insurances (insurances (*))
+            availabilities (starts_at, is_booked, is_blocked)
         `)
         .in('id', providerIds)
     : { data: [], error: null }
@@ -170,13 +403,6 @@ export async function GET(request: NextRequest) {
       lat: provider.lat,
       lng: provider.lng,
     })
-    const normalizedInsurances = (details?.provider_insurances ?? []).flatMap((entry) => {
-      if (!entry.insurances) {
-        return []
-      }
-
-      return Array.isArray(entry.insurances) ? entry.insurances : [entry.insurances]
-    })
 
     return {
       id: provider.id,
@@ -195,10 +421,7 @@ export async function GET(request: NextRequest) {
       city: provider.city,
       lat: publicCoordinates.lat,
       lng: publicCoordinates.lng,
-      insurances: normalizedInsurances.filter(
-        (insurance): insurance is ProviderCard['insurances'][number] => Boolean(insurance),
-      ),
-      distance: provider.distance_km ? `${provider.distance_km.toFixed(1)} km` : undefined,
+      distance: formatPublicProviderDistance(provider.distance_km),
     }
   })
 

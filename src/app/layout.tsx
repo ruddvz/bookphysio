@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/app/providers";
+import { CookieConsent } from "@/components/CookieConsent";
+import { PublicAnalytics } from "@/components/PublicAnalytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,9 +26,9 @@ export const metadata: Metadata = {
     "India's first physio-only booking platform. Find and book ICP-verified physiotherapists for home visits and in-clinic sessions across 18 cities. Same-day slots available.",
   keywords: "physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: "/icon.png?v=20260404b",
+    shortcut: "/icon.png?v=20260404b",
+    apple: "/icon.png?v=20260404b",
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -77,6 +79,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <noscript>You need JavaScript enabled to use BookPhysio.</noscript>
         <Providers>{children}</Providers>
+        <CookieConsent />
+        <PublicAnalytics />
       </body>
     </html>
   );

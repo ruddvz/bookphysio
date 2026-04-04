@@ -1,4 +1,4 @@
-import { Bell, CheckCheck, ShieldCheck } from 'lucide-react'
+import { Bell, CheckCheck } from 'lucide-react'
 
 export default function ProviderNotifications() {
   return (

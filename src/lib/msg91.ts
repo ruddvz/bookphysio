@@ -4,10 +4,7 @@ export async function sendOtp(phone: string): Promise<{ success: boolean; error?
   // Mock during development if keys are missing
   if (!process.env.MSG91_AUTH_KEY || !process.env.MSG91_TEMPLATE_ID) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('--- MSG91 MOCK ---')
-      console.log(`Sending OTP to ${phone}`)
-      console.log('OTP: 123456')
-      console.log('------------------')
+      console.warn(`[MSG91 MOCK] Sending OTP to ${phone}. OTP: 123456`)
       return { success: true }
     }
     return { success: false, error: 'OTP delivery failed' }

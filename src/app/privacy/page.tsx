@@ -1,11 +1,11 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { ShieldCheck, Globe, Clock, Lock, Sparkles } from 'lucide-react'
+import { ShieldCheck, Lock, Sparkles } from 'lucide-react'
 
 export default function PrivacyPage() {
   return (
     <>
-      <Navbar />
+      <Navbar locale="en" localeSwitchPath="/privacy" />
 
       <main className="bg-white min-h-screen">
         {/* Full-width Title Section - Clinical Legal Style */}
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer locale="en" localeSwitchPath="/privacy" />
     </>
   )
 }

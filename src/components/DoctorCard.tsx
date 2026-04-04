@@ -97,7 +97,6 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
   const availability = useMemo(() => generateDeterministicSlots(doctor.id), [doctor.id])
   const visibleDays = availability.slice(startIndex, startIndex + 3)
-  const firstSlot = availability.flatMap((day) => day.slots.map((slot) => ({ dayIso: day.iso, time: slot })))[0]
 
   const initials = doctor.name
     .replace(/^Dr\.\s*/, '')

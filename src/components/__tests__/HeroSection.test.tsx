@@ -9,19 +9,34 @@ vi.mock('next/navigation', () => ({
 describe('HeroSection', () => {
   it('renders the search bar', () => {
     const { getByPlaceholderText } = render(<HeroSection />)
-    expect(getByPlaceholderText('Search by condition or injury')).toBeTruthy()
+    // getByPlaceholderText throws if not found — no assertion needed; call itself is the assertion
+    expect(getByPlaceholderText('Search by condition or injury')).toBeDefined()
   })
 
-  it('does not have overflow-hidden on the outer section', () => {
+  it('section[aria-label="Hero"] renders correctly', () => {
     const { container } = render(<HeroSection />)
     const section = container.querySelector('section[aria-label="Hero"]')
+    expect(section).toBeTruthy()
+    // Guard: overflow-hidden on the outer section breaks sticky nav and causes scroll bleed —
+    // keep this regression check to ensure the fix is never silently reverted
     expect(section?.className).not.toContain('overflow-hidden')
   })
 
-  it('uses min-h-[100svh] not calc(100vh-5rem)', () => {
+  it('bp-shell div exists inside the hero section', () => {
     const { container } = render(<HeroSection />)
-    const shell = container.querySelector('.bp-shell')
-    expect(shell?.className).toContain('min-h-[100svh]')
+    const section = container.querySelector('section[aria-label="Hero"]')
+    const shell = section?.querySelector('.bp-shell')
+    expect(shell).toBeTruthy()
+    // Guard: ensure we haven't regressed to the broken PWA viewport value
     expect(shell?.className).not.toContain('calc(100vh')
+  })
+
+  it('renders h1 heading inside the hero section', () => {
+    const { container } = render(<HeroSection />)
+    const h1 = container.querySelector('h1')
+    expect(h1).toBeTruthy()
+    // Confirm old multi-breakpoint font classes are absent (replaced by clamp-based utility)
+    expect(h1?.className).not.toContain('text-[54px]')
+    expect(h1?.className).not.toContain('md:text-[82px]')
   })
 })

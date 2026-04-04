@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft, Loader2 } from 'lucide-react'
 import Link from 'next/link'
@@ -143,7 +144,7 @@ export default function PatientAppointmentDetail() {
         <div className="flex flex-col sm:flex-row gap-6 items-start mb-8">
           <div className="w-24 h-24 rounded-[32px] bg-bp-accent/10 border border-[#E0EFEE] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
             {appt.providers?.users?.avatar_url
-              ? <img src={appt.providers.users.avatar_url} alt={doctorName} className="w-full h-full object-cover" />
+              ? <Image src={appt.providers.users.avatar_url} width={96} height={96} alt={doctorName} className="w-full h-full object-cover" />
               : <Stethoscope className="w-10 h-10 text-bp-accent" />
             }
           </div>

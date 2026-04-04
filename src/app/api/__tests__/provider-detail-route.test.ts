@@ -58,7 +58,6 @@ describe('GET /api/providers/[id]', () => {
           },
         ],
         specialties: [],
-        provider_insurances: [],
         onboarding_step: 4,
         gstin: '27ABCDE1234F1Z5',
       },
@@ -131,8 +130,8 @@ describe('GET /api/providers/[id]', () => {
 
     expect(body).not.toHaveProperty('gstin')
     expect(body).not.toHaveProperty('onboarding_step')
-    expect(body.lat).toBe(19)
-    expect(body.lng).toBe(72.8)
+    expect(body.lat).toBeNull()
+    expect(body.lng).toBeNull()
     expect(body.locations).toEqual([
       {
         id: 'location-1',

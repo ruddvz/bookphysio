@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { 
   User, 
@@ -158,7 +159,7 @@ export default function PatientProfile() {
                 <div className="relative group">
                   <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-bp-accent/10 text-bp-accent text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
                     {profile.avatar_url
-                      ? <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                      ? <Image src={profile.avatar_url} width={112} height={112} alt={profile.full_name} className="w-full h-full object-cover" />
                       : initials
                     }
                   </div>

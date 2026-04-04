@@ -8,32 +8,32 @@
   "theme_color": "#00766C",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/icon.png?v=20260404b",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon.svg",
+      "src": "/icon.png?v=20260404b",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/icon.svg",
+      "src": "/icon.png?v=20260404b",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ],
   "shortcuts": [
     {
       "name": "Find Physios",
       "url": "/search",
-      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/icon.png?v=20260404b", "sizes": "any", "type": "image/png" }]
     },
     {
       "name": "My Bookings",
       "url": "/patient/dashboard",
-      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/icon.png?v=20260404b", "sizes": "any", "type": "image/png" }]
     }
   ]
 }

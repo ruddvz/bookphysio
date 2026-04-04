@@ -1,7 +1,6 @@
 'use client'
 
-import { cn } from "@/lib/utils";
-import { CheckCircle2, TrendingUp, Users, Calendar, ArrowUpRight } from "lucide-react";
+import { TrendingUp, Users, Calendar, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 const bullets = [

@@ -1,6 +1,6 @@
 'use client'
 
-import { IndianRupee, TrendingUp, Wallet, Receipt, Download, ArrowUpRight, ArrowDownRight, Calendar } from 'lucide-react'
+import { IndianRupee, TrendingUp, Wallet, Receipt, Download, ArrowUpRight, Calendar } from 'lucide-react'
 import { useState } from 'react'
 
 const TRANSACTIONS = [

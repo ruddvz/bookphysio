@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getDemoProfileById, getDemoSessionFromCookies } from '@/lib/demo/session'
 import { markDemoConversationRead } from '@/lib/demo/store'
-import { hasMessagingCareRelationship } from '@/lib/messaging/access'
+import { hasMessagingCareRelationship, type SupabaseAdminLike } from '@/lib/messaging/access'
 
 export async function POST(
   request: NextRequest,
@@ -65,7 +65,7 @@ export async function POST(
 
   try {
     hasCareRelationship = await hasMessagingCareRelationship(
-      supabaseAdmin,
+      supabaseAdmin as unknown as SupabaseAdminLike,
       user.id,
       profile.role,
       user_id,

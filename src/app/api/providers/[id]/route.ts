@@ -15,10 +15,6 @@ interface PublicProviderReviewRow {
   created_at: string
 }
 
-type ProviderInsuranceJoinRow = {
-  insurances: ProviderProfile['insurances'][number] | ProviderProfile['insurances'] | null
-}
-
 const MAX_PUBLIC_PROFILE_REVIEWS = 5
 const PUBLIC_PROFILE_REVIEW_BATCH_SIZE = 25
 
@@ -81,8 +77,7 @@ export async function GET(
       verified,
       users!inner (full_name, avatar_url),
       locations (id, name, city, state, lat, lng, visit_type),
-      specialties (*),
-      provider_insurances (insurances (*))
+      specialties (*)
     `)
     .eq('id', id)
     .eq('active', true)
@@ -112,16 +107,6 @@ export async function GET(
     lat: primaryLocation?.lat ?? null,
     lng: primaryLocation?.lng ?? null,
   })
-  const providerInsurances = (data.provider_insurances ?? []) as unknown as ProviderInsuranceJoinRow[]
-  const normalizedInsurances = providerInsurances.flatMap((providerInsurance) => {
-    if (!providerInsurance.insurances) {
-      return []
-    }
-
-    return Array.isArray(providerInsurance.insurances)
-      ? providerInsurance.insurances
-      : [providerInsurance.insurances]
-  })
 
   // Map raw data to ProviderProfile
   const profile: ProviderProfile = {
@@ -138,9 +123,6 @@ export async function GET(
     next_available_slot: null,
     visit_types: collectVisitTypes(locations),
     city: publicLocations[0]?.city ?? null,
-    insurances: normalizedInsurances.filter(
-      (insurance): insurance is ProviderProfile['insurances'][number] => Boolean(insurance),
-    ),
     bio: data.bio,
     icp_registration_no: data.icp_registration_no,
     locations: publicLocations,

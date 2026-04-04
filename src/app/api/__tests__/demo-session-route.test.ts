@@ -34,7 +34,7 @@ describe('GET /api/auth/demo-session', () => {
     expect(body.session.user.user_metadata.role).toBe('patient')
   })
 
-  it('returns 404 when demo access has been explicitly suppressed', async () => {
+  it('returns 204 when demo access has been explicitly suppressed', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
 
@@ -49,8 +49,23 @@ describe('GET /api/auth/demo-session', () => {
 
     const response = await GET(request)
 
-    expect(response.status).toBe(404)
-    await expect(response.json()).resolves.toEqual({ error: 'No demo session found.' })
+    expect(response.status).toBe(204)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.text()).resolves.toBe('')
+  })
+
+  it('returns 204 when no demo session cookie is present', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { GET } = await import('../auth/demo-session/route')
+    const request = new NextRequest('http://localhost/api/auth/demo-session')
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(204)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.text()).resolves.toBe('')
   })
 })
 

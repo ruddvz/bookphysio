@@ -1,13 +1,20 @@
 import { z } from 'zod'
 
+const deprecatedInsuranceField = z.any().optional().refine((value) => value === undefined, {
+  message: 'insurance_id is no longer supported',
+})
+
 export const createAppointmentSchema = z.object({
   provider_id: z.string().uuid(),
   availability_id: z.string().uuid(),
   location_id: z.string().uuid().optional(),
   visit_type: z.enum(['in_clinic', 'home_visit']),
-  insurance_id: z.string().uuid().optional(),
   patient_address: z.string().trim().min(10).max(250).optional(),
   notes: z.string().max(500).optional(),
+  insurance_id: deprecatedInsuranceField,
+}).transform(({ insurance_id, ...booking }) => {
+  void insurance_id
+  return booking
 })
 
 export const cancelAppointmentSchema = z.object({

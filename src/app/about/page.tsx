@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { ShieldCheck, Home, IndianRupee, Zap, Globe, Heart } from 'lucide-react'
+import { ShieldCheck, IndianRupee, Globe, Heart } from 'lucide-react'
 
 const benefits = [
   { title: 'Verified Experts', text: 'Every therapist on our platform is verified for credentials and clinical experience.', icon: ShieldCheck },
@@ -12,7 +12,7 @@ const benefits = [
 export default function AboutPage() {
   return (
     <>
-      <Navbar />
+      <Navbar locale="en" localeSwitchPath="/about" />
 
       <main className="bg-white min-h-screen">
         {/* Full-width Hero Section */}
@@ -92,7 +92,7 @@ export default function AboutPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer locale="en" localeSwitchPath="/about" />
     </>
   )
 }

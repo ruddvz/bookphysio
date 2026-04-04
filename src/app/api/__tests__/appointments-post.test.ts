@@ -246,6 +246,26 @@ describe('POST /api/appointments', () => {
     expect(adminFromMock).not.toHaveBeenCalled()
   })
 
+  it('rejects deprecated insurance fields in the booking payload', async () => {
+    createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
+
+    const { POST } = await import('../appointments/route')
+    const response = await POST(new NextRequest('http://localhost/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider_id: '11111111-1111-4111-8111-111111111111',
+        availability_id: '33333333-3333-4333-8333-333333333333',
+        location_id: '22222222-2222-4222-8222-222222222222',
+        visit_type: 'in_clinic',
+        insurance_id: 'legacy-plan',
+      }),
+    }))
+
+    expect(response.status).toBe(400)
+    expect(adminFromMock).not.toHaveBeenCalled()
+  })
+
   it('rate limits repeated booking attempts and releases the reserved slot when the user bucket is exhausted', async () => {
     createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
     bookingUserRateLimitMock.mockResolvedValue({ success: false })

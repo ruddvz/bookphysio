@@ -13,6 +13,7 @@ const CITY_CENTERS: Record<string, { lat: number; lng: number }> = {
   pune: { lat: 18.5204, lng: 73.8567 },
   ahmedabad: { lat: 23.0225, lng: 72.5714 },
   jaipur: { lat: 26.9124, lng: 75.7873 },
+  surat: { lat: 21.1702, lng: 72.8311 },
   lucknow: { lat: 26.8467, lng: 80.9462 },
   chandigarh: { lat: 30.7333, lng: 76.7794 },
   kochi: { lat: 9.9312, lng: 76.2673 },
@@ -51,12 +52,13 @@ function normalizeVisitTypes(visitTypes: readonly string[] | null | undefined): 
   return (visitTypes ?? []).filter((visitType): visitType is VisitType => isVisitType(visitType))
 }
 
-function roundToSingleDecimal(value: number | null | undefined): number | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return null
-  }
+function roundUpDistanceBucket(distanceKm: number): string {
+  if (distanceKm <= 2) return 'Within 2 km'
+  if (distanceKm <= 5) return 'Within 5 km'
+  if (distanceKm <= 10) return 'Within 10 km'
+  if (distanceKm <= 20) return 'Within 20 km'
 
-  return Math.round(value * 10) / 10
+  return '20+ km away'
 }
 
 function getLocationName(name: string | null | undefined, city: string | null | undefined): string {
@@ -112,9 +114,17 @@ export function getPublicProviderCoordinates(input: {
   }
 
   return {
-    lat: roundToSingleDecimal(input.lat),
-    lng: roundToSingleDecimal(input.lng),
+    lat: null,
+    lng: null,
   }
+}
+
+export function formatPublicProviderDistance(distanceKm: number | null | undefined): string | undefined {
+  if (typeof distanceKm !== 'number' || !Number.isFinite(distanceKm) || distanceKm < 0) {
+    return undefined
+  }
+
+  return roundUpDistanceBucket(distanceKm)
 }
 
 export function formatPublicProviderLocation(location: ProviderLocation | null | undefined): string {

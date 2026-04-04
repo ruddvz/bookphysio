@@ -49,7 +49,9 @@ function VerifyOtpContent() {
   if (!hasLoadedPendingOtp) {
     return (
       <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <BpLogo href="/" />
+        <div className="flex justify-center">
+          <BpLogo href="/" size="auth" />
+        </div>
         <div className="mt-10 space-y-4">
           <div className="h-10 w-48 rounded-2xl bg-bp-surface animate-pulse" />
           <div className="h-4 w-full rounded-full bg-bp-surface animate-pulse" />
@@ -67,7 +69,9 @@ function VerifyOtpContent() {
   if (!pendingOtp) {
     return (
       <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <BpLogo href="/" />
+        <div className="flex justify-center">
+          <BpLogo href="/" size="auth" />
+        </div>
 
         <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
           OTP session expired
@@ -176,7 +180,9 @@ function VerifyOtpContent() {
   return (
     <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="relative">
-      <BpLogo href="/" />
+      <div className="flex justify-center">
+        <BpLogo href="/" size="auth" />
+      </div>
 
       <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
         Verify Identity

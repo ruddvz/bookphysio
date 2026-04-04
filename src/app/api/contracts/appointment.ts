@@ -21,7 +21,6 @@ export interface Appointment {
   visit_type: VisitType
   status: AppointmentStatus
   fee_inr: number
-  insurance_id: string | null
   notes: string | null
   provider_notes?: string | null
   patient_reason?: string | null
@@ -35,7 +34,6 @@ export interface BookingRequest {
   availability_id: string
   location_id?: string
   visit_type: VisitType
-  insurance_id?: string
   notes?: string
   patient_address?: string
 }

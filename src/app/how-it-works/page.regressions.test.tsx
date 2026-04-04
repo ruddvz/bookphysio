@@ -36,6 +36,12 @@ describe('How It Works page regressions', () => {
 
   it('exports route metadata for the standalone page', () => {
     expect(metadata.title).toBe('How to Book a Physiotherapist Online in India | BookPhysio.in')
-    expect(metadata.alternates).toEqual({ canonical: '/how-it-works' })
+    expect(metadata.alternates).toEqual({
+      canonical: '/how-it-works',
+      languages: {
+        'en-IN': '/how-it-works',
+        'hi-IN': '/hi/how-it-works',
+      },
+    })
   })
 })

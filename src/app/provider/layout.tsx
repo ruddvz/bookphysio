@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useState, useEffect } from 'react'
-import Footer from '@/components/Footer'
-import { Home, Calendar, Inbox, BarChart3, Users, Settings, Activity, Bell, LogOut, Search, ChevronRight, Menu, X, Clock, Sparkles } from 'lucide-react'
+
+import { Home, Calendar, Inbox, BarChart3, Users, Activity, Bell, LogOut, Search, Menu, X } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +19,7 @@ const navItems = [
 export default function ProviderLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-   const { user, loading, signOut } = useAuth()
+   const { user, signOut } = useAuth()
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
