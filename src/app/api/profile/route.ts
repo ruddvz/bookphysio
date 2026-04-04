@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const updateSchema = z.object({
-  full_name: z.string().min(2).max(100),
+  full_name: z.string().trim().min(2).max(100),
 })
 
 export async function GET() {
@@ -19,7 +19,19 @@ export async function GET() {
 
   if (error || !data) return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
 
-  return NextResponse.json({ ...data, email: user.email ?? null })
+  let icp_registration_no: string | null = null
+
+  if (data.role === 'provider') {
+    const { data: providerData } = await supabase
+      .from('providers')
+      .select('icp_registration_no')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    icp_registration_no = providerData?.icp_registration_no ?? null
+  }
+
+  return NextResponse.json({ ...data, email: user.email ?? null, icp_registration_no })
 }
 
 export async function PATCH(request: NextRequest) {
@@ -27,7 +39,14 @@ export async function PATCH(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json()
+  let body: unknown
+
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
   const parsed = updateSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 

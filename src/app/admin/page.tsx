@@ -9,6 +9,7 @@ import {
   BarChart3,
   CalendarCheck,
   CheckCircle2,
+  CircleAlert,
   Clock,
   Loader2,
   MapPin,
@@ -64,30 +65,6 @@ const queuePreview = [
   },
 ]
 
-const flowPreview = [
-  {
-    title: 'Live bookings',
-    value: '324',
-    detail: 'Confirmed sessions this week',
-    tone: 'teal' as const,
-    icon: CalendarCheck,
-  },
-  {
-    title: 'Platform trust',
-    value: '98.4%',
-    detail: 'Verified providers with active availability',
-    tone: 'emerald' as const,
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Pending approvals',
-    value: '18',
-    detail: 'Profiles waiting on review',
-    tone: 'amber' as const,
-    icon: Clock,
-  },
-]
-
 export default function AdminDashboardHome() {
   const [stats, setStats] = useState({
     activeProviders: 0,
@@ -96,17 +73,77 @@ export default function AdminDashboardHome() {
     gmvMtd: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/stats')
-      .then((r) => r.json())
-      .then((data) => {
-        if (!data.error) setStats(data)
-      })
-      .finally(() => setLoading(false))
+    let isMounted = true
+
+    async function loadStats() {
+      try {
+        const response = await fetch('/api/admin/stats')
+        if (!response.ok) {
+          throw new Error('Failed to load admin stats')
+        }
+
+        const data = await response.json() as { error?: string } & typeof stats
+        if (data.error) {
+          throw new Error(data.error)
+        }
+
+        if (!isMounted) {
+          return
+        }
+
+        setStats(data)
+        setError(false)
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setError(true)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadStats()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const gmvLakhs = (stats.gmvMtd / 100000).toFixed(1)
+
+  const flowPreview = [
+    {
+      title: 'Live bookings',
+      value: '324',
+      detail: 'Confirmed sessions this week',
+      tone: 'teal' as const,
+      icon: CalendarCheck,
+      badge: 'Illustrative',
+    },
+    {
+      title: 'Platform trust',
+      value: '98.4%',
+      detail: 'Verified providers with active availability',
+      tone: 'emerald' as const,
+      icon: ShieldCheck,
+      badge: 'Illustrative',
+    },
+    {
+      title: 'Pending approvals',
+      value: stats.pendingApprovals.toLocaleString('en-IN'),
+      detail: 'Profiles waiting on review',
+      tone: 'amber' as const,
+      icon: Clock,
+      badge: 'Live',
+    },
+  ]
 
   const kpis: AdminStat[] = [
     {
@@ -131,11 +168,11 @@ export default function AdminDashboardHome() {
       caption: 'Patients active across the platform',
     },
     {
-      title: 'GMV (MTD)',
+      title: 'GMV (All Time)',
       value: `₹${gmvLakhs}L`,
       icon: TrendingUp,
       tone: 'emerald',
-      caption: 'Month-to-date platform gross volume',
+      caption: 'Completed appointment value on the platform',
     },
   ]
 
@@ -143,6 +180,20 @@ export default function AdminDashboardHome() {
     return (
       <div className="flex items-center justify-center min-h-[460px]">
         <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[460px] flex-col items-center justify-center gap-4 px-6 text-center">
+        <CircleAlert className="h-10 w-10 text-bp-accent" />
+        <div className="space-y-2">
+          <h1 className="text-[24px] font-black tracking-tight text-bp-primary">Admin stats unavailable</h1>
+          <p className="max-w-md text-[14px] font-medium text-bp-body/70">
+            We couldn&apos;t load the latest platform metrics right now. Refresh and try again in a moment.
+          </p>
+        </div>
       </div>
     )
   }
@@ -195,8 +246,13 @@ export default function AdminDashboardHome() {
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent">
                       <CardIcon size={20} strokeWidth={2.5} />
                     </div>
-                    <div className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-emerald-700">
-                      Live
+                    <div className={cn(
+                      'rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em]',
+                      card.badge === 'Live'
+                        ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
+                        : 'border border-bp-accent/20 bg-bp-accent/10 text-bp-accent',
+                    )}>
+                      {card.badge}
                     </div>
                   </div>
                   <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-bp-body/40">{card.title}</p>
@@ -247,9 +303,14 @@ export default function AdminDashboardHome() {
               <h2 className="text-[20px] font-black tracking-tight text-bp-primary">Revenue pulse</h2>
               <p className="mt-1 text-[12px] font-black uppercase tracking-[0.22em] text-bp-body/40">Platform volume by week</p>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-bp-border bg-bp-surface px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-bp-body/40">
-              <Clock size={12} />
-              Updated now
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-bp-accent">
+                Illustrative
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-bp-border bg-bp-surface px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-bp-body/40">
+                <Clock size={12} />
+                Updated now
+              </div>
             </div>
           </div>
 
@@ -288,7 +349,7 @@ export default function AdminDashboardHome() {
               <h2 className="mt-1 text-[20px] font-black tracking-tight">Queue at a glance</h2>
             </div>
             <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
-              18 pending
+              {stats.pendingApprovals.toLocaleString('en-IN')} pending
             </div>
           </div>
 
@@ -334,6 +395,13 @@ export default function AdminDashboardHome() {
               <p className="mt-3 text-[24px] font-black tracking-tight text-white">98.4%</p>
               <p className="mt-1 text-[12px] font-medium leading-relaxed text-white/65">High-quality verified provider profiles and fast matching.</p>
             </div>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Link href="/admin/listings" className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-white/70 transition-colors hover:text-white">
+              View all
+              <ArrowUpRight size={14} strokeWidth={3} />
+            </Link>
           </div>
         </section>
       </div>

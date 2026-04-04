@@ -5,8 +5,14 @@ export interface UserProfile {
   phone: string | null
   avatar_url: string | null
   created_at: string
+  email?: string | null
 }
 
 export interface PatientProfile extends UserProfile {
   role: 'patient'
+}
+
+export interface ProviderUserProfile extends UserProfile {
+  role: 'provider'
+  icp_registration_no: string | null
 }

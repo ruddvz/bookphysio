@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { CalendarDays, Users, Clock, CircleAlert, UserCircle, Settings, ChevronUp, ChevronDown, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, MoreHorizontal, Calendar, ArrowUpRight, DollarSign, CheckCircle2, MessageSquare } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { CalendarDays, Clock, CircleAlert, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, Calendar, ArrowUpRight, CheckCircle2, MessageSquare } from 'lucide-react'
+import type { ProviderUserProfile } from '@/app/api/contracts/user'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -11,7 +12,6 @@ import {
   filterToday,
   filterThisWeek,
   getNextAppointment,
-  formatAppointmentCount,
   formatSlotTime,
   patientDisplayName,
   type ProviderAppointment,
@@ -25,6 +25,23 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
 const VISIT_TYPE_COLORS: Record<string, string> = {
   in_clinic: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
   home_visit: 'bg-bp-secondary/10 text-bp-secondary border-bp-secondary/20',
+}
+
+type DashboardTab = 'Today' | 'This Week'
+
+type ProfileSummary = Pick<ProviderUserProfile, 'avatar_url' | 'icp_registration_no'>
+
+function parseProfileSummary(data: unknown): ProfileSummary | null {
+   if (!data || typeof data !== 'object') {
+      return null
+   }
+
+   const record = data as Record<string, unknown>
+
+   return {
+      avatar_url: typeof record.avatar_url === 'string' ? record.avatar_url : null,
+      icp_registration_no: typeof record.icp_registration_no === 'string' ? record.icp_registration_no : null,
+   }
 }
 
 function DashboardSkeleton() {
@@ -46,65 +63,49 @@ export default function ProviderDashboardHome() {
   const [appointments, setAppointments] = useState<ProviderAppointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [checklistOpen, setChecklistOpen] = useState(true)
+  const [activeTab, setActiveTab] = useState<DashboardTab>('Today')
+  const [profile, setProfile] = useState<ProfileSummary | null>(null)
 
-   const rawDisplayName = (user?.user_metadata?.full_name as string | undefined) ?? 'Doctor'
+   const rawDisplayName = typeof user?.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : 'Doctor'
    const displayName = rawDisplayName.replace(/^Dr\.?\s+/i, '').split(' ')[0] ?? 'Doctor'
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-   async function fetchAppointments() {
+    const loadDashboard = useCallback(async () => {
     setLoading(true)
     setError(false)
       try {
-         const response = await fetch('/api/appointments')
-         if (!response.ok) {
+         const appointmentsResponse = await fetch('/api/appointments')
+         if (!appointmentsResponse.ok) {
             throw new Error('Failed to fetch appointments')
          }
-         const data: { appointments?: ProviderAppointment[] } = await response.json()
+
+         const data: { appointments?: ProviderAppointment[] } = await appointmentsResponse.json()
          setAppointments(data.appointments ?? [])
-      } catch (err) {
-         console.error('Fetch error:', err)
+      } catch {
          setError(true)
+         setLoading(false)
+         return
+      }
+
+      try {
+         const profileResponse = await fetch('/api/profile')
+         if (!profileResponse.ok) {
+            setProfile(null)
+         } else {
+            setProfile(parseProfileSummary(await profileResponse.json()))
+         }
+      } catch {
+         setProfile(null)
       } finally {
          setLoading(false)
       }
-   }
+   }, [])
 
   useEffect(() => {
-      let isMounted = true
-
-      async function loadInitialAppointments() {
-         try {
-            const response = await fetch('/api/appointments')
-            if (!response.ok) {
-               throw new Error('Failed to fetch appointments')
-            }
-            const data: { appointments?: ProviderAppointment[] } = await response.json()
-            if (!isMounted) {
-               return
-            }
-            setAppointments(data.appointments ?? [])
-         } catch (err) {
-            console.error('Fetch error:', err)
-            if (!isMounted) {
-               return
-            }
-            setError(true)
-         } finally {
-            if (isMounted) {
-               setLoading(false)
-            }
-         }
-      }
-
-      void loadInitialAppointments()
-
-      return () => {
-         isMounted = false
-      }
-   }, [])
+      void loadDashboard()
+   }, [loadDashboard])
 
   if (loading) return <DashboardSkeleton />
 
@@ -121,7 +122,7 @@ export default function ProviderDashboardHome() {
                      <button
                         type="button"
                         onClick={() => {
-                           void fetchAppointments()
+                           void loadDashboard()
                         }}
                         className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-primary px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98]"
                      >
@@ -150,11 +151,20 @@ export default function ProviderDashboardHome() {
   const weekAppts = filterThisWeek(appointments)
   const nextAppt = getNextAppointment(todayAppts)
 
-  // Unique patients this week
-  const weekPatientCount = weekAppts.length
+   // Unique patients this week
+   const weekPatientCount = new Set(
+      weekAppts.map((appointment) => appointment.patient?.full_name?.trim() || appointment.id),
+   ).size
+
+   const checklistItems = [
+      { label: 'Clinical Profile', sub: 'Qualifications & Photo', href: '/provider/profile', done: Boolean(profile?.avatar_url) },
+      { label: 'Work Availability', sub: 'Clinical Hours & Buffer', href: '/provider/availability', done: false },
+      { label: 'Account Verification', sub: 'KYC & License Check', href: '/provider/profile', done: Boolean(profile?.icp_registration_no) },
+   ]
 
   // Sort timeline chronologically
-  const timeline = [...todayAppts].sort((a, b) => {
+   const timelineSource = activeTab === 'Today' ? todayAppts : weekAppts
+   const timeline = [...timelineSource].sort((a, b) => {
     const as = a.availabilities?.starts_at ?? ''
     const bs = b.availabilities?.starts_at ?? ''
     return as < bs ? -1 : 1
@@ -276,8 +286,15 @@ export default function ProviderDashboardHome() {
               </div>
               <div className="flex gap-2">
                  {['Today', 'This Week'].map((lbl) => (
-                    <button key={lbl} className={cn("px-4 py-2 rounded-xl text-[12px] font-black transition-all", 
-                       lbl === 'Today' ? "bg-bp-accent text-white shadow-lg shadow-bp-primary/10" : "text-bp-body/40 hover:text-bp-body font-bold")}>
+                    <button
+                       key={lbl}
+                       type="button"
+                       onClick={() => {
+                          setActiveTab(lbl as DashboardTab)
+                       }}
+                       className={cn("px-4 py-2 rounded-xl text-[12px] font-black transition-all", 
+                          lbl === activeTab ? "bg-bp-accent text-white shadow-lg shadow-bp-primary/10" : "text-bp-body/40 hover:text-bp-body font-bold")}
+                    >
                        {lbl}
                     </button>
                  ))}
@@ -333,11 +350,7 @@ export default function ProviderDashboardHome() {
               </div>
               
               <div className="space-y-6">
-                 {[
-                    { label: 'Clinical Profile', sub: 'Qualifications & Photo', href: '/provider/profile', done: true },
-                    { label: 'Work Availability', sub: 'Clinical Hours & Buffer', href: '/provider/availability', done: false },
-                    { label: 'Account Verification', sub: 'KYC & License Check', href: '/provider/profile', done: false },
-                 ].map((item, i) => (
+                 {checklistItems.map((item, i) => (
                     <div key={i} className="flex items-center gap-4 group/item">
                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2", 
                           item.done ? "bg-bp-accent border-bp-accent text-white" : "bg-white border-bp-border text-transparent"
@@ -365,15 +378,15 @@ export default function ProviderDashboardHome() {
               <div className="relative z-10">
                  <div className="flex items-center justify-between mb-8">
                     <p className="text-[11px] font-black text-white/30 uppercase tracking-widest leading-none">Earnings Outlook</p>
-                    <div className="p-3 bg-white/5 rounded-2xl text-emerald-400">
-                       <DollarSign size={18} strokeWidth={3} />
+                    <div className="flex h-11 min-w-11 items-center justify-center rounded-2xl bg-white/5 px-3 text-[20px] font-black text-emerald-400">
+                       ₹
                     </div>
                  </div>
                  
                  <div className="space-y-6">
                     <div>
-                       <h4 className="text-[32px] font-black tracking-tight leading-none mb-1">₹48,250</h4>
-                       <p className="text-[13px] font-bold text-white/40">Gross Practice Revenue (Period)</p>
+                       <h4 className="text-[28px] font-black tracking-tight leading-none mb-1">Coming soon</h4>
+                       <p className="text-[13px] font-bold text-white/40">Earnings analytics in next release</p>
                     </div>
                     <Link href="/provider/earnings" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all">
                        <span className="text-[14px] font-black uppercase tracking-widest text-white/80">View Analytics</span>

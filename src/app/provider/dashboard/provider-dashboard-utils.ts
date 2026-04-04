@@ -3,6 +3,8 @@
  * Extracted so they can be unit-tested without mounting the full page.
  */
 
+import { formatIndiaDateInput, formatIndiaTime, getIndiaWeekdayShort, parseIndiaDate } from '@/lib/india-date'
+
 export interface ProviderAppointment {
   id: string
   status: string
@@ -14,35 +16,54 @@ export interface ProviderAppointment {
   locations?: { city: string } | null
 }
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000
+
+const INDIA_WEEKDAY_INDEX: Record<string, number> = {
+  Mon: 0,
+  Tue: 1,
+  Wed: 2,
+  Thu: 3,
+  Fri: 4,
+  Sat: 5,
+  Sun: 6,
+}
+
+function toIndiaDay(value: Date | string): Date {
+  return parseIndiaDate(formatIndiaDateInput(value))
+}
+
 /**
- * Returns appointments whose slot starts today (local time).
+ * Returns appointments whose slot starts today in India time.
  */
 export function filterToday(appointments: ProviderAppointment[]): ProviderAppointment[] {
-  const now = new Date()
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
+  const todayStart = toIndiaDay(new Date())
+  const todayEnd = new Date(todayStart.getTime() + DAY_IN_MS)
+
   return appointments.filter((a) => {
     const start = a.availabilities?.starts_at
     if (!start) return false
-    const d = new Date(start)
-    return d >= todayStart && d < todayEnd && a.status !== 'cancelled'
+
+    const day = toIndiaDay(start)
+    return day >= todayStart && day < todayEnd && a.status !== 'cancelled'
   })
 }
 
 /**
- * Returns appointments within the current ISO week (Mon–Sun).
+ * Returns appointments within the current India week (Mon–Sun).
  */
 export function filterThisWeek(appointments: ProviderAppointment[]): ProviderAppointment[] {
-  const now = new Date()
-  const day = now.getDay() // 0=Sun
-  const diffToMon = (day === 0 ? -6 : 1 - day)
-  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMon)
-  const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const todayIndia = toIndiaDay(new Date())
+  const weekday = getIndiaWeekdayShort(new Date())
+  const diffToMon = INDIA_WEEKDAY_INDEX[weekday] ?? 0
+  const weekStart = new Date(todayIndia.getTime() - diffToMon * DAY_IN_MS)
+  const weekEnd = new Date(weekStart.getTime() + 7 * DAY_IN_MS)
+
   return appointments.filter((a) => {
     const start = a.availabilities?.starts_at
     if (!start) return false
-    const d = new Date(start)
-    return d >= weekStart && d < weekEnd && a.status !== 'cancelled'
+
+    const day = toIndiaDay(start)
+    return day >= weekStart && day < weekEnd && a.status !== 'cancelled'
   })
 }
 
@@ -75,10 +96,7 @@ export function formatAppointmentCount(count: number): string {
  * Formats a slot start time as HH:MM (12-hour, en-IN locale).
  */
 export function formatSlotTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  return formatIndiaTime(iso)
 }
 
 /**

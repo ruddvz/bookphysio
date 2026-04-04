@@ -66,6 +66,21 @@ describe('filterToday', () => {
   it('handles empty array', () => {
     expect(filterToday([])).toHaveLength(0)
   })
+
+  it('uses India time boundaries instead of the browser local day', () => {
+    vi.setSystemTime(new Date('2026-04-15T14:00:00.000Z'))
+
+    const todayIndia = {
+      ...makeAppt(0),
+      availabilities: { starts_at: '2026-04-15T12:00:00.000Z' },
+    }
+    const tomorrowIndia = {
+      ...makeAppt(0, 'confirmed', 'appt-2'),
+      availabilities: { starts_at: '2026-04-15T20:00:00.000Z' },
+    }
+
+    expect(filterToday([todayIndia, tomorrowIndia])).toEqual([todayIndia])
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -127,7 +142,7 @@ describe('formatAppointmentCount', () => {
 describe('formatSlotTime', () => {
   it('returns a time string without date components', () => {
     const result = formatSlotTime('2026-04-15T09:30:00.000Z')
-    expect(result).toMatch(/\d{1,2}:\d{2}/)
+    expect(result).toMatch(/(?:03|3):00/i)
     expect(result).not.toContain('2026')
   })
 })
