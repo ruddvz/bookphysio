@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Heart, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'
 import { DashboardSkeleton } from './DashboardSkeleton'
+import { DASHBOARD_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 type VisitType = 'in_clinic' | 'home_visit'
 
@@ -30,7 +31,8 @@ const VISIT_TYPE_LABELS: Record<VisitType, string> = {
 
 
 
-export default function PatientDashboardHome() {
+export default function PatientDashboardHome({ locale }: { locale?: StaticLocale } = {}) {
+  const t = DASHBOARD_COPY[locale ?? 'en']
   const { user } = useAuth()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -40,9 +42,15 @@ export default function PatientDashboardHome() {
   const displayName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'there'
 
   const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const greeting = hour < 12 ? t.greetingMorning : hour < 17 ? t.greetingAfternoon : t.greetingEvening
+  const recoveryPlaceholder = 'Coming soon'
+  const recoveryPlaceholderDetail = 'Recovery insights unlock after more completed sessions.'
 
    async function handleCopyReferralLink() {
+      if (typeof window === 'undefined') {
+         return
+      }
+
       const referralLink = `${window.location.origin}/signup?ref=bp-${user?.id?.slice(-6) ?? 'demo'}`
 
       try {
@@ -67,9 +75,10 @@ export default function PatientDashboardHome() {
       }
    }
 
-   async function fetchAppointments() {
-    setLoading(true)
-    setError(false)
+   const fetchAppointments = useCallback(async () => {
+      setLoading(true)
+      setError(false)
+
       try {
          const response = await fetch('/api/appointments')
          if (!response.ok) {
@@ -77,47 +86,16 @@ export default function PatientDashboardHome() {
          }
          const data: { appointments?: Appointment[] } = await response.json()
          setAppointments(data.appointments ?? [])
-      } catch (err) {
-         console.error('Fetch error:', err)
+      } catch {
          setError(true)
       } finally {
          setLoading(false)
       }
-   }
+   }, [])
 
   useEffect(() => {
-      let isMounted = true
-
-      async function loadInitialAppointments() {
-         try {
-            const response = await fetch('/api/appointments')
-            if (!response.ok) {
-               throw new Error('Failed to fetch appointments')
-            }
-            const data: { appointments?: Appointment[] } = await response.json()
-            if (!isMounted) {
-               return
-            }
-            setAppointments(data.appointments ?? [])
-         } catch (err) {
-            console.error('Fetch error:', err)
-            if (!isMounted) {
-               return
-            }
-            setError(true)
-         } finally {
-            if (isMounted) {
-               setLoading(false)
-            }
-         }
-      }
-
-      void loadInitialAppointments()
-
-      return () => {
-         isMounted = false
-      }
-   }, [])
+      void fetchAppointments()
+   }, [fetchAppointments])
 
   const now = new Date()
   const upcoming = appointments.filter((a) => {
@@ -131,30 +109,30 @@ export default function PatientDashboardHome() {
   const nextAppt = upcoming[0] ?? null
    const snapshotCards = [
       {
-         title: 'Next session',
-         value: nextAppt?.availabilities?.starts_at ? formatApptDate(nextAppt.availabilities.starts_at) : 'No booking yet',
-         detail: nextAppt ? providerDisplayName(nextAppt) : 'Find your next match with AI',
+         title: t.nextSession,
+         value: nextAppt?.availabilities?.starts_at ? formatApptDate(nextAppt.availabilities.starts_at) : t.noBookingYet,
+         detail: nextAppt ? providerDisplayName(nextAppt) : t.findNextMatch,
          icon: Calendar,
          href: '/patient/appointments',
       },
       {
-         title: 'Recovery pace',
-         value: '72%',
-         detail: 'On track with your mobility goal',
+         title: t.recoveryPace,
+         value: null,
+         detail: recoveryPlaceholderDetail,
          icon: Activity,
          href: '/patient/motio',
       },
       {
-         title: 'Care team',
+         title: t.careTeam,
          value: `${past.length}`,
-         detail: 'Previous specialists in record',
+         detail: t.previousSpecialists,
          icon: Users,
          href: '/search',
       },
       {
-         title: 'AI guidance',
+         title: t.aiGuidance,
          value: 'BookPhysio AI',
-         detail: 'Triage symptoms in focused chat',
+         detail: t.triageSymptoms,
          icon: MessageSquare,
          href: '/patient/motio',
       },
@@ -166,8 +144,8 @@ export default function PatientDashboardHome() {
       return (
          <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">
             <EmptyState
-               title="Recovery feed unavailable"
-               description="We couldn&apos;t load your appointment activity right now. Please try again in a moment."
+               title={t.errorTitle}
+               description={t.errorDesc}
                icon={CircleAlert}
                className="border border-bp-border bg-white rounded-[40px] shadow-sm"
                action={
@@ -179,19 +157,19 @@ export default function PatientDashboardHome() {
                         }}
                         className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-accent px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
                      >
-                        Retry Sync
+                        {t.retrySync}
                      </button>
                      <Link
                         href="/search"
                         className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-border bg-bp-surface px-8 py-4 text-[14px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent active:scale-[0.98]"
                      >
-                        Book New Therapy
+                        {t.bookNewTherapyBtn}
                      </Link>
                      <Link
                         href="/patient/motio"
                         className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
                      >
-                        Ask BookPhysio AI
+                        {t.askAI}
                      </Link>
                   </div>
                }
@@ -208,13 +186,13 @@ export default function PatientDashboardHome() {
         <div className="space-y-4">
            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
               <ShieldCheck size={12} strokeWidth={3} />
-              Verified Patient
+              {t.verifiedPatient}
            </div>
            <h1 className="text-[36px] md:text-[48px] font-bold text-bp-primary leading-none tracking-tight">
              {greeting}, <span className="text-bp-accent">{displayName}</span> 👋
            </h1>
            <p className="text-[16px] md:text-[18px] font-medium text-bp-body/60 max-w-[500px]">
-             Welcome back to your recovery hub. You have <span className="text-bp-primary font-bold">{upcoming.length} upcoming sessions</span> this week.
+             {t.welcomeBack(upcoming.length)}
            </p>
         </div>
             <div className="flex flex-wrap gap-3">
@@ -222,7 +200,7 @@ export default function PatientDashboardHome() {
                   href="/search"
                   className="flex items-center gap-4 px-10 py-5 bg-bp-primary text-white text-[16px] font-bold rounded-[24px] hover:bg-bp-primary/95 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-bp-primary/10"
                >
-                  Book New Therapy
+                  {t.bookNewTherapy}
                   <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
                       <CalendarPlus size={18} strokeWidth={3} />
                   </div>
@@ -231,7 +209,7 @@ export default function PatientDashboardHome() {
                   href="/patient/motio"
                   className="flex items-center gap-4 px-8 py-5 bg-white border-2 border-bp-accent/30 text-bp-accent text-[16px] font-bold rounded-[24px] hover:bg-bp-accent/5 hover:border-bp-accent transition-all hover:scale-[1.02] active:scale-[0.97] shadow-lg shadow-bp-accent/5"
                >
-                  Ask BookPhysio AI
+                  {t.askAI}
                   <div className="w-8 h-8 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent group-hover:scale-110 transition-transform">
                       <MessageSquare size={18} strokeWidth={3} />
                   </div>
@@ -258,7 +236,11 @@ export default function PatientDashboardHome() {
                         </div>
                      </div>
                      <p className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 leading-none">{card.title}</p>
-                     <p className="mt-2 text-[22px] font-black tracking-tighter text-bp-primary leading-tight">{card.value}</p>
+                     {card.value ? (
+                        <p className="mt-2 text-[22px] font-black tracking-tighter text-bp-primary leading-tight">{card.value}</p>
+                     ) : (
+                        <p className="mt-2 text-[18px] font-black tracking-tight text-bp-body/50 leading-tight">{recoveryPlaceholder}</p>
+                     )}
                      <div className="mt-3 flex items-center gap-1.5 overflow-hidden">
                          <p className="text-[12px] font-bold text-bp-body/60 truncate group-hover:text-bp-primary transition-colors">{card.detail}</p>
                      </div>
@@ -281,9 +263,9 @@ export default function PatientDashboardHome() {
                   <div className="flex flex-col gap-1">
                      <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
                         <Activity className="text-bp-accent" size={20} strokeWidth={3} />
-                        Recovery Journey
+                        {t.recoveryJourney}
                      </h2>
-                     <p className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest">Active Treatment Phase</p>
+                     <p className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest">{t.activeTreatment}</p>
                   </div>
                   <div className="p-3 bg-bp-accent/10 rounded-2xl text-bp-accent shadow-sm">
                      <TrendingUp size={22} strokeWidth={3} />
@@ -292,26 +274,26 @@ export default function PatientDashboardHome() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   <div className="space-y-6">
-                     <div className="flex items-end gap-3">
-                        <span className="text-[52px] font-bold text-bp-primary leading-none tracking-tighter">72<span className="text-[20px] text-bp-body/20 ml-1">%</span></span>
-                        <div className="flex flex-col pb-1.5">
-                           <span className="text-[13px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-1">
-                              <Zap size={11} strokeWidth={4} fill="currentColor" />
-                              On Track
+                     <div className="space-y-2">
+                        <span className="text-[32px] font-bold text-bp-primary leading-none tracking-tight">{recoveryPlaceholder}</span>
+                        <div className="flex flex-col gap-1.5">
+                           <span className="text-[13px] font-bold text-bp-body/50 uppercase tracking-widest flex items-center gap-1">
+                              <Zap size={11} strokeWidth={4} />
+                              {t.recoveryPace}
                            </span>
-                           <span className="text-[11px] font-bold text-bp-body/40 tracking-tight">Mobility Goal Progress</span>
+                           <span className="text-[11px] font-bold text-bp-body/40 tracking-tight">{recoveryPlaceholderDetail}</span>
                         </div>
                      </div>
                      <div className="h-5 w-full bg-bp-surface rounded-full overflow-hidden border border-bp-border p-1.5">
-                        <div className="h-full bg-gradient-to-r from-bp-accent to-emerald-400 rounded-full w-[72%] shadow-[0_0_12px_rgba(18,179,160,0.3)] transition-all duration-1000"></div>
+                        <div className="h-full bg-bp-border/60 rounded-full w-[24%]"></div>
                      </div>
                   </div>
                   <div className="bg-bp-surface/50 rounded-[28px] p-6 border border-bp-border flex flex-col justify-center gap-3">
                      <div className="bg-white p-4 rounded-2xl border border-bp-border shadow-sm flex items-center gap-4 hover:border-bp-accent/20 transition-colors">
                         <div className="text-[24px]">🎯</div>
                         <div>
-                           <p className="text-[15px] font-bold text-bp-primary leading-none mb-1.5">Weekly Goal</p>
-                           <p className="text-[13px] font-medium text-bp-body/60 italic">3 Sessions · <span className="text-bp-accent font-bold">2 Complete</span></p>
+                           <p className="text-[15px] font-bold text-bp-primary leading-none mb-1.5">{t.weeklyGoal}</p>
+                           <p className="text-[13px] font-medium text-bp-body/60 italic">{t.weeklyGoalDetail}</p>
                         </div>
                      </div>
                   </div>
@@ -328,9 +310,9 @@ export default function PatientDashboardHome() {
                    <div className="flex flex-col gap-1">
                       <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
                          <Users className="text-bp-accent" size={20} strokeWidth={3} />
-                         My Health Team
+                         {t.myHealthTeam}
                       </h2>
-                      <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">{past.length} Previous Specialists</p>
+                      <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">{past.length} {t.previousSpecialists}</p>
                    </div>
                    <button aria-label="Open care team actions" title="Open care team actions" className="p-3 bg-bp-surface rounded-2xl text-bp-body/40 hover:text-bp-accent transition-all hover:scale-105 active:scale-95 shadow-sm">
                       <MoreHorizontal size={20} strokeWidth={3} />
@@ -342,8 +324,8 @@ export default function PatientDashboardHome() {
                       <div className="w-12 h-12 rounded-2xl bg-white mx-auto mb-4 flex items-center justify-center text-bp-body/10 border border-bp-border shadow-sm">
                          <Users size={24} />
                       </div>
-                      <p className="text-[14px] font-bold text-bp-body/40">Build your recovery team.</p>
-                      <Link href="/search" className="text-[12px] font-black text-bp-accent hover:underline mt-2 inline-block">Browse Specialists</Link>
+                      <p className="text-[14px] font-bold text-bp-body/40">{t.buildTeam}</p>
+                      <Link href="/search" className="text-[12px] font-black text-bp-accent hover:underline mt-2 inline-block">{t.browseSpecialists}</Link>
                    </div>
                 ) : (
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -381,17 +363,17 @@ export default function PatientDashboardHome() {
                 <div className="flex-1 space-y-6">
                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
                       <Heart size={12} strokeWidth={3} fill="currentColor" />
-                      Community Referral
+                      {t.referralBadge}
                    </div>
                    <h2 className="text-[28px] md:text-[32px] font-black leading-none tracking-tighter">
-                      Share the progress, <br />get ₹500 off.
+                      {t.referralHeading}
                    </h2>
                    <p className="text-[15px] font-bold text-white/60 leading-relaxed max-w-[400px]">
-                      Know someone struggling with recovery? Give them ₹500 off their first session and receive ₹500 credit once they complete it.
+                      {t.referralBody}
                    </p>
-                   
+
                    <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-bp-secondary text-white text-[14px] font-bold rounded-2xl hover:bg-bp-secondary/90 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-bp-secondary/20 group/btn">
-                      {referralCopied ? 'Referral Link Copied' : 'Copy My Referral Link'}
+                      {referralCopied ? t.referralCopied : t.copyReferralLink}
                       <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                    </button>
                 </div>
@@ -424,8 +406,8 @@ export default function PatientDashboardHome() {
               <div className="relative z-10">
                  <div className="flex justify-between items-start mb-10">
                     <div className="flex flex-col gap-1">
-                       <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Next Booking</p>
-                       <h2 className="text-[22px] font-black tracking-tighter">Active Upcoming</h2>
+                       <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">{t.nextBooking}</p>
+                       <h2 className="text-[22px] font-black tracking-tighter">{t.activeUpcoming}</h2>
                     </div>
                     {nextAppt && (
                        <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center animate-pulse border border-white/10">
@@ -477,12 +459,12 @@ export default function PatientDashboardHome() {
                              href={`/patient/appointments/${nextAppt.id}`}
                              className="flex items-center justify-center gap-4 w-full py-6 bg-white text-bp-primary text-[15px] font-black rounded-[28px] hover:bg-bp-surface transition-all hover:scale-[1.03] active:scale-[0.97] shadow-2xl group/btn"
                           >
-                             Manage Booking
+                             {t.manageBooking}
                              <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                           </Link>
                           <div className="flex items-center justify-center gap-2 py-2 px-4 bg-white/5 rounded-full border border-white/5">
                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                             <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Appointment Confirmed</p>
+                             <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">{t.appointmentConfirmed}</p>
                           </div>
                        </div>
                     </div>
@@ -491,8 +473,8 @@ export default function PatientDashboardHome() {
                        <div className="w-20 h-20 rounded-[30px] bg-white/10 flex items-center justify-center mx-auto grayscale opacity-50">
                           <Calendar size={32} />
                        </div>
-                       <p className="text-[16px] font-medium text-white/60">No pending sessions found</p>
-                       <Link href="/search" className="inline-block px-8 py-3 bg-white text-bp-primary rounded-full text-[14px] font-bold uppercase tracking-widest shadow-lg hover:bg-bp-surface transition-colors">Start Recovery</Link>
+                       <p className="text-[16px] font-medium text-white/60">{t.noPendingSessions}</p>
+                       <Link href="/search" className="inline-block px-8 py-3 bg-white text-bp-primary rounded-full text-[14px] font-bold uppercase tracking-widest shadow-lg hover:bg-bp-surface transition-colors">{t.startRecovery}</Link>
                     </div>
                  )}
               </div>
@@ -505,8 +487,8 @@ export default function PatientDashboardHome() {
                     <MessageSquare size={20} />
                  </div>
                  <div className="flex-1">
-                    <p className="text-[15px] font-bold text-bp-primary leading-none mb-1">Need help?</p>
-                    <p className="text-[12px] font-medium text-bp-body/40">Ask BookPhysio AI</p>
+                    <p className="text-[15px] font-bold text-bp-primary leading-none mb-1">{t.needHelp}</p>
+                    <p className="text-[12px] font-medium text-bp-body/40">{t.askAIShort}</p>
                  </div>
                  <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center text-bp-body/20 group-hover:text-bp-accent group-hover:border-bp-accent/20 transition-colors">
                     <ChevronRight size={16} strokeWidth={3} />

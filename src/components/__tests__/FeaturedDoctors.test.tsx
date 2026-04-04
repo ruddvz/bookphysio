@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import type { SWRResponse } from 'swr'
@@ -9,7 +11,10 @@ import FeaturedDoctors from '@/components/FeaturedDoctors'
 
 vi.mock('next/image', () => ({
   __esModule: true,
-  default: ({ fill: _fill, ...props }: Record<string, unknown>) => <img {...props} />,
+  default: ({ fill, alt = '', ...props }: Record<string, unknown>) => {
+    void fill
+    return <img {...props} alt={String(alt)} />
+  },
 }))
 vi.mock('next/link', () => ({
   __esModule: true,

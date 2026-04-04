@@ -2,36 +2,98 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
+const avatarUrlSchema = z.string().url().max(2048).refine((value) => {
+  try {
+    const parsed = new URL(value)
+    return ['http:', 'https:'].includes(parsed.protocol)
+      && parsed.pathname.includes('/storage/v1/object/public/avatars/')
+  } catch {
+    return false
+  }
+}, 'Avatar URL must point to the public avatars bucket')
+
 const updateSchema = z.object({
-  full_name: z.string().trim().min(2).max(100),
+  full_name: z.string().trim().min(2).max(100).optional(),
+  avatar_url: avatarUrlSchema.nullable().optional(),
+  bio: z.string().trim().max(2000).optional(),
+  experience_years: z.number().int().min(0).max(80).optional(),
+  consultation_fee_inr: z.number().int().min(0).max(100000).optional(),
 })
 
-export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+type UserProfileRow = {
+  id: string
+  full_name: string
+  phone: string | null
+  role: 'patient' | 'provider' | 'admin'
+  avatar_url: string | null
+  created_at: string
+}
 
+type ProviderProfileRow = {
+  title: string | null
+  bio: string | null
+  experience_years: number | null
+  consultation_fee_inr: number | null
+  icp_registration_no: string | null
+}
+
+async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClient>>, user: { id: string; email?: string | null }) {
   const { data, error } = await supabase
     .from('users')
     .select('id, full_name, phone, role, avatar_url, created_at')
     .eq('id', user.id)
     .single()
 
-  if (error || !data) return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+  if (error || !data) {
+    return null
+  }
 
-  let icp_registration_no: string | null = null
+  const userProfile = data as UserProfileRow
+  let providerProfile: ProviderProfileRow | null = null
 
-  if (data.role === 'provider') {
-    const { data: providerData } = await supabase
+  if (userProfile.role === 'provider') {
+    const { data: providerData, error: providerError } = await supabase
       .from('providers')
-      .select('icp_registration_no')
+      .select('title, bio, experience_years, consultation_fee_inr, icp_registration_no')
       .eq('id', user.id)
       .maybeSingle()
 
-    icp_registration_no = providerData?.icp_registration_no ?? null
+    if (providerError) {
+      throw providerError
+    }
+
+    providerProfile = (providerData as ProviderProfileRow | null) ?? null
   }
 
-  return NextResponse.json({ ...data, email: user.email ?? null, icp_registration_no })
+  return {
+    ...userProfile,
+    email: user.email ?? null,
+    title: providerProfile?.title ?? null,
+    bio: providerProfile?.bio ?? null,
+    experience_years: providerProfile?.experience_years ?? null,
+    consultation_fee_inr: providerProfile?.consultation_fee_inr ?? null,
+    icp_registration_no: providerProfile?.icp_registration_no ?? null,
+  }
+}
+
+export async function GET() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  let profile = null
+
+  try {
+    profile = await getProfilePayload(supabase, user)
+  } catch {
+    return NextResponse.json({ error: 'Failed to load profile' }, { status: 500 })
+  }
+
+  if (!profile) {
+    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+  }
+
+  return NextResponse.json(profile)
 }
 
 export async function PATCH(request: NextRequest) {
@@ -50,14 +112,83 @@ export async function PATCH(request: NextRequest) {
   const parsed = updateSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { data, error } = await supabase
-    .from('users')
-    .update({ full_name: parsed.data.full_name })
-    .eq('id', user.id)
-    .select('id, full_name, phone, role, avatar_url, created_at')
-    .single()
+  let profile = null
 
-  if (error) return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+  try {
+    profile = await getProfilePayload(supabase, user)
+  } catch {
+    return NextResponse.json({ error: 'Failed to load profile' }, { status: 500 })
+  }
 
-  return NextResponse.json({ ...data, email: user.email ?? null })
+  if (!profile) {
+    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+  }
+
+  const userPatch: { full_name?: string; avatar_url?: string | null } = {}
+  const providerPatch: {
+    bio?: string
+    experience_years?: number
+    consultation_fee_inr?: number
+  } = {}
+
+  if (parsed.data.full_name !== undefined) {
+    userPatch.full_name = parsed.data.full_name
+  }
+
+  if (parsed.data.avatar_url !== undefined) {
+    userPatch.avatar_url = parsed.data.avatar_url
+  }
+
+  if (parsed.data.bio !== undefined) {
+    providerPatch.bio = parsed.data.bio
+  }
+
+  if (parsed.data.experience_years !== undefined) {
+    providerPatch.experience_years = parsed.data.experience_years
+  }
+
+  if (parsed.data.consultation_fee_inr !== undefined) {
+    providerPatch.consultation_fee_inr = parsed.data.consultation_fee_inr
+  }
+
+  const hasUserPatch = Object.keys(userPatch).length > 0
+  const hasProviderPatch = Object.keys(providerPatch).length > 0
+
+  if (!hasUserPatch && (!hasProviderPatch || profile.role !== 'provider')) {
+    return NextResponse.json({ error: 'No valid fields' }, { status: 400 })
+  }
+
+  if (hasUserPatch) {
+    const { error } = await supabase
+      .from('users')
+      .update(userPatch)
+      .eq('id', user.id)
+
+    if (error) {
+      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+    }
+  }
+
+  if (profile.role === 'provider' && hasProviderPatch) {
+    const { error } = await supabase
+      .from('providers')
+      .update(providerPatch)
+      .eq('id', user.id)
+
+    if (error) {
+      if (hasUserPatch) {
+        await supabase
+          .from('users')
+          .update({
+            full_name: profile.full_name,
+            avatar_url: profile.avatar_url,
+          })
+          .eq('id', user.id)
+      }
+
+      return NextResponse.json({ error: 'Failed to update provider profile' }, { status: 500 })
+    }
+  }
+
+  return NextResponse.json({ ok: true })
 }

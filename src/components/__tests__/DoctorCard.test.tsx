@@ -1,9 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
+
 import { render } from '@testing-library/react'
 import DoctorCard, { type Doctor } from '../DoctorCard'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
-vi.mock('next/image', () => ({ __esModule: true, default: (props: Record<string, unknown>) => <img {...props} /> }))
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ fill, alt = '', ...props }: Record<string, unknown>) => {
+    void fill
+    return <img {...props} alt={String(alt)} />
+  },
+}))
 
 const baseDoctor: Doctor = {
   id: 'test-1',
