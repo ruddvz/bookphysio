@@ -6,12 +6,15 @@ import useSWR from 'swr'
 import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
+import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
 import { Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
+import { getProviderDisplayName } from '@/lib/providers/display-name'
 import { cn } from '@/lib/utils'
 import type { SearchResponse } from '@/app/api/contracts/search'
+import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
@@ -76,7 +79,7 @@ async function fetchSearchResults(url: string): Promise<SearchResponse> {
 }
 
 function providerToDoctor(p: ProviderCard): Doctor {
-  const nameWithTitle = p.full_name.startsWith('Dr.') ? p.full_name : `Dr. ${p.full_name}`
+  const nameWithTitle = getProviderDisplayName(p)
   return {
     id: p.id,
     name: nameWithTitle,
@@ -100,6 +103,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
       : 'Check availability',
     visitTypes: (p.visit_types ?? []).map((v) => VISIT_TYPE_LABELS[v] ?? v),
     fee: p.consultation_fee_inr ?? 0,
+    avatarUrl: p.avatar_url,
     icpVerified: p.verified,
   }
 }
@@ -117,7 +121,8 @@ const POPULAR_CITIES = [
   { name: 'Surat', icon: '💎' },
 ]
 
-export default function SearchContent() {
+export default function SearchContent({ locale }: { locale?: StaticLocale } = {}) {
+  const t = SEARCH_COPY[locale ?? 'en']
   const searchParams = useSearchParams()
   const router = useRouter()
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
@@ -184,7 +189,7 @@ export default function SearchContent() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-bp-body/60">
-                <Link href="/" className="hover:text-bp-accent transition-colors">Find Physios</Link>
+                <Link href="/" className="hover:text-bp-accent transition-colors">{t.breadcrumbRoot}</Link>
                 <ChevronRight size={12} strokeWidth={4} />
                 <span className="text-bp-accent bg-bp-accent/5 px-2.5 py-1 rounded-lg border border-bp-accent/10">{displayLocation}</span>
                 {specialty && (
@@ -195,10 +200,10 @@ export default function SearchContent() {
                 )}
               </div>
               <h1 className="text-[32px] md:text-[42px] font-bold text-bp-primary tracking-tighter leading-none flex items-center gap-4">
-                {loading ? 'Sourcing Top Experts' : total > 0 ? `${total} Top Experts Found` : 'Search Results'}
+                {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
                 {loading && <div className="w-8 h-8 rounded-full border-4 border-bp-surface border-t-bp-accent animate-spin shrink-0" />}
               </h1>
-              <p className="text-[15px] font-medium text-bp-body/70 tracking-tight leading-relaxed">Verified physiotherapy clinic & home-visit experts available in {displayLocation}.</p>
+              <p className="text-[15px] font-medium text-bp-body/70 tracking-tight leading-relaxed">{t.subheading(displayLocation)}</p>
             </div>
           </div>
           
@@ -212,7 +217,7 @@ export default function SearchContent() {
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
             <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest whitespace-nowrap mr-2">
               <MapPin size={12} className="inline -mt-0.5 mr-1" />
-              Cities
+              {t.citiesLabel}
             </span>
             {POPULAR_CITIES.map((c) => (
               <button
@@ -245,17 +250,17 @@ export default function SearchContent() {
           ) : doctors.length === 0 ? (
             <div className="pt-8 pb-32">
               <EmptyState
-                title="No exact matches found"
-                description={`We couldn't locate any verified physios matching your criteria in ${displayLocation}. Here is a preview of how BookPhysio surfaces nearby care.`}
+                title={t.emptyTitle}
+                description={t.emptyDescription(displayLocation)}
                 icon={SearchIcon}
                 action={
                   <div className="w-full max-w-5xl space-y-6">
                     {error && (
                       <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
                         <div>
-                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
+                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                           <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
-                            Live results could not be loaded just now, but the demo preview below still shows the intended result flow.
+                            {t.errorBody}
                           </p>
                         </div>
                         <button
@@ -264,7 +269,7 @@ export default function SearchContent() {
                           }}
                           className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
                         >
-                          Retry search
+                          {t.retrySearch}
                         </button>
                       </div>
                     )}
@@ -272,9 +277,9 @@ export default function SearchContent() {
                     <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/40">
                       <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/5 px-3 py-1 text-bp-accent">
                         <Sparkles size={12} />
-                        Demo preview
+                        {t.demoPreview}
                       </span>
-                      <span>These cards show how live results will look once providers match.</span>
+                      <span>{t.demoPreviewNote}</span>
                     </div>
 
                     <div className="grid gap-6 md:grid-cols-2">
@@ -345,7 +350,7 @@ export default function SearchContent() {
                         onClick={() => router.push('/search')}
                         className="px-12 py-5 bg-bp-primary text-white text-[16px] font-black rounded-btn hover:bg-bp-accent shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
                       >
-                        Clear All Filters
+                        {t.clearFilters}
                       </button>
                     </div>
                   </div>
@@ -357,9 +362,9 @@ export default function SearchContent() {
               {error && (
                 <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">Search sync unavailable</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                     <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
-                      Showing the latest available provider results while we retry the live search.
+                      {t.errorBodyRetrying}
                     </p>
                   </div>
                   <button
@@ -368,14 +373,14 @@ export default function SearchContent() {
                     }}
                     className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
                   >
-                    Retry search
+                    {t.retrySearch}
                   </button>
                 </div>
               )}
               <div className="flex items-center justify-between px-2 mb-2">
                 <div className="flex items-center gap-3">
                    <div className="p-1.5 bg-bp-accent/10 rounded-lg text-bp-accent"><Zap size={16} strokeWidth={3} /></div>
-                   <p className="text-[13px] font-black text-bp-primary uppercase tracking-[0.15em]">Verified Professionals</p>
+                   <p className="text-[13px] font-black text-bp-primary uppercase tracking-[0.15em]">{t.verifiedProfessionals}</p>
                 </div>
                 <div className="md:hidden">
                   <button className="flex items-center gap-2 text-[14px] font-black text-bp-accent px-4 py-2 bg-bp-accent/10 rounded-xl border border-bp-accent/20">
@@ -384,6 +389,7 @@ export default function SearchContent() {
                   </button>
                 </div>
               </div>
+              {doctors.length > 0 && <FeaturedDoctors />}
               {doctors.map((doctor) => (
                 <div key={doctor.id} id={`doctor-${doctor.id}`}>
                   <DoctorCard
@@ -398,10 +404,10 @@ export default function SearchContent() {
               {/* End of List */}
               <div className="py-16 text-center border-t border-bp-border mt-8 bg-bp-surface/50 rounded-[32px] px-8">
                 <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-black uppercase text-bp-body/40 tracking-widest">
-                   Safety Verified
+                   {t.safetyVerified}
                 </div>
                 <p className="text-[18px] font-bold text-bp-body/60 italic max-w-[500px] mx-auto leading-relaxed">
-                  &ldquo;Connecting with the right therapist is the first step towards pain-free living.&rdquo;
+                  {t.closingQuote}
                 </p>
               </div>
             </div>

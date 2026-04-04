@@ -4,6 +4,7 @@ import { MouseEvent, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { formatIndiaDateInput } from '@/lib/india-date'
+import { getProviderInitials } from '@/lib/providers/display-name'
 import { cn } from '@/lib/utils'
 import {
   ArrowRight,
@@ -100,13 +101,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
   const availability = useMemo(() => generateDeterministicSlots(doctor.id), [doctor.id])
   const visibleDays = availability.slice(startIndex, startIndex + 3)
 
-  const initials = doctor.name
-    .replace(/^Dr\.\s*/, '')
-    .split(' ')
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
+  const initials = getProviderInitials(doctor.name)
 
   const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()

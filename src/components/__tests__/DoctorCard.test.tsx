@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react'
 import DoctorCard, { type Doctor } from '../DoctorCard'
-import { vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('next/image', () => ({ __esModule: true, default: (props: Record<string, unknown>) => <img {...props} /> }))
 
 const baseDoctor: Doctor = {
   id: 'test-1',
-  name: 'Dr. Ravi Kumar',
+  name: 'Dr. Rajesh Kumar',
   credentials: 'BPT',
   specialty: 'Sports Physio',
   rating: 4.9,
@@ -24,6 +24,14 @@ describe('DoctorCard', () => {
   it('shows initials when no avatarUrl', () => {
     const { getByText } = render(<DoctorCard doctor={baseDoctor} />)
     expect(getByText('RK')).toBeTruthy()
+  })
+
+  it('strips non-Dr titles when deriving initials', () => {
+    const { getByText } = render(
+      <DoctorCard doctor={{ ...baseDoctor, name: 'PT Priya Menon', avatarUrl: null }} />
+    )
+
+    expect(getByText('PM')).toBeTruthy()
   })
 
   it('shows next/image when avatarUrl is provided', () => {
