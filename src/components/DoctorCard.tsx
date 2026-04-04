@@ -2,6 +2,7 @@
 
 import { MouseEvent, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { formatIndiaDateInput } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import {
@@ -29,6 +30,7 @@ export interface Doctor {
   visitTypes: string[]
   fee: number
   icpVerified: boolean
+  avatarUrl?: string | null
   isLive?: boolean
   lat?: number | null
   lng?: number | null
@@ -138,9 +140,21 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
       <div className="grid gap-6 p-5 md:p-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex gap-5">
           <div className="relative shrink-0">
-            <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
-              {initials}
-            </div>
+            {doctor.avatarUrl ? (
+              <div className="relative h-24 w-24 rounded-[24px] overflow-hidden shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+                <Image
+                  src={doctor.avatarUrl}
+                  alt={doctor.name}
+                  fill
+                  className="object-cover"
+                  sizes="96px"
+                />
+              </div>
+            ) : (
+              <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+                {initials}
+              </div>
+            )}
             {doctor.icpVerified && (
               <div className="absolute -bottom-2 -right-2 rounded-full border border-white bg-white p-1.5 shadow-[0_10px_24px_-16px_rgba(24,49,45,0.3)]">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-bp-primary text-white">
