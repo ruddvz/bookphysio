@@ -166,15 +166,16 @@ function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, st
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  height: '44px',
-  border: '1px solid var(--color-bp-border)',
-  borderRadius: '8px',
-  padding: '0 12px',
-  fontSize: '15px',
+  height: '52px',
+  border: '2px solid var(--color-bp-border)',
+  borderRadius: '12px',
+  padding: '0 16px',
+  fontSize: '16px',
   color: 'var(--color-bp-primary)',
-  backgroundColor: '#FFFFFF',
+  backgroundColor: 'var(--color-bp-surface)',
   outline: 'none',
   boxSizing: 'border-box',
+  transition: 'all 0.3s ease',
 }
 
 function FieldError({ msg }: { msg?: string }) {
@@ -199,8 +200,8 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full h-12 text-white border-none rounded-full text-[15px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
-        disabled ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-bp-accent hover:bg-bp-primary cursor-pointer'
+      className={`w-full h-14 text-white border-none rounded-2xl text-[16px] font-bold mt-2 flex items-center justify-center gap-3 transition-all active:scale-[0.98] outline-none shadow-xl ${
+        disabled ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/10 cursor-pointer'
       }`}
     >
       {children}
@@ -350,16 +351,17 @@ function Step1({ data, onChange, onNext }: Step1Props) {
         <div style={{ display: 'flex', gap: '0' }}>
           <div
             style={{
-              height: '44px',
-              padding: '0 12px',
+              height: '52px',
+              padding: '0 16px',
               backgroundColor: 'var(--color-bp-surface)',
-              border: '1px solid var(--color-bp-border)',
+              border: '2px solid var(--color-bp-border)',
               borderRight: 'none',
-              borderRadius: '8px 0 0 8px',
+              borderRadius: '12px 0 0 12px',
               display: 'flex',
               alignItems: 'center',
-              fontSize: '15px',
-              color: 'var(--color-bp-body)',
+              fontSize: '16px',
+              fontWeight: 900,
+              color: 'var(--color-bp-primary)',
               flexShrink: 0,
             }}
           >
@@ -375,7 +377,7 @@ function Step1({ data, onChange, onNext }: Step1Props) {
             onBlur={() => setPhoneFocused(false)}
             style={{
               ...inputStyle,
-              borderRadius: '0 8px 8px 0',
+              borderRadius: '0 12px 12px 0',
               borderColor: phoneFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
             }}
           />

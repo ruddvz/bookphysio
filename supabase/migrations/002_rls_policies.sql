@@ -3,8 +3,6 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE specialties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE locations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE insurances ENABLE ROW LEVEL SECURITY;
-ALTER TABLE provider_insurances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE availabilities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
@@ -32,10 +30,6 @@ CREATE POLICY "providers_self_update" ON providers FOR UPDATE USING (id = auth.u
 CREATE POLICY "specialties_public_read" ON specialties FOR SELECT USING (true);
 CREATE POLICY "specialties_admin_write" ON specialties FOR ALL USING (auth_role() = 'admin');
 
--- insurances: public read
-CREATE POLICY "insurances_public_read" ON insurances FOR SELECT USING (true);
-CREATE POLICY "insurances_admin_write" ON insurances FOR ALL USING (auth_role() = 'admin');
-
 -- locations: public read for verified providers, self write
 CREATE POLICY "locations_public_read" ON locations FOR SELECT USING (
   EXISTS (SELECT 1 FROM providers p WHERE p.id = locations.provider_id AND p.verified = true AND p.active = true)
@@ -43,11 +37,6 @@ CREATE POLICY "locations_public_read" ON locations FOR SELECT USING (
 );
 CREATE POLICY "locations_self_write" ON locations FOR INSERT WITH CHECK (provider_id = auth.uid());
 CREATE POLICY "locations_self_update" ON locations FOR UPDATE USING (provider_id = auth.uid() OR auth_role() = 'admin');
-
--- provider_insurances: public read, self write
-CREATE POLICY "provider_insurances_public_read" ON provider_insurances FOR SELECT USING (true);
-CREATE POLICY "provider_insurances_self_write" ON provider_insurances FOR INSERT WITH CHECK (provider_id = auth.uid());
-CREATE POLICY "provider_insurances_self_delete" ON provider_insurances FOR DELETE USING (provider_id = auth.uid());
 
 -- availabilities: public read (unbooked), provider self write
 CREATE POLICY "availabilities_public_read" ON availabilities FOR SELECT USING (

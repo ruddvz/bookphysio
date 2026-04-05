@@ -10,7 +10,7 @@
 The ZocDoc clone homepage is **done and building clean**:
 - ✅ Navbar (bookphysio branding, teal CTA, Browse dropdown, mobile hamburger)
 - ✅ HeroSection (animated specialty cycling, search bar, Mumbai placeholder)
-- ✅ InsurancePlans (Indian insurers: Star Health, Niva Bupa, HDFC ERGO, Medi Assist, ICICI Lombard)
+- ✅ ProofSection (network transparency, live availability preview, trust cues)
 - ✅ TopSpecialties (Indian physio specialties, yellow cards)
 - ✅ HowItWorks (3 cards, yellow bg)
 - ✅ AppSection (peach bg, QR code placeholder, app store badges)
@@ -19,7 +19,7 @@ The ZocDoc clone homepage is **done and building clean**:
 - ✅ CityLinks (Indian cities, accordion, yellow bg)
 - ✅ JobsCTA (yellow bg)
 - ✅ CommonReasons (physio visit reasons, accordions)
-- ✅ Footer (dark bg, Indian insurance column, teal links)
+- ✅ Footer (dark bg, patient/provider/resources links, teal accents)
 
 **Build:** `npm run build` passes clean (Next.js 16, no TypeScript errors)
 

@@ -147,7 +147,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                title={t.errorTitle}
                description={t.errorDesc}
                icon={CircleAlert}
-               className="border border-bp-border bg-white rounded-[40px] shadow-sm"
+               className="border border-bp-border bg-white rounded-3xl shadow-sm"
                action={
                   <div className="flex flex-wrap items-center justify-center gap-3">
                      <button
@@ -167,7 +167,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                      </Link>
                      <Link
                         href="/patient/motio"
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
+                        className="inline-flex items-center justify-center gap-3 rounded-2xl border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
                      >
                         {t.askAI}
                      </Link>
@@ -225,7 +225,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                   <Link
                      key={card.title}
                      href={card.href}
-                     className="group rounded-[28px] border border-bp-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-xl shadow-bp-primary/5 active:scale-95"
+                     className="group rounded-2xl border border-bp-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-xl shadow-bp-primary/5 active:scale-95"
                   >
                      <div className="flex items-center justify-between gap-4 mb-5">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bp-accent/5 text-bp-accent transition-all group-hover:bg-bp-accent/10 group-hover:scale-110">
@@ -235,11 +235,11 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                            <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </div>
                      </div>
-                     <p className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 leading-none">{card.title}</p>
+                     <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 leading-none">{card.title}</p>
                      {card.value ? (
-                        <p className="mt-2 text-[22px] font-black tracking-tighter text-bp-primary leading-tight">{card.value}</p>
+                        <p className="mt-2 text-[22px] font-bold tracking-tighter text-bp-primary leading-tight">{card.value}</p>
                      ) : (
-                        <p className="mt-2 text-[18px] font-black tracking-tight text-bp-body/50 leading-tight">{recoveryPlaceholder}</p>
+                        <p className="mt-2 text-[18px] font-bold tracking-tight text-bp-body/50 leading-tight">{recoveryPlaceholder}</p>
                      )}
                      <div className="mt-3 flex items-center gap-1.5 overflow-hidden">
                          <p className="text-[12px] font-bold text-bp-body/60 truncate group-hover:text-bp-primary transition-colors">{card.detail}</p>
@@ -255,7 +255,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
         <div className="space-y-10">
           
       {/* Recovery Progress Widget */}
-          <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-sm relative overflow-hidden group">
+          <section className="bg-white rounded-3xl border border-bp-border p-8 md:p-10 shadow-sm relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-bp-accent/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
             
             <div className="relative z-10">
@@ -288,7 +288,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                         <div className="h-full bg-bp-border/60 rounded-full w-[24%]"></div>
                      </div>
                   </div>
-                  <div className="bg-bp-surface/50 rounded-[28px] p-6 border border-bp-border flex flex-col justify-center gap-3">
+                  <div className="bg-bp-surface/50 rounded-2xl p-6 border border-bp-border flex flex-col justify-center gap-3">
                      <div className="bg-white p-4 rounded-2xl border border-bp-border shadow-sm flex items-center gap-4 hover:border-bp-accent/20 transition-colors">
                         <div className="text-[24px]">🎯</div>
                         <div>
@@ -325,13 +325,13 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                          <Users size={24} />
                       </div>
                       <p className="text-[14px] font-bold text-bp-body/40">{t.buildTeam}</p>
-                      <Link href="/search" className="text-[12px] font-black text-bp-accent hover:underline mt-2 inline-block">{t.browseSpecialists}</Link>
+                      <Link href="/search" className="text-[12px] font-bold text-bp-accent hover:underline mt-2 inline-block">{t.browseSpecialists}</Link>
                    </div>
                 ) : (
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {past.slice(0, 4).map((a) => (
-                         <div key={a.id} className="group/item p-5 bg-white border border-bp-border rounded-[30px] hover:shadow-lg hover:border-bp-accent/20 transition-all duration-300 flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[20px] font-black group-hover/item:bg-bp-accent/10 transition-colors">
+                         <div key={a.id} className="group/item p-5 bg-white border border-bp-border rounded-2xl hover:shadow-lg hover:border-bp-accent/20 transition-all duration-300 flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[20px] font-bold group-hover/item:bg-bp-accent/10 transition-colors">
                                {providerDisplayName(a).charAt(0)}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -356,7 +356,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
           </section>
           
           {/* Growth & Referral Loop: Physio Journal */}
-          <section className="bg-gradient-to-br from-bp-primary to-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-bp-primary/20 text-white relative overflow-hidden group">
+          <section className="bg-gradient-to-br from-bp-primary to-bp-primary rounded-3xl p-8 md:p-10 shadow-2xl shadow-bp-primary/20 text-white relative overflow-hidden group">
              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
              
              <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
@@ -365,7 +365,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                       <Heart size={12} strokeWidth={3} fill="currentColor" />
                       {t.referralBadge}
                    </div>
-                   <h2 className="text-[28px] md:text-[32px] font-black leading-none tracking-tighter">
+                   <h2 className="text-[28px] md:text-[32px] font-bold leading-none tracking-tighter">
                       {t.referralHeading}
                    </h2>
                    <p className="text-[15px] font-bold text-white/60 leading-relaxed max-w-[400px]">
@@ -386,7 +386,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                          <Zap size={32} strokeWidth={3} fill="currentColor" className="relative z-10" />
                       </div>
                       <div className="text-center md:text-left">
-                         <p className="text-[20px] font-black leading-none">₹500 Credit</p>
+                         <p className="text-[20px] font-bold leading-none">₹500 Credit</p>
                          <p className="text-[12px] font-bold tracking-widest uppercase text-white/40 mt-1">Verified Gift</p>
                       </div>
                    </div>
@@ -400,17 +400,17 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
         <aside className="space-y-6 sticky top-28">
            
            {/* Primary Highlight: Next Appointment */}
-           <div className="bg-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-bp-primary/10 text-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-[60px] -mr-24 -mt-24 transition-transform group-hover:scale-110"></div>
+           <div className="bg-white border border-bp-border rounded-3xl p-8 md:p-10 shadow-sm text-bp-primary relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-bp-accent/5 rounded-full blur-[60px] -mr-24 -mt-24 transition-transform group-hover:scale-110"></div>
               
               <div className="relative z-10">
                  <div className="flex justify-between items-start mb-10">
                     <div className="flex flex-col gap-1">
-                       <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">{t.nextBooking}</p>
-                       <h2 className="text-[22px] font-black tracking-tighter">{t.activeUpcoming}</h2>
+                       <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-[0.2em]">{t.nextBooking}</p>
+                       <h2 className="text-[22px] font-bold tracking-tighter">{t.activeUpcoming}</h2>
                     </div>
                     {nextAppt && (
-                       <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center animate-pulse border border-white/10">
+                       <div className="w-14 h-14 rounded-2xl bg-bp-surface flex items-center justify-center animate-pulse border border-bp-border">
                           <Clock size={24} strokeWidth={3} className="text-bp-accent" />
                        </div>
                     )}
@@ -418,12 +418,12 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
 
                  {nextAppt ? (
                     <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
-                       <div className="flex items-center gap-5 px-6 py-5 bg-white/5 rounded-[32px] border border-white/10 backdrop-blur-sm group-hover:bg-white/10 transition-all">
-                          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-bp-primary text-[28px] font-black shadow-2xl group-hover:scale-110 transition-transform ring-4 ring-white/5">
+                       <div className="flex items-center gap-5 px-6 py-5 bg-bp-surface rounded-2xl border border-bp-border backdrop-blur-sm group-hover:bg-bp-accent/5 transition-all">
+                          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-bp-primary text-[28px] font-bold shadow-sm border border-bp-border">
                              {providerDisplayName(nextAppt).charAt(0)}
                           </div>
                           <div className="flex-1 min-w-0">
-                             <h3 className="text-[19px] font-black leading-tight mb-1 animate-in fade-in slide-in-from-left-2 duration-700">{providerDisplayName(nextAppt)}</h3>
+                             <h3 className="text-[19px] font-bold leading-tight mb-1 animate-in fade-in slide-in-from-left-2 duration-700">{providerDisplayName(nextAppt)}</h3>
                              <div className="flex items-center gap-2 opacity-60">
                                 <Activity size={14} strokeWidth={3} className="text-bp-accent" />
                                 <p className="text-[11px] font-bold uppercase tracking-widest truncate">
@@ -434,22 +434,22 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                        </div>
 
                        <div className="grid grid-cols-2 gap-3">
-                          <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 flex flex-col gap-3 group-hover:bg-white/10 transition-all group/item">
+                          <div className="p-6 bg-bp-surface rounded-2xl border border-bp-border flex flex-col gap-3 group-hover:bg-bp-accent/5 transition-all group/item">
                              <div className="w-8 h-8 rounded-xl bg-bp-accent/20 flex items-center justify-center text-bp-accent group-hover/item:scale-110 transition-transform">
                                 <Calendar size={16} strokeWidth={3} />
                              </div>
                              <div>
-                                <p className="text-[16px] font-black leading-none">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[0]}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[1]}</p>
+                                <p className="text-[16px] font-bold leading-none">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[0]}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-bp-body/30 mt-1">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[1]}</p>
                              </div>
                           </div>
-                          <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 flex flex-col gap-3 group-hover:bg-white/10 transition-all group/item">
+                          <div className="p-6 bg-bp-surface rounded-2xl border border-bp-border flex flex-col gap-3 group-hover:bg-bp-accent/5 transition-all group/item">
                              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover/item:scale-110 transition-transform">
                                 <Clock size={16} strokeWidth={3} />
                              </div>
                              <div>
-                                <p className="text-[16px] font-black leading-none">{new Date(nextAppt.availabilities?.starts_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">{VISIT_TYPE_LABELS[nextAppt.visit_type]}</p>
+                                <p className="text-[16px] font-bold leading-none">{new Date(nextAppt.availabilities?.starts_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-bp-body/30 mt-1">{VISIT_TYPE_LABELS[nextAppt.visit_type]}</p>
                              </div>
                           </div>
                        </div>
@@ -457,7 +457,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                        <div className="space-y-4 pt-4">
                           <Link
                              href={`/patient/appointments/${nextAppt.id}`}
-                             className="flex items-center justify-center gap-4 w-full py-6 bg-white text-bp-primary text-[15px] font-black rounded-[28px] hover:bg-bp-surface transition-all hover:scale-[1.03] active:scale-[0.97] shadow-2xl group/btn"
+                             className="flex items-center justify-center gap-4 w-full py-6 bg-white text-bp-primary text-[15px] font-bold rounded-[28px] hover:bg-bp-surface transition-all hover:scale-[1.03] active:scale-[0.97] shadow-2xl group/btn"
                           >
                              {t.manageBooking}
                              <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
@@ -481,7 +481,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
            </div>
 
            {/* Support Mini Widget */}
-           <Link href="/patient/motio" className="bg-bp-surface rounded-[40px] p-8 border border-bp-border group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300 block">
+           <Link href="/patient/motio" className="bg-bp-surface rounded-3xl p-8 border border-bp-border group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300 block">
               <div className="flex items-center gap-5">
                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-accent shadow-sm transition-transform group-hover:rotate-12">
                     <MessageSquare size={20} />

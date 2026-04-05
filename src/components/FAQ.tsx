@@ -42,7 +42,7 @@ export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
-    <section className="bp-section bg-[#fff9f1]" aria-label="Booking questions">
+    <section className="bp-section bg-bp-surface/40" aria-label="Booking questions">
       <div className="bp-shell">
         <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">

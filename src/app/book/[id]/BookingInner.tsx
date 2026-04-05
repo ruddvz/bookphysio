@@ -13,6 +13,7 @@ import { formatIndiaDateInput } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import { getVisitTypeConsultationFee } from '@/lib/booking/policy'
 import { formatPublicProviderLocation } from '@/lib/providers/public'
+import { BOOKING_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 type Step = 1 | 2 | 3
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -41,13 +42,13 @@ interface BookingResult {
   paymentMethod: PaymentMethod
 }
 
-const STEPS = [
-  { n: 1, label: 'Identify' },
-  { n: 2, label: 'Vouch' },
-  { n: 3, label: 'Success' },
-]
-
-export default function BookingInner() {
+export default function BookingInner({ locale }: { locale?: StaticLocale } = {}) {
+  const t = BOOKING_COPY[locale ?? 'en']
+  const STEPS = [
+    { n: 1, label: t.stepLabels[0] },
+    { n: 2, label: t.stepLabels[1] },
+    { n: 3, label: t.stepLabels[2] },
+  ]
   const params = useParams()
   const searchParams = useSearchParams()
   const doctorId = params.id as string
@@ -93,8 +94,8 @@ export default function BookingInner() {
               <div className="absolute inset-0 flex items-center justify-center text-bp-accent/20"><Activity size={24} /></div>
            </div>
            <div className="text-center">
-              <p className="text-[18px] font-black text-bp-primary tracking-tight">Securing Your Session</p>
-              <p className="text-[14px] font-bold text-bp-body/40 mt-1">Establishing high-fidelity connection...</p>
+              <p className="text-[18px] font-bold text-bp-primary tracking-tight">{t.loadingTitle}</p>
+              <p className="text-[14px] font-bold text-bp-body/40 mt-1">{t.loadingSubtitle}</p>
            </div>
         </main>
         <Footer />
@@ -123,7 +124,7 @@ export default function BookingInner() {
                   <div key={s.n} className="flex items-center">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-[18px] text-[15px] font-black transition-all duration-700 border-2",
+                        "flex h-10 w-10 items-center justify-center rounded-[18px] text-[15px] font-bold transition-all duration-700 border-2",
                         step === s.n ? "bg-bp-accent text-white border-bp-accent shadow-[0_12px_24px_-8px_rgba(0,118,108,0.4)] scale-110" :
                         step > s.n ? "bg-bp-accent text-white border-bp-accent" :
                         "bg-white text-gray-200 border-bp-border"
@@ -133,7 +134,7 @@ export default function BookingInner() {
                         ) : s.n}
                       </div>
                       <span className={cn(
-                        "text-[12px] font-black uppercase tracking-[0.25em] transition-all duration-700",
+                        "text-[12px] font-bold uppercase tracking-[0.25em] transition-all duration-700",
                         step >= s.n ? "text-bp-primary" : "text-gray-200"
                       )}>
                         {s.label}
@@ -151,7 +152,7 @@ export default function BookingInner() {
             
             <div className="flex items-center gap-3 px-4 py-2 bg-bp-surface rounded-xl border border-bp-border">
                <ShieldCheck size={16} className="text-emerald-500" />
-              <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest leading-none">Protected Booking Flow</span>
+              <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest leading-none">{t.protectedFlow}</span>
             </div>
          </div>
       </div>
@@ -164,10 +165,10 @@ export default function BookingInner() {
             <div className="mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
               <button 
                 onClick={() => setStep(step === 2 ? 1 : 2)}
-                className="group flex items-center gap-3 px-6 py-3 bg-white border border-bp-border rounded-2xl text-[14px] font-black text-bp-body/40 hover:text-bp-accent hover:border-bp-accent/20 shadow-sm transition-all active:scale-95"
+                className="group flex items-center gap-3 px-6 py-3 bg-white border border-bp-border rounded-2xl text-[14px] font-bold text-bp-body/40 hover:text-bp-accent hover:border-bp-accent/20 shadow-sm transition-all active:scale-95"
               >
-                <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
-                Return to previous step
+                <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                {t.returnToPrevious}
               </button>
             </div>
           )}
@@ -226,7 +227,7 @@ export default function BookingInner() {
 
                   <div className="bg-bp-accent p-8 text-white relative z-10">
                     <div className="flex items-center justify-between mb-4">
-                       <h3 className="text-[20px] font-black tracking-tight uppercase">Order Review</h3>
+                       <h3 className="text-[20px] font-bold tracking-tight uppercase">Order Review</h3>
                        <LayoutDashboard size={20} className="opacity-30" />
                     </div>
                     <p className="text-[13px] text-white/60 font-bold tracking-widest uppercase">Summary of your session</p>
@@ -239,7 +240,7 @@ export default function BookingInner() {
                          {doctor.avatar_url ? (
                            <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
-                           <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-black text-2xl border-4 border-white shadow-xl">
+                           <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-bold text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}
                            </div>
                          )}
@@ -248,10 +249,10 @@ export default function BookingInner() {
                          </div>
                        </div>
                        <div>
-                         <p className="text-[17px] font-black text-bp-primary leading-none mb-2">{doctor.name}</p>
+                         <p className="text-[17px] font-bold text-bp-primary leading-none mb-2">{doctor.name}</p>
                          <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-bp-accent/20 rounded-lg w-fit">
                             <Award size={12} className="text-bp-accent" strokeWidth={3} />
-                            <p className="text-[10px] font-black text-bp-accent uppercase tracking-widest">{doctor.specialty.split(' ')[0]} Expert</p>
+                            <p className="text-[10px] font-bold text-bp-accent uppercase tracking-widest">{doctor.specialty.split(' ')[0]} Expert</p>
                          </div>
                        </div>
                     </div>
@@ -263,8 +264,8 @@ export default function BookingInner() {
                              <Calendar size={20} />
                           </div>
                           <div>
-                            <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Schedule</p>
-                            <p className="text-[16px] font-black text-bp-primary tracking-tight">{displayDate}</p>
+                            <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Schedule</p>
+                            <p className="text-[16px] font-bold text-bp-primary tracking-tight">{displayDate}</p>
                           </div>
                        </div>
                        
@@ -273,10 +274,10 @@ export default function BookingInner() {
                              <Clock size={20} />
                           </div>
                           <div>
-                            <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Duration</p>
+                            <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Duration</p>
                             <div className="flex items-center gap-2">
-                               <p className="text-[16px] font-black text-bp-primary tracking-tight">{time}</p>
-                               <span className="text-[11px] font-black text-[#059669] bg-emerald-50 px-2.5 py-1 rounded-lg">45 MIN</span>
+                               <p className="text-[16px] font-bold text-bp-primary tracking-tight">{time}</p>
+                               <span className="text-[11px] font-bold text-[#059669] bg-emerald-50 px-2.5 py-1 rounded-lg">45 MIN</span>
                             </div>
                           </div>
                        </div>
@@ -286,8 +287,8 @@ export default function BookingInner() {
                              <MapPin size={20} />
                           </div>
                           <div>
-                            <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Consultation Mode</p>
-                            <p className="text-[16px] font-black text-bp-primary leading-none">{visitType.replace('_', ' ').toUpperCase()}</p>
+                            <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Consultation Mode</p>
+                            <p className="text-[16px] font-bold text-bp-primary leading-none">{visitType.replace('_', ' ').toUpperCase()}</p>
                           </div>
                        </div>
                     </div>
@@ -301,8 +302,8 @@ export default function BookingInner() {
                                <User size={20} strokeWidth={3} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Patient Details</p>
-                               <p className="text-[16px] font-black text-bp-primary tracking-tight">{patient.fullName}</p>
+                                <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Patient Details</p>
+                               <p className="text-[16px] font-bold text-bp-primary tracking-tight">{patient.fullName}</p>
                             </div>
                           </div>
                           {visitType === 'home_visit' && patient.homeVisitAddress ? (
@@ -311,8 +312,8 @@ export default function BookingInner() {
                                  <MapPin size={20} strokeWidth={3} />
                               </div>
                               <div>
-                                <p className="text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Visit Address</p>
-                                <p className="text-[15px] font-black text-bp-primary tracking-tight leading-relaxed">{patient.homeVisitAddress}</p>
+                                <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Visit Address</p>
+                                <p className="text-[15px] font-bold text-bp-primary tracking-tight leading-relaxed">{patient.homeVisitAddress}</p>
                               </div>
                             </div>
                           ) : null}
@@ -323,24 +324,24 @@ export default function BookingInner() {
                     {/* Price Matrix (High Contrast) */}
                     <div className="pt-10 mt-4 border-t border-bp-border">
                        <div className="flex justify-between items-center mb-4 px-2">
-                          <span className="text-[14px] font-black text-bp-body/30 uppercase tracking-widest">Consultation</span>
-                          <span className="text-[16px] font-black text-bp-primary">₹{doctor.fee.toLocaleString('en-IN')}</span>
+                          <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">Consultation</span>
+                          <span className="text-[16px] font-bold text-bp-primary">₹{doctor.fee.toLocaleString('en-IN')}</span>
                        </div>
                        <div className="flex justify-between items-center mb-4 px-2">
-                          <span className="text-[14px] font-black text-bp-body/30 uppercase tracking-widest">GST (18%)</span>
-                          <span className="text-[16px] font-black text-bp-primary">₹{Math.round(doctor.fee * 0.18).toLocaleString('en-IN')}</span>
+                          <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">GST (18%)</span>
+                          <span className="text-[16px] font-bold text-bp-primary">₹{Math.round(doctor.fee * 0.18).toLocaleString('en-IN')}</span>
                        </div>
                        <div className="flex justify-between items-center mb-8 px-2">
-                          <span className="text-[14px] font-black text-bp-body/30 uppercase tracking-widest">Platform Fee</span>
-                          <span className="text-[13px] font-black text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
+                          <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">Platform Fee</span>
+                          <span className="text-[13px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
                        </div>
                        <div className="flex justify-between items-center py-6 px-8 bg-bp-primary rounded-[28px] shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
-                          <span className="text-[14px] font-black text-white/40 uppercase tracking-widest">{amountLabel}</span>
-                          <span className="text-[26px] font-black text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
+                          <span className="text-[14px] font-bold text-white/40 uppercase tracking-widest">{amountLabel}</span>
+                          <span className="text-[26px] font-bold text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
                        </div>
                     </div>
 
-                    <div className="flex items-center justify-center gap-3 text-[11px] font-black text-bp-body/30 uppercase tracking-[0.2em] pt-4">
+                    <div className="flex items-center justify-center gap-3 text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] pt-4">
                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
                         Encrypted Booking Request
                     </div>

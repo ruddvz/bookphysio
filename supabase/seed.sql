@@ -10,11 +10,3 @@ INSERT INTO specialties (name, slug) VALUES
   ('Spine & Back Pain', 'spine'),
   ('Women''s Health Physiotherapy', 'womens-health'),
   ('Home Visit Physiotherapy', 'home-visit');
-
--- Insurance plans
-INSERT INTO insurances (name) VALUES
-  ('Star Health Insurance'),
-  ('ICICI Lombard Health'),
-  ('HDFC ERGO Health'),
-  ('Niva Bupa Health Insurance'),
-  ('Care Health Insurance');

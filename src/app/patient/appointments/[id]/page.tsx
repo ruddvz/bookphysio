@@ -134,7 +134,7 @@ export default function PatientAppointmentDetail() {
         Back to Appointments
       </Link>
 
-      <h1 className="text-[32px] sm:text-[40px] font-black text-bp-primary tracking-tighter mb-1">Appointment Detail</h1>
+      <h1 className="text-[32px] sm:text-[40px] font-bold text-bp-primary tracking-tighter mb-1">Appointment Detail</h1>
       <p className="text-[15px] text-bp-body mb-10">
         Ref: <span className="font-mono bg-bp-surface px-2 py-0.5 rounded-md">{refCode}</span>
       </p>
@@ -149,7 +149,7 @@ export default function PatientAppointmentDetail() {
             }
           </div>
           <div className="flex-1">
-            <h2 className="text-[24px] font-black text-bp-primary tracking-tight mb-1">{doctorName}</h2>
+            <h2 className="text-[24px] font-bold text-bp-primary tracking-tight mb-1">{doctorName}</h2>
             <p className="text-[15px] text-bp-body font-medium mb-4">Physiotherapist Specialist</p>
 
             <div className="flex flex-col gap-3">
@@ -177,7 +177,7 @@ export default function PatientAppointmentDetail() {
             </div>
           </div>
           <div className="shrink-0">
-            <span className={cn('inline-flex items-center text-[12px] font-black tracking-wider uppercase px-4 py-1.5 rounded-full border', 
+            <span className={cn('inline-flex items-center text-[12px] font-bold tracking-wider uppercase px-4 py-1.5 rounded-full border', 
               appt.status === 'confirmed' ? 'bg-bp-accent/10 text-bp-accent border-bp-accent/10' : 
               appt.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
               appt.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200' :
@@ -198,7 +198,7 @@ export default function PatientAppointmentDetail() {
             <div className="space-y-1">
               <div className="flex justify-between sm:block">
                 <span className="text-[14px] text-bp-body/60 sm:hidden">{summaryAmountLabel}</span>
-                <p className="text-[32px] font-black text-bp-primary leading-none tracking-tighter">₹{totalDue.toLocaleString('en-IN')}</p>
+                <p className="text-[32px] font-bold text-bp-primary leading-none tracking-tighter">₹{totalDue.toLocaleString('en-IN')}</p>
               </div>
               <p className="text-[12px] text-bp-body/60 font-medium">{summaryCopy}</p>
             </div>
@@ -217,14 +217,14 @@ export default function PatientAppointmentDetail() {
 
       {appt.patient_reason && (
         <div className={cn(SECTION_CARD_CLS, "bg-bp-surface border-none")}>
-          <h3 className="text-[16px] font-black text-bp-primary tracking-tight mb-3">Your Booking Notes</h3>
+          <h3 className="text-[16px] font-bold text-bp-primary tracking-tight mb-3">Your Booking Notes</h3>
           <p className="text-[15px] text-[#444444] leading-relaxed">{appt.patient_reason}</p>
         </div>
       )}
 
       {providerNotes && (
         <div className={cn(SECTION_CARD_CLS, "bg-bp-surface border-none")}>
-          <h3 className="text-[16px] font-black text-bp-primary tracking-tight mb-3">Physiotherapist Notes</h3>
+          <h3 className="text-[16px] font-bold text-bp-primary tracking-tight mb-3">Physiotherapist Notes</h3>
           <p className="text-[15px] text-[#444444] leading-relaxed italic">&ldquo;{providerNotes}&rdquo;</p>
         </div>
       )}
@@ -236,7 +236,7 @@ export default function PatientAppointmentDetail() {
             <>
               <Link
                 href="/search"
-                className="flex-[2] flex items-center justify-center gap-2 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-black tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5 cursor-pointer outline-none"
+                className="flex-[2] flex items-center justify-center gap-2 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-bold tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5 cursor-pointer outline-none"
               >
                 <RefreshCw className="w-5 h-5" />
                 Find Replacement Session
@@ -244,7 +244,7 @@ export default function PatientAppointmentDetail() {
               <button
                 type="button"
                 onClick={() => setConfirmCancel(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-8 py-5 border-2 border-[#DC2626] text-[#DC2626] hover:bg-[#FEF2F2] rounded-[32px] text-[16px] font-black tracking-tight transition-all cursor-pointer outline-none"
+                className="flex-1 flex items-center justify-center gap-2 px-8 py-5 border-2 border-[#DC2626] text-[#DC2626] hover:bg-[#FEF2F2] rounded-[32px] text-[16px] font-bold tracking-tight transition-all cursor-pointer outline-none"
               >
                 <X className="w-5 h-5" />
                 Cancel
@@ -254,7 +254,7 @@ export default function PatientAppointmentDetail() {
             <div className="w-full p-8 bg-red-50 border-2 border-red-100 rounded-[32px] animate-in slide-in-from-top-4 duration-300">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="text-center sm:text-left">
-                  <p className="text-[18px] text-[#DC2626] font-black mb-1">Are you sure you want to cancel?</p>
+                  <p className="text-[18px] text-[#DC2626] font-bold mb-1">Are you sure you want to cancel?</p>
                   <p className="text-[14px] text-red-600/70 font-medium">This action cannot be undone once confirmed.</p>
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
@@ -262,14 +262,14 @@ export default function PatientAppointmentDetail() {
                     type="button"
                     onClick={() => cancelMut.mutate()}
                     disabled={cancelMut.isPending}
-                    className="flex-1 sm:flex-initial px-8 py-3 bg-[#DC2626] text-white text-[15px] font-black rounded-full shadow-lg shadow-red-200 disabled:opacity-50 cursor-pointer transition-transform hover:scale-105"
+                    className="flex-1 sm:flex-initial px-8 py-3 bg-[#DC2626] text-white text-[15px] font-bold rounded-full shadow-lg shadow-red-200 disabled:opacity-50 cursor-pointer transition-transform hover:scale-105"
                   >
                     {cancelMut.isPending ? 'Processing...' : 'Yes, Cancel'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmCancel(false)}
-                    className="flex-1 sm:flex-initial px-8 py-3 bg-white text-[15px] font-black text-bp-body border border-bp-border rounded-full cursor-pointer hover:bg-bp-surface transition-colors"
+                    className="flex-1 sm:flex-initial px-8 py-3 bg-white text-[15px] font-bold text-bp-body border border-bp-border rounded-full cursor-pointer hover:bg-bp-surface transition-colors"
                   >
                     Keep It
                   </button>

@@ -136,7 +136,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
         <div className="flex gap-5">
           <div className="relative shrink-0">
             {doctor.avatarUrl ? (
-              <div className="relative h-24 w-24 rounded-[24px] overflow-hidden shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+              <div className="relative h-24 w-24 rounded-2xl overflow-hidden shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
                 <Image
                   src={doctor.avatarUrl}
                   alt={doctor.name}
@@ -146,7 +146,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 />
               </div>
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-[24px] bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+              <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
                 {initials}
               </div>
             )}
@@ -194,7 +194,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3">
+              <div className="rounded-xl border border-bp-border bg-bp-surface/50 p-3">
                 <div className="flex items-center gap-2 text-bp-body/40">
                   <MapPin size={14} />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Location</span>
@@ -203,7 +203,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
               </div>
 
-              <div className="rounded-[18px] border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
+              <div className="rounded-xl border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-bp-body/40">
                     <Clock3 size={14} />
@@ -215,7 +215,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                       </div>
-                      <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Live</span>
+                      <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Live</span>
                     </div>
                   )}
                 </div>

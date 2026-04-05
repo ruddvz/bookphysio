@@ -68,10 +68,6 @@
 - [ ] Set `UPSTASH_REDIS_REST_TOKEN`
 - [ ] Verify rate limiting works (OTP send, API routes)
 
-### Mapbox (Maps)
-- [ ] Create production-restricted token (scoped to `bookphysio.in`)
-- [ ] Set `NEXT_PUBLIC_MAPBOX_TOKEN`
-
 ---
 
 ## Phase 3: SEO & Social

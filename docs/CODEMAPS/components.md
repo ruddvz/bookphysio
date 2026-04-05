@@ -7,14 +7,14 @@
 | File | Purpose | Props | Imported By |
 |------|---------|-------|-------------|
 | `Navbar.tsx` | Top navigation: logo, nav links, Browse dropdown, Login/Signup CTAs, mobile hamburger | none | 12 public pages, not-found |
-| `Footer.tsx` | Page footer: links grid, Indian insurance column, copyright | none | 14 pages incl. patient + provider layouts |
+| `Footer.tsx` | Page footer: links grid, trust/resources links, copyright | none | 14 pages incl. patient + provider layouts |
 | `DoctorCard.tsx` | Doctor result card: avatar, name, credentials, rating, location, fee, book CTA | `Doctor` type (id, name, credentials, specialty, rating, reviewCount, location, distance, nextSlot, visitTypes, fee, icpVerified) | search, specialty, city pages |
 | `HeroSection.tsx` | Homepage hero: animated specialty cycling, search bar, illustration cards | none | page.tsx (homepage only) |
 | `HowItWorks.tsx` | Homepage: 3-step feature cards with teal links | none | page.tsx |
 | `TopSpecialties.tsx` | Homepage: specialty card grid | none | page.tsx |
 | `AppSection.tsx` | Homepage: app download CTA, QR code, app store badges | none | page.tsx |
 | `ProviderCTA.tsx` | Homepage: "List your practice" sign-up CTA | none | page.tsx |
-| `HealthSystems.tsx` | Homepage: hospital network / insurance logos | none | page.tsx |
+| `HealthSystems.tsx` | Homepage: hospital network / trust logos | none | page.tsx |
 | `CityLinks.tsx` | Homepage: Indian cities accordion | none | page.tsx |
 | `CommonReasons.tsx` | Homepage: physio visit reasons accordion | none | page.tsx |
 | `JobsCTA.tsx` | Homepage: careers CTA | none | page.tsx |

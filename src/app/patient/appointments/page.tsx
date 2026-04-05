@@ -137,11 +137,11 @@ function PatientAppointmentsContent() {
       {/* Header with Search/Filter */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
         <div className="space-y-6">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-black uppercase text-bp-accent tracking-widest shadow-sm">
+           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
               <Activity size={12} strokeWidth={3} />
               Session Tracker
            </div>
-           <h1 className="text-[42px] md:text-[52px] font-black text-bp-primary leading-none tracking-tighter">
+           <h1 className="text-[42px] md:text-[52px] font-bold text-bp-primary leading-none tracking-tighter">
              My Treatment <span className="text-bp-accent italic">Journey</span>
            </h1>
            <p className="text-[16px] md:text-[18px] font-medium text-bp-body/60 max-w-[500px] leading-relaxed">
@@ -149,11 +149,11 @@ function PatientAppointmentsContent() {
            </p>
         </div>
         <div className="flex items-center gap-4">
-           <button className="h-16 px-8 bg-white border border-bp-border rounded-[24px] text-[14px] font-black text-bp-primary flex items-center gap-3 hover:border-bp-accent/20 hover:text-bp-accent transition-all shadow-sm active:scale-95">
+           <button className="h-16 px-8 bg-white border border-bp-border rounded-[24px] text-[14px] font-bold text-bp-primary flex items-center gap-3 hover:border-bp-accent/20 hover:text-bp-accent transition-all shadow-sm active:scale-95">
               <Filter size={18} strokeWidth={2.5} />
               Advanced Filters
            </button>
-           <Link href="/search" className="h-16 px-8 bg-bp-primary text-white rounded-[24px] text-[15px] font-black flex items-center gap-4 hover:bg-bp-primary/95 hover:scale-[1.03] transition-all shadow-xl shadow-bp-primary/10 active:scale-95">
+           <Link href="/search" className="h-16 px-8 bg-bp-primary text-white rounded-[24px] text-[15px] font-bold flex items-center gap-4 hover:bg-bp-primary/95 hover:scale-[1.03] transition-all shadow-xl shadow-bp-primary/10 active:scale-95">
               <CalendarPlus size={20} strokeWidth={3} />
               Book New Session
            </Link>
@@ -167,7 +167,7 @@ function PatientAppointmentsContent() {
             key={t}
             onClick={() => switchTab(t)}
             className={cn(
-              "px-10 py-4 rounded-[28px] text-[14px] font-black tracking-tight transition-all duration-500 capitalize relative overflow-hidden group",
+              "px-10 py-4 rounded-[28px] text-[14px] font-bold tracking-tight transition-all duration-500 capitalize relative overflow-hidden group",
               tab === t
                 ? "bg-white text-bp-accent shadow-xl shadow-bp-primary/5 ring-1 ring-bp-border/50"
                 : "text-bp-body/40 hover:text-bp-primary"
@@ -188,12 +188,12 @@ function PatientAppointmentsContent() {
         ) : error ? (
           <div className="bg-white border border-bp-border rounded-[40px] shadow-sm py-20 px-10 text-center">
             <CircleAlert className="w-12 h-12 text-red-500 mx-auto mb-6 opacity-20" />
-            <h3 className="text-[20px] font-black text-bp-primary mb-2">Sync Interrupted</h3>
+            <h3 className="text-[20px] font-bold text-bp-primary mb-2">Sync Interrupted</h3>
             <p className="text-[15px] font-bold text-bp-body/40 mb-8">We couldn&apos;t retrieve your clinical records right now.</p>
             <button
               type="button"
               onClick={fetchAppointments}
-              className="px-10 py-4 bg-bp-accent text-white rounded-full text-[14px] font-black uppercase tracking-widest hover:bg-bp-primary transition-colors shadow-lg active:scale-95 shadow-bp-primary/10"
+              className="px-10 py-4 bg-bp-accent text-white rounded-full text-[14px] font-bold uppercase tracking-widest hover:bg-bp-primary transition-colors shadow-lg active:scale-95 shadow-bp-primary/10"
             >
               Retry Connection
             </button>
@@ -213,7 +213,7 @@ function PatientAppointmentsContent() {
                 tab === 'upcoming' && (
                   <Link
                     href="/search"
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-bp-primary text-white rounded-[24px] font-black text-[16px] hover:bg-bp-accent transition-all hover:scale-[1.03] shadow-xl"
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-bp-primary text-white rounded-[24px] font-bold text-[16px] hover:bg-bp-accent transition-all hover:scale-[1.03] shadow-xl"
                   >
                     Browse Specialists
                     <ArrowRight size={20} strokeWidth={3} />
@@ -231,17 +231,17 @@ function PatientAppointmentsContent() {
               >
                 <div className="flex flex-col md:flex-row md:items-center gap-6 flex-1 min-w-0">
                   {/* Provider Brand */}
-                  <div className="w-20 h-20 rounded-[32px] bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[28px] font-black shadow-sm group-hover:scale-110 group-hover:bg-bp-accent/5 transition-all">
+                  <div className="w-20 h-20 rounded-[32px] bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[28px] font-bold shadow-sm group-hover:scale-110 group-hover:bg-bp-accent/5 transition-all">
                      {providerDisplayName(appt).charAt(0)}
                   </div>
                   
                   {/* Details */}
                   <div className="flex-1 min-w-0 space-y-3">
                     <div className="flex items-center gap-4 flex-wrap">
-                      <h3 className="text-[20px] md:text-[24px] font-black text-bp-primary tracking-tighter truncate leading-none">
+                      <h3 className="text-[20px] md:text-[24px] font-bold text-bp-primary tracking-tighter truncate leading-none">
                         {providerDisplayName(appt)}
                       </h3>
-                      <div className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm", STATUS_COLORS[appt.status])}>
+                      <div className={cn("px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border shadow-sm", STATUS_COLORS[appt.status])}>
                          {STATUS_LABELS[appt.status] || appt.status}
                       </div>
                     </div>
@@ -259,13 +259,13 @@ function PatientAppointmentsContent() {
                     </div>
 
                     <div className="flex items-center gap-8 pt-4">
-                       <div className="flex items-center gap-2.5 text-[15px] font-black text-bp-accent bg-bp-accent/5 px-4 py-2 rounded-2xl border border-bp-accent/10">
+                       <div className="flex items-center gap-2.5 text-[15px] font-bold text-bp-accent bg-bp-accent/5 px-4 py-2 rounded-2xl border border-bp-accent/10">
                           <Calendar size={16} strokeWidth={3} />
                           {appt.availabilities?.starts_at ? formatApptDate(appt.availabilities.starts_at) : 'Review Pending'}
                        </div>
                        <div className="flex items-center gap-3">
-                          <span className="text-bp-body/20 text-[11px] font-black uppercase tracking-widest">Session Fee</span>
-                          <span className="text-[18px] font-black text-bp-primary tracking-tighter">₹{appt.fee_inr}</span>
+                          <span className="text-bp-body/20 text-[11px] font-bold uppercase tracking-widest">Session Fee</span>
+                          <span className="text-[18px] font-bold text-bp-primary tracking-tighter">₹{appt.fee_inr}</span>
                        </div>
                     </div>
                   </div>
@@ -273,7 +273,7 @@ function PatientAppointmentsContent() {
 
                 <Link
                   href={`/patient/appointments/${appt.id}`}
-                  className="h-16 px-10 rounded-[28px] bg-bp-primary text-white text-[15px] font-black flex items-center justify-center gap-3 hover:bg-bp-primary/95 transition-all shadow-xl shadow-bp-primary/10 active:scale-95 group/view md:w-auto w-full group-hover:scale-[1.03]"
+                  className="h-16 px-10 rounded-[28px] bg-bp-primary text-white text-[15px] font-bold flex items-center justify-center gap-3 hover:bg-bp-primary/95 transition-all shadow-xl shadow-bp-primary/10 active:scale-95 group/view md:w-auto w-full group-hover:scale-[1.03]"
                 >
                   View Records
                   <ArrowRight size={20} strokeWidth={3} className="group-hover/view:translate-x-1.5 transition-transform" />
@@ -288,12 +288,12 @@ function PatientAppointmentsContent() {
       <div className="mt-20 flex flex-wrap items-center justify-center gap-8 md:gap-12 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
          <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center"><CheckCircle2 size={18} /></div>
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">IAP Verified Care</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body">IAP Verified Care</span>
          </div>
          <div className="h-6 w-px bg-bp-border hidden md:block"></div>
          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent font-black">256</div>
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body">AES Encrypted Data</span>
+            <div className="w-10 h-10 bg-bp-surface rounded-xl flex items-center justify-center text-bp-accent font-bold">256</div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body">AES Encrypted Data</span>
          </div>
       </div>
     </div>

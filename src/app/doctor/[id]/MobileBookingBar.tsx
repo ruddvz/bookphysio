@@ -18,12 +18,12 @@ export default function MobileBookingBar({ fee, feeLabel, doctorName }: MobileBo
         
         <div className="pl-5 relative z-10">
           <div className="flex items-baseline gap-1.5 leading-none">
-             <span className="text-[24px] font-black text-white tracking-tighter">₹{fee.toLocaleString('en-IN')}</span>
-             <span className="text-[10px] text-white/30 font-black uppercase tracking-widest leading-none mb-1">{feeLabel}</span>
+             <span className="text-[24px] font-bold text-white tracking-tighter">₹{fee.toLocaleString('en-IN')}</span>
+             <span className="text-[10px] text-white/30 font-bold uppercase tracking-widest leading-none mb-1">{feeLabel}</span>
           </div>
           <div className="flex items-center gap-2 mt-1.5 leading-none">
              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-             <p className="text-[11px] text-white/50 font-black uppercase tracking-widest truncate max-w-[120px]">{doctorName.replace('Dr. ', '')}</p>
+             <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest truncate max-w-[120px]">{doctorName.replace('Dr. ', '')}</p>
           </div>
         </div>
         
@@ -37,7 +37,7 @@ export default function MobileBookingBar({ fee, feeLabel, doctorName }: MobileBo
                window.scrollTo({ top: 400, behavior: 'smooth' })
             }
           }}
-          className="relative h-[60px] bg-bp-accent text-white px-8 rounded-[24px] transition-all duration-500 flex items-center justify-center gap-2 overflow-hidden active:scale-95 shadow-xl shadow-bp-accent/20 font-black text-[15px] tracking-tight group/btn"
+          className="relative h-[60px] bg-bp-accent text-white px-8 rounded-[24px] transition-all duration-500 flex items-center justify-center gap-2 overflow-hidden active:scale-95 shadow-xl shadow-bp-accent/20 font-bold text-[15px] tracking-tight group/btn"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
           
@@ -48,7 +48,7 @@ export default function MobileBookingBar({ fee, feeLabel, doctorName }: MobileBo
         </button>
       </div>
       
-      <div className="mt-4 flex items-center justify-center gap-2 text-[9px] font-black text-bp-body/30 uppercase tracking-[0.3em] pointer-events-auto bg-white/40 backdrop-blur-sm self-center px-4 py-1.5 rounded-full border border-black/[0.03] mx-auto w-fit">
+      <div className="mt-4 flex items-center justify-center gap-2 text-[9px] font-bold text-bp-body/30 uppercase tracking-[0.3em] pointer-events-auto bg-white/40 backdrop-blur-sm self-center px-4 py-1.5 rounded-full border border-black/[0.03] mx-auto w-fit">
          <Zap size={10} className="text-bp-accent" />
          Official Medical Channel
       </div>

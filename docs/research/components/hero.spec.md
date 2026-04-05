@@ -11,8 +11,8 @@
   <div> (container-bp, pt-[70px] pb-[120px])
     <div> (2-col: text-left ~55%, illustration-right ~45%)
       <div> (text column)
-        <h1> "Book local <span.animate-specialty>physiotherapists</span>
-              who take your insurance"
+        <h1> "Book verified physiotherapists in India for
+              <span.animate-specialty>sports rehab</span>"
         <SearchBar />
       <div> (illustration column, decorative hands/card art)
 ```
@@ -110,14 +110,12 @@
   - Position: absolute, right: 0, top: 0, height: 100%, object-fit: contain
 
 ## Text Content (adapted for bookphysio)
-- Heading: "Book local [SPECIALTY] who take your insurance"
+- Heading: "Book verified physiotherapists in India for [SPECIALTY]"
 - Search placeholder 1: "Condition, injury or physio name"
 - Search placeholder 2: "Mumbai, MH"
-- Search placeholder 3: "Add insurance"
 - CTA button: "🔍 Find Physio"
 - Label above search field 1: "Search"
 - Label above search field 2: "Location"
-- Label above search field 3: "Add insurance"
 
 ## Responsive Behavior
 - **Desktop (1440px):** 2-col layout, heading 44px, illustration visible right

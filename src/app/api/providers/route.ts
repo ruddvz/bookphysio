@@ -162,6 +162,7 @@ async function searchProvidersWithoutRpc({
   lat,
   lng,
   radius_km,
+  query,
 }: {
   supabase: Awaited<ReturnType<typeof createClient>>
   city: string | null
@@ -174,6 +175,7 @@ async function searchProvidersWithoutRpc({
   lat: number | undefined
   lng: number | undefined
   radius_km: number
+  query?: string
 }): Promise<{ data: SearchProviderRpcRow[]; error: unknown }> {
   const maximumFee = max_fee_inr ?? 2000000
   let fallbackQuery = supabase
@@ -199,6 +201,10 @@ async function searchProvidersWithoutRpc({
 
   if (resolvedSpecialtyId) {
     fallbackQuery = fallbackQuery.contains('specialty_ids', [resolvedSpecialtyId])
+  }
+
+  if (query) {
+    fallbackQuery = fallbackQuery.ilike('users.full_name', `%${query}%`)
   }
 
   const { data: fallbackProviderData, error: fallbackProviderError } = await fallbackQuery
@@ -310,7 +316,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
   const supabase = await createClient()
 
   let resolvedSpecialtyId: string | null = null
@@ -342,6 +348,13 @@ export async function GET(request: NextRequest) {
     p_limit: limit
   })
 
+  // If RPC doesn't support query yet, we force fallback if query is present
+  if (!error && query) {
+     // We can't easily filter by query in the current RPC v2
+     // So we'll force the fallback if a text query is present to ensure correct results
+     error = new Error('RPC does not support text query') as any
+  }
+
   if (error) {
     console.error('Supabase RPC error:', error)
 
@@ -357,6 +370,7 @@ export async function GET(request: NextRequest) {
       lat,
       lng,
       radius_km: Number(radius_km),
+      query,
     })
 
     data = fallbackSearch.data

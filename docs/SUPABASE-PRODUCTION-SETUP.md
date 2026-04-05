@@ -32,7 +32,7 @@ After migrations, run the seed file:
 supabase/seed.sql
 ```
 
-This inserts specialties and insurance plans needed for the app to function.
+This inserts specialties needed for the app to function.
 
 ## 4. Configure Authentication
 
@@ -114,7 +114,6 @@ Go to **GitHub repo > Settings > Secrets and variables > Actions** and add:
 | `RAZORPAY_KEY_ID` | Payment processing |
 | `RAZORPAY_KEY_SECRET` | Payment processing |
 | `RAZORPAY_WEBHOOK_SECRET` | Payment webhooks |
-| `NEXT_PUBLIC_MAPBOX_TOKEN` | Map view on search |
 | `RESEND_API_KEY` | Transactional email |
 | `UPSTASH_REDIS_REST_URL` | Rate limiting |
 | `UPSTASH_REDIS_REST_TOKEN` | Rate limiting |

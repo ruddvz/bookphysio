@@ -13,7 +13,6 @@ https://www.zocdoc.com
 - [x] Search Results — `/search` — doctor cards + map view, filters sidebar
 - [x] Doctor Profile — `/doctor/{name}-{id}` — photo, bio, credentials, availability, reviews, book CTA
 - [x] Specialty Landing — `/specialty/{name}` — e.g. physiotherapy, sports rehab
-- [x] Insurance Landing — `/insurance/{name}` — filtered doctor search by insurance
 - [x] City Landing — `/city/{name}` — e.g. New Delhi physiotherapists
 - [x] How It Works — `/how-it-works`
 - [x] About — `/about`
@@ -118,15 +117,15 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 | US state abbreviations (NY, CA) | Indian states (DL, MH, KA…) |
 | ZIP codes | 6-digit pincodes (`/^[1-9][0-9]{5}$/`) |
 | "Near me" geolocation | India-bounded geolocation |
-| Mapbox map centered on USA | Mapbox map centered on India (lat: 20.5937, lng: 78.9629) |
+| Interactive US map | Lightweight India-first location cues |
 
 ### Currency & Payments
 | ZocDoc | bookphysio.in |
 |--------|--------------|
 | USD ($) | INR (₹) — stored as integer rupees, NEVER paise |
-| Insurance billing (US) | Razorpay (UPI, cards, netbanking, wallets) |
-| Insurance filter | "Pay via UPI / Card / Cash" filter |
-| "Accepts your insurance" badge | "UPI accepted" / "Home visit available" badge |
+| US billing flow | Razorpay (UPI, cards, netbanking, wallets) |
+| Payment filter | "Pay via UPI / Card / Cash" filter |
+| Payment / visit badge | "UPI accepted" / "Home visit available" badge |
 | Price: "$150" | Price: "₹800" (example) |
 
 ### Authentication
@@ -163,7 +162,7 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 | "Book online" | "Book online" (keep) |
 | "Same-day appointments" | "Same-day appointments" (keep) |
 | "Verified reviews" | "Verified reviews" (keep) |
-| Insurance jargon | "No hidden charges" / "Pay at clinic" |
+| Billing jargon | "No hidden charges" / "Pay at clinic" |
 | Phone: (555) 000-0000 | Phone: +91 98765 43210 |
 | Date: MM/DD/YYYY | Date: DD/MM/YYYY |
 | Time: 12-hour AM/PM | Time: 12-hour AM/PM (keep — common in India) |

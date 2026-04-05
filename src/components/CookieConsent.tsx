@@ -29,18 +29,27 @@ export function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border p-4 shadow-lg sm:p-6">
-      <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground text-center sm:text-left">
-          We use cookies to improve your experience, handle secure logins, and analyze site traffic. By continuing to use our site, you agree to our use of cookies.
-        </p>
-        <div className="flex gap-3 shrink-0">
-          <Button variant="outline" size="sm" onClick={handleReject}>
-            Decline Non-Essential
-          </Button>
-          <Button size="sm" onClick={handleAccept} className="bg-bp-primary text-white hover:bg-bp-primary/90">
-            Accept All
-          </Button>
+    <div className="fixed bottom-8 left-8 right-8 z-[100] md:left-auto md:max-w-md animate-in slide-in-from-bottom-10 duration-700">
+      <div className="bg-white rounded-2xl border border-bp-border p-6 shadow-2xl shadow-bp-primary/10">
+        <div className="flex flex-col gap-4">
+          <p className="text-[14px] leading-relaxed text-bp-body font-medium">
+            We use essential cookies for clinical security and performance.
+            By clicking &ldquo;Accept&rdquo;, you agree to our verification protocols.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleAccept}
+              className="flex-1 bg-bp-primary text-white py-3 rounded-xl text-[14px] font-bold hover:bg-bp-accent transition-all active:scale-[0.98]"
+            >
+              Accept
+            </button>
+            <button
+              onClick={handleReject}
+              className="px-6 py-3 border border-bp-border rounded-xl text-[14px] font-bold text-bp-body/60 hover:bg-bp-surface transition-all active:scale-[0.98]"
+            >
+              Essential Only
+            </button>
+          </div>
         </div>
       </div>
     </div>

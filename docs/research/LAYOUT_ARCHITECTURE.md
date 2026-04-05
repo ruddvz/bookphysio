@@ -28,12 +28,12 @@ Standardized layout architecture for the ZocDoc clone, adapted for BookPhysio.
 - **Section Margins:** `48px-64px` between sections (Desktop), `24px-32px` (Mobile).
 
 ### Search Results (`/search`)
-- **Horizontal Split (Desktop):** Sidebar (Filters) | List (Doctor Cards) | Map (MapView - optionally sticky or side-panel).
-- **Vertical Stack (Mobile):** Filters (Sticky/Expandable) -> List (Doctor Cards) -> Map (Toggle button).
+- **Horizontal Split (Desktop):** Sidebar (Filters) | List (Doctor Cards) with city and coverage context.
+- **Vertical Stack (Mobile):** Filters (Sticky/Expandable) -> List (Doctor Cards).
 - **Infinite Scroll / Pagination:** Results load as user scrolls or through a 'Load more' button.
 
 ### Doctor Profile (`/doctor/{id}`)
-- **Left Column (70%):** Profile info, bio, reviews, insurance info.
+- **Left Column (70%):** Profile info, bio, reviews, and visit format details.
 - **Right Column (30% - Sticky):** Appointment booking widget (Calendar/Time picker).
 - **Mobile:** Booking widget is either at the bottom (floating) or top-of-page before bio.
 

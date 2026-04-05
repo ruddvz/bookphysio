@@ -71,7 +71,7 @@ function FilterDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2.5 px-6 py-3 rounded-2xl border text-[14px] font-black tracking-tight transition-all whitespace-nowrap active:scale-95 group",
+          "flex items-center gap-2.5 px-6 py-3 rounded-xl border text-[14px] font-bold tracking-tight transition-all whitespace-nowrap active:scale-95 group",
           value 
             ? "border-bp-accent/30 bg-bp-accent/10/50 text-bp-accent shadow-sm shadow-bp-accent/10" 
             : "border-bp-border bg-white text-bp-body hover:border-bp-body/30 hover:bg-bp-surface/50"
@@ -83,8 +83,8 @@ function FilterDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-bp-border rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-50 py-3 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-          <div className="px-4 py-2 text-[11px] font-black text-bp-body/40 uppercase tracking-widest border-b border-bp-border/50 mb-2">
+        <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-bp-border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-50 py-3 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+          <div className="px-4 py-2 text-[11px] font-bold text-bp-body/40 uppercase tracking-widest border-b border-bp-border/50 mb-2">
             Select {label}
           </div>
           <button
@@ -193,13 +193,13 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         />
 
         {/* Visit Type Toggle (Modern Segmented Control) */}
-        <div className="flex bg-bp-surface p-1.5 rounded-2xl border border-bp-border ml-1 shadow-inner">
+        <div className="flex bg-bp-surface p-1.5 rounded-xl border border-bp-border ml-1 shadow-inner">
           {['Any', ...VISIT_TYPES].map((type) => (
             <button
               key={type}
               onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
               className={cn(
-                "px-5 py-2 rounded-xl text-[13px] font-black transition-all duration-300",
+                "px-5 py-2 rounded-xl text-[13px] font-bold transition-all duration-300",
                 currentVisitType === type 
                   ? "bg-white text-bp-accent shadow-[0_4px_12px_rgba(0,0,0,0.05)] translate-y-[-1px]" 
                   : "text-bp-body/40 hover:text-bp-body"
@@ -211,10 +211,10 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         </div>
 
         {/* Pricing Filter (Premium Slider) */}
-        <div className="flex items-center gap-4 px-6 py-2.5 rounded-2xl border border-bp-border bg-white ml-1 hover:border-bp-body/30 transition-colors">
+        <div className="flex items-center gap-4 px-6 py-2.5 rounded-xl border border-bp-border bg-white ml-1 hover:border-bp-body/30 transition-colors">
           <div className="flex flex-col">
-             <span id="max-fee-label" className="text-[9px] font-black text-bp-body/40 uppercase tracking-widest leading-none mb-1">Max Fee</span>
-             <span className="text-[14px] font-black text-bp-accent whitespace-nowrap leading-none">₹{localMaxFee}</span>
+             <span id="max-fee-label" className="text-[9px] font-bold text-bp-body/40 uppercase tracking-widest leading-none mb-1">Max Fee</span>
+             <span className="text-[14px] font-bold text-bp-accent whitespace-nowrap leading-none">₹{localMaxFee}</span>
           </div>
           <input
             type="range"
@@ -234,7 +234,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="text-[14px] font-black text-bp-secondary hover:text-bp-secondary px-4 ml-auto transition-colors flex items-center gap-2 group"
+            className="text-[14px] font-bold text-bp-secondary hover:text-bp-secondary px-4 ml-auto transition-colors flex items-center gap-2 group"
           >
             <X size={14} className="group-hover:rotate-90 transition-transform" />
             Reset
@@ -246,7 +246,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
       <div className="md:hidden">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="inline-flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-bp-border bg-white text-[15px] font-black text-bp-primary shadow-md active:scale-[0.98] transition-transform"
+          className="inline-flex items-center justify-between w-full px-6 py-4 rounded-xl border border-bp-border bg-white text-[15px] font-bold text-bp-primary shadow-md active:scale-[0.98] transition-transform"
         >
           <div className="flex items-center gap-3">
              <div className="w-8 h-8 rounded-lg bg-bp-accent/10 flex items-center justify-center text-bp-accent">
@@ -270,7 +270,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
             
             <div className="flex items-center justify-between mb-10">
               <div>
-                 <h2 className="text-3xl font-black text-bp-primary tracking-tight mb-1">Search Filters</h2>
+                 <h2 className="text-3xl font-bold text-bp-primary tracking-tight mb-1">Search Filters</h2>
                  <p className="text-[14px] font-bold text-bp-body/40 tracking-tight">Personalize your results</p>
               </div>
               <button 
@@ -285,7 +285,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
               <section>
                 <div className="flex items-center gap-3 mb-6">
                    <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><Activity size={20} /></div>
-                   <label className="text-[13px] font-black text-bp-primary uppercase tracking-[0.1em]">Specialty</label>
+                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Specialty</label>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {SPECIALTIES.map(s => (
@@ -310,7 +310,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
 
 
                    <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><MapPin size={20} /></div>
-                   <label className="text-[13px] font-black text-bp-primary uppercase tracking-[0.1em]">Location</label>
+                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Location</label>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -335,12 +335,12 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
               <section>
                 <div className="flex items-center gap-3 mb-6">
                    <div className="w-10 h-10 bg-bp-secondary/10 rounded-xl flex items-center justify-center text-bp-secondary"><Wallet size={20} /></div>
-                   <label className="text-[13px] font-black text-bp-primary uppercase tracking-[0.1em]">Consultation Fee</label>
+                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Consultation Fee</label>
                 </div>
                 <div className="bg-bp-surface p-8 rounded-[32px] border border-bp-border/50">
                   <div className="flex justify-between items-end mb-6">
-                    <div className="text-4xl font-black text-bp-accent tracking-tighter">₹{localMaxFee}</div>
-                    <div className="text-[12px] font-black text-bp-body/30 uppercase tracking-widest leading-none pb-2">Limit</div>
+                    <div className="text-4xl font-bold text-bp-accent tracking-tighter">₹{localMaxFee}</div>
+                    <div className="text-[12px] font-bold text-bp-body/30 uppercase tracking-widest leading-none pb-2">Limit</div>
                   </div>
                   <input
                     type="range" min={0} max={2000} step={100} value={localMaxFee}
@@ -359,7 +359,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
             <div className="mt-16 flex gap-4 sticky bottom-0 bg-white/80 backdrop-blur-xl pt-4 pb-4">
               <button 
                 onClick={clearAll} 
-                className="flex-1 py-5 text-[15px] font-black text-bp-body/40 hover:text-bp-body transition-colors"
+                className="flex-1 py-5 text-[15px] font-bold text-bp-body/40 hover:text-bp-body transition-colors"
               >
                 Reset All
               </button>
@@ -368,7 +368,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
                   pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })
                   setDrawerOpen(false)
                 }}
-                className="flex-[2.5] py-5 rounded-[22px] bg-bp-accent text-white text-[17px] font-black shadow-2xl shadow-bp-accent/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
+                className="flex-[2.5] py-5 rounded-[22px] bg-bp-accent text-white text-[17px] font-bold shadow-2xl shadow-bp-accent/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
               >
                 Apply Filters
                 <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-sm">{total}</div>

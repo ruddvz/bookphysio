@@ -34,12 +34,12 @@ export default function ProviderCTA() {
                             <div className="w-3 h-3 rounded-full bg-yellow-400/60"></div>
                             <div className="w-3 h-3 rounded-full bg-green-400/60"></div>
                          </div>
-                         <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black text-white/40 uppercase tracking-widest">Dashboard</div>
+                         <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold text-white/40 uppercase tracking-widest">Dashboard</div>
                       </div>
                       <div className="grid grid-cols-3 gap-3">
                          {[['12', 'Today'], ['4.9★', 'Rating'], ['98%', 'Attend.']].map(([val, lbl]) => (
                             <div key={lbl} className="bg-white/10 rounded-2xl p-4">
-                               <p className="text-[18px] font-black text-white">{val}</p>
+                               <p className="text-[18px] font-bold text-white">{val}</p>
                                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{lbl}</p>
                             </div>
                          ))}
@@ -58,9 +58,9 @@ export default function ProviderCTA() {
                    <div className="absolute top-6 right-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl">
                       <div className="flex items-center gap-2 mb-1">
                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                         <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Growth</p>
+                         <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Growth</p>
                       </div>
-                      <p className="text-[20px] font-black text-white">+142%</p>
+                      <p className="text-[20px] font-bold text-white">+142%</p>
                       <p className="text-[10px] font-bold text-white/40">Patient volume</p>
                    </div>
                 </div>
@@ -69,11 +69,11 @@ export default function ProviderCTA() {
 
           {/* Right Column: Copy & Action */}
           <div className="w-full lg:w-1/2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/10 rounded-full text-[12px] font-black text-emerald-400 uppercase tracking-widest mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/10 rounded-full text-[12px] font-bold text-emerald-400 uppercase tracking-widest mb-6">
                Practice Solutions
             </div>
             
-            <h2 className="text-[36px] md:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-8">
+            <h2 className="text-[36px] md:text-[52px] font-bold text-white leading-[1.1] tracking-tight mb-8">
               Grow your practice <span className="text-emerald-400 italic">instantly.</span>
             </h2>
             
@@ -87,7 +87,7 @@ export default function ProviderCTA() {
                   <div className="mt-1 p-2 bg-bp-primary/50 rounded-xl text-emerald-400 group-hover/item:bg-emerald-400 group-hover/item:text-[#004D40] transition-all">
                     <bullet.icon size={20} strokeWidth={2.5} />
                   </div>
-                  <p className="text-[17px] font-black text-white/90 leading-snug pt-1">{bullet.text}</p>
+                  <p className="text-[17px] font-bold text-white/90 leading-snug pt-1">{bullet.text}</p>
                 </div>
               ))}
             </div>
@@ -95,12 +95,12 @@ export default function ProviderCTA() {
             <div className="flex flex-col sm:flex-row items-center gap-6">
                <Link
                 href="/auth/register/provider"
-                className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-black rounded-2xl shadow-xl shadow-bp-primary/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
+                className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-bold rounded-2xl shadow-xl shadow-bp-primary/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
                >
                  Get Started
                  <ArrowUpRight size={22} className="stroke-[3]" />
                </Link>
-               <Link href="#" className="text-[15px] font-black text-white/60 hover:text-white transition-colors underline decoration-white/20 underline-offset-4">
+               <Link href="#" className="text-[15px] font-bold text-white/60 hover:text-white transition-colors underline decoration-white/20 underline-offset-4">
                   Schedule a Demo
                </Link>
             </div>

@@ -113,45 +113,44 @@ export default function Footer({
   }))
 
   return (
-    <footer className="border-t border-[#244540]/10 bg-[#18312d] text-white">
-      <div className="bp-shell py-16 md:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
+    <footer className="border-t border-bp-border bg-white selection:bg-bp-accent/10 selection:text-bp-accent">
+      <div className="bp-shell py-20 md:py-24">
+        <div className="grid gap-16 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div className="max-w-xl">
             <Link href="/" className="flex items-center gap-3">
               <BpLogo
-                invert
                 priority={false}
                 size="footer"
               />
             </Link>
 
-            <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/70">
+            <p className="mt-8 max-w-lg text-[16px] leading-8 text-bp-body/60 font-medium tracking-tight">
               {copy.tagline}
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#18312d] transition-all hover:bg-white"
+                className="inline-flex items-center gap-3 rounded-2xl bg-bp-primary px-7 py-4 text-[15px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98] shadow-xl shadow-bp-primary/10"
               >
                 {copy.startSearching}
-                <ArrowRight size={16} />
+                <ArrowRight size={18} strokeWidth={3} />
               </Link>
               <Link
                 href="/doctor-signup"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-[14px] font-semibold text-white transition-all hover:border-[#dcefe9]/50 hover:bg-white/10"
+                className="inline-flex items-center gap-3 rounded-2xl border-2 border-bp-border bg-white px-7 py-4 text-[15px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:bg-bp-surface active:scale-[0.98]"
               >
                 {copy.joinAsProvider}
               </Link>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-2 text-[13px] text-white/60">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <ShieldCheck size={14} className="text-[#dcefe9]" />
+            <div className="mt-10 flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2.5 rounded-xl border border-bp-border bg-bp-surface/50 px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-bp-primary/60">
+                <ShieldCheck size={16} className="text-bp-accent" />
                 {copy.verifiedProviders}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <MapPin size={14} className="text-[#dcefe9]" />
+              <span className="inline-flex items-center gap-2.5 rounded-xl border border-bp-border bg-bp-surface/50 px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-bp-primary/60">
+                <MapPin size={16} className="text-bp-accent" />
                 {copy.homeVisits}
               </span>
             </div>
@@ -159,11 +158,11 @@ export default function Footer({
 
           {columns.map((column) => (
             <div key={column.heading}>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">{column.heading}</h3>
-              <ul className="mt-6 space-y-4">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-bp-primary/40">{column.heading}</h3>
+              <ul className="mt-8 space-y-5">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-[15px] font-medium text-white/70 transition-colors hover:text-white">
+                    <Link href={link.href} className="text-[15px] font-bold text-bp-body/70 transition-all hover:text-bp-accent hover:translate-x-1 inline-block">
                       {link.label}
                     </Link>
                   </li>
@@ -173,21 +172,21 @@ export default function Footer({
           ))}
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-6 text-[13px] leading-6 text-white/55 md:flex md:items-center md:justify-between md:gap-6">
-          <p className="max-w-3xl">
+        <div className="mt-20 border-t border-bp-border pt-10 text-[13px] leading-7 text-bp-body/40 md:flex md:items-center md:justify-between md:gap-10">
+          <p className="max-w-3xl font-medium italic">
             {copy.disclaimer}
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 md:mt-0">
+          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4 md:mt-0 font-bold shrink-0">
             {locale && localeSwitchPath ? <LocaleSwitcher locale={locale} path={localeSwitchPath} /> : null}
-            <span>{copy.copyright}</span>
-            <Link href={locale ? getLocalizedStaticHref(locale, '/privacy') : '/privacy'} className="transition-colors hover:text-white">
+            <span className="text-bp-primary/60">{copy.copyright}</span>
+            <Link href={locale ? getLocalizedStaticHref(locale, '/privacy') : '/privacy'} className="transition-colors hover:text-bp-accent">
               {copy.privacy}
             </Link>
-            <Link href={locale ? getLocalizedStaticHref(locale, '/terms') : '/terms'} className="transition-colors hover:text-white">
+            <Link href={locale ? getLocalizedStaticHref(locale, '/terms') : '/terms'} className="transition-colors hover:text-bp-accent">
               {copy.terms}
             </Link>
-            <Link href={locale ? getLocalizedStaticHref(locale, '/faq') : '/faq'} className="transition-colors hover:text-white">
+            <Link href={locale ? getLocalizedStaticHref(locale, '/faq') : '/faq'} className="transition-colors hover:text-bp-accent">
               {copy.faq}
             </Link>
           </div>

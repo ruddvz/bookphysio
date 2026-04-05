@@ -31,7 +31,7 @@ const DEMO_RESULTS = [
     icon: Activity,
     href: '/search?city=Bangalore&specialty=Sports%20Physio',
     coverage: 'Koramangala, Indiranagar',
-    availability: '94%'
+    verified: true
   },
   {
     title: 'Back Pain Fast Track',
@@ -42,7 +42,7 @@ const DEMO_RESULTS = [
     icon: MapPin,
     href: '/search?city=Delhi&specialty=Pain%20Management',
     coverage: 'South Delhi, Saket',
-    availability: '88%'
+    verified: true
   },
   {
     title: 'Home Visit Preview',
@@ -53,7 +53,7 @@ const DEMO_RESULTS = [
     icon: Zap,
     href: '/search?visit_type=home_visit',
     coverage: 'Bandra, Juhu, Andheri',
-    availability: '100%'
+    verified: true
   },
   {
     title: 'Post-op Recovery',
@@ -64,7 +64,7 @@ const DEMO_RESULTS = [
     icon: Sparkles,
     href: '/search?specialty=Post-Surgery%20Rehab',
     coverage: 'Kothrud, Baner',
-    availability: '76%'
+    verified: true
   },
 ]
 
@@ -128,7 +128,8 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
 
   const location = searchParams.get('location')
-  const city = searchParams.get('city')
+  const city = searchParams.get('city') ?? location
+  const condition = searchParams.get('condition')
 
   // Handle city selection from chips
   const handleCitySelect = (selectedCity: string) => {
@@ -152,14 +153,14 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const fetchUrl = useMemo(() => {
     const apiParams: Record<string, string> = { page: '1', limit: '40' }
     if (city) apiParams.city = city
-    else if (location) apiParams.city = location
     if (specialty) apiParams.specialty_id = specialty
+    if (condition) apiParams.query = condition
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, location, specialty, visit_type, max_fee, lat, lng])
+  }, [city, specialty, condition, visit_type, max_fee, lat, lng])
 
   // Polling with SWR (Phase 11.5)
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
@@ -188,7 +189,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
         <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-6 md:py-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-bp-body/60">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-bp-body/60">
                 <Link href="/" className="hover:text-bp-accent transition-colors">{t.breadcrumbRoot}</Link>
                 <ChevronRight size={12} strokeWidth={4} />
                 <span className="text-bp-accent bg-bp-accent/5 px-2.5 py-1 rounded-lg border border-bp-accent/10">{displayLocation}</span>
@@ -215,7 +216,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
       <div className="bg-white border-b border-bp-border">
         <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-            <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest whitespace-nowrap mr-2">
+            <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest whitespace-nowrap mr-2">
               <MapPin size={12} className="inline -mt-0.5 mr-1" />
               {t.citiesLabel}
             </span>
@@ -224,7 +225,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                 key={c.name}
                 onClick={() => handleCitySelect(c.name)}
                 className={cn(
-                  "flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold whitespace-nowrap transition-all active:scale-95 border",
+                  "flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-bold whitespace-nowrap transition-all active:scale-[0.98] border",
                   city === c.name
                     ? "bg-bp-primary text-white border-bp-primary shadow-lg shadow-bp-primary/10"
                     : "bg-bp-surface text-bp-body border-bp-border hover:border-bp-accent/30 hover:bg-bp-accent/5 hover:text-bp-primary"
@@ -258,7 +259,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     {error && (
                       <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
                         <div>
-                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
+                          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                           <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
                             {t.errorBody}
                           </p>
@@ -267,14 +268,14 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                           onClick={() => {
                             void mutate()
                           }}
-                          className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
+                          className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent"
                         >
                           {t.retrySearch}
                         </button>
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.22em] text-bp-body/40">
+                    <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-bp-body/40">
                       <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/5 px-3 py-1 text-bp-accent">
                         <Sparkles size={12} />
                         {t.demoPreview}
@@ -297,11 +298,11 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
                             <div className="relative flex items-start justify-between gap-4">
                               <div className="min-w-0 flex-1">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-bp-accent/10 bg-bp-accent/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-bp-accent">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-bp-accent/10 bg-bp-accent/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent">
                                   <Sparkles size={10} />
                                   Preview
                                 </div>
-                                <h3 className="mt-4 text-[20px] font-black leading-tight tracking-tight text-bp-primary group-hover:text-bp-accent transition-colors">{result.title}</h3>
+                                <h3 className="mt-4 text-[20px] font-bold leading-tight tracking-tight text-bp-primary group-hover:text-bp-accent transition-colors">{result.title}</h3>
                                 <p className="mt-2 text-[14px] font-medium leading-relaxed text-bp-body/80">{result.specialty}</p>
                               </div>
                               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-bp-accent/10 text-bp-accent shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-bp-accent group-hover:text-white group-hover:shadow-bp-accent/20">
@@ -328,13 +329,13 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
                             <div className="relative mt-6 flex items-center justify-between border-t border-bp-border/60 pt-5">
                               <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-1.5 rounded-full bg-bp-accent animate-pulse" />
-                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40">
-                                  {result.availability} Match
+                                <div className="h-1.5 w-1.5 rounded-full bg-bp-accent" />
+                                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
+                                  Verified Professional
                                 </span>
                               </div>
                               <div className="flex items-center gap-3">
-                                <span className="text-[16px] font-black text-bp-primary">{result.fee}</span>
+                                <span className="text-[16px] font-bold text-bp-primary">{result.fee}</span>
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bp-surface text-bp-body/40 group-hover:bg-bp-secondary group-hover:text-white transition-all duration-300">
                                   <ArrowRight size={16} strokeWidth={3} />
                                 </div>
@@ -348,7 +349,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     <div className="flex justify-center">
                       <button
                         onClick={() => router.push('/search')}
-                        className="px-12 py-5 bg-bp-primary text-white text-[16px] font-black rounded-btn hover:bg-bp-accent shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
+                        className="px-12 py-5 bg-bp-primary text-white text-[16px] font-bold rounded-btn hover:bg-bp-accent shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
                       >
                         {t.clearFilters}
                       </button>
@@ -362,7 +363,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               {error && (
                 <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                     <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
                       {t.errorBodyRetrying}
                     </p>
@@ -371,7 +372,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     onClick={() => {
                       void mutate()
                     }}
-                    className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-black text-white transition-all hover:bg-bp-accent"
+                    className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent"
                   >
                     {t.retrySearch}
                   </button>
@@ -380,10 +381,10 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               <div className="flex items-center justify-between px-2 mb-2">
                 <div className="flex items-center gap-3">
                    <div className="p-1.5 bg-bp-accent/10 rounded-lg text-bp-accent"><Zap size={16} strokeWidth={3} /></div>
-                   <p className="text-[13px] font-black text-bp-primary uppercase tracking-[0.15em]">{t.verifiedProfessionals}</p>
+                   <p className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.15em]">{t.verifiedProfessionals}</p>
                 </div>
                 <div className="md:hidden">
-                  <button className="flex items-center gap-2 text-[14px] font-black text-bp-accent px-4 py-2 bg-bp-accent/10 rounded-xl border border-bp-accent/20">
+                  <button className="flex items-center gap-2 text-[14px] font-bold text-bp-accent px-4 py-2 bg-bp-accent/10 rounded-xl border border-bp-accent/20">
                      <SlidersHorizontal size={14} strokeWidth={3} />
                      Sort
                   </button>
@@ -403,7 +404,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               
               {/* End of List */}
               <div className="py-16 text-center border-t border-bp-border mt-8 bg-bp-surface/50 rounded-[32px] px-8">
-                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-black uppercase text-bp-body/40 tracking-widest">
+                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-body/40 tracking-widest">
                    {t.safetyVerified}
                 </div>
                 <p className="text-[18px] font-bold text-bp-body/60 italic max-w-[500px] mx-auto leading-relaxed">

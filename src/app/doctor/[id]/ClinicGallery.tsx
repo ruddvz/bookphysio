@@ -26,7 +26,7 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
     <section className="bg-white rounded-[32px] border border-bp-border p-8 mb-8 shadow-sm group/gallery overflow-hidden">
       <div className="flex items-center justify-between mb-8 px-1">
          <div>
-            <h2 className="text-[24px] font-black text-bp-primary tracking-tight">Clinic Tour</h2>
+            <h2 className="text-[24px] font-bold text-bp-primary tracking-tight">Clinic Tour</h2>
             <p className="text-[14px] text-bp-body/40 font-bold mt-1">High-fidelity preview of our treatment environment</p>
          </div>
          <div className="flex items-center gap-4">
@@ -62,7 +62,7 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
          <div className="absolute bottom-10 left-10 flex items-center gap-4">
             <div className="px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl flex items-center gap-3 text-white">
                <ImageIcon size={18} />
-               <span className="text-[13px] font-black uppercase tracking-widest">{index + 1} / {galleryImages.length} View</span>
+               <span className="text-[13px] font-bold uppercase tracking-widest">{index + 1} / {galleryImages.length} View</span>
             </div>
             <button className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
                <Maximize2 size={20} />
@@ -70,7 +70,7 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
          </div>
          
          {/* Live Badge */}
-         <div className="absolute top-10 right-10 px-4 py-2 bg-emerald-500 rounded-xl text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">
+         <div className="absolute top-10 right-10 px-4 py-2 bg-emerald-500 rounded-xl text-white text-[11px] font-bold uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">
             Verified Setting
          </div>
       </div>

@@ -281,14 +281,14 @@ export default function ProviderProfile() {
               <Briefcase size={24} strokeWidth={2.5} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-bp-accent">Registry Management</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-bp-accent">Registry Management</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-[11px] font-bold text-emerald-600">Active Listing</span>
               </div>
             </div>
           </div>
-          <h1 className="text-[42px] lg:text-[48px] font-black text-bp-primary tracking-tighter leading-none">
+          <h1 className="text-[42px] lg:text-[48px] font-bold text-bp-primary tracking-tighter leading-none">
             Practice <span className="text-bp-accent">Profile</span>
           </h1>
           <p className="text-[16px] font-medium text-bp-body max-w-xl leading-relaxed">
@@ -297,8 +297,8 @@ export default function ProviderProfile() {
         </div>
 
         <div className="flex items-center gap-4 bg-bp-surface p-2 rounded-[24px] border border-bp-border">
-          <button type="button" className="px-6 py-3 text-[13px] font-black text-bp-accent bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
-          <button type="button" className="px-6 py-3 text-[13px] font-black text-bp-body hover:text-bp-primary transition-colors rounded-[18px]">Analytics</button>
+          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-accent bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
+          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-body hover:text-bp-primary transition-colors rounded-[18px]">Analytics</button>
         </div>
       </div>
 
@@ -306,7 +306,7 @@ export default function ProviderProfile() {
         {/* ── Left Column: Form ── */}
         <div className="lg:col-span-2 space-y-12">
           <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 group/section">
-            <h3 className="text-[22px] font-black text-bp-primary tracking-tight mb-8 flex items-center gap-3">
+            <h3 className="text-[22px] font-bold text-bp-primary tracking-tight mb-8 flex items-center gap-3">
               <User size={22} className="text-bp-accent" />
               Personal Details
             </h3>
@@ -326,7 +326,7 @@ export default function ProviderProfile() {
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 rounded-[32px] bg-bp-accent/10 text-bp-accent flex items-center justify-center text-2xl font-black border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
+                    <div className="w-24 h-24 rounded-[32px] bg-bp-accent/10 text-bp-accent flex items-center justify-center text-2xl font-bold border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
                       {initials}
                     </div>
                   )}
@@ -348,7 +348,7 @@ export default function ProviderProfile() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-[18px] font-black text-bp-primary">{displayName}</h4>
+                  <h4 className="text-[18px] font-bold text-bp-primary">{displayName}</h4>
                   <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest">{expertiseLabel}</p>
                   {avatarError ? <p className="text-[12px] font-bold text-rose-500">{avatarError}</p> : null}
                   {!avatarError && loadError ? <p className="text-[12px] font-bold text-amber-600">{loadError}</p> : null}
@@ -357,7 +357,7 @@ export default function ProviderProfile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label htmlFor="full-name" className="text-[12px] font-black text-bp-body/40 uppercase tracking-widest ml-1">Full Name</label>
+                  <label htmlFor="full-name" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Full Name</label>
                   <input
                     id="full-name"
                     type="text"
@@ -369,7 +369,7 @@ export default function ProviderProfile() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="consultation-fee" className="text-[12px] font-black text-bp-body/40 uppercase tracking-widest ml-1">Consultation Fee (₹)</label>
+                  <label htmlFor="consultation-fee" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Consultation Fee (₹)</label>
                   <input
                     id="consultation-fee"
                     type="number"
@@ -386,7 +386,7 @@ export default function ProviderProfile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label htmlFor="experience-years" className="text-[12px] font-black text-bp-body/40 uppercase tracking-widest ml-1">Experience Years</label>
+                  <label htmlFor="experience-years" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Experience Years</label>
                   <input
                     id="experience-years"
                     type="number"
@@ -400,7 +400,7 @@ export default function ProviderProfile() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="icp-registration" className="text-[12px] font-black text-bp-body/40 uppercase tracking-widest ml-1">ICP Registration</label>
+                  <label htmlFor="icp-registration" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">ICP Registration</label>
                   <input
                     id="icp-registration"
                     type="text"
@@ -413,7 +413,7 @@ export default function ProviderProfile() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="professional-bio" className="text-[12px] font-black text-bp-body/40 uppercase tracking-widest ml-1">Professional Bio</label>
+                <label htmlFor="professional-bio" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Professional Bio</label>
                 <textarea
                   id="professional-bio"
                   rows={4}
@@ -436,14 +436,14 @@ export default function ProviderProfile() {
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-xl text-emerald-400 border border-white/5 backdrop-blur-md">
                     <Navigation size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Service Boundary</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Service Boundary</span>
                   </div>
-                  <h3 className="text-[28px] font-black tracking-tight leading-none">Coverage Area</h3>
+                  <h3 className="text-[28px] font-bold tracking-tight leading-none">Coverage Area</h3>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-right mr-2 hidden sm:block">
-                    <p className="text-[11px] font-black text-bp-body uppercase tracking-widest">Efficiency</p>
-                    <p className="text-[14px] font-black text-emerald-400">High Density</p>
+                    <p className="text-[11px] font-bold text-bp-body uppercase tracking-widest">Efficiency</p>
+                    <p className="text-[14px] font-bold text-emerald-400">High Density</p>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
                     <MapPin size={22} className="text-emerald-400" />
@@ -464,12 +464,12 @@ export default function ProviderProfile() {
                       type="text"
                       placeholder="Coverage sync coming soon"
                       disabled
-                      className="w-full pl-6 pr-32 py-5 bg-white/5 border border-white/10 rounded-[20px] text-white/70 text-[16px] font-black placeholder:text-bp-body outline-none transition-all disabled:cursor-not-allowed"
+                      className="w-full pl-6 pr-32 py-5 bg-white/5 border border-white/10 rounded-[20px] text-white/70 text-[16px] font-bold placeholder:text-bp-body outline-none transition-all disabled:cursor-not-allowed"
                     />
                     <button
                       type="button"
                       disabled
-                      className="absolute right-2 top-2 bottom-2 px-6 bg-bp-accent/50 text-white text-[12px] font-black rounded-xl transition-all uppercase tracking-widest disabled:cursor-not-allowed"
+                      className="absolute right-2 top-2 bottom-2 px-6 bg-bp-accent/50 text-white text-[12px] font-bold rounded-xl transition-all uppercase tracking-widest disabled:cursor-not-allowed"
                     >
                       Soon
                     </button>
@@ -483,13 +483,13 @@ export default function ProviderProfile() {
                 <div className="space-y-6">
                   <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 relative overflow-hidden group/metrics">
                     <div className="flex items-center justify-between mb-8">
-                      <span className="text-[11px] font-black text-bp-body uppercase tracking-widest">Active Corridors</span>
+                      <span className="text-[11px] font-bold text-bp-body uppercase tracking-widest">Active Corridors</span>
                       <Activity size={16} className="text-bp-accent" />
                     </div>
                     <div className="space-y-6">
                       <div className="flex justify-between items-end">
                         <span className="text-[13px] font-bold text-bp-body/40">Coverage Sync</span>
-                        <span className="text-[18px] font-black">Preview</span>
+                        <span className="text-[18px] font-bold">Preview</span>
                       </div>
                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                         <div className="h-full bg-bp-accent/50 w-[28%] rounded-full" />
@@ -500,7 +500,7 @@ export default function ProviderProfile() {
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[12px] font-bold">Live sync pending</span>
                       </div>
-                      <span className="text-[10px] font-black uppercase text-bp-accent tracking-widest">Preview</span>
+                      <span className="text-[10px] font-bold uppercase text-bp-accent tracking-widest">Preview</span>
                     </div>
                   </div>
                 </div>
@@ -522,7 +522,7 @@ export default function ProviderProfile() {
             <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
               <ShieldCheck size={28} strokeWidth={2.5} />
             </div>
-            <h4 className="text-[20px] font-black text-bp-primary tracking-tight mb-3">Verification Hub</h4>
+            <h4 className="text-[20px] font-bold text-bp-primary tracking-tight mb-3">Verification Hub</h4>
             <p className="text-[14px] font-medium text-bp-body/40 leading-relaxed mb-8">
               Your medical registration is the primary trust signal for patients.
             </p>
@@ -531,7 +531,7 @@ export default function ProviderProfile() {
               <div className="flex items-center gap-4 p-4 bg-bp-surface rounded-2xl border border-bp-border group/item transition-all hover:bg-white hover:shadow-lg">
                 <Award size={20} className="text-bp-accent" />
                 <div className="flex flex-col">
-                  <span className="text-[13px] font-black text-bp-primary">ICP Medical ID</span>
+                  <span className="text-[13px] font-bold text-bp-primary">ICP Medical ID</span>
                   <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
                     {formData.icp_registration_no ? 'Verified ✓' : 'Pending'}
                   </span>
@@ -540,37 +540,37 @@ export default function ProviderProfile() {
               <div className="flex items-center gap-4 p-4 bg-bp-secondary/10/50 rounded-2xl border border-bp-secondary/20 group/item transition-all">
                 <Info size={20} className="text-bp-secondary" />
                 <div className="flex flex-col">
-                  <span className="text-[13px] font-black text-bp-secondary">GST Registration</span>
+                  <span className="text-[13px] font-bold text-bp-secondary">GST Registration</span>
                   <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Required for Payouts</span>
                 </div>
               </div>
             </div>
 
-            <button type="button" className="w-full py-4 bg-bp-primary hover:bg-black text-white text-[12px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
+            <button type="button" className="w-full py-4 bg-bp-primary hover:bg-black text-white text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
               Update Documents <ArrowRight size={14} />
             </button>
           </section>
 
           <section className="bg-emerald-50 rounded-[40px] p-8 border border-emerald-100">
-            <h4 className="text-[18px] font-black text-bp-accent tracking-tight mb-4 flex items-center gap-2">
+            <h4 className="text-[18px] font-bold text-bp-accent tracking-tight mb-4 flex items-center gap-2">
               <Globe size={18} />
               Global Status
             </h4>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
                 <span className="text-[13px] font-bold text-bp-accent/70">Profile Strength</span>
-                <span className="text-[13px] font-black text-bp-accent">Live soon</span>
+                <span className="text-[13px] font-bold text-bp-accent">Live soon</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
                 <span className="text-[13px] font-bold text-bp-accent/70">Search Visibility</span>
-                <span className="text-[13px] font-black text-bp-accent">Preview</span>
+                <span className="text-[13px] font-bold text-bp-accent">Preview</span>
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-[13px] font-bold text-bp-accent/70">City Hub</span>
-                <span className="text-[13px] font-black text-bp-accent">After sync</span>
+                <span className="text-[13px] font-bold text-bp-accent">After sync</span>
               </div>
             </div>
-            <button type="button" className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-bp-accent text-[12px] font-black rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
+            <button type="button" className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-bp-accent text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
               View Public Profile
             </button>
           </section>
@@ -584,7 +584,7 @@ export default function ProviderProfile() {
             <Check size={24} strokeWidth={3} />
           </div>
           <div>
-            <p className="text-[15px] font-black text-bp-primary">
+            <p className="text-[15px] font-bold text-bp-primary">
               {saveStatus === 'saved'
                 ? 'Changes saved'
                 : saveStatus === 'error'
@@ -607,7 +607,7 @@ export default function ProviderProfile() {
             type="button"
             onClick={handleDiscard}
             disabled={saveStatus === 'saving' || loadingProfile}
-            className="flex-1 sm:flex-none px-10 py-5 border-2 border-bp-border rounded-[24px] text-[14px] font-black text-bp-body/40 hover:bg-bp-surface transition-all active:scale-95 disabled:opacity-60"
+            className="flex-1 sm:flex-none px-10 py-5 border-2 border-bp-border rounded-[24px] text-[14px] font-bold text-bp-body/40 hover:bg-bp-surface transition-all active:scale-95 disabled:opacity-60"
           >
             Discard
           </button>
@@ -617,7 +617,7 @@ export default function ProviderProfile() {
               void handleSave()
             }}
             disabled={!canSave}
-            className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-bp-accent text-white rounded-[24px] text-[14px] font-black transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
+            className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-bp-accent text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
           >
             {saveStatus === 'saving' ? 'Saving...' : 'Push Updates Live'}
           </button>

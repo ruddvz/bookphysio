@@ -11,7 +11,6 @@ Senior backend engineer specializing in:
 - **Razorpay** — order creation, webhooks, refunds (INR only — NOT Stripe)
 - **Resend** — transactional email (booking confirmations)
 - **MSG91** — SMS/OTP for Indian phone numbers
-- **Mapbox** — geocoding (address → lat/lng)
 - **Upstash Redis** — rate limiting middleware
 - **Zod** — schema validation on all inputs
 
@@ -55,7 +54,6 @@ src/lib/supabase/admin.ts
 src/lib/razorpay.ts
 src/lib/msg91.ts
 src/lib/resend.ts
-src/lib/mapbox.ts
 src/lib/upstash.ts
 
 # Validation schemas
@@ -78,12 +76,11 @@ middleware.ts
 - `src/components/**` — bp-ui-public owns
 - `tailwind.config.ts`, `.claude/design-system/`
 
-## Database Tables (14 total)
+## Database Tables (11 total)
 
 ```
-users, providers, specialties, locations, insurances, provider_insurances,
-availabilities, appointments, payments, subscriptions, reviews, documents,
-notifications
+users, providers, specialties, locations, availabilities, appointments,
+payments, subscriptions, reviews, documents, notifications
 ```
 
 RLS: patients see own data, providers see own + their patients, admins see all.

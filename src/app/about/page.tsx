@@ -21,10 +21,10 @@ export default function AboutPage() {
           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-bp-accent/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
           
           <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[12px] font-bold uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                Verified Marketplace
             </div>
-            <h1 className="text-[52px] sm:text-[84px] font-black mb-10 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <h1 className="text-[52px] sm:text-[84px] font-bold mb-10 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               India&apos;s focused platform for <span className="text-bp-primary">Physiotherapy.</span>
             </h1>
             <p className="text-[18px] sm:text-[22px] leading-relaxed max-w-[800px] mx-auto text-white/60 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
@@ -39,7 +39,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center mb-32">
               <div className="relative">
                 <div className="w-1.5 h-12 bg-bp-accent rounded-full mb-8"></div>
-                <h2 className="text-[44px] font-black text-bp-primary mb-8 tracking-tighter leading-tight">A New Paradigm in Rehabilitation</h2>
+                <h2 className="text-[44px] font-bold text-bp-primary mb-8 tracking-tighter leading-tight">A New Paradigm in Rehabilitation</h2>
                 <div className="space-y-6">
                   <p className="text-[19px] leading-[1.8] text-bp-body/70 font-medium">
                     BookPhysio.in is India&apos;s leading platform dedicated exclusively to physiotherapy.
@@ -55,15 +55,15 @@ export default function AboutPage() {
                  <div className="absolute inset-0 bg-gradient-to-br from-bp-primary/5 to-transparent group-hover:from-bp-primary/10 transition-all duration-700"></div>
                  <div className="text-center relative z-10 scale-110 group-hover:scale-125 transition-transform duration-1000">
                     <Globe className="w-24 h-24 mx-auto mb-6 text-bp-primary/20" />
-                    <p className="text-[14px] font-black text-bp-primary uppercase tracking-[0.3em]">National Care Network</p>
+                    <p className="text-[14px] font-bold text-bp-primary uppercase tracking-[0.3em]">National Care Network</p>
                  </div>
               </div>
             </div>
 
             <div className="mb-32">
               <div className="text-center max-w-2xl mx-auto mb-20">
-                 <p className="text-[12px] font-black text-bp-accent uppercase tracking-[0.3em] mb-4">Precision Pillars</p>
-                 <h2 className="text-[40px] font-black text-bp-primary tracking-tighter leading-none">Why Experts Choose Us</h2>
+                 <p className="text-[12px] font-bold text-bp-accent uppercase tracking-[0.3em] mb-4">Precision Pillars</p>
+                 <h2 className="text-[40px] font-bold text-bp-primary tracking-tighter leading-none">Why Experts Choose Us</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {benefits.map(({ title, text, icon: Icon }, idx) => (
@@ -71,7 +71,7 @@ export default function AboutPage() {
                     <div className="w-16 h-16 rounded-2xl bg-bp-surface flex items-center justify-center mb-8 group-hover:bg-bp-primary group-hover:text-white transition-all duration-500">
                       <Icon className="w-8 h-8" />
                     </div>
-                    <h3 className="text-[22px] font-black text-bp-primary mb-4 tracking-tight">{title}</h3>
+                    <h3 className="text-[22px] font-bold text-bp-primary mb-4 tracking-tight">{title}</h3>
                     <p className="text-[16px] leading-relaxed text-bp-body/60 font-medium">{text}</p>
                   </div>
                 ))}
@@ -82,7 +82,7 @@ export default function AboutPage() {
                <div className="absolute inset-0 bg-gradient-to-br from-bp-primary/20 to-transparent opacity-50"></div>
                <div className="relative z-10">
                   <Heart className="w-16 h-16 text-bp-accent mx-auto mb-8 animate-pulse" />
-                  <h2 className="text-[48px] font-black text-white mb-6 tracking-tighter">Leading Clinical Recovery</h2>
+                  <h2 className="text-[48px] font-bold text-white mb-6 tracking-tighter">Leading Clinical Recovery</h2>
                   <p className="text-[20px] text-white/50 max-w-[700px] mx-auto font-medium leading-relaxed">
                     We are dedicated to making physiotherapy discovery and booking clearer for patients and providers alike.
                   </p>

@@ -37,20 +37,6 @@ CREATE TABLE providers (
   gstin text
 );
 
--- Insurance plans
-CREATE TABLE insurances (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text UNIQUE NOT NULL,
-  logo_url text
-);
-
--- Provider <-> Insurance mapping
-CREATE TABLE provider_insurances (
-  provider_id uuid NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
-  insurance_id uuid NOT NULL REFERENCES insurances(id) ON DELETE CASCADE,
-  PRIMARY KEY (provider_id, insurance_id)
-);
-
 -- Clinic locations
 CREATE TABLE locations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -92,7 +78,6 @@ CREATE TABLE appointments (
   visit_type text NOT NULL CHECK (visit_type IN ('in_clinic','home_visit')),
   status text NOT NULL DEFAULT 'pending'
     CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
-  insurance_id uuid REFERENCES insurances(id) ON DELETE SET NULL,
   fee_inr int NOT NULL CHECK (fee_inr >= 0),
   notes text,
   created_at timestamptz NOT NULL DEFAULT now()

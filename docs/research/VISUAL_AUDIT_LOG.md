@@ -63,7 +63,7 @@ Based on the latest discovery, the Provider onboarding is a structured 5-step pr
 3. **Step 3: Verification / Login** - User logs in to confirm the account.
 4. **Step 4: Goal Selection** - "How can Zocdoc help your practice?"
    - Get new patients
-   - Save time (collecting forms/insurance)
+   - Save time (intake and scheduling admin)
    - Booking availability
    - Virtual visits
 5. **Step 5: Product Selection** - Recommendations for Marketplace (Paid) or Google Booking (Free).

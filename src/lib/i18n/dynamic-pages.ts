@@ -375,6 +375,124 @@ export const DASHBOARD_COPY = {
   bookNewTherapyBtn: string
 }>
 
+// ─── Provider Dashboard ───────────────────────────────────────────────────────
+
+export const PROVIDER_COPY = {
+  en: {
+    greetingMorning: 'Good morning',
+    greetingAfternoon: 'Good afternoon',
+    greetingEvening: 'Good evening',
+    clinicStatus: 'Clinic Status: Operational',
+    tagline: 'Manage your session flow, track performance insights, and stay connected with your patients in 12 verified practice cities.',
+    openCalendar: 'Open Calendar',
+    askAI: 'Ask BookPhysio AI',
+    appointmentFlow: 'Appointment Flow',
+    estimatedSession: (minutes: number) => `Estimated ${minutes}m in-session today`,
+    incomingSession: 'Incoming Session',
+    noPending: 'NO PENDING',
+    agendaComplete: 'Treatment agenda complete',
+    weeklyReach: 'Weekly Reach',
+    percentTarget: (pct: number) => `${pct}% Target`,
+    practiceAgenda: 'Practice Agenda',
+    confirmedRoadmap: 'Confirmed Patient Roadmap',
+    tabToday: 'Today',
+    tabThisWeek: 'This Week',
+    emptyCalendarTitle: 'Treatment calendar Clear',
+    emptyCalendarDesc: 'No upcoming sessions found for this timeframe. Focus on your performance analytics.',
+    regularCheckup: 'Regular Checkup',
+    practiceReadiness: 'Practice Readiness',
+    earningsOutlook: 'Earnings Outlook',
+    earningsComingSoon: 'Coming soon',
+    earningsNote: 'Earnings analytics in next release',
+    viewAnalytics: 'View Analytics',
+    errorTitle: 'Clinical sync unavailable',
+    errorDesc: "We couldn't load your provider schedule right now. Please retry in a moment.",
+    retrySync: 'Retry Sync',
+    checklistClinicalProfile: 'Clinical Profile',
+    checklistClinicalProfileSub: 'Qualifications & Photo',
+    checklistAvailability: 'Work Availability',
+    checklistAvailabilitySub: 'Clinical Hours & Buffer',
+    checklistVerification: 'Account Verification',
+    checklistVerificationSub: 'KYC & License Check',
+    upNext: 'UP NEXT',
+  },
+  hi: {
+    greetingMorning: 'सुप्रभात',
+    greetingAfternoon: 'नमस्ते',
+    greetingEvening: 'शुभ संध्या',
+    clinicStatus: 'क्लिनिक स्थिति: संचालित',
+    tagline: 'अपने सत्र प्रवाह को प्रबंधित करें, प्रदर्शन अंतर्दृष्टि ट्रैक करें, और 12 सत्यापित शहरों में अपने मरीजों से जुड़े रहें।',
+    openCalendar: 'कैलेंडर खोलें',
+    askAI: 'BookPhysio AI से पूछें',
+    appointmentFlow: 'अपॉइंटमेंट प्रवाह',
+    estimatedSession: (minutes: number) => `आज अनुमानित ${minutes} मिनट सत्र में`,
+    incomingSession: 'आगामी सत्र',
+    noPending: 'कोई लंबित नहीं',
+    agendaComplete: 'उपचार एजेंडा पूर्ण',
+    weeklyReach: 'साप्ताहिक पहुंच',
+    percentTarget: (pct: number) => `${pct}% लक्ष्य`,
+    practiceAgenda: 'प्रैक्टिस एजेंडा',
+    confirmedRoadmap: 'पुष्ट मरीज रोडमैप',
+    tabToday: 'आज',
+    tabThisWeek: 'इस सप्ताह',
+    emptyCalendarTitle: 'उपचार कैलेंडर खाली',
+    emptyCalendarDesc: 'इस समय सीमा में कोई आगामी सत्र नहीं मिला। अपने प्रदर्शन विश्लेषण पर ध्यान दें।',
+    regularCheckup: 'नियमित जांच',
+    practiceReadiness: 'प्रैक्टिस तैयारी',
+    earningsOutlook: 'आय दृष्टिकोण',
+    earningsComingSoon: 'जल्द आ रहा है',
+    earningsNote: 'अगले अपडेट में आय विश्लेषण',
+    viewAnalytics: 'विश्लेषण देखें',
+    errorTitle: 'क्लिनिकल सिंक उपलब्ध नहीं',
+    errorDesc: 'आपका प्रदाता शेड्यूल अभी लोड नहीं हो पाया। कृपया कुछ देर बाद पुनः प्रयास करें।',
+    retrySync: 'पुनः सिंक करें',
+    checklistClinicalProfile: 'क्लिनिकल प्रोफाइल',
+    checklistClinicalProfileSub: 'योग्यताएं और फोटो',
+    checklistAvailability: 'कार्य उपलब्धता',
+    checklistAvailabilitySub: 'क्लिनिकल घंटे और बफर',
+    checklistVerification: 'खाता सत्यापन',
+    checklistVerificationSub: 'KYC और लाइसेंस जांच',
+    upNext: 'अगला',
+  },
+} as const satisfies Record<StaticLocale, {
+  greetingMorning: string
+  greetingAfternoon: string
+  greetingEvening: string
+  clinicStatus: string
+  tagline: string
+  openCalendar: string
+  askAI: string
+  appointmentFlow: string
+  estimatedSession: (minutes: number) => string
+  incomingSession: string
+  noPending: string
+  agendaComplete: string
+  weeklyReach: string
+  percentTarget: (pct: number) => string
+  practiceAgenda: string
+  confirmedRoadmap: string
+  tabToday: string
+  tabThisWeek: string
+  emptyCalendarTitle: string
+  emptyCalendarDesc: string
+  regularCheckup: string
+  practiceReadiness: string
+  earningsOutlook: string
+  earningsComingSoon: string
+  earningsNote: string
+  viewAnalytics: string
+  errorTitle: string
+  errorDesc: string
+  retrySync: string
+  checklistClinicalProfile: string
+  checklistClinicalProfileSub: string
+  checklistAvailability: string
+  checklistAvailabilitySub: string
+  checklistVerification: string
+  checklistVerificationSub: string
+  upNext: string
+}>
+
 /** Returns the /hi/-prefixed path for a given path when locale is 'hi'. */
 export function localePath(locale: StaticLocale, path: string): string {
   return locale === 'hi' ? `/hi${path}` : path

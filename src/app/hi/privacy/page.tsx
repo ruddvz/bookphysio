@@ -13,10 +13,10 @@ export default function HindiPrivacyPage() {
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-bp-accent/5 rounded-full blur-[100px] -ml-40 -mb-40"></div>
 
           <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-bold uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
               डेटा प्रोटेक्शन ऑफिस
             </div>
-            <h1 className="text-[56px] sm:text-[88px] font-black mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <h1 className="text-[56px] sm:text-[88px] font-bold mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               प्राइवेसी <span className="text-bp-primary italic">पॉलिसी</span>
             </h1>
             <p className="text-[18px] sm:text-[24px] text-white/50 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
@@ -31,24 +31,24 @@ export default function HindiPrivacyPage() {
               <div className="lg:col-span-4 sticky top-32 group">
                 <div className="space-y-16">
                   <div>
-                    <h2 className="text-[12px] font-black text-bp-primary uppercase tracking-[0.4em] mb-12">लीगल इंडेक्स</h2>
+                    <h2 className="text-[12px] font-bold text-bp-primary uppercase tracking-[0.4em] mb-12">लीगल इंडेक्स</h2>
                     <ul className="space-y-6">
-                      <li><a href="#introduction" className="text-[20px] font-black text-bp-primary hover:text-bp-primary transition-all flex items-center gap-4 group/item">1.0 परिचय <div className="w-1.5 h-1.5 rounded-full bg-bp-primary"></div></a></li>
-                      <li><a href="#data-collection" className="text-[20px] font-black text-bp-body/40 hover:text-bp-primary transition-all">2.0 डेटा संग्रह</a></li>
-                      <li><a href="#data-usage" className="text-[20px] font-black text-bp-body/40 hover:text-bp-primary transition-all">3.0 उपयोग</a></li>
-                      <li><a href="#data-security" className="text-[20px] font-black text-bp-body/40 hover:text-bp-primary transition-all">4.0 सुरक्षा</a></li>
-                      <li><a href="#sharing" className="text-[20px] font-black text-bp-body/40 hover:text-bp-primary transition-all">5.0 साझा करना</a></li>
+                      <li><a href="#introduction" className="text-[20px] font-bold text-bp-primary hover:text-bp-primary transition-all flex items-center gap-4 group/item">1.0 परिचय <div className="w-1.5 h-1.5 rounded-full bg-bp-primary"></div></a></li>
+                      <li><a href="#data-collection" className="text-[20px] font-bold text-bp-body/40 hover:text-bp-primary transition-all">2.0 डेटा संग्रह</a></li>
+                      <li><a href="#data-usage" className="text-[20px] font-bold text-bp-body/40 hover:text-bp-primary transition-all">3.0 उपयोग</a></li>
+                      <li><a href="#data-security" className="text-[20px] font-bold text-bp-body/40 hover:text-bp-primary transition-all">4.0 सुरक्षा</a></li>
+                      <li><a href="#sharing" className="text-[20px] font-bold text-bp-body/40 hover:text-bp-primary transition-all">5.0 साझा करना</a></li>
                     </ul>
                   </div>
 
                   <div className="p-10 bg-bp-surface rounded-[40px] border border-bp-border/40 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-bp-primary/5 rounded-full blur-2xl -mr-16 -mt-16"></div>
                     <ShieldCheck className="w-10 h-10 text-bp-primary mb-8" />
-                    <h3 className="text-[24px] font-black text-bp-primary mb-5 tracking-tight">क्लिनिकल गवर्नेंस</h3>
+                    <h3 className="text-[24px] font-bold text-bp-primary mb-5 tracking-tight">क्लिनिकल गवर्नेंस</h3>
                     <p className="text-[17px] text-bp-body/60 font-medium leading-relaxed mb-8">
                       हम अकाउंट, बुकिंग और भुगतान से जुड़े डेटा की सुरक्षा के लिए लेयर्ड टेक्निकल और ऑपरेशनल कंट्रोल्स का उपयोग करते हैं।
                     </p>
-                        <div className="flex items-center gap-3 text-bp-primary font-black text-[12px] uppercase tracking-widest">
+                        <div className="flex items-center gap-3 text-bp-primary font-bold text-[12px] uppercase tracking-widest">
                       <Lock className="w-4 h-4" /> सिक्योर्ड प्रोटोकॉल
                     </div>
                   </div>
@@ -60,7 +60,7 @@ export default function HindiPrivacyPage() {
                   <section id="introduction" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
                       <div className="w-2.5 h-2.5 rounded-full bg-bp-accent shadow-[0_0_12px_rgba(255,107,53,0.4)]"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">1.0 परिचय</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">1.0 परिचय</h2>
                     </div>
                     <p className="text-[20px] text-bp-primary font-bold leading-relaxed mb-8">
                       BookPhysio.in पर आपकी गोपनीयता हमारी प्राथमिक जिम्मेदारी है।
@@ -73,16 +73,16 @@ export default function HindiPrivacyPage() {
                   <section id="data-collection" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
                       <div className="w-2.5 h-2.5 rounded-full bg-bp-primary shadow-[0_0_12px_rgba(0,118,108,0.4)]"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">2.0 जानकारी का संग्रह</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">2.0 जानकारी का संग्रह</h2>
                     </div>
                     <p className="mb-10">बेहतर बुकिंग अनुभव और समन्वय के लिए हम निम्न प्रकार की जानकारी एकत्र कर सकते हैं:</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 not-prose">
                       <div className="p-8 bg-bp-surface/50 border border-bp-border/40 rounded-[32px]">
-                        <h4 className="text-[18px] font-black text-bp-primary mb-4">व्यक्तिगत डेटा</h4>
+                        <h4 className="text-[18px] font-bold text-bp-primary mb-4">व्यक्तिगत डेटा</h4>
                         <p className="text-[16px] text-bp-body/60 italic">नाम, उम्र, जेंडर, फोन नंबर, ईमेल और शहर जैसी बुनियादी जानकारी।</p>
                       </div>
                       <div className="p-8 bg-bp-surface/50 border border-bp-border/40 rounded-[32px]">
-                        <h4 className="text-[18px] font-black text-bp-primary mb-4">बुकिंग और क्लिनिकल संदर्भ</h4>
+                        <h4 className="text-[18px] font-bold text-bp-primary mb-4">बुकिंग और क्लिनिकल संदर्भ</h4>
                         <p className="text-[16px] text-bp-body/60 italic">विज़िट का कारण, पसंदीदा विज़िट प्रकार और आपकी बुकिंग हिस्ट्री।</p>
                       </div>
                     </div>
@@ -91,7 +91,7 @@ export default function HindiPrivacyPage() {
                   <section id="data-usage" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
                       <div className="w-2.5 h-2.5 rounded-full bg-bp-accent"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">3.0 आपकी जानकारी का उपयोग</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">3.0 आपकी जानकारी का उपयोग</h2>
                     </div>
                     <ul className="list-none p-0 space-y-6">
                       {[
@@ -113,13 +113,13 @@ export default function HindiPrivacyPage() {
                   <section id="data-security" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
                       <div className="w-2.5 h-2.5 rounded-full bg-bp-secondary"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">4.0 सुरक्षा उपाय</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">4.0 सुरक्षा उपाय</h2>
                     </div>
                     <div className="p-10 bg-[#111111] rounded-[40px] text-white overflow-hidden relative group">
                       <div className="absolute top-0 right-0 w-64 h-64 bg-bp-primary/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
                       <Lock className="w-8 h-8 text-bp-accent mb-6" />
                       <p className="text-[19px] font-medium leading-relaxed opacity-80 relative z-10">
-                        हम इंडस्ट्री-स्टैंडर्ड सुरक्षा उपाय अपनाते हैं ताकि आपकी जानकारी अनधिकृत एक्सेस, बदलाव या दुरुपयोग से सुरक्षित रहे। <span className="text-white font-black italic">हम आपका व्यक्तिगत या क्लिनिकल डेटा विज्ञापनदाताओं को नहीं बेचते।</span>
+                        हम इंडस्ट्री-स्टैंडर्ड सुरक्षा उपाय अपनाते हैं ताकि आपकी जानकारी अनधिकृत एक्सेस, बदलाव या दुरुपयोग से सुरक्षित रहे। <span className="text-white font-bold italic">हम आपका व्यक्तिगत या क्लिनिकल डेटा विज्ञापनदाताओं को नहीं बेचते।</span>
                       </p>
                     </div>
                   </section>
@@ -127,7 +127,7 @@ export default function HindiPrivacyPage() {
                   <section id="sharing" className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-10">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none m-0">5.0 जानकारी साझा करना</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">5.0 जानकारी साझा करना</h2>
                     </div>
                     <p className="text-[18px] leading-relaxed">
                       हम वही जानकारी साझा करते हैं जो बुकिंग और प्लेटफॉर्म संचालन के लिए आवश्यक हो। इसमें चुने हुए प्रदाता के साथ अपॉइंटमेंट विवरण, भुगतान प्रोसेसर के साथ ट्रांजैक्शन डेटा, BookPhysio AI फीचर्स में आपके द्वारा भेजे गए प्रॉम्प्ट्स को उत्तर तैयार करने के लिए हमारे AI सेवा प्रदाताओं द्वारा प्रोसेस किया जाना, और कानून या नियामक आवश्यकता होने पर सीमित खुलासा शामिल हो सकता है।
@@ -140,9 +140,9 @@ export default function HindiPrivacyPage() {
                         <Sparkles className="w-10 h-10 text-bp-primary" />
                       </div>
                       <div>
-                        <h3 className="text-[24px] font-black text-bp-primary mb-2">डेटा प्रोटेक्शन अधिकारी</h3>
+                        <h3 className="text-[24px] font-bold text-bp-primary mb-2">डेटा प्रोटेक्शन अधिकारी</h3>
                         <p className="text-[17px] text-bp-body/60 font-medium mb-4">अगर आपके पास डेटा सुरक्षा या गोपनीयता से जुड़े सवाल हैं, तो हमें लिखें।</p>
-                        <a href="mailto:privacy@bookphysio.in" className="text-[18px] font-black text-bp-primary underline decoration-2 underline-offset-8 hover:text-bp-primary transition-colors italic">privacy@bookphysio.in</a>
+                        <a href="mailto:privacy@bookphysio.in" className="text-[18px] font-bold text-bp-primary underline decoration-2 underline-offset-8 hover:text-bp-primary transition-colors italic">privacy@bookphysio.in</a>
                       </div>
                     </div>
                   </section>

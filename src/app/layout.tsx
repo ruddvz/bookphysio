@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/app/providers";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -12,9 +12,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-outfit",
   weight: ["500", "600", "700"],
   display: "swap",
 });
@@ -75,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${outfit.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <noscript>You need JavaScript enabled to use BookPhysio.</noscript>
         <Providers>{children}</Providers>

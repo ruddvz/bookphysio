@@ -45,19 +45,19 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
     <div className="bg-bp-surface min-h-screen flex flex-col font-sans selection:bg-bp-accent/10 selection:text-bp-accent">
       
       {/* ── Practitioner Sidebar (Desktop) ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[240px] bg-bp-primary flex-col z-[60] shadow-[10px_0_40px_rgba(24,49,45,0.15)]">
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[240px] bg-white flex-col z-[60] border-r border-bp-border shadow-sm">
         <div className="p-8">
            <Link href="/provider/dashboard" className="flex items-center gap-3 group no-underline">
               <div className="w-9 h-9 bg-bp-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-bp-accent/20 group-hover:scale-105 transition-transform">
                  <Activity size={20} strokeWidth={3} />
               </div>
-              <span className="text-[20px] font-bold text-white tracking-tighter">Practitioner</span>
+              <span className="text-[20px] font-bold text-bp-primary tracking-tighter">Practitioner</span>
            </Link>
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-6">
            <div className="px-4 mb-4">
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Management</p>
+              <p className="text-[10px] font-bold text-bp-primary uppercase tracking-[0.2em] opacity-40">Management</p>
            </div>
            {navItems.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -68,11 +68,11 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                     className={cn(
                        "flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[14px] font-bold transition-all duration-300 group",
                        isActive 
-                          ? "bg-white text-bp-primary shadow-xl shadow-bp-primary/10" 
-                          : "text-white/50 hover:text-white hover:bg-white/5"
+                          ? "bg-bp-accent/10 text-bp-accent shadow-sm" 
+                          : "text-bp-body hover:text-bp-primary hover:bg-bp-surface"
                     )}
                  >
-                    <Icon size={18} strokeWidth={isActive ? 3 : 2} className={cn("transition-colors", isActive ? "text-bp-accent" : "text-white/30")} />
+                    <Icon size={18} strokeWidth={isActive ? 3 : 2} className={cn("transition-colors", isActive ? "text-bp-accent" : "text-bp-body/30 group-hover:text-bp-primary")} />
                     <span>{label}</span>
                  </Link>
               )
@@ -80,19 +80,19 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="p-4 mt-auto">
-           <div className="bg-white/5 rounded-3xl p-5 border border-white/5 group hover:bg-white/10 transition-all">
+           <div className="bg-bp-surface rounded-2xl p-5 border border-bp-border group hover:bg-white transition-all shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                 <div className="w-9 h-9 rounded-full bg-bp-accent text-white flex items-center justify-center text-[12px] font-bold border-2 border-white/10">
+                 <div className="w-9 h-9 rounded-xl bg-bp-accent text-white flex items-center justify-center text-[12px] font-bold shadow-lg shadow-bp-accent/20">
                     {initials}
                  </div>
                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold text-white truncate leading-none mb-1">{displayName}</p>
-                    <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest truncate">Verified Provider</p>
+                    <p className="text-[13px] font-bold text-bp-primary truncate leading-none mb-1">{displayName}</p>
+                    <p className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest truncate">Verified Provider</p>
                  </div>
               </div>
               <button
                  onClick={handleSignOut}
-                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 border border-white/10 text-white/40 text-[12px] font-bold hover:bg-white/10 hover:text-white transition-all active:scale-95"
+                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-bp-border text-bp-body text-[12px] font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 shadow-sm"
               >
                  <LogOut size={14} />
                  End Session
@@ -149,7 +149,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
               <div className="w-8 h-8 bg-bp-accent rounded-lg flex items-center justify-center text-white shadow-lg shadow-bp-accent/20">
                  <Activity size={18} strokeWidth={3} />
               </div>
-              <span className="text-[18px] font-black text-bp-primary tracking-tighter">Practitioner</span>
+              <span className="text-[18px] font-bold text-bp-primary tracking-tighter">Practitioner</span>
            </Link>
            <button 
              onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -173,7 +173,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                         href={href}
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
-                           "flex items-center gap-5 p-5 rounded-3xl text-[20px] font-black transition-all",
+                           "flex items-center gap-5 p-5 rounded-3xl text-[20px] font-bold transition-all",
                            isActive ? "bg-white text-bp-primary shadow-xl" : "text-white/60"
                         )}
                      >
@@ -185,7 +185,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                <div className="h-px bg-white/10 my-10"></div>
                <button
                   onClick={handleSignOut}
-                  className="w-full flex items-center justify-center gap-4 p-5 rounded-3xl bg-white/5 text-red-400 text-[20px] font-black border border-white/5"
+                  className="w-full flex items-center justify-center gap-4 p-5 rounded-3xl bg-white/5 text-red-400 text-[20px] font-bold border border-white/5"
                >
                   <LogOut size={24} />
                   Log Out
@@ -223,7 +223,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                   )}>
                      <Icon size={20} strokeWidth={isActive ? 3 : 2} />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-widest">{label === 'Overview' ? 'Home' : label}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest">{label === 'Overview' ? 'Home' : label}</span>
                </Link>
             )
          })}
@@ -233,11 +233,11 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
          <div className="flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 group">
             <div className="flex items-center gap-3">
                <Activity size={16} />
-               <span className="text-[11px] font-black tracking-[0.2em] uppercase">© 2026 Practical Intelligence Hub</span>
+               <span className="text-[11px] font-bold tracking-[0.2em] uppercase">© 2026 Practical Intelligence Hub</span>
             </div>
             <div className="flex gap-10">
                {['Security', 'Guidelines', 'Compliance', 'Help'].map((item) => (
-                  <span key={item} className="text-[11px] font-black tracking-[0.2em] uppercase hover:text-bp-accent transition-colors cursor-pointer">{item}</span>
+                  <span key={item} className="text-[11px] font-bold tracking-[0.2em] uppercase hover:text-bp-accent transition-colors cursor-pointer">{item}</span>
                ))}
             </div>
          </div>

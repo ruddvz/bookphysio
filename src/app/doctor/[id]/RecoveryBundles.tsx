@@ -26,10 +26,10 @@ export default function RecoveryBundles() {
     <section className="mb-12 relative z-10 px-1">
       <div className="flex items-center justify-between mb-8">
         <div>
-           <h2 className="text-[26px] font-black text-bp-primary tracking-tight">Recovery Bundles</h2>
+           <h2 className="text-[26px] font-bold text-bp-primary tracking-tight">Recovery Bundles</h2>
            <p className="text-[14px] text-bp-body/40 font-bold mt-1">Multi-session plans for a complete finish line</p>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-bp-accent/10 rounded-2xl border border-bp-accent/10 text-bp-accent text-[11px] font-black uppercase tracking-widest">
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-bp-accent/10 rounded-2xl border border-bp-accent/10 text-bp-accent text-[11px] font-bold uppercase tracking-widest">
            <Zap size={14} className="fill-bp-accent" />
            Limited Offers
         </div>
@@ -45,14 +45,14 @@ export default function RecoveryBundles() {
                    <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
                       <Package size={28} />
                    </div>
-                   <div className="px-3 py-1 bg-bp-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
+                   <div className="px-3 py-1 bg-bp-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-lg">
                       {bundle.tag}
                    </div>
                 </div>
 
-                <h3 className="text-[22px] font-black text-bp-primary mb-2 leading-tight group-hover:text-bp-accent transition-colors">{bundle.title}</h3>
+                <h3 className="text-[22px] font-bold text-bp-primary mb-2 leading-tight group-hover:text-bp-accent transition-colors">{bundle.title}</h3>
                 <div className="flex items-baseline gap-2 mb-8">
-                   <span className="text-[32px] font-black text-bp-primary tracking-tighter">{bundle.price}</span>
+                   <span className="text-[32px] font-bold text-bp-primary tracking-tighter">{bundle.price}</span>
                    <span className="text-[13px] text-bp-body/40 font-bold uppercase tracking-widest">/ {bundle.sessions} Sessions</span>
                 </div>
 
@@ -65,7 +65,7 @@ export default function RecoveryBundles() {
                    ))}
                 </div>
 
-                <button className="w-full py-4 bg-bp-surface rounded-2xl text-bp-primary text-[15px] font-black hover:bg-bp-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
+                <button className="w-full py-4 bg-bp-surface rounded-2xl text-bp-primary text-[15px] font-bold hover:bg-bp-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
                    Register Interest
                    <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>

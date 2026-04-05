@@ -10,7 +10,8 @@ test.describe('8.17 Empty States and Skeletons', () => {
     await expect(emptyState).toBeVisible()
 
     const description = page.getByText(/We couldn't locate any verified physios matching your criteria/i)
-    
+    await expect(description).toBeVisible()
+
     const clearButton = page.getByRole('button', { name: /clear all filters/i })
     await expect(clearButton).toBeVisible()
   })

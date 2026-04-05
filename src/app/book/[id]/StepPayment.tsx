@@ -140,7 +140,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
               <Lock size={24} strokeWidth={2.5} />
            </div>
            <div>
-              <h2 className="text-[32px] md:text-[40px] font-black text-bp-primary tracking-tighter leading-none">Booking Checkout</h2>
+              <h2 className="text-[32px] md:text-[40px] font-bold text-bp-primary tracking-tighter leading-none">Booking Checkout</h2>
               <p className="text-[14px] text-bp-body/40 font-bold mt-1 tracking-widest uppercase">Clinic payment currently enabled</p>
            </div>
         </div>
@@ -189,12 +189,12 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
 
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
-                     <p className={cn("text-[18px] font-black tracking-tight transition-colors duration-500", isSelected ? "text-bp-accent" : "text-bp-primary")}>
+                     <p className={cn("text-[18px] font-bold tracking-tight transition-colors duration-500", isSelected ? "text-bp-accent" : "text-bp-primary")}>
                        {mode.label}
                      </p>
                      {mode.badge && (
                        <span className={cn(
-                         "text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
+                         "text-[9px] font-bold uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
                          mode.available && isSelected ? "bg-bp-accent/15/50 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
                        )}>
                          {mode.badge}
@@ -226,7 +226,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                <X className="w-5 h-5 text-red-500" strokeWidth={3} />
             </div>
             <div>
-              <p className="text-[15px] font-black text-red-600">Booking could not be completed</p>
+              <p className="text-[15px] font-bold text-red-600">Booking could not be completed</p>
                <p className="text-[13px] font-bold text-red-400 mt-1">{error}</p>
             </div>
           </div>
@@ -241,7 +241,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                loading && "opacity-80 cursor-not-allowed"
             )}
           >
-            <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
+            <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-bold tracking-tighter">
                {loading ? (
                  <>
                    <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
@@ -250,7 +250,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                ) : (
                  <>
                    <div className="flex flex-col items-start leading-none gap-1">
-                      <span className="text-[12px] font-black text-white/50 uppercase tracking-[0.2em]">Reserve</span>
+                      <span className="text-[12px] font-bold text-white/50 uppercase tracking-[0.2em]">Reserve</span>
                       <span className="text-[20px]">Confirm Booking</span>
                    </div>
                    <MoveRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform duration-500" />
@@ -267,11 +267,11 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
             <div className="flex flex-wrap items-center justify-center gap-4">
               <div className="flex items-center gap-2.5 px-4 py-2 bg-bp-surface rounded-full border border-bp-border">
                 <ShieldCheck size={14} className="text-emerald-500" />
-                <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest">Encrypted Booking Request</span>
+                <span className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest">Encrypted Booking Request</span>
               </div>
               <div className="flex items-center gap-2.5 px-4 py-2 bg-bp-surface rounded-full border border-bp-border">
                 <Lock size={14} className="text-bp-accent" />
-                <span className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest">Pay During Visit</span>
+                <span className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest">Pay During Visit</span>
               </div>
             </div>
             <p className="text-center text-[12px] font-bold text-bp-body/40 max-w-md">

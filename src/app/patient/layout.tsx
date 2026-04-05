@@ -43,13 +43,13 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
     <div className="bg-bp-surface min-h-screen flex flex-col font-sans selection:bg-bp-accent/5 selection:text-bp-accent">
       
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[280px] bg-bp-primary flex-col z-[60] shadow-2xl shadow-bp-primary/20">
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[280px] bg-white flex-col z-[60] border-r border-bp-border shadow-sm">
         <div className="p-8">
           <Link href="/" className="flex items-center gap-3 no-underline group focus:outline-none focus:ring-2 focus:ring-bp-accent/50 rounded-lg">
-             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-bp-primary shadow-lg group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-bp-accent rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
                 <Activity size={22} strokeWidth={3} />
              </div>
-            <span className="text-[22px] font-bold text-white tracking-tighter">
+            <span className="text-[22px] font-bold text-bp-primary tracking-tighter">
               BookPhysio
             </span>
           </Link>
@@ -57,7 +57,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
 
         <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar">
           <div className="px-5 mb-4 opacity-40">
-             <p className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Patient Hub</p>
+             <p className="text-[10px] font-bold text-bp-primary uppercase tracking-[0.2em]">Patient Hub</p>
           </div>
           {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -68,15 +68,15 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
                 className={cn(
                   "flex items-center justify-between px-5 py-4 rounded-2xl text-[15px] font-bold transition-all duration-300 group relative overflow-hidden",
                   isActive
-                    ? "bg-white/15 text-white shadow-lg backdrop-blur-md"
-                    : "text-white/50 hover:text-white hover:bg-white/5"
+                    ? "bg-bp-accent/10 text-bp-accent"
+                    : "text-bp-body hover:text-bp-primary hover:bg-bp-surface"
                 )}
               >
                 {isActive && (
                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-bp-accent rounded-r-full shadow-[2px_0_12px_rgba(18,179,160,0.5)]"></span>
                 )}
                 <div className="flex items-center gap-4">
-                  <Icon size={20} strokeWidth={isActive ? 3 : 2} className={cn(isActive ? "text-bp-accent scale-110" : "group-hover:scale-110 transition-transform")} />
+                  <Icon size={20} strokeWidth={isActive ? 3 : 2} className={cn(isActive ? "text-bp-accent scale-110" : "text-bp-body/40 group-hover:scale-110 group-hover:text-bp-primary transition-all")} />
                   <span className="tracking-tight">{label}</span>
                 </div>
                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-bp-accent shadow-[0_0_8px_rgba(18,179,160,0.8)] animate-pulse"></div>}
@@ -86,19 +86,19 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="p-6 mt-auto">
-           <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-5 border border-white/5 shadow-inner">
+           <div className="bg-bp-surface rounded-2xl p-5 border border-bp-border shadow-sm">
               <div className="flex items-center gap-3 mb-5">
-                 <div className="w-11 h-11 rounded-2xl bg-bp-accent text-white flex items-center justify-center text-[15px] font-bold border-2 border-white/10 shadow-lg shadow-bp-accent/20">
+                 <div className="w-11 h-11 rounded-xl bg-bp-accent text-white flex items-center justify-center text-[15px] font-bold shadow-lg shadow-bp-accent/20">
                     {initials}
                  </div>
                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold text-white truncate leading-none mb-1.5">{displayName}</p>
-                    <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest truncate">Verified Patient</p>
+                    <p className="text-[14px] font-bold text-bp-primary truncate leading-none mb-1.5">{displayName}</p>
+                    <p className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest truncate">Verified Patient</p>
                  </div>
               </div>
               <button
                 onClick={handleSignOut}
-                className="group w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white/50 text-[13px] font-bold hover:bg-white hover:text-bp-primary hover:border-white transition-all active:scale-95 shadow-sm"
+                className="group w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-white border border-bp-border text-bp-body text-[13px] font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 shadow-sm"
               >
                 <LogOut size={16} className="group-hover:rotate-12 transition-transform" />
                 Sign Out
@@ -156,7 +156,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
               <div className="h-px bg-white/10 my-8"></div>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center justify-center gap-3 p-5 rounded-3xl bg-bp-accent text-white text-[18px] font-black shadow-xl shadow-bp-accent/20 active:scale-95 transition-transform"
+                className="w-full flex items-center justify-center gap-3 p-5 rounded-3xl bg-bp-accent text-white text-[18px] font-bold shadow-xl shadow-bp-accent/20 active:scale-95 transition-transform"
               >
                 <LogOut size={24} />
                 Sign Out
@@ -169,7 +169,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
       <div className="hidden lg:flex fixed top-0 right-0 left-[280px] h-[80px] bg-white/70 backdrop-blur-md border-b border-bp-surface z-40 items-center justify-between px-10">
          <div className="flex items-center gap-3">
             <div className="w-2 h-2 bg-bp-accent rounded-full animate-pulse shadow-[0_0_8px_rgba(18,179,160,0.6)]"></div>
-            <p className="text-[13px] font-black text-bp-primary uppercase tracking-widest">Safe & Secured Session</p>
+            <p className="text-[13px] font-bold text-bp-primary uppercase tracking-widest">Safe & Secured Session</p>
          </div>
          <div className="flex items-center gap-4">
             <button
@@ -183,10 +183,10 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
             </button>
             <div className="h-8 w-px bg-bp-border"></div>
             <button className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-bp-surface transition-colors">
-               <div className="w-9 h-9 rounded-full bg-bp-accent/10 border border-bp-accent/20 flex items-center justify-center text-bp-accent font-black text-[13px]">
+               <div className="w-9 h-9 rounded-full bg-bp-accent/10 border border-bp-accent/20 flex items-center justify-center text-bp-accent font-bold text-[13px]">
                   {initials}
                </div>
-               <span className="text-[14px] font-black text-bp-primary">{displayName}</span>
+               <span className="text-[14px] font-bold text-bp-primary">{displayName}</span>
             </button>
          </div>
       </div>

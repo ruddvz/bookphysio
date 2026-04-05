@@ -91,7 +91,7 @@ export default function PatientProfile() {
   return (
     <div className="max-w-[1142px] mx-auto px-4 md:px-6 py-8 md:py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="flex flex-col gap-2 mb-8 md:mb-12">
-        <h1 className="text-[32px] md:text-[40px] font-black text-bp-primary tracking-tighter leading-none">
+        <h1 className="text-[32px] md:text-[40px] font-bold text-bp-primary tracking-tighter leading-none">
           Patient Profile
         </h1>
         <p className="text-[17px] text-bp-body font-medium tracking-tight">
@@ -157,7 +157,7 @@ export default function PatientProfile() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-10 border-b border-bp-border">
               <div className="flex items-center gap-6">
                 <div className="relative group">
-                  <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-bp-accent/10 text-bp-accent text-2xl font-black shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
+                  <div className="flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-bp-accent/10 text-bp-accent text-2xl font-bold shrink-0 overflow-hidden ring-4 ring-white shadow-md transition-transform duration-300 group-hover:scale-105">
                     {profile.avatar_url
                       ? <Image src={profile.avatar_url} width={112} height={112} alt={profile.full_name} className="w-full h-full object-cover" />
                       : initials
@@ -168,11 +168,11 @@ export default function PatientProfile() {
                   </button>
                 </div>
                 <div>
-                  <h2 className="text-[24px] md:text-[28px] font-black text-bp-primary tracking-tighter mb-1">
+                  <h2 className="text-[24px] md:text-[28px] font-bold text-bp-primary tracking-tighter mb-1">
                     {profile.full_name}
                   </h2>
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 bg-bp-accent/10 text-bp-accent text-[12px] font-black uppercase tracking-wider rounded-full">
+                    <span className="px-3 py-1 bg-bp-accent/10 text-bp-accent text-[12px] font-bold uppercase tracking-wider rounded-full">
                       {profile.role} account
                     </span>
                     <span className="text-[14px] text-bp-body">Member since 2024</span>
@@ -188,7 +188,7 @@ export default function PatientProfile() {
               <div className="grid grid-cols-1 gap-8">
                 {/* Full Name */}
                 <div className="space-y-3">
-                  <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                  <label className="text-[16px] font-bold text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
                     Full Name
                   </label>
                   <div className="relative group">
@@ -209,7 +209,7 @@ export default function PatientProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Phone — read only */}
                   <div className="space-y-3">
-                    <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                    <label className="text-[16px] font-bold text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
                       Mobile Number
                     </label>
                     <div className="relative">
@@ -220,7 +220,7 @@ export default function PatientProfile() {
                         className="w-full pl-12 pr-6 py-4 border-2 border-bp-border rounded-[20px] md:rounded-[24px] bg-bp-surface text-[16px] text-bp-primary font-medium cursor-not-allowed outline-none opacity-80"
                       />
                       <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/50" />
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-black uppercase">
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase">
                         <Check className="w-3 h-3" /> Verified
                       </div>
                     </div>
@@ -228,7 +228,7 @@ export default function PatientProfile() {
 
                   {/* Email — read only */}
                   <div className="space-y-3">
-                    <label className="text-[16px] font-black text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
+                    <label className="text-[16px] font-bold text-bp-primary tracking-tight block ml-1 uppercase text-[12px]">
                       Email Address
                     </label>
                     <div className="relative">
@@ -267,7 +267,7 @@ export default function PatientProfile() {
                   <button
                     type="submit"
                     disabled={saveMut.isPending || name.trim() === profile.full_name}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-bp-accent hover:bg-bp-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-black tracking-tight transform transition-all active:scale-95 shadow-xl shadow-bp-primary/10"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-bp-accent hover:bg-bp-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full text-[17px] font-bold tracking-tight transform transition-all active:scale-95 shadow-xl shadow-bp-primary/10"
                   >
                     {saveMut.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -287,13 +287,13 @@ export default function PatientProfile() {
                 <Shield className="w-6 h-6 text-bp-secondary" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-[16px] font-black text-[#853C1D] uppercase text-[12px]">Data Privacy</h4>
+                <h4 className="text-[16px] font-bold text-[#853C1D] uppercase text-[12px]">Data Privacy</h4>
                 <p className="text-[14px] text-[#853C1D]/80 leading-snug">
                   Your data is protected with 128-bit encryption and never shared with third parties.
                 </p>
               </div>
             </div>
-            <button className="text-[14px] font-black text-bp-secondary hover:underline whitespace-nowrap">
+            <button className="text-[14px] font-bold text-bp-secondary hover:underline whitespace-nowrap">
               Learn More
             </button>
           </div>

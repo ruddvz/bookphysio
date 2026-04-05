@@ -22,7 +22,10 @@ Status legend: `[x]` fixed in code, `[ ]` still open or needs follow-up verifica
 | [x] | BUG-11 | Medium-High | Code | Scroll behavior now lives only in CSS |
 | [x] | BUG-12 | Medium | UX | Hero stats are readable by default |
 | [x] | BUG-13 | Medium | UX | FAQ collapsed answers are fully hidden |
-| [x] | BUG-14 | Medium | Performance | Navbar blur background reduced from `/92` to `/90` |
+| [x] | BUG-14 | Medium | Performance | Navbar blur background reduced and standardized to white/80 |
+| [x] | BUG-36 | High | API | Search handles text queries (query param) with ILIKE fallback |
+| [x] | BUG-37 | Medium | UX | Preview search results map parameters correctly to search page |
+| [x] | BUG-38 | Medium | Design | Footer social/placeholder links removed for premium light theme |
 | [x] | BUG-15 | Medium | Code | Unused Hero `PreviewPanel` dead code removed |
 | [x] | BUG-16 | Medium | Design | Footer CTA hover state preserves contrast |
 | [x] | BUG-17 | Medium | A11y | FAQ items no longer use `<article>` |
@@ -47,6 +50,10 @@ Status legend: `[x]` fixed in code, `[ ]` still open or needs follow-up verifica
 | [x] | DESIGN-01 | Low | Design | Auth cards already have visible shadow/border contrast |
 | [x] | DESIGN-02 | Medium | UX | Standalone How It Works page now includes a compact hero and CTA |
 | [x] | DESIGN-03 | Medium | UX | Auth logos now link back to the homepage |
+| [x] | DESIGN-04 | High | Design | Dashboard radii standardized to 16px/24px (removed 'bubbly' corners) |
+| [x] | DESIGN-05 | High | Design | Sidebars migrated to premium 'Light' theme (Patient/Provider/Admin) |
+| [x] | DESIGN-06 | Medium | Design | AI Chat (Motio) aesthetic softed (font-bold + unified radii) |
+| [x] | UX-01 | Medium | UX | Enter-key support for messaging verified |
 
 Open items still needing follow-up: BUG-02 (final production wordmark asset).
 
@@ -776,7 +783,7 @@ export default function robots() {
 | **Razorpay** | ~~ARCHIVED~~ — all routes return 503 | Re-enable when subscription billing is implemented. |
 | **Resend** | Needs domain verification | Verify `bookphysio.in` domain on Resend. Set `RESEND_API_KEY` |
 | **Upstash Redis** | Needs production instance | Create prod Redis DB. Set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` |
-| **Mapbox** | Needs production token | Create restricted token for `bookphysio.in` domain. Set `NEXT_PUBLIC_MAPBOX_TOKEN` |
+| **Search map** | Removed from scope | No map token required |
 | **Textbelt** | Ready | Set `TEXTBELT_API_KEY=textbelt` for free (1/day) or purchase credits at textbelt.com |
 | **Domain DNS** | Action needed | Remove GitHub Pages A records, add Vercel DNS (see Session 2 notes below) |
 | **SSL Certificate** | Vercel automatic | Vercel provisions SSL automatically once domain is connected |
@@ -853,7 +860,6 @@ pm run build � **PASSES** � full route tree renders, no TypeScript errors bl
    NEXT_PUBLIC_SITE_URL=https://bookphysio.in
    UPSTASH_REDIS_REST_URL=<upstash url>
    UPSTASH_REDIS_REST_TOKEN=<upstash token>
-   NEXT_PUBLIC_MAPBOX_TOKEN=<mapbox token>
    `
 
 3. **Domain DNS** (at your registrar � remove all GitHub Pages A records):
@@ -876,3 +882,38 @@ pm run build � **PASSES** � full route tree renders, no TypeScript errors bl
 - **SEC-15**: Magic link callback 
 equest.nextUrl.origin fallback � set NEXT_PUBLIC_SITE_URL in prod
 
+
+---
+
+## 🔎 LIVE SITE AUDIT — 2026-04-04
+> Findings from manual and automated browsing of https://bookphysio.in
+
+### CRITICAL — Search & Core UX
+#### BUG-36: Search Filters for Major Cities Return "No Results"
+- **Symptom:** Selecting "Mumbai" or "Bangalore" from the quick-filters/chips returns "No exact matches found," even though these are primary markets.
+- **Impact:** Users think the service is unavailable in India's biggest cities.
+- **Root Cause:** Likely a mismatch between the filter value and the database city names, or empty mock data for certain regions in the production build.
+
+#### BUG-37: "Demo Preview" Search Results are Not Clickable
+- **Symptom:** Search results labeled "PREVIEW" (e.g., Sports Rehab Starter) have buttons that do not lead to a doctor profile or booking page. They often just refresh the search.
+- **Impact:** Dead-end UX for users trying to book.
+
+### HIGH — Visual & Interface
+#### BUG-38: "94% Match" Gimmick Feels Unreliable
+- **Symptom:** Cards display an arbitrary "Match %." 
+- **Impact:** Contributes to the "AI-generated" or "Template" feel. Patients value clinical verification over arbitrary percentages.
+- **Fix:** Replace with "Verified Partner," "Years of Experience," or "Clinic Visit Available."
+
+#### BUG-39: Cookie Banner Interaction Lag
+- **Symptom:** The "Accept All" button on the cookie banner is initially unresponsive or requires multiple clicks.
+- **Root Cause:** Script hydration delay or z-index conflict with the hero section.
+
+### MEDIUM — Branding & Consistency
+#### BUG-40: Inconsistent Dark Theme on Legal/Support Pages
+- **Symptom:** FAQ, Privacy, and Terms pages use a dark background hero section, while the rest of the site is creamy/light.
+- **Impact:** Feels like these pages were imported from a different template. 
+- **Fix:** Use the primary light theme for all pages to maintain a cohesive brand journey.
+
+#### BUG-41: Layout Shifts on Language Toggle
+- **Symptom:** Switching between English and Hindi causes layout jumps in the hero and card sections.
+- **Fix:** Set fixed aspect ratios or min-heights for container elements that hold translated text.

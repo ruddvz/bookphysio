@@ -38,7 +38,7 @@ function SearchBar({
     <div className="bp-card relative mx-auto w-full max-w-4xl overflow-hidden p-6 md:p-8">
       <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-bp-primary via-bp-accent to-bp-secondary" />
       <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr_auto]">
-        <label className="flex flex-col gap-2 rounded-[22px] border border-bp-border bg-white px-5 py-4 transition-all focus-within:ring-4 focus-within:ring-bp-accent/10">
+        <label className="flex flex-col gap-2 rounded-xl border border-bp-border bg-white px-5 py-4 transition-all focus-within:ring-4 focus-within:ring-bp-accent/10">
           <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/60">
             <Search size={14} className="text-bp-accent" />
             Condition
@@ -52,7 +52,7 @@ function SearchBar({
           />
         </label>
 
-        <label className="flex flex-col gap-2 rounded-[22px] border border-bp-border bg-white px-5 py-4 transition-all focus-within:ring-4 focus-within:ring-bp-accent/10">
+        <label className="flex flex-col gap-2 rounded-xl border border-bp-border bg-white px-5 py-4 transition-all focus-within:ring-4 focus-within:ring-bp-accent/10">
           <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/60">
             <MapPin size={14} className="text-bp-accent" />
             Location
@@ -68,7 +68,7 @@ function SearchBar({
 
         <button
           onClick={onSubmit}
-          className="inline-flex items-center justify-center gap-2 rounded-[22px] bg-bp-primary px-8 py-4 text-[15px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98] lg:min-w-[160px]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-bp-primary px-8 py-4 text-[15px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98] lg:min-w-[160px]"
         >
           Find care
           <ArrowRight size={18} />

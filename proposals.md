@@ -122,3 +122,30 @@ Instead of just single sessions, allow doctors to sell **"Recovery Bundles"** (e
 > 14. Regional Insights (India Map Integration) - **COMPLETED ✅**
 
 
+
+---
+
+## 🧪 11. Design Overhaul (Moving Away from "AI Feel")
+
+**User Feedback:** The current website feels "too AI" (generic templates, loud typography). We need to shift toward a premium, medical-authority aesthetic.
+
+### 💡 11.1 Typography Refinement
+- **Current:** Heavy, stylistic serif headings with frequent italics (a hallmark of "modern AI" startup templates).
+- **Proposal:** Replace with a more sophisticated, medium-weight serif (like **Lora** or **Playfair Display**) or a high-end humanistic sans-serif (**Inter** is currently used but could be paired better). 
+- **Action:** Scale back on italicized emphasis in hero sections. Let the copy speak for itself through layout and hierarchy.
+
+### 💡 11.2 Professional Trust via Badging
+- **Current:** "Match %" indicators on search results. This feels like a guessing algorithm and reduces professional trust.
+- **Proposal:** Remove "Match %." Replace with explicit, non-gimmicky trust signals:
+  - `"Verified Professional"` (with shield icon)
+  - `"10+ Years Experience"`
+  - `"Clinic & Home Visits"`
+- **Benefit:** Moves from "AI matching" to "Clinical networking."
+
+### 💡 11.3 Layout & Card Density
+- **Proposal:** Reduce card padding and border-radius (e.g., to 12px or 16px). Implement a tighter grid for search results so users see more verified options above the fold. -- **COMPLETED ✅ (Standardized to 16px/24px)**
+- **Benefit:** A more "functional/utility" feel that patients expect from a medical booking platform.
+
+### 💡 11.4 Site-Wide Theme Unification
+- **Current Status:** COMPLETED ✅ 
+- **Action:** Migrated all pages (Auth, Privacy, Terms, FAQ, Navbar, Footer) to the consistent "Creamy/Light" premium theme. Removed legacy dark backgrounds and oversized bubble corners.

@@ -12,7 +12,6 @@
 | `razorpay.ts` | Razorpay payment gateway | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | `/api/payments/*` routes |
 | `msg91.ts` | MSG91 SMS/OTP (India) | `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID` | `/api/auth/otp/*` routes |
 | `resend.ts` | Resend transactional email | `RESEND_API_KEY` | Booking confirmation, notifications |
-| `mapbox.ts` | Mapbox geocoding | `MAPBOX_ACCESS_TOKEN` | Provider onboarding (address → lat/lng) |
 | `upstash.ts` | Upstash Redis rate limiting | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | `middleware.ts` |
 | `utils.ts` | Utility: `cn()` classname merge | — | All UI components |
 
@@ -31,9 +30,10 @@
 
 | File | What It Does |
 |------|-------------|
-| `001_initial_schema.sql` | Creates 14 tables: users, providers, specialties, locations, insurances, provider_insurances, availabilities, appointments, payments, subscriptions, reviews, documents, notifications |
+| `001_initial_schema.sql` | Creates the core users, providers, specialties, locations, availabilities, appointments, payments, subscriptions, reviews, documents, and notifications tables |
 | `002_rls_policies.sql` | Row-level security: patients=own data, providers=own+patients, admins=all |
 | `003_indexes.sql` | Performance indexes on foreign keys + search columns |
+| `023_remove_legacy_coverage_schema.sql` | Drops legacy coverage-related tables/columns from existing databases |
 
 ## Environment Variables (documented in `.env.example`)
 
@@ -55,10 +55,6 @@ MSG91_SENDER_ID=
 
 # Resend (email)
 RESEND_API_KEY=
-
-# Mapbox (geocoding)
-MAPBOX_ACCESS_TOKEN=
-NEXT_PUBLIC_MAPBOX_TOKEN=
 
 # Upstash (rate limiting)
 UPSTASH_REDIS_REST_URL=

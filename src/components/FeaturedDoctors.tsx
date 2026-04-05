@@ -21,9 +21,9 @@ function FeaturedSkeleton() {
   return (
     <div
       data-testid="featured-skeleton"
-      className="animate-pulse bg-white rounded-[20px] border border-bp-border p-4 flex items-center gap-3"
+      className="animate-pulse bg-white rounded-2xl border border-bp-border p-4 flex items-center gap-3"
     >
-      <div className="w-[52px] h-[52px] rounded-[14px] bg-bp-border/40 shrink-0" />
+      <div className="w-[52px] h-[52px] rounded-xl bg-bp-border/40 shrink-0" />
       <div className="flex-1 space-y-2">
         <div className="h-3 bg-bp-border/40 rounded-full w-3/4" />
         <div className="h-2.5 bg-bp-border/30 rounded-full w-1/2" />
@@ -45,11 +45,11 @@ function FeaturedCard({ provider }: FeaturedCardProps) {
   return (
     <Link
       href={`/doctor/${provider.id}`}
-      className="bg-white rounded-[20px] border border-bp-border p-4 flex items-center gap-3 hover:border-bp-accent/30 hover:shadow-md transition-all duration-200 group"
+      className="bg-white rounded-2xl border border-bp-border p-4 flex items-center gap-3 hover:border-bp-accent/30 hover:shadow-md transition-all duration-200 group"
     >
       <div className="relative w-[52px] h-[52px] shrink-0">
         {provider.avatar_url ? (
-          <div className="relative w-[52px] h-[52px] rounded-[14px] overflow-hidden">
+          <div className="relative w-[52px] h-[52px] rounded-xl overflow-hidden">
             <Image
               src={provider.avatar_url}
               alt={nameWithTitle}
@@ -59,20 +59,20 @@ function FeaturedCard({ provider }: FeaturedCardProps) {
             />
           </div>
         ) : (
-          <div className="w-[52px] h-[52px] rounded-[14px] bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-black">
+          <div className="w-[52px] h-[52px] rounded-xl bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-bold">
             {initials}
           </div>
         )}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[14px] font-black text-bp-primary truncate group-hover:text-bp-accent transition-colors">
+        <p className="text-[14px] font-bold text-bp-primary truncate group-hover:text-bp-accent transition-colors">
           {nameWithTitle}
         </p>
         <p className="text-[11px] font-bold text-bp-accent mt-0.5 truncate">{specialty}</p>
         <div className="flex items-center gap-1 mt-1">
           <Star size={11} className="fill-[#F59E0B] text-[#F59E0B]" />
-          <span className="text-[11px] font-black text-bp-primary">
+          <span className="text-[11px] font-bold text-bp-primary">
             {(provider.rating_avg ?? 0).toFixed(1)}
           </span>
           <span className="text-[10px] text-bp-body/40 font-medium">
@@ -102,7 +102,7 @@ export default function FeaturedDoctors() {
 
   return (
     <div className="mb-8">
-      <h2 className="text-[13px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-4">
+      <h2 className="text-[13px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-4">
         Featured Physiotherapists
       </h2>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

@@ -4,7 +4,7 @@
 
 **Goal:** Scaffold the bookphysio.in Next.js 15 project from the ai-website-cloner-template, configure all tooling, set up Supabase schema with migrations, implement all API routes, and publish TypeScript contracts so UI agents can build in parallel.
 
-**Architecture:** Clone the ai-website-cloner-template (Next.js 15 + shadcn/ui pre-wired) into the bookphysio repo, layer in the full Supabase schema (14 tables + RLS), implement API routes under `src/app/api/`, and export TypeScript types to `src/app/api/contracts/` as the source of truth for all UI agents.
+**Architecture:** Clone the ai-website-cloner-template (Next.js 15 + shadcn/ui pre-wired) into the bookphysio repo, layer in the full Supabase schema (11 tables + RLS), implement API routes under `src/app/api/`, and export TypeScript types to `src/app/api/contracts/` as the source of truth for all UI agents.
 
 
 ---
@@ -23,10 +23,10 @@
 ### Supabase
 | File | Responsibility |
 |------|---------------|
-| `supabase/migrations/001_initial_schema.sql` | All 14 tables: users, providers, specialties, locations, insurances, provider_insurances, availabilities, appointments, payments, subscriptions, reviews, documents, notifications |
+| `supabase/migrations/001_initial_schema.sql` | All 11 tables: users, providers, specialties, locations, availabilities, appointments, payments, subscriptions, reviews, documents, notifications |
 | `supabase/migrations/002_rls_policies.sql` | Row-level security policies for all roles |
 | `supabase/migrations/003_indexes.sql` | Performance indexes on foreign keys + search columns |
-| `supabase/seed.sql` | 10 specialties, 5 insurances, 2 seed providers, 10 availability slots |
+| `supabase/seed.sql` | 10 specialties, 2 seed providers, 10 availability slots |
 | `src/lib/supabase/client.ts` | Browser Supabase client (anon key) |
 | `src/lib/supabase/server.ts` | Server Supabase client (cookies-based, for API routes + Server Components) |
 | `src/lib/supabase/admin.ts` | Service role client — server-only, never imported client-side |
@@ -37,7 +37,6 @@
 | `src/lib/razorpay.ts` | Razorpay client init + order creation + webhook verification |
 | `src/lib/resend.ts` | Resend email client + booking confirmation template |
 | `src/lib/msg91.ts` | MSG91 SMS client + OTP send/verify |
-| `src/lib/mapbox.ts` | Mapbox geocoding helper (address → lat/lng) |
 | `src/lib/upstash.ts` | Upstash Redis client for rate limiting |
 
 ### Zod Validation Schemas
@@ -56,7 +55,7 @@
 | `src/app/api/auth/signup/route.ts` | POST — patient + provider signup |
 | `src/app/api/auth/otp/send/route.ts` | POST — send phone OTP via MSG91 |
 | `src/app/api/auth/otp/verify/route.ts` | POST — verify OTP |
-| `src/app/api/providers/route.ts` | GET — search providers (filters: specialty, city, insurance, visit_type) |
+| `src/app/api/providers/route.ts` | GET — search providers (filters: specialty, city, visit_type) |
 | `src/app/api/providers/[id]/route.ts` | GET — single provider profile |
 | `src/app/api/providers/[id]/availability/route.ts` | GET — available slots for a date range |
 | `src/app/api/providers/[id]/reviews/route.ts` | GET — paginated reviews for a provider |
@@ -200,9 +199,6 @@ RAZORPAY_KEY_SECRET=your-secret
 RAZORPAY_WEBHOOK_SECRET=your-webhook-secret
 
 HMS_TEMPLATE_ID=your-template-id
-
-# Mapbox
-NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1...
 
 # Resend (email)
 RESEND_API_KEY=re_xxxx
@@ -569,20 +565,6 @@ CREATE TABLE providers (
   gstin text
 );
 
--- Insurance plans
-CREATE TABLE insurances (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text UNIQUE NOT NULL,
-  logo_url text
-);
-
--- Provider <-> Insurance mapping
-CREATE TABLE provider_insurances (
-  provider_id uuid NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
-  insurance_id uuid NOT NULL REFERENCES insurances(id) ON DELETE CASCADE,
-  PRIMARY KEY (provider_id, insurance_id)
-);
-
 -- Clinic locations
 CREATE TABLE locations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -622,7 +604,6 @@ CREATE TABLE appointments (
   location_id uuid REFERENCES locations(id) ON DELETE SET NULL,
   status text NOT NULL DEFAULT 'pending'
     CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
-  insurance_id uuid REFERENCES insurances(id) ON DELETE SET NULL,
   fee_inr int NOT NULL CHECK (fee_inr >= 0),
   notes text,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -736,8 +717,6 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE specialties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE locations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE insurances ENABLE ROW LEVEL SECURITY;
-ALTER TABLE provider_insurances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE availabilities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
@@ -765,10 +744,6 @@ CREATE POLICY "providers_self_update" ON providers FOR UPDATE USING (id = auth.u
 CREATE POLICY "specialties_public_read" ON specialties FOR SELECT USING (true);
 CREATE POLICY "specialties_admin_write" ON specialties FOR ALL USING (auth_role() = 'admin');
 
--- insurances: public read
-CREATE POLICY "insurances_public_read" ON insurances FOR SELECT USING (true);
-CREATE POLICY "insurances_admin_write" ON insurances FOR ALL USING (auth_role() = 'admin');
-
 -- locations: public read for verified providers, self write
 CREATE POLICY "locations_public_read" ON locations FOR SELECT USING (
   EXISTS (SELECT 1 FROM providers p WHERE p.id = locations.provider_id AND p.verified = true AND p.active = true)
@@ -776,11 +751,6 @@ CREATE POLICY "locations_public_read" ON locations FOR SELECT USING (
 );
 CREATE POLICY "locations_self_write" ON locations FOR INSERT WITH CHECK (provider_id = auth.uid());
 CREATE POLICY "locations_self_update" ON locations FOR UPDATE USING (provider_id = auth.uid() OR auth_role() = 'admin');
-
--- provider_insurances: public read, self write
-CREATE POLICY "provider_insurances_public_read" ON provider_insurances FOR SELECT USING (true);
-CREATE POLICY "provider_insurances_self_write" ON provider_insurances FOR INSERT WITH CHECK (provider_id = auth.uid());
-CREATE POLICY "provider_insurances_self_delete" ON provider_insurances FOR DELETE USING (provider_id = auth.uid());
 
 -- availabilities: public read (unbooked), provider self write
 CREATE POLICY "availabilities_public_read" ON availabilities FOR SELECT USING (
@@ -861,14 +831,6 @@ INSERT INTO specialties (name, slug) VALUES
   ('Spine & Back Pain', 'spine'),
   ('Women''s Health Physiotherapy', 'womens-health'),
   ('Home Visit Physiotherapy', 'home-visit');
-
--- Insurance plans
-INSERT INTO insurances (name) VALUES
-  ('Star Health Insurance'),
-  ('ICICI Lombard Health'),
-  ('HDFC ERGO Health'),
-  ('Niva Bupa Health Insurance'),
-  ('Care Health Insurance');
 ```
 
 - [ ] **Step 4.5: Apply migrations to local Supabase**
@@ -1036,7 +998,6 @@ export const searchFiltersSchema = z.object({
   query: z.string().optional(),
   city: z.string().optional(),
   specialty_id: z.string().uuid().optional(),
-  insurance_id: z.string().uuid().optional(),
   available_date: z.string().date().optional(), // YYYY-MM-DD
   min_rating: z.coerce.number().min(1).max(5).optional(),
   max_fee_inr: z.coerce.number().min(0).optional(),
@@ -1055,7 +1016,6 @@ export const createAppointmentSchema = z.object({
   provider_id: z.string().uuid(),
   availability_id: z.string().uuid(),
   location_id: z.string().uuid().optional(),
-  insurance_id: z.string().uuid().optional(),
   notes: z.string().max(500).optional(),
 })
 
@@ -1187,7 +1147,6 @@ rtk git commit -m "feat: add Zod validation schemas for all API input boundaries
 - Create: `src/lib/razorpay.ts`
 - Create: `src/lib/resend.ts`
 - Create: `src/lib/msg91.ts`
-- Create: `src/lib/mapbox.ts`
 - Create: `src/lib/hundredms.ts`
 - Create: `src/lib/upstash.ts`
 
@@ -1305,22 +1264,9 @@ export async function sendSms(phone: string, message: string): Promise<void> {
 }
 ```
 
-- [ ] **Step 6.4: Create `src/lib/mapbox.ts`**
+- [ ] **Step 6.4: Keep location search database-backed**
 
-```typescript
-const MAPBOX_BASE = 'https://api.mapbox.com'
-
-export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
-  const encoded = encodeURIComponent(address)
-  const res = await fetch(
-    `${MAPBOX_BASE}/geocoding/v5/mapbox.places/${encoded}.json?country=IN&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
-  )
-  const data = await res.json() as { features: Array<{ center: [number, number] }> }
-  const feature = data.features[0]
-  if (!feature) return null
-  return { lng: feature.center[0], lat: feature.center[1] }
-}
-```
+Use city, pincode, and provider coverage fields already stored in Supabase. No separate live map or geocoding client is required for the scoped product.
 
 - [ ] **Step 6.5: Create `src/lib/hundredms.ts`**
 
@@ -1392,7 +1338,7 @@ npm install @upstash/redis @upstash/ratelimit
 - [ ] **Step 6.7: Commit**
 
 ```bash
-rtk git add src/lib/razorpay.ts src/lib/resend.ts src/lib/msg91.ts src/lib/mapbox.ts src/lib/hundredms.ts src/lib/upstash.ts
+rtk git add src/lib/razorpay.ts src/lib/resend.ts src/lib/msg91.ts src/lib/hundredms.ts src/lib/upstash.ts
 ```
 
 ---
@@ -1436,12 +1382,6 @@ export interface Specialty {
   icon_url: string | null
 }
 
-export interface Insurance {
-  id: string
-  name: string
-  logo_url: string | null
-}
-
 export interface ProviderLocation {
   id: string
   name: string
@@ -1466,7 +1406,6 @@ export interface ProviderCard {
   consultation_fee_inr: number | null
   next_available_slot: string | null // ISO datetime
   city: string | null
-  insurances: Insurance[]
 }
 
 export interface ProviderProfile extends ProviderCard {
@@ -1504,7 +1443,6 @@ export interface Appointment {
   visit_type: VisitType
   status: AppointmentStatus
   fee_inr: number
-  insurance_id: string | null
   notes: string | null
   created_at: string
 }
@@ -1514,7 +1452,6 @@ export interface BookingRequest {
   availability_id: string
   location_id?: string
   visit_type: VisitType
-  insurance_id?: string
   notes?: string
 }
 ```
@@ -1594,7 +1531,6 @@ export interface SearchFilters {
   query?: string
   city?: string
   specialty_id?: string
-  insurance_id?: string
   available_date?: string
   min_rating?: number
   max_fee_inr?: number
@@ -1712,7 +1648,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { query, city, specialty_id, insurance_id, visit_type, min_rating, max_fee_inr, page, limit } = parsed.data
+  const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit } = parsed.data
   const supabase = await createClient()
 
   let q = supabase
@@ -1722,8 +1658,7 @@ export async function GET(request: NextRequest) {
       rating_avg, rating_count,
       users!inner (full_name, avatar_url),
       specialties:specialty_ids,
-      locations (id, city, state, visit_type),
-      provider_insurances (insurance_id)
+      locations (id, city, state, visit_type)
     `, { count: 'exact' })
     .eq('verified', true)
     .eq('active', true)
@@ -1777,7 +1712,6 @@ export async function GET(
       *,
       users!inner (full_name, avatar_url, phone),
       locations (*),
-      provider_insurances (insurances (*)),
       reviews (id, rating, comment, patient_id, created_at, is_published)
     `)
     .eq('id', id)
@@ -1845,7 +1779,7 @@ export async function POST(request: NextRequest) {
   const parsed = createAppointmentSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { provider_id, availability_id, location_id, visit_type, insurance_id, notes } = parsed.data
+  const { provider_id, availability_id, location_id, visit_type, notes } = parsed.data
 
   // Fetch slot and fee in one query
   const { data: slot } = await supabase
@@ -1868,7 +1802,6 @@ export async function POST(request: NextRequest) {
       location_id: location_id ?? null,
       visit_type,
       status: 'pending',
-      insurance_id: insurance_id ?? null,
       fee_inr: feeInr,
       notes: notes ?? null,
     })

@@ -99,7 +99,7 @@ function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGro
   if (slots.length === 0) return null
   return (
     <div className="mb-6 last:mb-0">
-      <p className="text-[10px] font-black text-bp-body/40 uppercase tracking-[0.2em] mb-3 ml-1">
+      <p className="text-[10px] font-bold text-bp-body/40 uppercase tracking-[0.2em] mb-3 ml-1">
         {heading}
       </p>
       <div className="grid grid-cols-3 gap-2.5">
@@ -110,7 +110,7 @@ function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGro
               key={slot.id}
               onClick={() => onSelect(slot)}
               className={cn(
-                "relative py-5 rounded-[22px] text-[15px] font-black transition-all duration-500 border flex flex-col items-center justify-center gap-1 overflow-hidden active:scale-95 group",
+                "relative py-5 rounded-[22px] text-[15px] font-bold transition-all duration-500 border flex flex-col items-center justify-center gap-1 overflow-hidden active:scale-95 group",
                 isSelected
                   ? "bg-[#111111] text-white border-[#111111] shadow-[0_12px_24px_-8px_rgba(0,0,0,0.3)] scale-[1.05] z-10"
                   : "bg-white text-bp-primary border-bp-border/40 hover:border-bp-primary/60 hover:shadow-[0_8px_16px_-4px_rgba(0,118,108,0.08)]"
@@ -121,7 +121,7 @@ function TimeSlotGroup({ heading, slots, selectedSlotId, onSelect }: TimeSlotGro
                  {isSelected && <div className="w-1.5 h-1.5 bg-bp-accent rounded-full animate-pulse" />}
               </div>
               <span className={cn(
-                "text-[9px] font-black uppercase tracking-[0.2em] transition-opacity duration-500", 
+                "text-[9px] font-bold uppercase tracking-[0.2em] transition-opacity duration-500", 
                 isSelected ? "text-white/50" : "text-bp-body/30 group-hover:text-bp-primary/60"
               )}>
                  {formatSlotTime(slot.starts_at).split(' ')[1]}
@@ -215,10 +215,10 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       {/* ── Header ── */}
       <div className="flex flex-col gap-5 mb-10 relative z-10">
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20/50 rounded-lg text-[10px] font-black text-bp-accent uppercase tracking-widest leading-none">
+           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20/50 rounded-lg text-[10px] font-bold text-bp-accent uppercase tracking-widest leading-none">
               Secured Session
            </div>
-           <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none">
+           <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest leading-none">
               Available <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
            </div>
         </div>
@@ -226,7 +226,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
         <div className="flex items-end justify-between pt-2">
            <div>
               <div className="flex items-baseline gap-2 mb-1">
-                 <span className="text-[48px] font-black text-bp-primary tracking-tighter leading-none">₹{selectedFee.toLocaleString('en-IN')}</span>
+                 <span className="text-[48px] font-bold text-bp-primary tracking-tighter leading-none">₹{selectedFee.toLocaleString('en-IN')}</span>
                  <span className="text-[14px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">/ Session</span>
               </div>
               <p className="text-[13px] font-bold text-bp-body/40 flex items-center gap-2 mt-3">
@@ -250,7 +250,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                 className={cn(
                   "flex items-center justify-center gap-2.5 py-4 rounded-[22px] transition-all duration-500 active:scale-95 group",
                   isActive 
-                    ? "bg-white text-bp-primary shadow-[0_8px_16px_-4px_rgba(0,0,0,0.05)] font-black border border-bp-border/10 ring-1 ring-black/[0.02]" 
+                    ? "bg-white text-bp-primary shadow-[0_8px_16px_-4px_rgba(0,0,0,0.05)] font-bold border border-bp-border/10 ring-1 ring-black/[0.02]" 
                     : "text-bp-body/40 font-bold hover:text-bp-primary/60"
                 )}
               >
@@ -261,7 +261,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                    <Icon size={18} strokeWidth={isActive ? 3 : 2} />
                 </div>
                 <div className="flex flex-col items-start leading-none gap-1">
-                   <span className="text-[11px] uppercase tracking-widest font-black">{VISIT_TYPE_LABELS[type]?.label ?? type}</span>
+                   <span className="text-[11px] uppercase tracking-widest font-bold">{VISIT_TYPE_LABELS[type]?.label ?? type}</span>
                    {isActive && <div className="h-0.5 w-4 bg-bp-primary/30 rounded-full animate-in slide-in-from-left-2 duration-700" />}
                 </div>
               </button>
@@ -273,7 +273,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       {/* ── Horizontal Date Rail ── */}
       <div className="mb-8 relative z-10">
         <div className="flex items-center justify-between mb-4 px-1">
-           <label className="text-[10px] font-black text-bp-body/40 uppercase tracking-widest">Available Calendar</label>
+           <label className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest">Available Calendar</label>
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
           {days.map((day) => {
@@ -290,12 +290,12 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                 )}
               >
                 <span className={cn(
-                  "text-[9px] font-black uppercase tracking-[0.2em] mb-1.5 transition-colors duration-500", 
+                  "text-[9px] font-bold uppercase tracking-[0.2em] mb-1.5 transition-colors duration-500", 
                   isSelected ? "text-white/40" : "text-bp-body/30 group-hover:text-bp-primary"
                 )}>
                   {day.label}
                 </span>
-                <span className="text-[20px] font-black tracking-tighter leading-none">{day.dayNum}</span>
+                <span className="text-[20px] font-bold tracking-tighter leading-none">{day.dayNum}</span>
                 {isSelected && (
                    <div className="w-1 h-1 bg-bp-accent rounded-full mt-2 animate-in zoom-in duration-500 shadow-[0_0_8px_rgba(255,107,53,0.5)]" />
                 )}
@@ -312,7 +312,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
             <div className="flex flex-col items-center justify-center py-20 text-bp-body/40 gap-4">
               <div className="w-10 h-10 rounded-full border-4 border-bp-border/20 border-t-bp-primary animate-spin" />
               <div className="text-center">
-                 <p className="text-[12px] font-black text-bp-primary uppercase tracking-widest">Checking</p>
+                 <p className="text-[12px] font-bold text-bp-primary uppercase tracking-widest">Checking</p>
                  <p className="text-[10px] font-bold text-bp-body/40">Real-time Sync</p>
               </div>
             </div>
@@ -321,7 +321,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
               <div className="w-14 h-14 bg-white rounded-2xl border border-bp-border/40 shadow-sm flex items-center justify-center mb-4 text-bp-border">
                  <Calendar className="w-7 h-7" />
               </div>
-              <p className="text-[14px] text-bp-primary font-black tracking-tight">No Slots Available</p>
+              <p className="text-[14px] text-bp-primary font-bold tracking-tight">No Slots Available</p>
               <p className="text-[12px] text-bp-body/40 font-bold mt-1">Try another medical date</p>
             </div>
           ) : (
@@ -340,7 +340,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
           onClick={handleBook}
           disabled={!canBook}
           className={cn(
-            "w-full py-6 rounded-[32px] text-[18px] font-black tracking-tight transition-all duration-700 flex items-center justify-center gap-3 relative overflow-hidden group shadow-[0_24px_48px_-12px_rgba(var(--color-bp-primary-rgb),0.2)]",
+            "w-full py-6 rounded-[32px] text-[18px] font-bold tracking-tight transition-all duration-700 flex items-center justify-center gap-3 relative overflow-hidden group shadow-[0_24px_48px_-12px_rgba(var(--color-bp-primary-rgb),0.2)]",
             canBook 
               ? "bg-[#111111] text-white hover:scale-[1.03] active:scale-95" 
               : "bg-bp-surface/80 text-bp-body/20 cursor-not-allowed border border-bp-border/40 shadow-none grayscale"
@@ -366,12 +366,12 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                  <ShieldCheck size={20} />
               </div>
               <div>
-                <p className="text-[12px] font-black text-emerald-700 uppercase tracking-widest leading-none">Transparent Pricing</p>
+                <p className="text-[12px] font-bold text-emerald-700 uppercase tracking-widest leading-none">Transparent Pricing</p>
                 <p className="text-[11px] font-medium text-emerald-600/60 mt-1">Consultation fee is shown before you confirm the booking</p>
               </div>
            </div>
 
-           <div className="flex items-center justify-center gap-2 text-[10px] font-black text-bp-body/30 uppercase tracking-[0.2em] mt-2">
+           <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] mt-2">
               <Lock size={12} className="opacity-50" />
               Secure Booking Flow
            </div>

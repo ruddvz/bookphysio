@@ -77,14 +77,14 @@ export default function AdminAnalytics() {
               <BarChart3 size={22} className="group-hover:scale-110 transition-transform" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-bp-accent">Intelligence Hub</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-bp-accent">Intelligence Hub</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[11px] font-bold text-emerald-600">Syncing live data</span>
               </div>
             </div>
           </div>
-          <h1 className="text-[42px] lg:text-[48px] font-black text-bp-primary tracking-tighter leading-none">
+          <h1 className="text-[42px] lg:text-[48px] font-bold text-bp-primary tracking-tighter leading-none">
             Business <span className="text-bp-accent">Analytics</span>
           </h1>
           <p className="text-[16px] font-medium text-bp-body max-w-xl">
@@ -94,8 +94,8 @@ export default function AdminAnalytics() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 p-1.5 bg-bp-surface/80 backdrop-blur-sm rounded-[18px]">
-            <button className="px-5 py-2.5 text-[13px] font-black text-bp-accent bg-white rounded-[14px] shadow-sm transform active:scale-95 transition-all">Real-time</button>
-            <button className="px-5 py-2.5 text-[13px] font-black text-bp-body hover:text-bp-primary transition-colors rounded-[14px]">Historical</button>
+            <button className="px-5 py-2.5 text-[13px] font-bold text-bp-accent bg-white rounded-[14px] shadow-sm transform active:scale-95 transition-all">Real-time</button>
+            <button className="px-5 py-2.5 text-[13px] font-bold text-bp-body hover:text-bp-primary transition-colors rounded-[14px]">Historical</button>
           </div>
           <div className="h-12 w-px bg-bp-border mx-2 hidden sm:block" />
           <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function AdminAnalytics() {
                   <stat.icon size={28} strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col items-end">
-                  <div className="flex items-center gap-1 text-[13px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                  <div className="flex items-center gap-1 text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
                     <ArrowUpRight size={14} strokeWidth={3} />
                     {stat.trend}
                   </div>
@@ -139,11 +139,11 @@ export default function AdminAnalytics() {
                 </div>
               </div>
               <div className="relative z-10">
-                <p className="text-[13px] font-black text-bp-body/40 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                   {stat.label}
                   <Info size={12} className="cursor-help" />
                 </p>
-                <p className="text-[36px] font-black text-bp-primary tracking-tighter leading-none">{stat.value}</p>
+                <p className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -158,8 +158,8 @@ export default function AdminAnalytics() {
           <div className="flex items-center justify-between mb-12">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-[24px] font-black text-bp-primary tracking-tight">Revenue Pulse</h2>
-                <div className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-md tracking-widest">+18% MoM</div>
+                <h2 className="text-[24px] font-bold text-bp-primary tracking-tight">Revenue Pulse</h2>
+                <div className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded-md tracking-widest">+18% MoM</div>
               </div>
               <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest">Platform Earnings (Monthly Revenue in ₹)</p>
             </div>
@@ -167,16 +167,16 @@ export default function AdminAnalytics() {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-bp-accent" />
-                  <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Actual</span>
+                  <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">Actual</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-bp-surface border border-bp-border" />
-                  <span className="text-[11px] font-black text-bp-body/40 uppercase tracking-widest">Target</span>
+                  <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">Target</span>
                 </div>
               </div>
               {isLoading && <Loader2 size={16} className="animate-spin text-bp-body/40" />}
               <div className="relative">
-                <select className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-bp-border bg-bp-surface text-[12px] font-black text-bp-primary cursor-pointer outline-none hover:bg-bp-surface transition-all uppercase tracking-widest">
+                <select className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-bp-border bg-bp-surface text-[12px] font-bold text-bp-primary cursor-pointer outline-none hover:bg-bp-surface transition-all uppercase tracking-widest">
                   <option>Monthly</option>
                   <option>Quarterly</option>
                   <option>Yearly</option>
@@ -250,7 +250,7 @@ export default function AdminAnalytics() {
             </svg>
             <div className="flex justify-between mt-12 border-t border-bp-border/50 pt-6">
               {xLabels.map(m => (
-                <span key={m} className="text-[11px] font-black text-bp-body/40 uppercase tracking-[0.2em]">{m}</span>
+                <span key={m} className="text-[11px] font-bold text-bp-body/40 uppercase tracking-[0.2em]">{m}</span>
               ))}
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function AdminAnalytics() {
         {/* Acquisition Mix */}
         <div className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 flex flex-col group">
           <div className="flex items-center justify-between mb-10">
-            <h2 className="text-[22px] font-black text-bp-primary tracking-tight">Acquisition</h2>
+            <h2 className="text-[22px] font-bold text-bp-primary tracking-tight">Acquisition</h2>
             <div className="w-8 h-8 rounded-full bg-bp-surface flex items-center justify-center text-bp-body/40 hover:text-bp-primary transition-colors cursor-pointer">
               <Info size={14} />
             </div>
@@ -274,13 +274,13 @@ export default function AdminAnalytics() {
               <div key={channel.name} className="space-y-4">
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col">
-                    <span className="text-[14px] font-black text-bp-primary tracking-tight uppercase leading-none">{channel.name}</span>
+                    <span className="text-[14px] font-bold text-bp-primary tracking-tight uppercase leading-none">{channel.name}</span>
                     <span className={cn("text-[10px] font-bold mt-1.5", channel.change.startsWith('+') ? "text-emerald-500" : "text-rose-500")}>
                       {channel.change} vs avg
                     </span>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-[20px] font-black text-bp-primary tracking-tighter">{channel.value}</span>
+                    <span className="text-[20px] font-bold text-bp-primary tracking-tighter">{channel.value}</span>
                     <span className="text-[12px] font-bold text-bp-body/40">%</span>
                   </div>
                 </div>
@@ -295,7 +295,7 @@ export default function AdminAnalytics() {
               </div>
             ))}
           </div>
-          <button className="w-full py-5 mt-12 bg-bp-primary hover:bg-black text-white text-[13px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-[0.98]">
+          <button className="w-full py-5 mt-12 bg-bp-primary hover:bg-black text-white text-[13px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg active:scale-[0.98]">
             Explore Growth Channels <ArrowUpRight size={16} />
           </button>
         </div>
@@ -308,9 +308,9 @@ export default function AdminAnalytics() {
           <div>
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-white/5 rounded-xl border border-white/10 text-emerald-400 mb-8 backdrop-blur-md">
               <MapPin size={16} />
-              <span className="text-[11px] font-black uppercase tracking-[0.25em]">Regional Density</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.25em]">Regional Density</span>
             </div>
-            <h2 className="text-[36px] md:text-[44px] lg:text-[56px] font-black tracking-tighter leading-[0.9] mb-8">
+            <h2 className="text-[36px] md:text-[44px] lg:text-[56px] font-bold tracking-tighter leading-[0.9] mb-8">
               Geo-Spatial <br/><span className="text-bp-accent">Performance</span>
             </h2>
             <div className="space-y-8 max-w-lg mb-12">
@@ -318,17 +318,17 @@ export default function AdminAnalytics() {
                 Platform load distribution across India&apos;s urban corridors. Visualizing the surge in home-visit demand within Tier-1 cities.
               </p>
               <div className="grid grid-cols-2 gap-10">
-                <div className="space-y-1 border-l-2 border-bp-accent pl-6 font-black uppercase">
+                <div className="space-y-1 border-l-2 border-bp-accent pl-6 font-bold uppercase">
                   <span className="text-bp-body text-[10px] tracking-widest">Top Hub</span>
                   <p className="text-[20px] tracking-tight">New Delhi</p>
                 </div>
-                <div className="space-y-1 border-l-2 border-emerald-500 pl-6 font-black uppercase">
+                <div className="space-y-1 border-l-2 border-emerald-500 pl-6 font-bold uppercase">
                   <span className="text-bp-body text-[10px] tracking-widest">Max Growth</span>
                   <p className="text-[20px] tracking-tight">+42% Pune</p>
                 </div>
               </div>
             </div>
-            <button className="px-10 py-5 bg-bp-accent hover:bg-[#008F83] text-white text-[14px] font-black rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-bp-accent/20 hover:-translate-y-1 active:scale-95">
+            <button className="px-10 py-5 bg-bp-accent hover:bg-[#008F83] text-white text-[14px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-bp-accent/20 hover:-translate-y-1 active:scale-95">
               Launch Global Map <MapPin size={18} />
             </button>
           </div>

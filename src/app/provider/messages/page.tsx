@@ -100,7 +100,7 @@ export default function ProviderMessages() {
     <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-8 h-[calc(100vh-100px)] flex flex-col animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-[32px] font-black text-bp-primary tracking-tighter leading-none mb-2">
+          <h1 className="text-[32px] font-bold text-bp-primary tracking-tighter leading-none mb-2">
             Patient Messages
           </h1>
           <p className="text-[15px] font-medium text-bp-body">Communicate with your patients about their treatment.</p>
@@ -145,7 +145,7 @@ export default function ProviderMessages() {
                 >
                   <div className="relative shrink-0">
                     <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center text-[18px] font-black transition-transform duration-500 group-hover:scale-105",
+                      "w-14 h-14 rounded-2xl flex items-center justify-center text-[18px] font-bold transition-transform duration-500 group-hover:scale-105",
                       selectedConversationId === chat.id ? "bg-bp-accent text-white" : "bg-white border border-bp-border text-bp-body/40"
                     )}>
                       {(chat.other_user?.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
@@ -153,19 +153,19 @@ export default function ProviderMessages() {
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[15px] font-black text-bp-primary truncate">{chat.other_user?.full_name || 'Unknown'}</span>
+                      <span className="text-[15px] font-bold text-bp-primary truncate">{chat.other_user?.full_name || 'Unknown'}</span>
                       <span className="text-[11px] font-bold text-bp-body/40 whitespace-nowrap ml-2">{formatConversationTimestamp(chat.last_message_at || chat.created_at)}</span>
                     </div>
                     <p className="text-[13px] font-bold text-bp-body/40 truncate leading-tight mb-1">Patient</p>
                     <p className={cn(
                       "text-[13px] truncate",
-                      chat.unread_count > 0 ? "text-bp-accent font-black" : "text-bp-body/40 font-medium"
+                      chat.unread_count > 0 ? "text-bp-accent font-bold" : "text-bp-body/40 font-medium"
                     )}>
                       {chat.last_message?.content || 'No messages yet'}
                     </p>
                   </div>
                   {chat.unread_count > 0 && (
-                    <div className="w-6 h-6 rounded-full bg-bp-accent text-white text-[10px] font-black flex items-center justify-center shadow-lg shadow-bp-accent/30">
+                    <div className="w-6 h-6 rounded-full bg-bp-accent text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-bp-accent/30">
                       {chat.unread_count}
                     </div>
                   )}
@@ -188,11 +188,11 @@ export default function ProviderMessages() {
                   <button aria-label="Back to conversation list" title="Back to conversation list" onClick={() => setSelectedConversationId(null)} className="md:hidden p-2 -ml-2 text-bp-body/40 hover:text-bp-primary">
                      <MessageSquare size={24} />
                   </button>
-                  <div className="w-12 h-12 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent font-black text-[18px]">
+                  <div className="w-12 h-12 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent font-bold text-[18px]">
                     {(activeChat?.other_user?.full_name || 'U').charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-[17px] font-black text-bp-primary leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
+                    <h3 className="text-[17px] font-bold text-bp-primary leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
                     <div className="flex items-center gap-2">
                        <div className="w-1.5 h-1.5 rounded-full bg-bp-border" />
                        <span className="text-[12px] font-bold text-bp-body/40 tracking-tight">
@@ -221,7 +221,7 @@ export default function ProviderMessages() {
                 ) : (
                   <>
                     <div className="text-center py-4">
-                      <span className="px-4 py-1.5 bg-bp-surface rounded-full text-[11px] font-black text-bp-body/40 uppercase tracking-widest">
+                      <span className="px-4 py-1.5 bg-bp-surface rounded-full text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">
                         {formatConversationDateDivider(messages[0]?.created_at || '')}
                       </span>
                     </div>
@@ -301,7 +301,7 @@ export default function ProviderMessages() {
                 <div className="w-24 h-24 mx-auto rounded-[32px] bg-white border border-bp-border shadow-xl flex items-center justify-center mb-8 rotate-3">
                   <MessageSquare size={40} className="text-bp-accent" strokeWidth={2.5} />
                 </div>
-                <h2 className="text-[24px] font-black text-bp-primary tracking-tight mb-3">Patient Care Communication</h2>
+                <h2 className="text-[24px] font-bold text-bp-primary tracking-tight mb-3">Patient Care Communication</h2>
                 <p className="text-[15px] font-medium text-bp-body/40 leading-relaxed">
                   Select a patient from your active conversations to send secure messages about their treatment and appointments.
                 </p>

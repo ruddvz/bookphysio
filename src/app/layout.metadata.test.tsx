@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('next/font/google', () => ({
   Inter: () => ({ variable: '--font-inter' }),
   Fraunces: () => ({ variable: '--font-fraunces' }),
+  Outfit: () => ({ variable: '--font-outfit' }),
 }))
 
 vi.mock('@/app/providers', () => ({

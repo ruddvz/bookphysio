@@ -9,6 +9,7 @@ import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
+import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -28,21 +29,22 @@ interface SignupErrors {
   general?: string
 }
 
-export default function SignupPage() {
+export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
+  const t = AUTH_COPY[locale ?? 'en']
   const router = useRouter()
   const [form, setForm] = useState<SignupFormState>({ name: '', phone: '' })
   const [errors, setErrors] = useState<SignupErrors>({})
   const [loading, setLoading] = useState(false)
   const [nameFocused, setNameFocused] = useState(false)
   const [phoneFocused, setPhoneFocused] = useState(false)
-  const [loginHref, setLoginHref] = useState('/login')
+  const [loginHref, setLoginHref] = useState(localePath(locale ?? 'en', '/login'))
 
   useEffect(() => {
     const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
     if (returnTo) {
-      setLoginHref(`/login?return=${encodeURIComponent(returnTo)}`)
+      setLoginHref(`${localePath(locale ?? 'en', '/login')}?return=${encodeURIComponent(returnTo)}`)
     }
-  }, [])
+  }, [locale])
 
   function handleChange(field: keyof SignupFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -103,7 +105,7 @@ export default function SignupPage() {
         return
       }
 
-      router.push('/verify-otp')
+      router.push(localePath(locale ?? 'en', '/verify-otp'))
     } catch {
       setErrors({ general: 'Unable to reach the OTP service. Try again.' })
     } finally {
@@ -112,18 +114,18 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="bg-white rounded-3xl p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="flex justify-center">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>
 
-      <h1 className="text-[32px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
-        Join BookPhysio
+      <h1 className="text-[32px] font-bold text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+        {t.signupHeading}
       </h1>
-      <p className="text-[16px] font-bold text-bp-body/40 mb-10">India&apos;s recovery companion</p>
+      <p className="text-[16px] font-bold text-bp-body/40 mb-10">{t.signupSubheading}</p>
 
       {errors.general && (
-        <div className="mb-6 rounded-[24px] bg-red-50 border border-red-100 p-5 text-[13px] font-bold text-red-600 animate-in fade-in zoom-in-95 flex items-start gap-3">
+        <div className="mb-6 rounded-2xl bg-red-50 border border-red-100 p-5 text-[13px] font-bold text-red-600 animate-in fade-in zoom-in-95 flex items-start gap-3">
           <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
           {errors.general}
         </div>
@@ -132,8 +134,8 @@ export default function SignupPage() {
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Full Name */}
         <div>
-          <label htmlFor="name" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
-            Full Name
+          <label htmlFor="name" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
+            {t.signupLabelName}
           </label>
           <div className="relative group">
             <input
@@ -141,7 +143,7 @@ export default function SignupPage() {
               type="text"
               placeholder="e.g. Rahul Sharma"
               className={cn(
-                "w-full pl-14 pr-6 py-5 text-[17px] font-black text-bp-primary bg-bp-surface/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                "w-full pl-14 pr-6 py-5 text-[17px] font-bold text-bp-primary bg-bp-surface/50 rounded-2xl outline-none border-2 transition-all duration-500",
                 errors.name 
                   ? "border-red-100 bg-red-50/20" 
                   : nameFocused 
@@ -160,20 +162,20 @@ export default function SignupPage() {
 
         {/* Mobile Number */}
         <div>
-          <label htmlFor="phone" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
-            Mobile Number
+          <label htmlFor="phone" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
+            {t.signupLabelPhone}
           </label>
           <div className="relative group">
             <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
               <Smartphone className={cn("w-5 h-5 transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-body/30")} />
-              <span className={cn("text-[17px] font-black transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-body/40")}>+91</span>
+              <span className={cn("text-[17px] font-bold transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-body/40")}>+91</span>
             </div>
             <input
               id="phone"
               type="tel"
               placeholder="98765 43210"
               className={cn(
-                "w-full pl-28 pr-6 py-5 text-[18px] font-black text-bp-primary bg-bp-surface/50 rounded-[28px] outline-none border-2 transition-all duration-500",
+                "w-full pl-28 pr-6 py-5 text-[18px] font-bold text-bp-primary bg-bp-surface/50 rounded-2xl outline-none border-2 transition-all duration-500",
                 errors.phone 
                   ? "border-red-100 bg-red-50/20" 
                   : phoneFocused 
@@ -193,18 +195,18 @@ export default function SignupPage() {
           type="submit"
           disabled={loading}
           className={cn(
-            "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-black text-white rounded-[28px] transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-[#111111] hover:bg-bp-accent shadow-bp-primary/10'
+            "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-bold text-white rounded-2xl transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
+            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/10'
           )}
         >
           {loading ? (
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Verifying...</span>
+              <span>{t.signupButtonLoading}</span>
             </div>
           ) : (
             <>
-              <span className="relative z-10">Start Your Recovery</span>
+              <span className="relative z-10">{t.signupButtonSubmit}</span>
               <ArrowRight size={18} strokeWidth={4} className="text-bp-accent/70 group-hover:translate-x-1 transition-transform relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </>
@@ -214,12 +216,12 @@ export default function SignupPage() {
 
       <div className="mt-10 text-center border-t border-bp-border pt-8">
         <p className="text-[14px] font-bold text-bp-body/40">
-          Already have an account?{' '}
+          {t.signupAlreadyAccount}{' '}
           <Link
             href={loginHref}
             className="text-bp-accent hover:text-bp-primary transition-colors ml-1"
           >
-            Log in here
+            {t.signupLoginLink}
           </Link>
         </p>
       </div>

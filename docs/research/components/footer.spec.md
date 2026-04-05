@@ -9,8 +9,8 @@
 ```
 <footer> (full width, dark bg)
   <div> (container-bp, py-[64px])
-    <div> (5-col grid: bookphysio | Discover | Insurance | Specialties | For Providers)
-      <FooterColumn /> × 5
+    <div> (4-col grid: brand | Explore | Patients | Providers)
+      <FooterColumn /> × 4
     <div> (app badges row + social icons, border-top, mt-48px, pt-32px)
       <div> app badges
       <div> social icons
@@ -130,14 +130,14 @@
 **Column 2 — Discover**
 - The Physio Journal (blog) | Resources for providers | Community Standards | Privacy policy | Verified reviews | Tech Blog `New`
 
-**Column 3 — Insurance**
-- Star Health | Niva Bupa | HDFC ERGO | Medi Assist | ICICI Lombard
+**Column 2 — Explore**
+- About us | Search physios | How it works | FAQ
 
-**Column 4 — Top Specialties**
-- Sports Physio | Neuro Physio | Ortho Physio | Paediatric Physio | Women's Health
+**Column 3 — Patients**
+- Log in | Create account | Book a session | Privacy policy
 
-**Column 5 — For Providers**
-- Try our AI scheduler `New` | List your practice on bookphysio | Become an EHR partner | Access bookphysio for Developers | Enterprise solutions | Get the bookphysio app
+**Column 4 — Providers**
+- Doctor signup | Provider dashboard | Availability | Terms of service
 
 **App section**: "Get the bookphysio app" + App Store + Google Play badges
 

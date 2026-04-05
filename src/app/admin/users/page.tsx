@@ -63,7 +63,7 @@ export default function AdminUsers() {
       <section className="overflow-hidden rounded-[36px] border border-bp-border bg-white shadow-[0_28px_80px_-40px_rgba(0,0,0,0.2)]">
         <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-bp-body/40">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/40">
               <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1 text-bp-accent">
                 <Sparkles size={12} />
                 User operations
@@ -75,19 +75,19 @@ export default function AdminUsers() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-bp-accent">Admin console</p>
-              <h1 className="max-w-3xl text-[34px] font-black leading-[0.95] tracking-tight text-bp-primary md:text-[54px]">User management feels premium, not utilitarian.</h1>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-bp-accent">Admin console</p>
+              <h1 className="max-w-3xl text-[34px] font-bold leading-[0.95] tracking-tight text-bp-primary md:text-[54px]">User management feels premium, not utilitarian.</h1>
               <p className="max-w-2xl text-[15px] font-medium leading-relaxed text-bp-body md:text-[17px]">
                 Review patients and providers from a clean, high-signal dashboard that is ready for demos and future operational workflows.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button onClick={() => { setActiveTab('providers'); setActionMessage('Provider profiles are ready for review.') }} className="inline-flex items-center gap-3 rounded-[24px] bg-bp-primary px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-bp-accent">
+              <button onClick={() => { setActiveTab('providers'); setActionMessage('Provider profiles are ready for review.') }} className="inline-flex items-center gap-3 rounded-[24px] bg-bp-primary px-6 py-3.5 text-[14px] font-bold text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-bp-accent">
                 Open profile queue
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
-              <button onClick={() => { setActiveTab('suspended'); setActionMessage('Suspended accounts moved into focus.') }} className="inline-flex items-center gap-3 rounded-[24px] border border-bp-border bg-white px-6 py-3.5 text-[14px] font-black text-bp-primary shadow-sm transition-all hover:border-bp-accent/20 hover:text-bp-accent">
+              <button onClick={() => { setActiveTab('suspended'); setActionMessage('Suspended accounts moved into focus.') }} className="inline-flex items-center gap-3 rounded-[24px] border border-bp-border bg-white px-6 py-3.5 text-[14px] font-bold text-bp-primary shadow-sm transition-all hover:border-bp-accent/20 hover:text-bp-accent">
                 Review suspensions
                 <ArrowUpRight size={16} strokeWidth={3} />
               </button>
@@ -103,12 +103,12 @@ export default function AdminUsers() {
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent">
                       <CardIcon size={20} strokeWidth={2.5} />
                     </div>
-                    <div className="rounded-full border border-bp-border bg-white px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-[#6B7280]">
+                    <div className="rounded-full border border-bp-border bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#6B7280]">
                       Live
                     </div>
                   </div>
-                  <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-[#6B7280]">{card.title}</p>
-                  <p className="mt-1 text-[18px] font-black tracking-tight text-bp-primary">{card.value}</p>
+                  <p className="mt-4 text-[11px] font-bold uppercase tracking-widest text-[#6B7280]">{card.title}</p>
+                  <p className="mt-1 text-[18px] font-bold tracking-tight text-bp-primary">{card.value}</p>
                   <p className="mt-2 text-[12px] font-medium leading-relaxed text-bp-body">{card.detail}</p>
                 </div>
               )
@@ -120,8 +120,8 @@ export default function AdminUsers() {
       <section className="rounded-[36px] border border-bp-border bg-white shadow-[0_28px_80px_-44px_rgba(0,0,0,0.2)]">
         <div className="flex flex-col gap-6 border-b border-bp-border p-6 md:p-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-[20px] font-black tracking-tight text-bp-primary">User registry</h2>
-            <p className="mt-1 text-[12px] font-black uppercase tracking-[0.22em] text-[#6B7280]">Search, suspend, and inspect accounts</p>
+            <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">User registry</h2>
+            <p className="mt-1 text-[12px] font-bold uppercase tracking-[0.22em] text-[#6B7280]">Search, suspend, and inspect accounts</p>
           </div>
 
           <div className="relative shrink-0">
@@ -154,7 +154,7 @@ export default function AdminUsers() {
                   aria-pressed="true"
                   className={cn(
                     'border-b-2 py-4 text-[15px] capitalize transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bp-accent/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
-                    'border-bp-accent font-black text-bp-accent'
+                    'border-bp-accent font-bold text-bp-accent'
                   )}
                 >
                   {tab}

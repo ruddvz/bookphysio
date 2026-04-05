@@ -67,7 +67,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://api.msg91.com https://api.mapbox.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.razorpay.com https://api.msg91.com",
       "frame-src https://api.razorpay.com https://checkout.razorpay.com",
       "media-src 'self' blob:",
     ].join("; "),

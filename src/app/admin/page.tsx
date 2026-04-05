@@ -189,7 +189,7 @@ export default function AdminDashboardHome() {
       <div className="flex min-h-[460px] flex-col items-center justify-center gap-4 px-6 text-center">
         <CircleAlert className="h-10 w-10 text-bp-accent" />
         <div className="space-y-2">
-          <h1 className="text-[24px] font-black tracking-tight text-bp-primary">Admin stats unavailable</h1>
+          <h1 className="text-[24px] font-bold tracking-tight text-bp-primary">Admin stats unavailable</h1>
           <p className="max-w-md text-[14px] font-medium text-bp-body/70">
             We couldn&apos;t load the latest platform metrics right now. Refresh and try again in a moment.
           </p>
@@ -203,7 +203,7 @@ export default function AdminDashboardHome() {
       <section className="overflow-hidden rounded-[40px] border border-bp-border bg-white shadow-[0_28px_80px_-40px_rgba(0,0,0,0.22)]">
         <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
           <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-bp-body/40">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/40">
               <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1 text-bp-accent">
                 <Sparkles size={12} />
                 Platform command center
@@ -215,8 +215,8 @@ export default function AdminDashboardHome() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.24em] text-bp-accent">BookPhysio administration</p>
-              <h1 className="max-w-3xl text-[34px] font-black leading-[0.95] tracking-tight text-bp-primary md:text-[54px]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-bp-accent">BookPhysio administration</p>
+              <h1 className="max-w-3xl text-[34px] font-bold leading-[0.95] tracking-tight text-bp-primary md:text-[54px]">
                 Control the platform without the clutter.
               </h1>
               <p className="max-w-2xl text-[15px] font-medium leading-relaxed text-bp-body md:text-[17px]">
@@ -225,11 +225,11 @@ export default function AdminDashboardHome() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/admin/listings" className="inline-flex items-center gap-3 rounded-[24px] bg-bp-primary px-6 py-3.5 text-[14px] font-black text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-bp-accent">
+              <Link href="/admin/listings" className="inline-flex items-center gap-3 rounded-[24px] bg-bp-primary px-6 py-3.5 text-[14px] font-bold text-white shadow-xl shadow-gray-200 transition-all hover:-translate-y-0.5 hover:bg-bp-accent">
                 Open approvals
                 <ArrowUpRight size={16} strokeWidth={3} />
               </Link>
-              <Link href="/admin/analytics" className="inline-flex items-center gap-3 rounded-[24px] border border-bp-border bg-white px-6 py-3.5 text-[14px] font-black text-bp-primary shadow-sm transition-all hover:border-bp-accent/20 hover:text-bp-accent">
+              <Link href="/admin/analytics" className="inline-flex items-center gap-3 rounded-[24px] border border-bp-border bg-white px-6 py-3.5 text-[14px] font-bold text-bp-primary shadow-sm transition-all hover:border-bp-accent/20 hover:text-bp-accent">
                 Review analytics
                 <ArrowUpRight size={16} strokeWidth={3} />
               </Link>
@@ -247,7 +247,7 @@ export default function AdminDashboardHome() {
                       <CardIcon size={20} strokeWidth={2.5} />
                     </div>
                     <div className={cn(
-                      'rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em]',
+                      'rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em]',
                       card.badge === 'Live'
                         ? 'border border-emerald-100 bg-emerald-50 text-emerald-700'
                         : 'border border-bp-accent/20 bg-bp-accent/10 text-bp-accent',
@@ -255,8 +255,8 @@ export default function AdminDashboardHome() {
                       {card.badge}
                     </div>
                   </div>
-                  <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-bp-body/40">{card.title}</p>
-                  <p className="mt-1 text-[18px] font-black tracking-tight text-bp-primary">{card.value}</p>
+                  <p className="mt-4 text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{card.title}</p>
+                  <p className="mt-1 text-[18px] font-bold tracking-tight text-bp-primary">{card.value}</p>
                   <p className="mt-2 text-[12px] font-medium leading-relaxed text-bp-body/60">{card.detail}</p>
                 </div>
               )
@@ -284,12 +284,12 @@ export default function AdminDashboardHome() {
                 <div className={cn('flex h-12 w-12 items-center justify-center rounded-2xl', toneStyles)}>
                   <KpiIcon size={22} strokeWidth={2.5} />
                 </div>
-                <div className="rounded-full border border-bp-border bg-bp-surface px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-bp-body/40">
+                <div className="rounded-full border border-bp-border bg-bp-surface px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-bp-body/40">
                   Live
                 </div>
               </div>
-              <p className="mt-4 text-[11px] font-black uppercase tracking-widest text-bp-body/40">{kpi.title}</p>
-              <p className="mt-1 text-[32px] font-black tracking-tight text-bp-primary">{kpi.value}</p>
+              <p className="mt-4 text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{kpi.title}</p>
+              <p className="mt-1 text-[32px] font-bold tracking-tight text-bp-primary">{kpi.value}</p>
               <p className="mt-2 text-[12px] font-medium leading-relaxed text-bp-body/60">{kpi.caption}</p>
             </div>
           )
@@ -300,14 +300,14 @@ export default function AdminDashboardHome() {
         <section className="rounded-[36px] border border-bp-border bg-white p-6 shadow-[0_28px_80px_-44px_rgba(0,0,0,0.2)] md:p-8">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-[20px] font-black tracking-tight text-bp-primary">Revenue pulse</h2>
-              <p className="mt-1 text-[12px] font-black uppercase tracking-[0.22em] text-bp-body/40">Platform volume by week</p>
+              <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">Revenue pulse</h2>
+              <p className="mt-1 text-[12px] font-bold uppercase tracking-[0.22em] text-bp-body/40">Platform volume by week</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <div className="rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-bp-accent">
+              <div className="rounded-full border border-bp-accent/20 bg-bp-accent/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-bp-accent">
                 Illustrative
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-bp-border bg-bp-surface px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-bp-body/40">
+              <div className="flex items-center gap-2 rounded-full border border-bp-border bg-bp-surface px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-bp-body/40">
                 <Clock size={12} />
                 Updated now
               </div>
@@ -322,7 +322,7 @@ export default function AdminDashboardHome() {
                     className={cn('w-full rounded-[18px] bg-[linear-gradient(180deg,_var(--color-bp-primary),_var(--color-bp-accent))] shadow-[0_20px_40px_-18px_var(--color-bp-accent)]', bar.heightClass)}
                   />
                 </div>
-                <p className="text-center text-[11px] font-black uppercase tracking-widest text-bp-body/40">W{index + 1}</p>
+                <p className="text-center text-[11px] font-bold uppercase tracking-widest text-bp-body/40">W{index + 1}</p>
               </div>
             ))}
           </div>
@@ -334,8 +334,8 @@ export default function AdminDashboardHome() {
               { label: 'Retention', value: '74%', detail: 'Returning patients' },
             ].map((item) => (
               <div key={item.label} className="rounded-[24px] border border-bp-border bg-[#fafbfc] p-4">
-                <p className="text-[11px] font-black uppercase tracking-widest text-bp-body/40">{item.label}</p>
-                <p className="mt-1 text-[24px] font-black tracking-tight text-bp-primary">{item.value}</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{item.label}</p>
+                <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">{item.value}</p>
                 <p className="mt-1 text-[12px] font-medium text-bp-body/60">{item.detail}</p>
               </div>
             ))}
@@ -345,10 +345,10 @@ export default function AdminDashboardHome() {
         <section className="rounded-[36px] border border-bp-border bg-bp-primary p-6 text-white shadow-[0_28px_80px_-44px_rgba(0,0,0,0.35)] md:p-8">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Approval cockpit</p>
-              <h2 className="mt-1 text-[20px] font-black tracking-tight">Queue at a glance</h2>
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/40">Approval cockpit</p>
+              <h2 className="mt-1 text-[20px] font-bold tracking-tight">Queue at a glance</h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/60">
               {stats.pendingApprovals.toLocaleString('en-IN')} pending
             </div>
           </div>
@@ -364,11 +364,11 @@ export default function AdminDashboardHome() {
                       <QueueIcon size={20} strokeWidth={2.5} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">{item.label}</p>
-                      <h3 className="mt-2 text-[15px] font-black tracking-tight text-white">{item.title}</h3>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">{item.label}</p>
+                      <h3 className="mt-2 text-[15px] font-bold tracking-tight text-white">{item.title}</h3>
                       <p className="mt-1 text-[13px] leading-relaxed text-white/65">{item.detail}</p>
                     </div>
-                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/60">
                       {item.status}
                     </div>
                   </div>
@@ -379,26 +379,26 @@ export default function AdminDashboardHome() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
                 <MapPin size={12} />
                 Regional density
               </div>
-              <p className="mt-3 text-[24px] font-black tracking-tight text-white">NCR leading</p>
+              <p className="mt-3 text-[24px] font-bold tracking-tight text-white">NCR leading</p>
               <p className="mt-1 text-[12px] font-medium leading-relaxed text-white/65">The demo heat map and specialty demand will live here.</p>
             </div>
 
             <div className="rounded-[24px] border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
                 <PieChart size={12} />
                 Funnel health
               </div>
-              <p className="mt-3 text-[24px] font-black tracking-tight text-white">98.4%</p>
+              <p className="mt-3 text-[24px] font-bold tracking-tight text-white">98.4%</p>
               <p className="mt-1 text-[12px] font-medium leading-relaxed text-white/65">High-quality verified provider profiles and fast matching.</p>
             </div>
           </div>
 
           <div className="mt-6 flex justify-end">
-            <Link href="/admin/listings" className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.18em] text-white/70 transition-colors hover:text-white">
+            <Link href="/admin/listings" className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.18em] text-white/70 transition-colors hover:text-white">
               View all
               <ArrowUpRight size={14} strokeWidth={3} />
             </Link>
@@ -436,8 +436,8 @@ export default function AdminDashboardHome() {
                   <CardIcon size={20} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-bp-body/40">{card.title}</p>
-                  <h3 className="text-[24px] font-black tracking-tight text-bp-primary">{card.value}</h3>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{card.title}</p>
+                  <h3 className="text-[24px] font-bold tracking-tight text-bp-primary">{card.value}</h3>
                 </div>
               </div>
               <p className="mt-3 text-[13px] font-medium text-bp-body/60">{card.detail}</p>

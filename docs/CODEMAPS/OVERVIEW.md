@@ -44,7 +44,6 @@ bookphysio.in
 │       ├── razorpay.ts         # Razorpay client
 │       ├── msg91.ts            # MSG91 SMS/OTP
 │       ├── resend.ts           # Resend email
-│       ├── mapbox.ts           # Geocoding
 │       ├── upstash.ts          # Rate limiting
 │       └── utils.ts            # cn() helper
 ├── supabase/

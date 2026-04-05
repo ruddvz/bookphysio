@@ -7,8 +7,6 @@
 
 import { test, expect } from '@playwright/test'
 
-const BASE = 'http://localhost:3000'
-
 // ---------------------------------------------------------------------------
 // Test 1: Homepage loads with BookPhysio branding
 // ---------------------------------------------------------------------------
@@ -106,7 +104,7 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
 test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /login', async ({ page }) => {
   // Disable JS to force middleware-level redirect (server-side), not client-side
   // We inspect the final URL after navigation
-  const response = await page.goto('/patient/dashboard', {
+  await page.goto('/patient/dashboard', {
     waitUntil: 'networkidle',
   })
 
@@ -121,7 +119,6 @@ test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /lo
 
   // Also check: the authenticated dashboard elements must NOT be visible
   // (e.g. the sign-out avatar button rendered by PatientLayout)
-  const hasDashboardNav = await page.getByRole('link', { name: /appointments/i }).isVisible().catch(() => false)
 
   // Note: middleware protects /dashboard prefix, not /patient/dashboard.
   // The patient layout uses useAuth() client-side. Document actual behaviour.

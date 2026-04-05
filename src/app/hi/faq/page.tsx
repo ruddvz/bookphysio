@@ -86,10 +86,10 @@ export default function HindiFAQPage() {
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-bp-accent/5 rounded-full blur-[100px] -ml-40 -mb-40"></div>
 
           <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-black uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-bold uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
               क्लिनिकल सपोर्ट डेस्क
             </div>
-            <h1 className="text-[56px] sm:text-[88px] font-black mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <h1 className="text-[56px] sm:text-[88px] font-bold mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               हम <span className="text-bp-primary italic">कैसे मदद करें?</span>
             </h1>
             <p className="text-[18px] sm:text-[24px] leading-relaxed max-w-[750px] mx-auto text-white/50 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
@@ -104,13 +104,13 @@ export default function HindiFAQPage() {
               <div className="lg:col-span-4 sticky top-32 group">
                 <div className="space-y-16">
                   <div>
-                    <h2 className="text-[12px] font-black text-bp-primary uppercase tracking-[0.4em] mb-12">FAQ इंडेक्स</h2>
+                    <h2 className="text-[12px] font-bold text-bp-primary uppercase tracking-[0.4em] mb-12">FAQ इंडेक्स</h2>
                     <ul className="space-y-6">
                       {FAQS.map((category) => (
                         <li key={category.category}>
                           <a
                             href={`#${category.category}`}
-                            className="text-[20px] font-black text-bp-primary hover:text-bp-primary transition-all flex items-center gap-4 group/item"
+                            className="text-[20px] font-bold text-bp-primary hover:text-bp-primary transition-all flex items-center gap-4 group/item"
                           >
                             {category.category}
                             <div className="w-1.5 h-1.5 rounded-full bg-bp-primary opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
@@ -123,13 +123,13 @@ export default function HindiFAQPage() {
                   <div className="p-10 bg-bp-surface rounded-[40px] border border-bp-border/40 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-bp-primary/5 rounded-full blur-2xl -mr-16 -mt-16"></div>
                     <Sparkles className="w-10 h-10 text-bp-primary mb-8 animate-bounce duration-[3s]" />
-                    <h3 className="text-[24px] font-black text-bp-primary mb-5 tracking-tight">बुकिंग में मदद चाहिए?</h3>
+                    <h3 className="text-[24px] font-bold text-bp-primary mb-5 tracking-tight">बुकिंग में मदद चाहिए?</h3>
                     <p className="text-[17px] text-bp-body/60 font-medium leading-relaxed mb-8">
                       हमारी टीम बुकिंग फ्लो, प्रदाता सत्यापन और प्लेटफॉर्म उपयोग से जुड़े सवालों में सहायता कर सकती है।
                     </p>
                     <a
                       href="mailto:support@bookphysio.in"
-                      className="block w-full py-5 bg-[#111111] text-white rounded-full font-black text-[14px] uppercase tracking-[0.2em] text-center hover:bg-bp-primary hover:shadow-xl transition-all duration-500"
+                      className="block w-full py-5 bg-[#111111] text-white rounded-full font-bold text-[14px] uppercase tracking-[0.2em] text-center hover:bg-bp-primary hover:shadow-xl transition-all duration-500"
                     >
                       सपोर्ट से संपर्क करें
                     </a>
@@ -142,7 +142,7 @@ export default function HindiFAQPage() {
                   <div key={category.category} id={category.category} className="scroll-mt-32">
                     <div className="flex items-center gap-5 mb-12">
                       <div className="w-2.5 h-2.5 rounded-full bg-bp-accent shadow-[0_0_12px_rgba(255,107,53,0.4)]"></div>
-                      <h2 className="text-[36px] font-black text-bp-primary tracking-tighter leading-none">{category.category}</h2>
+                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none">{category.category}</h2>
                     </div>
                     <div className="space-y-6">
                       {category.items.map((item, idx) => {
@@ -158,7 +158,7 @@ export default function HindiFAQPage() {
                               onClick={() => toggle(id)}
                               className="w-full text-left px-10 py-8 flex items-center justify-between focus:outline-none"
                             >
-                              <span className={`text-[21px] font-black tracking-tight ${isOpen ? 'text-bp-primary' : 'text-bp-body/80'} group-hover:text-bp-primary transition-all duration-500`}>
+                              <span className={`text-[21px] font-bold tracking-tight ${isOpen ? 'text-bp-primary' : 'text-bp-body/80'} group-hover:text-bp-primary transition-all duration-500`}>
                                 {item.question}
                               </span>
                               <div className={`w-12 h-12 rounded-full border ${isOpen ? 'bg-bp-primary border-bp-primary' : 'border-bp-border/60'} flex items-center justify-center shrink-0 transition-all duration-500`}>

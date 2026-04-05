@@ -3,14 +3,14 @@
 > Roadmap with phase checkboxes. Orchestrator reads this at startup.
 > `[ ]` = pending, `[x]` = done, `[~]` = built but needs polish/wiring
 >
-> **STATUS AS OF 2026-04-01: Phase 10 COMPLETE ✅**
-> All development phases 0-10 are done. Production hosting target is now Vercel; stale GitHub Pages references below are legacy until the cutover is fully verified.
-> Phase 11+ are post-launch features.
+> **STATUS AS OF 2026-04-04: Phase 14 COMPLETE ✅ · Phase 15 rollout mostly complete · Phase 11.6 IN PROGRESS**
+> Production hosting target is Vercel. Apex is live, analytics/robots/IndexNow are wired, and the providers API has a production fallback in place.
+> Remaining Phase 15 blockers are external-console work (`www` DNS, Search Console, Bing Webmaster) plus applying the forward Supabase RPC migration with authenticated DB access. The repo also includes a next-deploy fix for the public-page demo-session empty-state 404 noise.
 
 ---
 
 ## PHASE 0 — Project Setup
-- [x] Define tech stack (Next.js 15, Supabase, Razorpay, MSG91, Resend, Mapbox, Upstash)
+- [x] Define tech stack (Next.js 15, Supabase, Razorpay, MSG91, Resend, Upstash)
 - [x] Scaffold project structure (App Router, route groups, lib/, api/)
 - [x] Configure TypeScript, ESLint, Tailwind CSS v4
 - [x] Set up Vitest / testing infrastructure
@@ -20,7 +20,7 @@
 - [x] Seed data (specialties, cities, mock providers)
 - [x] All API routes scaffolded (auth, providers, appointments, payments, reviews, notifications, admin, upload)
 - [x] TypeScript contracts published (src/app/api/contracts/)
-- [x] External service clients (Razorpay, MSG91, Resend, Mapbox, Upstash)
+- [x] External service clients (Razorpay, MSG91, Resend, Upstash)
 - [x] Zod validation schemas (auth, provider, booking, payment, review, search)
 - [x] Middleware (auth route protection + Upstash rate limiting)
 
@@ -158,12 +158,15 @@
   - DB: Aggregate queries via /api/admin/analytics (users, appointments, revenue, GMV)
   - UI: KPI cards + Revenue Pulse SVG chart wired to real API (React Query)
   - Monthly revenue data for last 7 months, completion rate, active patients, provider count
-- [ ] **11.4** Advanced Interactions (Mapbox Live, Auth Wiring)
+- [x] **11.4** Account Recovery & Search Simplification
   - [x] Forgot Password stub replaced with real Supabase Reset/OTP logic
-  - [ ] Mapbox Live Integration (currently SVG stub)
+  - [x] Removed live map integration from scope; search remains list-first with lightweight location cues only
 - [ ] **11.5** Mobile app (React Native / Expo) — P3
-- [ ] **11.6** Multi-language support — P3
-- [ ] **11.7** Insurance partnerships — P3
+- [~] **11.6** Multi-language support — P3
+  - [x] Added English/Hindi locale switcher for public static pages
+  - [x] Added Hindi routes for About, FAQ, How It Works, Privacy, and Terms
+  - [x] Added bilingual metadata alternates and sitemap coverage for the Hindi static routes
+  - [ ] Search, auth, booking, and dashboard flows remain English-only
 
 ## PHASE 12 — UI Refresh (21st.dev-Inspired)
 
@@ -189,8 +192,58 @@
 
 ---
 
+## PHASE 14 — Deploy Readiness & Code Quality ✅
+
+> Comprehensive pre-production audit: eliminate build warnings, fix broken PWA assets, harden CSP, clean unused code.
+
+- [x] Removed `ignoreBuildErrors: true` from `next.config.ts`
+- [x] Removed dead `gleo` dependency; cleaned `transpilePackages`
+- [x] Removed `--webpack` flag from build script (Turbopack by default)
+- [x] CSP hardened: removed `unsafe-eval`, added Razorpay, removed dead legacy map entries
+- [x] AI SDK config production warning suppressed (`experimental.telemetry` guard)
+- [x] MSG91 dev logs cleaned (conditional debug only)
+- [x] `CookieConsent` component created and wired into `layout.tsx`
+- [x] IndexNow key file created at `public/9e3b426a8d844146a2ee1fac2c3fc665.txt`
+- [x] `public/manifest.json` all icon paths fixed: `icon.svg` → `icon.png` (file exists)
+- [x] Dead legacy map CSP entries removed from `next.config.ts` connect-src
+- [x] `isAdminPath` unused import removed from `src/middleware.ts`
+- [x] Mass lint cleanup: ~90 unused imports eliminated across ~35 source files
+  - Lucide icon imports, `cn`, unused hooks, `Link`, unused variables
+- [x] 4 `<img>` → `<Image>` replacements (Next.js image optimization)
+  - `BookingInner.tsx`, `ClinicGallery.tsx`, `appointments/[id]/page.tsx`, `profile/page.tsx`
+- [x] `AuthContext.tsx` useEffect missing dep fix (eslint-disable, queryClient is stable)
+- [x] `BpLogo.tsx` updated: removed `icon.png` + text span → `logo.png` full wordmark
+
+**Verification results:**
+- Build: ✅ exit 0 (91 static pages)
+- Lint: ✅ 0 warnings, 0 errors (was ~90 warnings)
+- TypeCheck: ✅ 0 errors
+- Tests: ✅ 220/220 passing
+
+---
+
+## PHASE 15 — Post-Launch Growth (upcoming)
+
+- [x] **15.1** Set `GOOGLE_GENERATIVE_AI_API_KEY` in Vercel env → enable AI chatbot in production
+  - Confirmed already present in Development / Preview / Production Vercel environments
+- [ ] **15.2** Google Search Console verification (submit sitemap, verify domain ownership)
+- [ ] **15.3** Bing Webmaster Tools submission
+- [x] **15.4** IndexNow ping automation on content publish
+  - Deploy workflow now runs `npm run ping:indexnow` as a best-effort post-deploy step
+- [x] **15.5** Vercel Analytics integration (`@vercel/analytics` package)
+  - Tracking is consent-gated and restricted to public marketing/search routes only
+- [~] **15.6** Domain cutover: bookphysio.in → Vercel (retire GitHub Pages)
+  - `bookphysio.in` is live on Vercel
+  - `www.bookphysio.in` still needs registrar-side DNS (`A www.bookphysio.in 76.76.21.21`) or Vercel nameservers
+- [~] **15.7** End-to-end smoke test in production after domain cutover
+  - Apex smoke checks passed for `/`, `/search`, `/sitemap.xml`, `/robots.txt`, and the IndexNow key file
+  - Public providers API no longer returns `500`; runtime fallback deployed while `search_providers_v2` DB migration awaits authenticated apply access
+  - Repo fix ready for next deploy: public pages no longer treat the missing demo-session state as a 404 error during auth hydration
+  - Production dataset currently returns zero public providers, so results rendering remains data-limited rather than route-broken
+
+---
+
 ## ROADMAP (future)
 - Mobile app (React Native / Expo)
 - Multi-language support (Hindi, regional languages)
-- Insurance / corporate tie-ups
 - AI-powered physio matching

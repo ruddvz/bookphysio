@@ -24,21 +24,20 @@ Extracted: 2026-03-28 via Chrome MCP on https://www.zocdoc.com
 - **Model**: time-driven (CSS animation cycles specialties)
 - **Bg**: Changes per specialty. Default: `rgb(253, 250, 238)` cream. Blue variant: `rgb(220, 233, 253)`.
 - **Animation**: CSS keyframe `bwWwin`, 3.5s ease-in-out forwards, on `.fadeInAndOut` span
-- **Heading**: "Book local [SPECIALTY] who take your insurance" — specialty word animated with `fadeInAndOut` class
+- **Heading**: "Book verified physiotherapists in India for [SPECIALTY]" — specialty word animated with `fadeInAndOut` class
 - **Specialties cycle**: OB-GYNs, dentists, doctors, dermatologists (and more)
-- **Search bar**: 3 fields (condition/doctor | location | insurance) + "Find care" yellow button
-- **Find care button**: bg `rgb(254, 237, 90)`, black text, 48px height, border-radius 4px
+- **Search bar**: 2 fields (condition/injury | location) + "Find care" button
+- **Find care button**: bg `#00766C`, white text, pill shape
 - **Hero padding**: 70px top, 120px bottom, 60px sides
 - **h1**: 44px, lineHeight 60px, sharp-sans-medium (use Inter for bookphysio)
 - **Illustration**: decorative hands with card illustration — top-right of hero, CSS background or SVG
 
-## Insurance Plans
-- **Model**: static (cards) + click (See all button)
-- **Heading**: "Find an in-network doctor from over 1,000 insurance plans" (24px, sharp-sans-semibold)
-- **Cards**: 5 insurance logo cards in a row (Aetna, Cigna, United Healthcare, Medicare, BlueCross BlueShield)
-- **Card style**: white bg, border `1px solid #E0E0E0`, border-radius 8px, ~135px × 80px
-- **"See all" link**: underlined, 16px
-- **"Add your insurance coverage" button**: outlined style, black border, 16px text
+## Proof Section
+- **Model**: static availability preview with trust messaging
+- **Heading**: "Real-time availability" with supporting network transparency copy
+- **Cards**: live provider preview rows with fee and next-slot cues
+- **Supporting points**: medical verification, instant confirmation, flexible care
+- **Trust badge**: live provider count shown as a rounded pill
 
 ## Top Specialties
 - **Model**: static grid
@@ -52,9 +51,9 @@ Extracted: 2026-03-28 via Chrome MCP on https://www.zocdoc.com
 - **Model**: static
 - **Heading**: "Let's get you a doc who gets you"
 - **Section bg**: yellow `rgb(254, 250, 230)` ≈ `#FEFAE6`
-- **3 cards**: "Browse providers who take your insurance", "Read reviews from users", "Book an appointment today, online"
+- **3 cards**: "Search with context", "Compare verified options", "Book in a few taps"
 - **Card bg**: white, border-radius 12px, illustration above text
-- **CTA buttons on cards**: outlined, "See specialties", "See providers", "See availability"
+- **CTA buttons on cards**: simplified to a single section-level CTA
 - **Illustrations**: ~200×150px each
 
 ## App Section
@@ -108,7 +107,7 @@ Extracted: 2026-03-28 via Chrome MCP on https://www.zocdoc.com
 - **Model**: static
 - **Bg**: `#333333` dark
 - **Text color**: white / light gray
-- **Columns**: Zocdoc (Home, About us, Press, Careers, Contact us, Help), Discover (blog, resources, etc.), Insurance Carriers, Top Specialties, Are you a top doctor/health service?
+- **Columns**: Explore, Patients, Providers, plus legal/support links
 - **App download**: App Store + Google Play buttons
 - **Legal**: disclaimer text + copyright + social icons (Twitter/X, Instagram, Facebook, LinkedIn)
 
@@ -119,7 +118,7 @@ Extracted: 2026-03-28 via Chrome MCP on https://www.zocdoc.com
 
 ## Hover States Summary
 - Nav links: underline appears on hover
-- Cards (specialty, insurance, how-it-works): subtle shadow increase
+- Cards (specialty, proof, how-it-works): subtle shadow increase
 - Buttons (outlined): bg fills on hover
 - City/reason accordions: text color changes on hover
 - Footer links: color lightens on hover

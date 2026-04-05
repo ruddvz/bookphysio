@@ -50,25 +50,25 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
       {/* Header Layout */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-lg text-[10px] font-black uppercase text-bp-accent tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-lg text-[10px] font-bold uppercase text-bp-accent tracking-widest">
              Patient Verification
           </div>
-          <h2 className="text-[36px] md:text-[48px] font-black text-bp-primary tracking-tighter leading-tight">Patient Details</h2>
+          <h2 className="text-[36px] md:text-[48px] font-bold text-bp-primary tracking-tighter leading-tight">Patient Details</h2>
           <p className="text-[17px] text-bp-body/40 font-bold max-w-lg leading-relaxed">Please provide the details of the individual attending the appointment.</p>
         </div>
         
         <div className="hidden lg:flex flex-col items-end">
            <div className="flex -space-x-4 mb-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-surface flex items-center justify-center text-[12px] font-black text-bp-body/30">
+                <div key={i} className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-surface flex items-center justify-center text-[12px] font-bold text-bp-body/30">
                    {String.fromCharCode(64 + i)}
                 </div>
               ))}
-              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-accent flex items-center justify-center text-[12px] font-black text-white">
+              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-accent flex items-center justify-center text-[12px] font-bold text-white">
                  +
               </div>
            </div>
-           <p className="text-[11px] font-black text-bp-body/30 uppercase tracking-widest leading-none">Security Shield Active</p>
+           <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-widest leading-none">Security Shield Active</p>
         </div>
       </div>
 
@@ -79,10 +79,10 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
            {/* Full Name */}
            <div className="space-y-3 group">
              <div className="flex items-center justify-between px-1">
-                <label className="text-[12px] font-black text-bp-primary uppercase tracking-widest block">
+                <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                   Identity Name <span className="text-bp-accent">*</span>
                 </label>
-                <div className="opacity-0 group-focus-within:opacity-100 transition-opacity flex items-center gap-1.5 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                <div className="opacity-0 group-focus-within:opacity-100 transition-opacity flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
                    <Activity size={10} /> Validating
                 </div>
              </div>
@@ -96,7 +96,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                  onChange={(e) => setFullName(e.target.value)}
                  placeholder="Enter patient's full name"
                  className={cn(
-                   "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-black outline-none transition-all duration-500 placeholder:text-gray-200",
+                   "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
                    errors.fullName 
                      ? "border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]" 
                      : "border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_20px_40px_-10px_rgba(0,118,108,0.1)]"
@@ -106,21 +106,21 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                    {fullName.length > 3 && !errors.fullName && <CheckCircle2 className="text-emerald-500 animate-in zoom-in" size={20} />}
                </div>
              </div>
-             {errors.fullName && <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.fullName}</p>}
+             {errors.fullName && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.fullName}</p>}
            </div>
 
            {/* Mobile Number */}
            <div className="space-y-3 group">
              <div className="flex items-center justify-between px-1">
-                <label className="text-[12px] font-black text-bp-primary uppercase tracking-widest block">
+                <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                   Contact Number <span className="text-bp-accent">*</span>
                 </label>
-                <div className="flex items-center gap-1.5 text-[10px] font-black text-bp-body/30 uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-bp-body/30 uppercase tracking-widest">
                    Used for updates
                 </div>
              </div>
              <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none font-black text-[18px] text-gray-200 group-focus-within:text-bp-accent transition-colors leading-[1.2] pb-0.5">
+               <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none font-bold text-[18px] text-gray-200 group-focus-within:text-bp-accent transition-colors leading-[1.2] pb-0.5">
                  +91
                </div>
                <input
@@ -130,21 +130,21 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                  placeholder="9876543210"
                  className={cn(
-                   "w-full bg-white rounded-[24px] border-2 pl-20 pr-6 py-6 text-[20px] font-black outline-none transition-all duration-500 placeholder:text-gray-200 tracking-wider",
+                   "w-full bg-white rounded-[24px] border-2 pl-20 pr-6 py-6 text-[20px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200 tracking-wider",
                    errors.phone 
                      ? "border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]" 
                      : "border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_20px_40px_-10px_rgba(0,118,108,0.1)]"
                  )}
                />
              </div>
-             {errors.phone && <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.phone}</p>}
+             {errors.phone && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.phone}</p>}
            </div>
         </div>
 
         {/* Email Row */}
         <div className="space-y-3 group">
           <div className="flex items-center gap-3 px-1">
-             <label className="text-[12px] font-black text-bp-primary uppercase tracking-widest block">
+             <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                Communications Channel
              </label>
              <span className="text-[10px] font-bold text-bp-body/30 uppercase tracking-widest bg-bp-surface px-2.5 py-1 rounded-lg">High Sensitivity</span>
@@ -159,23 +159,23 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="patient@medical.secure"
               className={cn(
-                "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-black outline-none transition-all duration-500 placeholder:text-gray-200",
+                "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
                 errors.email 
                    ? "border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]" 
                    : "border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_20px_40px_-10px_rgba(0,118,108,0.1)]"
               )}
             />
           </div>
-          {errors.email && <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
+          {errors.email && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
         </div>
 
         {requiresHomeVisitAddress ? (
           <div className="space-y-4 group">
             <div className="flex items-center justify-between px-1">
-              <label className="text-[12px] font-black text-bp-primary uppercase tracking-widest block">
+              <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                 Visit Address <span className="text-bp-accent">*</span>
               </label>
-              <div className="w-10 h-6 bg-bp-secondary/10 rounded-full flex items-center justify-center text-[10px] font-black text-bp-secondary">REQ</div>
+              <div className="w-10 h-6 bg-bp-secondary/10 rounded-full flex items-center justify-center text-[10px] font-bold text-bp-secondary">REQ</div>
             </div>
             <div className="relative">
               <div className="absolute top-6 left-6 pointer-events-none">
@@ -195,15 +195,15 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                 )}
               />
             </div>
-            {errors.homeVisitAddress ? <p className="text-[12px] font-black text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.homeVisitAddress}</p> : null}
+            {errors.homeVisitAddress ? <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.homeVisitAddress}</p> : null}
           </div>
         ) : null}
 
         {/* Reason for visit (Luxury Area) */}
         <div className="space-y-4 group">
           <div className="flex items-center justify-between px-1">
-             <label className="text-[12px] font-black text-bp-primary uppercase tracking-widest block">Clinical Concerns & Focus</label>
-             <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-black text-bp-body/30">OPT</div>
+             <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Clinical Concerns & Focus</label>
+             <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
           </div>
           <div className="relative">
             <div className="absolute top-6 left-6 pointer-events-none">
@@ -228,7 +228,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                <Sparkles size={24} />
             </div>
             <div>
-               <h4 className="text-[16px] font-black text-bp-primary mb-2">Automated Confirmations</h4>
+               <h4 className="text-[16px] font-bold text-bp-primary mb-2">Automated Confirmations</h4>
                <p className="text-[15px] font-bold text-bp-body/40 leading-[1.8] max-w-[500px]">
                   Your session link and professional clinician bio will be issued to these credentials upon high-fidelity verification.
                </p>
@@ -242,7 +242,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
              type="submit"
              className="w-full h-24 group relative bg-bp-accent text-white rounded-[32px] shadow-2xl shadow-bp-primary/10 hover:shadow-bp-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-500 overflow-hidden"
            >
-             <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-black tracking-tighter">
+             <div className="relative z-10 flex items-center justify-center gap-4 text-[22px] font-bold tracking-tighter">
                 Continue to Booking
                 <ChevronRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform duration-500" />
              </div>
@@ -250,10 +250,10 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shine transition-transform duration-1000"></div>
            </button>
 
-           <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-[12px] font-black text-bp-body/30 uppercase tracking-widest">
+           <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-[12px] font-bold text-bp-body/30 uppercase tracking-widest">
               <div className="flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> Encrypted Booking Request</div>
               <div className="hidden md:block w-1.5 h-1.5 bg-bp-surface rounded-full"></div>
-              <p>Payment collected during the <span className="text-bp-accent font-black">visit</span></p>
+              <p>Payment collected during the <span className="text-bp-accent font-bold">visit</span></p>
            </div>
         </div>
       </form>

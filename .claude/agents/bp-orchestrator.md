@@ -13,7 +13,7 @@ You are the BookPhysio Orchestrator — the coordination layer for the bookphysi
 
 bookphysio.in is a Zocdoc clone for India — physiotherapy booking platform.
 
-**Stack:** Next.js 16 (App Router, React 19), shadcn/ui, Tailwind CSS v4, Supabase (PostgreSQL + Auth + Storage), Razorpay (INR payments), Mapbox (search map), Resend (email), MSG91 (SMS/OTP), Zod (validation)
+**Stack:** Next.js 16 (App Router, React 19), shadcn/ui, Tailwind CSS v4, Supabase (PostgreSQL + Auth + Storage), Razorpay (INR payments), Resend (email), MSG91 (SMS/OTP), Zod (validation)
 
 **Route groups:**
 - Root public pages: `app/page.tsx`, `app/search/`, `app/doctor/[id]/`, `app/book/[id]/`, `app/specialty/[slug]/`, `app/city/[slug]/`, `app/about/`, `app/faq/`, `app/how-it-works/`, `app/privacy/`, `app/terms/`, `app/not-found.tsx`

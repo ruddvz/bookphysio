@@ -27,7 +27,7 @@ Build strategy: Use the [ai-website-cloner-template](https://github.com/JCodesMo
 | Auth | Supabase Auth (email + Google OAuth + phone/OTP) |
 | Storage | Supabase Storage (doctor photos, credential documents) |
 | Payments | Razorpay (UPI, cards, netbanking, wallets — India-first) |
-| Maps | Mapbox GL JS (doctor search map view + geocoding) |
+| Location discovery | City and pincode search with provider coverage cues |
 | Email | Resend (transactional — booking confirmations, password reset) |
 | SMS/OTP | MSG91 (Indian SMS gateway — OTP + appointment reminders) |
 | Validation | Zod (all input boundaries) |
@@ -75,7 +75,6 @@ src/lib/
   razorpay.ts     ← Razorpay client init
   resend.ts       ← Resend email client
   msg91.ts        ← MSG91 SMS client
-  mapbox.ts       ← Mapbox geocoding helpers
 src/app/api/
   contracts/      ← TypeScript types exported for UI agent consumption
                     (source of truth for API response shapes)
@@ -147,20 +146,6 @@ locations (
   visit_type text[] CHECK (visit_type <@ ARRAY['in_clinic','home_visit','online'])
 )
 
--- Insurance plans
-insurances (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text UNIQUE NOT NULL,
-  logo_url text
-)
-
--- Provider <-> Insurance mapping
-provider_insurances (
-  provider_id uuid REFERENCES providers(id),
-  insurance_id uuid REFERENCES insurances(id),
-  PRIMARY KEY (provider_id, insurance_id)
-)
-
 -- Provider availability slots
 availabilities (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -186,7 +171,6 @@ appointments (
   visit_type text CHECK (visit_type IN ('in_clinic','home_visit','online')),
     visit_type text CHECK (visit_type IN ('in_clinic','home_visit')),
   status text CHECK (status IN ('pending','confirmed','cancelled','completed','no_show')),
-  insurance_id uuid REFERENCES insurances(id),
   fee_inr int NOT NULL,
   notes text,
   created_at timestamptz DEFAULT now()
@@ -258,7 +242,7 @@ notifications (
 - **patients**: read/write own `users` row, own `appointments`, `payments`, `reviews`, `notifications`
 - **providers**: read/write own `providers`, `locations`, `availabilities`, `documents`, `subscriptions`; read `appointments` where `provider_id = auth.uid()`
 - **admins**: full access to all tables
-- **public (anon)**: read `providers` (verified=true, active=true), `specialties`, `insurances`, `locations`
+- **public (anon)**: read `providers` (verified=true, active=true), `specialties`, `locations`
 
 ---
 
@@ -268,10 +252,9 @@ notifications (
 | Route | Description |
 |-------|-------------|
 | `/` | Homepage: search hero, specialty grid, how it works, testimonials, app CTA, footer |
-| `/search` | Doctor search: sidebar filters (specialty, insurance, distance, availability, visit type), doctor cards grid, Mapbox map view toggle |
-| `/doctor/[slug]` | Doctor profile: photo, bio, specialties, rating/reviews, insurance badges, availability calendar, Book CTA |
+| `/search` | Doctor search: sidebar filters (specialty, fee, availability, visit type), doctor cards grid, coverage cues |
+| `/doctor/[slug]` | Doctor profile: photo, bio, specialties, rating/reviews, availability calendar, Book CTA |
 | `/specialty/[name]` | Specialty landing pages (generated from DB) |
-| `/insurance/[name]` | Insurance landing pages (generated from DB) |
 | `/how-it-works` | 3-step explainer for patients |
 | `/about` | Company story |
 | `/careers` | Open positions |
@@ -294,9 +277,9 @@ notifications (
 |-------|-------------|
 | `/dashboard` | Upcoming appointments, activity feed |
 | `/appointments` | History, upcoming, cancelled tabs |
-| `/book/[doctorId]` | 3-step booking wizard: slot picker → insurance → confirm |
+| `/book/[doctorId]` | 3-step booking wizard: slot picker → visit details → confirm |
 | `/book/[doctorId]/success` | Booking confirmation page |
-| `/profile` | Personal info, insurance cards, notification preferences |
+| `/profile` | Personal info, visit preferences, notification preferences |
 | `/notifications` | Notification centre |
 
 ### Provider Portal — `app/(provider)/`
@@ -315,7 +298,6 @@ notifications (
 | `/dashboard` | Platform metrics: DAU, bookings, revenue charts |
 | `/users` | Patient + provider list, search, ban/approve |
 | `/listings` | Provider listing approval queue, document review |
-| `/insurance` | Insurance plan management |
 | `/content` | Static page content management |
 
 ---
@@ -325,7 +307,7 @@ notifications (
 1. Patient lands on `/doctor/[slug]` (public portal)
 2. Clicks "Book Appointment" → redirects to `/login?return=/book/[doctorId]` if unauthenticated
 3. After auth: `/book/[doctorId]?step=1` — select date/time slot from `availabilities`
-4. `?step=2` — select insurance (or self-pay), enter visit type
+4. `?step=2` — select visit type, confirm location and notes
 5. `?step=3` — confirm details, pay via Razorpay checkout
 6. On payment success webhook: appointment status → `confirmed`, slot → `is_booked: true`
 7. Redirect to `/book/[doctorId]/success` with summary
@@ -352,12 +334,11 @@ notifications (
 **Breakpoints:** 375px (mobile), 768px (tablet), 1280px (desktop)
 
 **Key shared components (owned by bp-ui-public):**
-- `<SearchBar>` — condition autocomplete + location + insurance filter
+- `<SearchBar>` — condition autocomplete + location input
 - `<DoctorCard>` — photo, name, specialty, rating stars, next available slot, Book button
-- `<BookingWizard>` — 3-step wizard (slot → insurance → confirm)
+- `<BookingWizard>` — 3-step wizard (slot → details → confirm)
 - `<AvailabilityCalendar>` — date/time slot picker
 - `<RatingStars>` — display + count
-- `<InsuranceBadge>` — insurance plan pill
 - `<AppHeader>` — logo, search, nav links, login/avatar
 - `<AppFooter>` — links grid, app store badges, copyright
 
@@ -449,9 +430,6 @@ SUPABASE_SERVICE_ROLE_KEY=       # server-side only
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
-
-# Mapbox
-NEXT_PUBLIC_MAPBOX_TOKEN=
 
 # Resend (email)
 RESEND_API_KEY=

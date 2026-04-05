@@ -634,7 +634,7 @@ Create the file with the following content:
 1. Step 1 (Account): email + password → Supabase account created
 2. Step 2 (Email confirm): confirmation email sent via Resend → provider clicks link
 3. Step 3 (Identity): provider logs in with new credentials
-4. Step 4 (Goals): 4-card interactive selection (New Patients / Insurance+Forms / Online Booking / Virtual Care) — multi-select
+4. Step 4 (Goals): 4-card interactive selection (New Patients / Intake+Forms / Online Booking / Virtual Care) — multi-select
 5. Step 5 (Profile): ICP registration number (required, Zod validated), name, specialty, city → profile saved
 6. Provider redirected to `/provider/dashboard` (pending admin approval)
 

@@ -30,15 +30,15 @@ Standardized component definitions for the ZocDoc clone, tailored for BookPhysio
   - **Left Section:** Photo + Badge (Verified/Premium)
   - **Center Section:** Name, Specialty, Ratings (stars), Address, Availability summary
   - **Right Section:** Availability grid (Next available slots)
-- **Filter Sidebar:** Multi-select checkboxes for specialty, gender, distance, and visit type. (Insurance removed)
-- **MapView:** Floating or side-by-side interactive Mapbox map.
+- **Filter Sidebar:** Multi-select checkboxes for specialty, gender, distance, and visit type.
+- **Location Context:** City chips, nearby coverage cues, and availability previews instead of a live map.
 
 ### Doctor Profile (`/doctor/{id}`)
 - **Profile Header:** Larger photo, full name, specialty, address.
 - **Booking Carousel:** Multi-day/time date-and-time picker.
 - **Detailed Bio:** About text, education, board certifications (ICP for India), languages spoken.
 - **Reviews Section:** Average rating, count, detailed reviews list with verified badge.
-- **Photos/Videos:** Gallery of the clinic or doctor. (Note: Insurance list tab removed)
+- **Photos/Videos:** Gallery of the clinic or doctor.
 
 ## UI Primitives (shadcn/ui equivalents)
 
@@ -58,7 +58,7 @@ Standardized component definitions for the ZocDoc clone, tailored for BookPhysio
 
 - **Condition:** `Search`, `Stethoscope`
 - **Location:** `MapPin`
-- **Insurance:** `PlusCircle`
+- **Filters:** `SlidersHorizontal`
 - **Physio-specific:** `Activity`, `Dumbbell` (for rehab), `HeartPulse`
 - **Home Visit:** `Home`
 - **In-clinic:** `Building2`

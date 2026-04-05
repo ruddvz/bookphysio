@@ -12,9 +12,9 @@
     <h2> "Let's get you a physio who gets you"
     <div> (flex row, gap-24px)
       <FeatureCard /> × 3
-        - "Browse physios who take your insurance" → "See specialties"
-        - "Read reviews from patients" → "See providers"
-        - "Book an appointment today, online" → "See availability"
+        - "Search with context"
+        - "Compare verified options"
+        - "Book in a few taps"
 ```
 
 ## Computed Styles
@@ -90,9 +90,9 @@
 
 ## Text Content (adapted for bookphysio)
 - Section heading: "Let's get you a physio who gets you"
-- Card 1: title "Browse physios who take your insurance" | CTA "See specialties"
-- Card 2: title "Read reviews from patients" | CTA "See providers"
-- Card 3: title "Book an appointment today, online" | CTA "See availability"
+- Card 1: title "Search with context"
+- Card 2: title "Compare verified options"
+- Card 3: title "Book in a few taps"
 
 ## Responsive Behavior
 - **Desktop (1440px):** 3 cards in a row

@@ -78,7 +78,7 @@ src/lib/utils.ts
 | TopSpecialties | `src/components/TopSpecialties.tsx` | Homepage |
 | AppSection | `src/components/AppSection.tsx` | Homepage |
 | ProviderCTA | `src/components/ProviderCTA.tsx` | Homepage |
-| InsurancePlans (HealthSystems) | `src/components/HealthSystems.tsx` | Homepage |
+| HealthSystems | `src/components/HealthSystems.tsx` | Homepage |
 | CityLinks | `src/components/CityLinks.tsx` | Homepage |
 | CommonReasons | `src/components/CommonReasons.tsx` | Homepage |
 | JobsCTA | `src/components/JobsCTA.tsx` | Homepage |
