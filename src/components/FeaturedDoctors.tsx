@@ -101,10 +101,13 @@ export default function FeaturedDoctors() {
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-[13px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-4">
-        Featured Physiotherapists
-      </h2>
+    <div className="mt-4 rounded-[28px] border border-bp-border bg-bp-surface/40 p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <Star size={14} className="fill-[#F59E0B] text-[#F59E0B]" />
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40">
+          Top-rated on BookPhysio
+        </h2>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {isLoading
           ? Array.from({ length: FEATURED_PROVIDER_COUNT }).map((_, index) => (

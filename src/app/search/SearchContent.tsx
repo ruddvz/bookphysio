@@ -447,7 +447,6 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                   </button>
                 </div>
               </div>
-              {doctors.length > 0 && <FeaturedDoctors />}
               {doctors.map((doctor) => (
                 <div key={doctor.id} id={`doctor-${doctor.id}`}>
                   <DoctorCard
@@ -458,7 +457,10 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                   />
                 </div>
               ))}
-              
+
+              {/* Explore More — shown below results as a discovery section */}
+              <FeaturedDoctors />
+
               {/* End of List */}
               <div className="py-16 text-center border-t border-bp-border mt-8 bg-bp-surface/50 rounded-[32px] px-8">
                 <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-body/40 tracking-widest">

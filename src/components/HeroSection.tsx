@@ -252,7 +252,7 @@ export default function HeroSection() {
   return (
     <section className="relative border-b border-bp-border bg-bp-surface/40 overflow-visible" aria-label="Hero">
       <div className="absolute left-1/2 top-0 h-[540px] max-w-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.12),transparent_70%)] overflow-hidden" />
-      <div className="bp-shell relative flex min-h-[calc(100svh-6rem)] flex-col justify-center pt-2 pb-10 md:pt-4 md:pb-12 lg:pt-6 lg:pb-14">
+      <div className="bp-shell relative flex min-h-[100svh] flex-col justify-center pt-2 pb-10 md:pt-4 md:pb-12 lg:pt-6 lg:pb-14">
         <div className="mx-auto max-w-5xl text-center">
           <h1 className="mx-auto max-w-4xl text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary">
             Book verified physiotherapists in India for <br className="hidden md:block" />

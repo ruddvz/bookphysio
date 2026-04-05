@@ -94,14 +94,11 @@ export default function ProviderCTA() {
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
                <Link
-                href="/auth/register/provider"
+                href="/doctor-signup"
                 className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-bold rounded-2xl shadow-xl shadow-bp-primary/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
                >
                  Get Started
                  <ArrowUpRight size={22} className="stroke-[3]" />
-               </Link>
-               <Link href="#" className="text-[15px] font-bold text-white/60 hover:text-white transition-colors underline decoration-white/20 underline-offset-4">
-                  Schedule a Demo
                </Link>
             </div>
           </div>

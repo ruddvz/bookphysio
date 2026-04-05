@@ -4,8 +4,10 @@ import ProofSection from '@/components/ProofSection'
 import TopSpecialties from '@/components/TopSpecialties'
 import HowItWorks from '@/components/HowItWorks'
 import HealthSystems from '@/components/HealthSystems'
+import ProviderCTA from '@/components/ProviderCTA'
 import Testimonials from '@/components/Testimonials'
 import FAQ from '@/components/FAQ'
+import CityLinks from '@/components/CityLinks'
 import Footer from '@/components/Footer'
 
 const organizationSchema = {
@@ -66,8 +68,10 @@ export default function Home() {
         <TopSpecialties />
         <HowItWorks />
         <HealthSystems />
+        <ProviderCTA />
         <Testimonials />
         <FAQ />
+        <CityLinks />
       </main>
       <Footer />
     </>
