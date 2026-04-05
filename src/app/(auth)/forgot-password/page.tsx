@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
 
       {!submitted ? (
         <>
-          <h1 className="text-[28px] font-bold text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+          <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
             Forgot Password?
           </h1>
           <p className="text-[15px] font-bold text-bp-body/40 mb-10">
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-10">
-              <label htmlFor="identifier" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
+              <label htmlFor="identifier" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
                 Mobile Number or Email
               </label>
               <div className="relative group">
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
               type="submit"
               disabled={loading}
               className={cn(
-                "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-bold text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]",
+                "w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]",
                 loading ? "bg-bp-primary/40 cursor-not-allowed" : "bg-bp-primary hover:bg-bp-accent hover:shadow-bp-accent/20"
               )}
             >
@@ -163,25 +163,25 @@ export default function ForgotPasswordPage() {
           <div className="w-20 h-20 mx-auto rounded-[24px] bg-bp-accent/10 flex items-center justify-center mb-8 animate-bounce">
             <Mail className="w-10 h-10 text-bp-accent" />
           </div>
-          <h2 className="text-[28px] font-bold text-bp-primary mb-2 mt-4 tracking-tighter leading-none">
+          <h2 className="text-[28px] font-black text-bp-primary mb-2 mt-4 tracking-tighter leading-none">
             {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? 'Check your inbox' : 'OTP Sent'}
           </h2>
           <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
             {/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? (
               <>
                 If an account exists for{' '}
-                <span className="text-bp-primary font-bold">{identifier}</span>, we have sent instructions to reset your password.
+                <span className="text-bp-primary font-black">{identifier}</span>, we have sent instructions to reset your password.
               </>
             ) : (
               <>
                 We have sent a verification code to{' '}
-                <span className="text-bp-primary font-bold">{identifier}</span> to help you access your account.
+                <span className="text-bp-primary font-black">{identifier}</span> to help you access your account.
               </>
             )}
           </p>
           <button
             onClick={handleReset}
-            className="text-[14px] font-bold text-bp-accent hover:text-bp-primary transition-all flex items-center gap-2 mx-auto focus:outline-none"
+            className="text-[14px] font-black text-bp-accent hover:text-bp-primary transition-all flex items-center gap-2 mx-auto focus:outline-none"
           >
             <RotateCcw className="w-4 h-4" />
             Try another email/number

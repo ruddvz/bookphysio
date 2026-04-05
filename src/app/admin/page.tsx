@@ -200,7 +200,7 @@ export default function AdminDashboardHome() {
 
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-6 py-10 md:px-10 md:py-12 animate-in fade-in duration-500">
-      <section className="overflow-hidden rounded-[40px] border border-bp-border bg-white shadow-[0_28px_80px_-40px_rgba(0,0,0,0.22)]">
+      <section className="overflow-hidden rounded-[28px] border border-white bg-white/60 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] ring-1 ring-bp-primary/5">
         <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/40">
@@ -241,7 +241,7 @@ export default function AdminDashboardHome() {
               const CardIcon = card.icon
 
               return (
-                <div key={card.title} className="rounded-[28px] border border-bp-border bg-[#fafbfc] p-4 shadow-sm">
+                <div key={card.title} className="rounded-[24px] border border-white bg-white/50 backdrop-blur-md p-4 shadow-sm ring-1 ring-bp-primary/5">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent">
                       <CardIcon size={20} strokeWidth={2.5} />
@@ -278,7 +278,7 @@ export default function AdminDashboardHome() {
           return (
             <div
               key={kpi.title}
-              className="group rounded-[30px] border border-bp-border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-xl"
+              className="group rounded-[24px] border border-white bg-white/60 backdrop-blur-xl p-6 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)]"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className={cn('flex h-12 w-12 items-center justify-center rounded-2xl', toneStyles)}>
@@ -297,7 +297,7 @@ export default function AdminDashboardHome() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-[36px] border border-bp-border bg-white p-6 shadow-[0_28px_80px_-44px_rgba(0,0,0,0.2)] md:p-8">
+        <section className="rounded-[28px] border border-white bg-white/60 backdrop-blur-xl p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] ring-1 ring-bp-primary/5 md:p-8">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">Revenue pulse</h2>
@@ -333,7 +333,7 @@ export default function AdminDashboardHome() {
               { label: 'Conversion', value: '18.2%', detail: 'Search to booking' },
               { label: 'Retention', value: '74%', detail: 'Returning patients' },
             ].map((item) => (
-              <div key={item.label} className="rounded-[24px] border border-bp-border bg-[#fafbfc] p-4">
+              <div key={item.label} className="rounded-[20px] border border-white bg-white/50 backdrop-blur-md p-4 ring-1 ring-bp-primary/5">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{item.label}</p>
                 <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">{item.value}</p>
                 <p className="mt-1 text-[12px] font-medium text-bp-body/60">{item.detail}</p>
@@ -430,7 +430,7 @@ export default function AdminDashboardHome() {
           const CardIcon = card.icon
 
           return (
-            <div key={card.title} className="rounded-[30px] border border-bp-border bg-white p-6 shadow-sm">
+            <div key={card.title} className="rounded-[24px] border border-white bg-white/60 backdrop-blur-xl p-6 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent">
                   <CardIcon size={20} strokeWidth={2.5} />

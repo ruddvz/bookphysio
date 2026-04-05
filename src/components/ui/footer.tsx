@@ -1,18 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
-  Github,
-  Twitter,
-  Linkedin,
-  Mail,
-  Youtube,
-  Facebook,
-  Instagram,
+  ExternalLink,
+  Send,
+  Globe,
+  Link2,
+  Play,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const footerConfig = {
@@ -27,11 +23,11 @@ const footerConfig = {
     phone: "+91 (555) 123-4567",
   },
   socials: [
-    { icon: Github, href: "#" },
-    { icon: Twitter, href: "#" },
-    { icon: Linkedin, href: "#" },
-    { icon: Youtube, href: "#" },
-    { icon: Instagram, href: "#" },
+    { icon: ExternalLink, href: "#" },
+    { icon: Send, href: "#" },
+    { icon: Link2, href: "#" },
+    { icon: Play, href: "#" },
+    { icon: Globe, href: "#" },
   ],
   columns: [
     {

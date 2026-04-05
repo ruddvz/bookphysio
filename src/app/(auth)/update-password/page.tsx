@@ -58,7 +58,7 @@ export default function UpdatePasswordPage() {
 
       {!updated ? (
         <>
-          <h1 className="text-[28px] font-bold text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
+          <h1 className="text-[28px] font-black text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
             Set a new password
           </h1>
           <p className="text-[15px] font-bold text-bp-body/40 mb-10">
@@ -73,7 +73,7 @@ export default function UpdatePasswordPage() {
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-6">
-              <label htmlFor="password" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
+              <label htmlFor="password" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
                 New Password
               </label>
               <div className="relative">
@@ -93,7 +93,7 @@ export default function UpdatePasswordPage() {
             </div>
 
             <div className="mb-10">
-              <label htmlFor="confirm-password" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
+              <label htmlFor="confirm-password" className="block text-[11px] font-black uppercase tracking-[0.2em] text-bp-body/40 mb-2 ml-1">
                 Confirm Password
               </label>
               <div className="relative">
@@ -116,7 +116,7 @@ export default function UpdatePasswordPage() {
               type="submit"
               disabled={loading}
               className={cn(
-                'w-full flex items-center justify-center gap-3 py-5 text-[16px] font-bold text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]',
+                'w-full flex items-center justify-center gap-3 py-5 text-[16px] font-black text-white rounded-[24px] transition-all shadow-xl shadow-bp-primary/10 active:scale-[0.98]',
                 loading ? 'bg-bp-primary/40 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent hover:shadow-bp-accent/20'
               )}
             >
@@ -134,7 +134,7 @@ export default function UpdatePasswordPage() {
           <div className="w-20 h-20 mx-auto rounded-[24px] bg-bp-accent/10 flex items-center justify-center mb-8">
             <CheckCircle2 className="w-10 h-10 text-bp-accent" />
           </div>
-          <h1 className="text-[28px] font-bold text-bp-primary mb-2 tracking-tighter leading-none">
+          <h1 className="text-[28px] font-black text-bp-primary mb-2 tracking-tighter leading-none">
             Password updated
           </h1>
           <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
@@ -142,7 +142,7 @@ export default function UpdatePasswordPage() {
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center gap-3 px-6 py-4 text-[15px] font-bold text-white bg-bp-primary hover:bg-bp-accent rounded-[24px] transition-all shadow-xl shadow-bp-primary/10"
+            className="inline-flex items-center justify-center gap-3 px-6 py-4 text-[15px] font-black text-white bg-bp-primary hover:bg-bp-accent rounded-[24px] transition-all shadow-xl shadow-bp-primary/10"
           >
             Go to Login
             <ArrowRight className="w-5 h-5" />

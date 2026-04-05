@@ -225,7 +225,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                   <Link
                      key={card.title}
                      href={card.href}
-                     className="group rounded-2xl border border-bp-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-xl shadow-bp-primary/5 active:scale-95"
+                     className="group rounded-[24px] border border-white bg-white/60 backdrop-blur-xl p-6 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 transition-all hover:-translate-y-1 hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] active:scale-95"
                   >
                      <div className="flex items-center justify-between gap-4 mb-5">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bp-accent/5 text-bp-accent transition-all group-hover:bg-bp-accent/10 group-hover:scale-110">
@@ -255,7 +255,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
         <div className="space-y-10">
           
       {/* Recovery Progress Widget */}
-          <section className="bg-white rounded-3xl border border-bp-border p-8 md:p-10 shadow-sm relative overflow-hidden group">
+          <section className="bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 md:p-10 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-bp-accent/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
             
             <div className="relative z-10">
@@ -302,7 +302,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
           </section>
 
           {/* Past Care Team */}
-          <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-sm relative group overflow-hidden">
+          <section className="bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 md:p-10 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative group overflow-hidden">
              <div className="absolute top-0 left-0 w-32 h-32 bg-bp-accent/5 rounded-full blur-[40px] -ml-16 -mt-16 transition-transform group-hover:scale-110"></div>
              
              <div className="relative z-10">
@@ -400,7 +400,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
         <aside className="space-y-6 sticky top-28">
            
            {/* Primary Highlight: Next Appointment */}
-           <div className="bg-white border border-bp-border rounded-3xl p-8 md:p-10 shadow-sm text-bp-primary relative overflow-hidden group">
+           <div className="bg-white/60 backdrop-blur-xl border border-white rounded-[28px] p-8 md:p-10 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 text-bp-primary relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-48 h-48 bg-bp-accent/5 rounded-full blur-[60px] -mr-24 -mt-24 transition-transform group-hover:scale-110"></div>
               
               <div className="relative z-10">

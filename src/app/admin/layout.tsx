@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen bg-bp-surface text-bp-primary font-sans">
       
       {/* Sidebar Navigation (Compact) */}
-      <aside className="sticky top-0 flex flex-col w-[80px] h-screen bg-white border-r border-bp-border shadow-sm shrink-0 items-center py-8">
+      <aside className="sticky top-0 flex flex-col w-[80px] h-screen bg-white/60 backdrop-blur-3xl border-r border-white shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] ring-1 ring-bp-primary/5 shrink-0 items-center py-8">
         
         {/* Logo Area */}
         <Link href="/admin" className="mb-12 group outline-none">

@@ -210,7 +210,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 
         {/* Agenda Card */}
-        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10 hover:-translate-y-1">
+        <div className="group bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative overflow-hidden transition-all hover:-translate-y-1">
            <div className="absolute top-0 right-0 w-32 h-32 bg-bp-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
            <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
@@ -259,7 +259,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
         </div>
 
         {/* Weekly Progress */}
-        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10">
+        <div className="group bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative overflow-hidden transition-all hover:-translate-y-1">
            <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
                  <div className="w-12 h-12 rounded-2xl bg-bp-surface text-bp-primary flex items-center justify-center border border-bp-border">
@@ -282,7 +282,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
 
         {/* ── Schedule Timeline ── */}
-        <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
+        <section className="bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 md:p-10 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5">
            <div className="flex items-center justify-between mb-10">
               <div className="flex flex-col gap-1">
                  <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
@@ -348,7 +348,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
         <aside className="space-y-8 sticky top-28">
 
            {/* Setup Checklist (Clinical Onboarding) */}
-           <div className="bg-bp-surface rounded-[40px] p-8 md:p-10 border border-bp-border">
+           <div className="bg-white/40 backdrop-blur-xl rounded-[28px] p-8 md:p-10 border border-white ring-1 ring-bp-primary/5 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.04)]">
               <div className="flex justify-between items-center mb-8">
                  <h3 className="text-[18px] font-bold text-bp-primary tracking-tight">{t.practiceReadiness}</h3>
                  <div className="p-2 bg-white rounded-xl border border-bp-border text-bp-accent">

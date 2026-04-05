@@ -348,15 +348,12 @@ export async function GET(request: NextRequest) {
     p_limit: limit
   })
 
-  // If RPC doesn't support query yet, we force fallback if query is present
-  if (!error && query) {
-     // We can't easily filter by query in the current RPC v2
-     // So we'll force the fallback if a text query is present to ensure correct results
-     error = new Error('RPC does not support text query') as any
-  }
+  const shouldFallbackForQuery = !error && Boolean(query)
 
-  if (error) {
-    console.error('Supabase RPC error:', error)
+  if (error || shouldFallbackForQuery) {
+    if (error) {
+      console.error('Supabase RPC error:', error)
+    }
 
     const fallbackSearch = await searchProvidersWithoutRpc({
       supabase,

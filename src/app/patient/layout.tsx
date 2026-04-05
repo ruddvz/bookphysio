@@ -8,16 +8,12 @@ import {
   Calendar,
   Inbox,
   User,
-  Settings,
   Bell,
   LogOut,
   Sparkles,
-  ChevronRight,
   Menu,
   X,
-  Activity,
   Heart,
-  Search
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -52,7 +48,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen bg-bp-surface font-sans selection:bg-bp-accent/10 selection:text-bp-accent">
       
       {/* ── Compact Sidebar Navigation (Desktop) ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[80px] bg-white border-r border-bp-border z-50 flex-col items-center py-8 shadow-sm">
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[80px] bg-white/60 backdrop-blur-3xl border-r border-white z-50 flex-col items-center py-8 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] ring-1 ring-bp-primary/5">
         {/* Branding Icon */}
         <Link href="/patient/dashboard" className="mb-10 group">
           <div className="w-12 h-12 bg-bp-accent rounded-2xl flex items-center justify-center text-white shadow-lg shadow-bp-accent/20 group-hover:scale-105 transition-transform duration-300">
@@ -114,7 +110,7 @@ export default function PatientLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* ── Mobile Control Bar ── */}
-      <header className="lg:hidden fixed top-0 inset-x-0 h-[72px] bg-white border-b border-bp-border z-50 px-6 flex items-center justify-between shadow-sm">
+      <header className="lg:hidden fixed top-0 inset-x-0 h-[72px] bg-white/80 backdrop-blur-2xl border-b border-white z-50 px-6 flex items-center justify-between shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5">
         <Link href="/patient/dashboard" className="flex items-center gap-3">
           <div className="w-9 h-9 bg-bp-accent rounded-[12px] flex items-center justify-center text-white shadow-lg shadow-bp-accent/20">
             <Heart size={20} strokeWidth={3} fill="currentColor" />

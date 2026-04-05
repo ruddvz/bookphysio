@@ -214,7 +214,7 @@ describe('Auth regressions', () => {
     render(<VerifyOtpPage />)
 
     expect(screen.getByText(/otp session expired/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /welcome back/i })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: /go to login/i })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('link', { name: /recover access/i })).toHaveAttribute('href', '/forgot-password')
     expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
   })

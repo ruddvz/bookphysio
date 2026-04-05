@@ -121,6 +121,62 @@ const POPULAR_CITIES = [
   { name: 'Surat', icon: '💎' },
 ]
 
+const CONDITION_SPECIALTY_MAP: Record<string, string> = {
+  'sports rehab': 'Sports Physio',
+  'sports injury': 'Sports Physio',
+  'sports physiotherapy': 'Sports Physio',
+  'sports physio': 'Sports Physio',
+  'neuro care': 'Neuro Physio',
+  'neurological physiotherapy': 'Neuro Physio',
+  'neuro physio': 'Neuro Physio',
+  'orthopedic physiotherapy': 'Ortho Physio',
+  'orthopaedic physiotherapy': 'Ortho Physio',
+  'ortho physio': 'Ortho Physio',
+  'knee rehab': 'Ortho Physio',
+  'shoulder pain': 'Ortho Physio',
+  'arthritis': 'Ortho Physio',
+  'post-surgery': 'Post-Surgery Rehab',
+  'post-surgery recovery': 'Post-Surgery Rehab',
+  'post-surgical rehabilitation': 'Post-Surgery Rehab',
+  'back pain': 'Pain Management',
+  'neck pain': 'Pain Management',
+  'daily pain relief': 'Pain Management',
+  'spinal cord injury': 'Neuro Physio',
+  "women's health": "Women's Health",
+  "women's health physiotherapy": "Women's Health",
+  'pediatric care': 'Paediatric Physio',
+  'paediatric physio': 'Paediatric Physio',
+  'paediatric physiotherapy': 'Paediatric Physio',
+  'geriatric care': 'Geriatric Physio',
+  'geriatric physiotherapy': 'Geriatric Physio',
+}
+
+function normalizeConditionTerm(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, ' ')
+}
+
+function resolveConditionFilters(condition: string | null): {
+  specialty: string | null
+  visitType: 'home_visit' | null
+  query: string | null
+} {
+  if (!condition) {
+    return { specialty: null, visitType: null, query: null }
+  }
+
+  const normalizedCondition = normalizeConditionTerm(condition)
+  const mappedSpecialty = CONDITION_SPECIALTY_MAP[normalizedCondition] ?? null
+  const visitType = normalizedCondition === 'home visits' || normalizedCondition === 'home visit'
+    ? 'home_visit'
+    : null
+
+  return {
+    specialty: mappedSpecialty,
+    visitType,
+    query: mappedSpecialty || visitType ? null : condition,
+  }
+}
+
 export default function SearchContent({ locale }: { locale?: StaticLocale } = {}) {
   const t = SEARCH_COPY[locale ?? 'en']
   const searchParams = useSearchParams()
@@ -130,6 +186,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const location = searchParams.get('location')
   const city = searchParams.get('city') ?? location
   const condition = searchParams.get('condition')
+  const conditionFilters = useMemo(() => resolveConditionFilters(condition), [condition])
 
   // Handle city selection from chips
   const handleCitySelect = (selectedCity: string) => {
@@ -143,8 +200,8 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     router.push(`/search?${params.toString()}`)
   }
 
-  const specialty = searchParams.get('specialty')
-  const visit_type = searchParams.get('visit_type')
+  const specialty = searchParams.get('specialty') ?? conditionFilters.specialty
+  const visit_type = searchParams.get('visit_type') ?? conditionFilters.visitType
   const max_fee = searchParams.get('max_fee')
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
@@ -154,13 +211,13 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     const apiParams: Record<string, string> = { page: '1', limit: '40' }
     if (city) apiParams.city = city
     if (specialty) apiParams.specialty_id = specialty
-    if (condition) apiParams.query = condition
+    if (conditionFilters.query) apiParams.query = conditionFilters.query
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, specialty, condition, visit_type, max_fee, lat, lng])
+  }, [city, specialty, conditionFilters.query, visit_type, max_fee, lat, lng])
 
   // Polling with SWR (Phase 11.5)
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(

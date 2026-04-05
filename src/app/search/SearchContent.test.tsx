@@ -8,12 +8,13 @@ import type { SearchResponse } from '@/app/api/contracts/search'
 import SearchContent from './SearchContent'
 
 const pushMock = vi.fn()
+let searchParamsValue = new URLSearchParams()
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: pushMock,
   }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => searchParamsValue,
 }))
 
 vi.mock('next/link', () => ({
@@ -55,6 +56,7 @@ vi.mock('./SearchFilters', () => ({
 
 const mockedUseSWR = useSWR as unknown as {
   mockReturnValue: (value: SWRResponse<SearchResponse, Error>) => void
+  mock: { calls: unknown[][] }
 }
 
 const mockProviders: ProviderCard[] = [
@@ -93,6 +95,7 @@ function mockSearchSWR(response: Partial<SWRResponse<SearchResponse, Error>>) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  searchParamsValue = new URLSearchParams()
 })
 
 describe('SearchContent', () => {
@@ -125,5 +128,26 @@ describe('SearchContent', () => {
 
     expect(screen.queryByTestId('featured-doctors')).toBeNull()
     expect(screen.getByTestId('empty-state').textContent).toContain('No exact matches found')
+  })
+
+  it('maps condition-style searches to specialty filters before calling the providers API', () => {
+    searchParamsValue = new URLSearchParams('condition=Sports Physiotherapy&location=Mumbai')
+
+    mockSearchSWR({
+      data: mockSearchResponse([]),
+      error: undefined,
+      isLoading: false,
+      mutate: vi.fn() as unknown as SWRResponse<SearchResponse, Error>['mutate'],
+    })
+
+    render(<SearchContent />)
+
+    const fetchUrl = mockedUseSWR.mock.calls[0]?.[0]
+    expect(typeof fetchUrl).toBe('string')
+
+    const params = new URL(fetchUrl as string, 'http://localhost').searchParams
+    expect(params.get('city')).toBe('Mumbai')
+    expect(params.get('specialty_id')).toBe('Sports Physio')
+    expect(params.get('query')).toBeNull()
   })
 })

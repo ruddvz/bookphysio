@@ -47,11 +47,11 @@ describe('Homepage regressions', () => {
 
     const hero = screen.getByRole('region', { name: /hero/i })
     const shell = hero.querySelector('.bp-shell')
-    const animatedWordFrame = screen.getByText('sports rehab').parentElement
+    const animatedWordFrame = screen.getByText(/sports rehab/i).parentElement
     const statsRow = screen.getByText('5,000+').closest('div')?.parentElement
 
-    expect(shell?.className).toContain('min-h-[100svh]')
-    expect(shell?.className).not.toContain('calc(100vh-5rem)')
+    expect(shell?.className).toContain('min-h-[calc(100svh-6rem)]')
+    expect(shell?.className).not.toContain('calc(100vh')
     expect(shell?.className).toContain('justify-center')
     expect(animatedWordFrame?.className).toContain('align-baseline')
     expect(animatedWordFrame?.className).not.toContain('align-top')

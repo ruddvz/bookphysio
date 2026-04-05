@@ -10,7 +10,7 @@ describe('HeroSection', () => {
   it('renders the search bar', () => {
     const { getByPlaceholderText } = render(<HeroSection />)
     // getByPlaceholderText throws if not found — no assertion needed; call itself is the assertion
-    expect(getByPlaceholderText('Search by condition or injury')).toBeDefined()
+    expect(getByPlaceholderText('Search condition...')).toBeDefined()
   })
 
   it('section[aria-label="Hero"] renders correctly', () => {
