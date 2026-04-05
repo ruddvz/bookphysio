@@ -114,9 +114,11 @@ describe('Homepage regressions', () => {
     expect(container.firstChild).toHaveClass('bg-[#fffaf4]/90')
 
     rerender(<Footer />)
-    const footerCta = screen.getByRole('link', { name: /start searching/i })
-    expect(footerCta.className).toContain('hover:bg-white')
-    expect(footerCta.className).not.toContain('hover:bg-[#f7efe5]')
+    expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /join as provider/i })).not.toBeInTheDocument()
+    expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
+    expect(screen.queryByText('Home visits')).not.toBeInTheDocument()
+    expect(screen.getByText(/bookphysio is a booking platform/i)).toBeInTheDocument()
   })
 
   it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {

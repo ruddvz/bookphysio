@@ -178,28 +178,29 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
   ]
 
   return (
-    <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 py-24 md:py-32 animate-in fade-in duration-700 relative z-10">
+      <div className="absolute left-1/2 top-0 h-[600px] max-w-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(24,49,45,0.05),transparent_70%)] pointer-events-none" />
 
       {/* ── Practitioner Briefing ── */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-        <div className="space-y-4">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
+      <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+        <div className="space-y-6">
+           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/40 backdrop-blur-md border border-white rounded-full text-[11px] font-bold uppercase text-bp-accent tracking-[0.2em] shadow-sm ring-1 ring-bp-primary/5">
               <Activity size={12} strokeWidth={3} />
               {t.clinicStatus}
            </div>
-           <h1 className="text-[36px] md:text-[48px] font-bold text-bp-primary leading-none tracking-tight">
+           <h1 className="text-[40px] md:text-[56px] font-bold text-bp-primary leading-[1.1] tracking-tight">
              {greeting}, <span className="text-bp-accent">Dr. {displayName}</span> 🩺
            </h1>
-           <p className="text-[15px] font-medium text-bp-body/60 max-w-[540px]">
+           <p className="text-[17px] font-bold text-bp-body/40 max-w-[540px] leading-relaxed">
              {t.tagline}
            </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-           <Link href="/provider/calendar" className="flex items-center justify-center gap-3 h-16 px-10 bg-bp-primary text-white text-[15px] font-bold rounded-[24px] hover:bg-bp-primary/95 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-bp-primary/10">
+        <div className="flex flex-wrap gap-4">
+           <Link href="/provider/calendar" className="flex items-center justify-center gap-3 h-16 px-10 bg-bp-primary text-white text-[15px] font-bold rounded-full hover:bg-bp-accent hover:shadow-xl hover:shadow-bp-primary/20 transition-all active:scale-[0.98]">
               <Calendar size={18} strokeWidth={3} />
               {t.openCalendar}
            </Link>
-           <Link href="/provider/ai-assistant" className="flex items-center justify-center gap-3 h-16 px-8 bg-white border border-bp-border text-bp-primary text-[15px] font-bold rounded-[24px] hover:border-bp-accent/20 hover:text-bp-accent transition-all hover:scale-[1.02] active:scale-[0.97] shadow-sm">
+           <Link href="/provider/ai-assistant" className="flex items-center justify-center gap-3 h-16 px-8 bg-white/50 backdrop-blur-xl border border-white text-bp-primary text-[15px] font-bold rounded-full hover:bg-white hover:text-bp-accent transition-all active:scale-[0.98] shadow-sm">
               <MessageSquare size={18} strokeWidth={3} />
               {t.askAI}
            </Link>
@@ -210,7 +211,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 
         {/* Agenda Card */}
-        <div className="group bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative overflow-hidden transition-all hover:-translate-y-1">
+        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10 hover:-translate-y-1">
            <div className="absolute top-0 right-0 w-32 h-32 bg-bp-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
            <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
@@ -259,7 +260,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
         </div>
 
         {/* Weekly Progress */}
-        <div className="group bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 relative overflow-hidden transition-all hover:-translate-y-1">
+        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10">
            <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-8">
                  <div className="w-12 h-12 rounded-2xl bg-bp-surface text-bp-primary flex items-center justify-center border border-bp-border">
@@ -282,7 +283,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
 
         {/* ── Schedule Timeline ── */}
-        <section className="bg-white/60 backdrop-blur-xl rounded-[28px] border border-white p-8 md:p-10 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5">
+        <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
            <div className="flex items-center justify-between mb-10">
               <div className="flex flex-col gap-1">
                  <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
@@ -348,7 +349,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
         <aside className="space-y-8 sticky top-28">
 
            {/* Setup Checklist (Clinical Onboarding) */}
-           <div className="bg-white/40 backdrop-blur-xl rounded-[28px] p-8 md:p-10 border border-white ring-1 ring-bp-primary/5 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.04)]">
+           <div className="bg-bp-surface rounded-[40px] p-8 md:p-10 border border-bp-border">
               <div className="flex justify-between items-center mb-8">
                  <h3 className="text-[18px] font-bold text-bp-primary tracking-tight">{t.practiceReadiness}</h3>
                  <div className="p-2 bg-white rounded-xl border border-bp-border text-bp-accent">

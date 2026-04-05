@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight, MapPin, Search, ChevronDown } from 'lucide-react'
 
 const focusWords = [
   'sports rehab',
@@ -47,6 +47,8 @@ function SearchBar({
   
   const conditionRef = useRef<HTMLDivElement>(null)
   const cityRef = useRef<HTMLDivElement>(null)
+  const conditionInputRef = useRef<HTMLInputElement>(null)
+  const cityInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,21 +72,37 @@ function SearchBar({
     : CONDITIONS
 
   return (
-    <div className="relative mx-auto w-full max-w-4xl overflow-visible p-2 md:p-0 mt-8">
-      <div className="flex flex-col lg:flex-row items-center gap-3 bg-white/70 backdrop-blur-3xl border border-white rounded-full p-2.5 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 transition-all">
+    <div className="relative mx-auto w-full max-w-5xl overflow-visible px-2 md:px-0">
+      <form
+        className="flex flex-col items-stretch gap-2.5 rounded-[32px] border border-white/70 bg-white/78 p-2 shadow-[0_22px_55px_-28px_rgba(24,49,45,0.34)] ring-1 ring-bp-primary/5 backdrop-blur-2xl transition-all lg:flex-row lg:items-center"
+        onSubmit={(event) => {
+          event.preventDefault()
+          onSubmit()
+        }}
+      >
         
         {/* CONDITION SELECTOR */}
         <div ref={conditionRef} className="relative flex-1 w-full lg:w-auto h-full">
           <div 
-            onClick={() => setShowConditions(true)}
-            className="flex flex-col gap-1 px-6 py-3.5 h-full transition-all bg-white/50 border border-bp-border/40 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] focus-within:bg-white focus-within:ring-2 ring-bp-accent/30 cursor-text"
+            onClick={() => {
+              setShowConditions(true)
+              conditionInputRef.current?.focus()
+            }}
+            className="flex h-full flex-col gap-1 rounded-[28px] border border-white/80 bg-[#fdfbf7]/92 px-6 py-3 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus-within:bg-white focus-within:ring-2 ring-bp-accent/30 cursor-text"
           >
-            <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
+            <label htmlFor="hero-condition-input" className="flex cursor-text items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
+              <Search size={12} className="text-bp-accent" />
               Condition
-            </span>
+            </label>
             <div className="flex items-center justify-between">
               <input
+                id="hero-condition-input"
+                ref={conditionInputRef}
                 type="text"
+                role="combobox"
+                aria-expanded={showConditions ? 'true' : 'false'}
+                aria-controls="hero-condition-options"
+                aria-autocomplete="list"
                 value={condition}
                 onChange={(event) => {
                   onConditionChange(event.target.value)
@@ -99,11 +117,18 @@ function SearchBar({
           </div>
           
           {showConditions && (
-            <div className="absolute top-full left-0 right-0 mt-3 max-h-[300px] overflow-y-auto rounded-[24px] border border-white bg-white/95 backdrop-blur-2xl p-3 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 z-50 custom-scrollbar text-left animate-in fade-in slide-in-from-top-2 duration-200">
+            <div
+              id="hero-condition-options"
+              role="listbox"
+              className="absolute top-full left-0 right-0 mt-3 max-h-[300px] overflow-y-auto rounded-[24px] border border-white bg-white/95 backdrop-blur-2xl p-3 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 z-50 custom-scrollbar text-left animate-in fade-in slide-in-from-top-2 duration-200"
+            >
               {filteredConditions.length > 0 ? (
                 filteredConditions.map((c) => (
                   <button
                     key={c}
+                    type="button"
+                    role="option"
+                    aria-selected={condition === c ? 'true' : 'false'}
                     onClick={() => {
                       onConditionChange(c)
                       setShowConditions(false)
@@ -123,15 +148,25 @@ function SearchBar({
         {/* LOCATION SELECTOR */}
         <div ref={cityRef} className="relative flex-1 w-full lg:w-auto h-full">
           <div 
-             onClick={() => setShowCities(true)}
-             className="flex flex-col gap-1 px-6 py-3.5 h-full transition-all bg-white/50 border border-bp-border/40 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.04)] focus-within:bg-white focus-within:ring-2 ring-bp-accent/30 cursor-text"
+             onClick={() => {
+               setShowCities(true)
+               cityInputRef.current?.focus()
+             }}
+             className="flex h-full flex-col gap-1 rounded-[28px] border border-white/80 bg-[#fdfbf7]/92 px-6 py-3 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] focus-within:bg-white focus-within:ring-2 ring-bp-accent/30 cursor-text"
           >
-            <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
+            <label htmlFor="hero-location-input" className="flex cursor-text items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
+              <MapPin size={12} className="text-bp-accent" />
               Location
-            </span>
+            </label>
             <div className="flex items-center justify-between">
               <input
+                id="hero-location-input"
+                ref={cityInputRef}
                 type="text"
+                role="combobox"
+                aria-expanded={showCities ? 'true' : 'false'}
+                aria-controls="hero-city-options"
+                aria-autocomplete="list"
                 value={location}
                 onChange={(event) => {
                   onLocationChange(event.target.value)
@@ -146,11 +181,18 @@ function SearchBar({
           </div>
           
            {showCities && (
-            <div className="absolute top-full left-0 right-0 mt-3 max-h-[300px] overflow-y-auto rounded-[24px] border border-white bg-white/95 backdrop-blur-2xl p-3 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 z-50 custom-scrollbar text-left animate-in fade-in slide-in-from-top-2 duration-200">
+            <div
+              id="hero-city-options"
+              role="listbox"
+              className="absolute top-full left-0 right-0 mt-3 max-h-[300px] overflow-y-auto rounded-[24px] border border-white bg-white/95 backdrop-blur-2xl p-3 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 z-50 custom-scrollbar text-left animate-in fade-in slide-in-from-top-2 duration-200"
+            >
               {filteredCities.length > 0 ? (
                 filteredCities.map((c) => (
                   <button
                     key={c}
+                    type="button"
+                    role="option"
+                    aria-selected={location === c ? 'true' : 'false'}
                     onClick={() => {
                       onLocationChange(c)
                       setShowCities(false)
@@ -168,13 +210,13 @@ function SearchBar({
         </div>
 
         <button
-          onClick={onSubmit}
-          className="w-full lg:w-auto h-[68px] lg:min-w-[160px] rounded-full bg-bp-primary text-white font-bold flex items-center justify-center gap-2 px-8 transition-all hover:bg-bp-accent hover:shadow-xl hover:shadow-bp-primary/20 active:scale-[0.98] group shrink-0"
+          type="submit"
+          className="flex h-[64px] w-full shrink-0 items-center justify-center gap-2 rounded-[28px] bg-bp-primary px-8 font-bold text-white shadow-[0_18px_36px_-20px_rgba(24,49,45,0.62)] transition-all hover:bg-bp-accent hover:shadow-xl hover:shadow-bp-primary/20 active:scale-[0.98] group lg:w-auto lg:min-w-[176px]"
         >
           Find care
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
         </button>
-      </div>
+      </form>
     </div>
   )
 }
@@ -209,9 +251,9 @@ export default function HeroSection() {
 
   return (
     <section className="relative border-b border-bp-border bg-bp-surface/40 overflow-visible" aria-label="Hero">
-      <div className="absolute left-1/2 top-0 h-[600px] max-w-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.12),transparent_70%)] overflow-hidden" />
-      <div className="bp-shell relative flex min-h-[calc(100svh-6rem)] flex-col justify-center pt-10 pb-20 md:pt-12 lg:pt-16">
-        <div className="mx-auto max-w-5xl text-center mt-8">
+      <div className="absolute left-1/2 top-0 h-[540px] max-w-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.12),transparent_70%)] overflow-hidden" />
+      <div className="bp-shell relative flex min-h-[calc(100svh-6rem)] flex-col justify-center pt-2 pb-10 md:pt-4 md:pb-12 lg:pt-6 lg:pb-14">
+        <div className="mx-auto max-w-5xl text-center">
           <h1 className="mx-auto max-w-4xl text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[1.02] tracking-[-0.05em] text-bp-primary">
             Book verified physiotherapists in India for <br className="hidden md:block" />
             <span className="relative inline-flex min-h-[1.05em] items-end overflow-hidden align-baseline pb-[0.06em] text-bp-accent pr-8">
@@ -221,11 +263,11 @@ export default function HeroSection() {
             </span>
           </h1>
 
-          <p className="mx-auto mt-8 max-w-4xl text-[18px] leading-relaxed text-bp-body/80 md:text-[22px]">
+          <p className="mx-auto mt-6 max-w-4xl text-[18px] leading-relaxed text-bp-body/80 md:text-[22px]">
             Book verified physiotherapists for home visits or in-clinic care in under 60 seconds.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-7 md:mt-8">
             <SearchBar
               condition={condition}
               location={location}
@@ -235,7 +277,7 @@ export default function HeroSection() {
             />
           </div>
 
-          <div className="mt-9 flex flex-wrap justify-center gap-8 md:gap-12 transition-all">
+          <div className="mt-7 flex flex-wrap justify-center gap-6 transition-all md:mt-8 md:gap-10">
             {heroStats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="text-[20px] font-bold text-bp-primary">{stat.value}</p>

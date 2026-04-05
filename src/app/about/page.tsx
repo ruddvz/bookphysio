@@ -67,7 +67,7 @@ export default function AboutPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {benefits.map(({ title, text, icon: Icon }, idx) => (
-                  <div key={idx} className="flex flex-col p-10 bg-white/60 backdrop-blur-xl border border-white rounded-[28px] shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5 hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] transition-all duration-500 group">
+                  <div key={idx} className="flex flex-col p-10 bg-white border border-bp-border/40 rounded-[32px] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] hover:border-bp-primary/30 transition-all duration-500 group">
                     <div className="w-16 h-16 rounded-2xl bg-bp-surface flex items-center justify-center mb-8 group-hover:bg-bp-primary group-hover:text-white transition-all duration-500">
                       <Icon className="w-8 h-8" />
                     </div>

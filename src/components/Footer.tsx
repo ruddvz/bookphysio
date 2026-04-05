@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ArrowRight, MapPin, ShieldCheck } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } from '@/lib/i18n/static-pages'
@@ -7,10 +6,6 @@ import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } f
 const FOOTER_COPY = {
   en: {
     tagline: 'A sharper way to find physiotherapy care. Start with the search, compare verified providers, and book with clarity.',
-    startSearching: 'Start searching',
-    joinAsProvider: 'Join as provider',
-    verifiedProviders: 'Verified providers',
-    homeVisits: 'Home visits',
     disclaimer: 'BookPhysio is a booking platform. We do not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.',
     copyright: '© 2026 BookPhysio.in',
     privacy: 'Privacy',
@@ -48,10 +43,6 @@ const FOOTER_COPY = {
   },
   hi: {
     tagline: 'फिजियोथेरेपी देखभाल खोजने का एक स्पष्ट तरीका। खोज से शुरुआत करें, सत्यापित प्रदाताओं की तुलना करें, और भरोसे के साथ बुक करें।',
-    startSearching: 'खोज शुरू करें',
-    joinAsProvider: 'प्रदाता के रूप में जुड़ें',
-    verifiedProviders: 'सत्यापित प्रदाता',
-    homeVisits: 'होम विज़िट्स',
     disclaimer: 'BookPhysio एक बुकिंग प्लेटफॉर्म है। हम चिकित्सा सलाह, निदान या उपचार प्रदान नहीं करते। किसी भी चिकित्सीय चिंता के लिए हमेशा योग्य स्वास्थ्य सेवा प्रदाता से सलाह लें।',
     copyright: '© 2026 BookPhysio.in',
     privacy: 'प्राइवेसी',
@@ -128,33 +119,6 @@ export default function Footer({
             <p className="mt-5 max-w-lg text-[15px] leading-7 text-white/70">
               {copy.tagline}
             </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                href="/search"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-semibold text-[#18312d] transition-all hover:bg-white"
-              >
-                {copy.startSearching}
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/doctor-signup"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-[14px] font-semibold text-white transition-all hover:border-[#dcefe9]/50 hover:bg-white/10"
-              >
-                {copy.joinAsProvider}
-              </Link>
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-2 text-[13px] text-white/60">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <ShieldCheck size={14} className="text-[#dcefe9]" />
-                {copy.verifiedProviders}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                <MapPin size={14} className="text-[#dcefe9]" />
-                {copy.homeVisits}
-              </span>
-            </div>
           </div>
 
           {columns.map((column) => (

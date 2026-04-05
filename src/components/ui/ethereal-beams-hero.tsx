@@ -1,13 +1,13 @@
 "use client";
 
+import Link from "next/link"
 import type React from "react"
 
 import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo, type FC, type ReactNode } from "react"
 import * as THREE from "three"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { PerspectiveCamera } from "@react-three/drei"
-import { degToRad } from "three/src/math/MathUtils.js"
-import { ArrowRight, Star } from "lucide-react"
+import { ArrowRight, ExternalLink, Star } from "lucide-react"
 
 // ============================================================================
 // BEAMS COMPONENT (3D Background)
@@ -401,7 +401,7 @@ const Beams: FC<BeamsProps> = ({
 
   return (
     <CanvasWrapper>
-      <group rotation={[0, 0, degToRad(rotation)]}>
+      <group rotation={[0, 0, THREE.MathUtils.degToRad(rotation)]}>
         <PlaneNoise ref={meshRef} material={beamMaterial} count={beamNumber} width={beamWidth} height={beamHeight} />
         <DirLight color={lightColor} position={[0, 3, 10]} />
       </group>
@@ -488,41 +488,51 @@ export default function EtherealBeamsHero() {
           <div className="flex h-16 items-center justify-between">
             {/* Brand Name Only */}
             <div className="flex items-center">
-              <span className="text-xl font-bold text-white">Mysh UI</span>
+              <span className="text-xl font-bold text-white">BookPhysio Lab</span>
             </div>
 
             {/* Glassmorphic Navigation Pills */}
             <div className="hidden md:flex items-center space-x-1 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 p-1 -mr-6">
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="rounded-full px-4 py-2 text-sm font-medium text-white/90 transition-all hover:bg-white/10 hover:text-white"
               >
                 Home
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/search"
                 className="rounded-full px-4 py-2 text-sm font-medium text-white/90 transition-all hover:bg-white/10 hover:text-white"
               >
-                Components
-              </a>
-              <a
-                href="#"
+                Search
+              </Link>
+              <Link
+                href="/about"
                 className="rounded-full px-4 py-2 text-sm font-medium text-white/90 transition-all hover:bg-white/10 hover:text-white"
               >
-                Templates
-              </a>
-              <a
-                href="#"
+                About
+              </Link>
+              <Link
+                href="/how-it-works"
                 className="rounded-full px-4 py-2 text-sm font-medium text-white/90 transition-all hover:bg-white/10 hover:text-white"
               >
-                Docs
-              </a>
+                How it works
+              </Link>
             </div>
 
             {/* CTA Button */}
             <div className="flex items-center space-x-4">
-              <Button size="sm">
-                Get Started
+              <Link
+                href="/search"
+                className="group relative hidden h-9 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-xl transition-all hover:border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 sm:inline-flex"
+              >
+                <span className="relative z-10 flex items-center">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Search Physios
+                </span>
+                <div className="absolute inset-0 -top-2 -bottom-2 -translate-x-full skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full" />
+              </Link>
+              <Button size="sm" onClick={() => window.location.assign('/')}>
+                View Site
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -537,7 +547,7 @@ export default function EtherealBeamsHero() {
             {/* Badge */}
             <div className="mb-8 inline-flex items-center rounded-full bg-white/5 backdrop-blur-xl border border-white/10 px-4 py-2 text-sm text-white/90">
               <Star className="mr-2 h-4 w-4 text-white" />
-              {"Trusted by industry leaders"}
+              {"Experimental motion concept"}
             </div>
 
             {/* Main Heading */}
@@ -559,11 +569,11 @@ export default function EtherealBeamsHero() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Button size="lg" className="shadow-2xl shadow-white/25 font-semibold">
+              <Button size="lg" className="shadow-2xl shadow-white/25 font-semibold" onClick={() => window.location.assign('/search')}>
                 Start Creating
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button variant="outline" size="lg" className="font-semibold bg-transparent">
+              <Button variant="outline" size="lg" className="font-semibold bg-transparent" onClick={() => window.location.assign('/about')}>
                 Learn More
               </Button>
             </div>

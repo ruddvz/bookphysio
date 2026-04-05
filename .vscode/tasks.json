@@ -48,6 +48,49 @@
 			"type": "shell",
 			"command": "rtk proxy npm exec -- vitest run src/app/api/__tests__/providers.test.ts src/app/api/__tests__/provider-detail-route.test.ts src/app/api/__tests__/provider-availability-route.test.ts src/lib/india-date.test.ts src/app/book/[id]/StepSuccess.test.tsx",
 			"isBackground": false
+		},
+		{
+			"label": "temporary eslint review gate",
+			"type": "shell",
+			"command": "rtk npm run lint",
+			"args": [
+				"--",
+				".",
+				"--ext",
+				".ts,.tsx,.js,.jsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "temporary eslint review gate args",
+			"type": "shell",
+			"command": "rtk",
+			"args": [
+				"npm",
+				"run",
+				"lint",
+				"--",
+				".",
+				"--ext",
+				".ts,.tsx,.js,.jsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "temporary eslint requested files",
+			"type": "shell",
+			"command": "rtk",
+			"args": [
+				"npm",
+				"run",
+				"lint",
+				"--",
+				"src/components/Navbar.tsx",
+				"src/components/HeroSection.tsx",
+				"src/components/ui/ethereal-beams-hero.tsx",
+				"src/app/demo/beams/page.tsx"
+			],
+			"isBackground": false
 		}
 	]
 }

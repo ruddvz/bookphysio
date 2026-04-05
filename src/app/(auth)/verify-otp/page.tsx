@@ -8,45 +8,15 @@ import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
 import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
 import { resolvePostAuthRedirect } from '@/lib/demo/session'
-import type { StaticLocale } from '@/lib/i18n/static-pages'
 import { cn } from '@/lib/utils'
+import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
 
-function getLocalizedLoginRoute(locale?: StaticLocale): string {
-  return locale === 'hi' ? '/hi/login' : '/login'
-}
-
-function normalizeLocalizedReturnPath(value: string | null | undefined, locale?: StaticLocale): string | null | undefined {
-  if (locale === 'hi' && value?.startsWith('/hi/')) {
-    return value.slice(3) || '/'
-  }
-
-  return value
-}
-
-function localizePostAuthPath(value: string, locale?: StaticLocale): string {
-  if (locale !== 'hi') {
-    return value
-  }
-
-  if (
-    value === '/patient/dashboard'
-    || value === '/provider/dashboard'
-    || value === '/search'
-    || value.startsWith('/search?')
-    || value.startsWith('/book/')
-  ) {
-    return `/hi${value}`
-  }
-
-  return value
-}
-
 function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
+  const t = AUTH_COPY[locale ?? 'en']
   const router = useRouter()
-  const loginHref = getLocalizedLoginRoute(locale)
   const [pendingOtp, setPendingOtp] = useState<ReturnType<typeof readPendingOtp>>(null)
   const [hasLoadedPendingOtp, setHasLoadedPendingOtp] = useState(false)
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''))
@@ -68,7 +38,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   const displayPhone = pendingOtp?.phone
     ? `+${pendingOtp.phone.slice(0, 2)} ${pendingOtp.phone.slice(2, 7)} ${pendingOtp.phone.slice(7)}`
     : ''
-  const deliveryLabel = pendingOtp?.flow === 'login' ? 'If an account exists, a code was sent to' : 'Code sent to'
+  const deliveryLabel = pendingOtp?.flow === 'login' ? t.otpLoginSubheading(displayPhone) : t.otpSubheading(displayPhone)
 
   const allFilled = otp.every((digit) => digit !== '')
 
@@ -105,7 +75,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
           <BpLogo href="/" size="auth" />
         </div>
 
-        <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
+        <h1 className="text-[32px] font-bold text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
           OTP session expired
         </h1>
         <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
@@ -114,15 +84,15 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
         <div className="flex flex-col gap-4">
           <Link
-            href={loginHref}
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10"
+            href={localePath(locale ?? 'en', '/login')}
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-bold text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10"
           >
-            Go to Login
+            {t.loginHeading}
             <ArrowRight className="w-5 h-5 text-bp-accent" />
           </Link>
           <Link
             href="/forgot-password"
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-black text-bp-accent rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
+            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-bold text-bp-accent rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
           >
             Recover Access
           </Link>
@@ -171,12 +141,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       }
       clearPendingOtp()
       const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role ?? data.user?.user_metadata?.role
-      router.push(
-        localizePostAuthPath(
-          resolvePostAuthRedirect(fallbackRole, normalizeLocalizedReturnPath(pendingOtp?.returnTo, locale)),
-          locale,
-        ),
-      )
+      router.push(resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo))
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -221,12 +186,11 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         <BpLogo href="/" size="auth" />
       </div>
 
-      <h1 className="text-[32px] font-black text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
-        Verify Identity
+      <h1 className="text-[32px] font-bold text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
+        {t.otpHeading}
       </h1>
       <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
-        {deliveryLabel}{' '}
-        <span className="text-bp-accent">{displayPhone}</span>
+        {deliveryLabel}
       </p>
 
       {/* OTP digit inputs */}
@@ -242,7 +206,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
       {/* Error */}
       {error && (
-        <p className="text-[13px] font-black text-red-500 text-center -mt-4 mb-6 animate-in shake duration-500">
+        <p className="text-[13px] font-bold text-red-500 text-center -mt-4 mb-6 animate-in shake duration-500">
           {error}
         </p>
       )}
@@ -250,22 +214,22 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       {/* Resend + countdown */}
       <div className="flex justify-between items-center mb-10 px-1">
         {countdown > 0 ? (
-          <span className="text-[14px] font-black text-bp-body/30 uppercase tracking-widest">
-            Resend OTP
+          <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">
+            {t.otpResendIn(formatCountdown(countdown))}
           </span>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            className="inline-flex items-center gap-2 text-[14px] text-bp-accent font-black bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-[14px] text-bp-accent font-bold bg-transparent border-none cursor-pointer p-0 outline-none hover:underline transition-colors uppercase tracking-widest"
           >
             <RefreshCw className="w-4 h-4" />
-            Resend
+            {t.otpResend}
           </button>
         )}
         <span
           className={cn(
-            "text-[14px] font-black tabular-nums tracking-widest transition-opacity duration-300",
+            "text-[14px] font-bold tabular-nums tracking-widest transition-opacity duration-300",
             countdown > 0 ? 'text-bp-body/40' : 'opacity-0'
           )}
         >
@@ -279,7 +243,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         onClick={() => handleVerify()}
         disabled={!allFilled || loading}
         className={cn(
-          "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-black text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
+          "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-bold text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
           allFilled && !loading 
             ? 'bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10 cursor-pointer' 
             : 'bg-bp-border cursor-not-allowed text-white/50'
@@ -289,11 +253,11 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
           {loading ? (
             <>
               <RefreshCw className="w-5 h-5 animate-spin" />
-              Verifying
+              {t.otpVerifyingButton}
             </>
           ) : (
             <>
-              Verify & Continue
+              {t.otpVerifyButton}
               <ArrowRight className="w-5 h-5 text-bp-accent" />
             </>
           )}
@@ -308,10 +272,10 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-[14px] text-bp-body/40 hover:text-bp-accent font-black bg-transparent border-none cursor-pointer no-underline outline-none transition-colors uppercase tracking-widest"
+          className="inline-flex items-center gap-2 text-[14px] text-bp-body/40 hover:text-bp-accent font-bold bg-transparent border-none cursor-pointer no-underline outline-none transition-colors uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
+          {t.otpBack}
         </button>
       </div>
       </div>

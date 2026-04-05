@@ -89,13 +89,15 @@ Latest Session Work (2026-04-01):
 ## NEXT PHASE (Phase 11 — Post-Launch Features)
 
 ### Currently In Progress
-- [>] **11.6** Multi-language support
-  - Hindi static-page slice live: `/hi/about`, `/hi/faq`, `/hi/how-it-works`, `/hi/privacy`, `/hi/terms`
-  - Locale switcher added to public static page chrome
-  - Core search, auth, booking, and dashboard flows still English-only
+- [ ] **11.6** Multi-language (Hindi) — PAUSED (Future Milestone)
+  - Hindi static-page slice implemented: `/hi/about`, `/hi/faq`, `/hi/how-it-works`, `/hi/privacy`, `/hi/terms`
+  - Auth, Search, Booking stubs exist but work is suspended to focus on English launch
+  - Locale switcher remains active for existing static pages
 
 ### High Priority (P1)
-- No P1 items remaining
+- [ ] Final launch verification (English-first)
+- [ ] External follow-up: Google Search Console verification + sitemap submission
+- [ ] External follow-up: Bing Webmaster Tools submission
 
 ### Medium Priority (P2)
 - None at this time

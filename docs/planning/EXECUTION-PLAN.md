@@ -162,11 +162,11 @@
   - [x] Forgot Password stub replaced with real Supabase Reset/OTP logic
   - [x] Removed live map integration from scope; search remains list-first with lightweight location cues only
 - [ ] **11.5** Mobile app (React Native / Expo) — P3
-- [~] **11.6** Multi-language support — P3
+- [~] **11.6** Multi-language (Hindi) — PAUSED (Future Milestone)
   - [x] Added English/Hindi locale switcher for public static pages
   - [x] Added Hindi routes for About, FAQ, How It Works, Privacy, and Terms
   - [x] Added bilingual metadata alternates and sitemap coverage for the Hindi static routes
-  - [ ] Search, auth, booking, and dashboard flows remain English-only
+  - [ ] Search, auth, booking, and dashboard flows remain English-only (Work Suspended)
 
 ## PHASE 12 — UI Refresh (21st.dev-Inspired)
 

@@ -1,14 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
-  ExternalLink,
-  Send,
-  Globe,
-  Link2,
-  Play,
+  Mail,
+  Home,
+  User,
+  Settings,
+  Shield,
+  HelpCircle,
+  Clock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const footerConfig = {
@@ -23,11 +27,11 @@ const footerConfig = {
     phone: "+91 (555) 123-4567",
   },
   socials: [
-    { icon: ExternalLink, href: "#" },
-    { icon: Send, href: "#" },
-    { icon: Link2, href: "#" },
-    { icon: Play, href: "#" },
-    { icon: Globe, href: "#" },
+    { icon: Home, href: "#" },
+    { icon: User, href: "#" },
+    { icon: Settings, href: "#" },
+    { icon: Shield, href: "#" },
+    { icon: Clock, href: "#" },
   ],
   columns: [
     {

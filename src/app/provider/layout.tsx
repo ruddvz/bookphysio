@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useState, useEffect } from 'react'
 
-import { Home, Calendar, Inbox, BarChart3, Users, Activity, Bell, LogOut, Menu, X } from 'lucide-react'
+import { Home, Calendar, Inbox, BarChart3, Users, Activity, Bell, LogOut, Search, Menu, X } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 
@@ -46,7 +46,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       
       {/* ── Practitioner Sidebar (Compact) ── */}
       <aside className={cn(
-        "hidden lg:flex fixed left-0 top-0 bottom-0 w-[80px] bg-white/60 backdrop-blur-3xl flex-col z-[60] border-r border-white shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] ring-1 ring-bp-primary/5 transition-all duration-300 items-center py-8"
+        "hidden lg:flex fixed left-0 top-0 bottom-0 w-[80px] bg-white flex-col z-[60] border-r border-bp-border shadow-sm transition-all duration-300 items-center py-8"
       )}>
         <Link href="/provider/dashboard" className="mb-10 group no-underline">
           <div className="w-12 h-12 bg-bp-accent rounded-2xl flex items-center justify-center text-white shadow-lg shadow-bp-accent/20 group-hover:scale-105 transition-transform">
@@ -103,7 +103,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       {/* ── Mobile Navigation ── */}
       <header className={cn(
         "lg:hidden fixed top-0 inset-x-0 h-[72px] z-50 transition-all duration-300 border-b",
-         scrolled ? "bg-white/80 backdrop-blur-2xl border-white/80 shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] ring-1 ring-bp-primary/5" : "bg-white/60 backdrop-blur-xl border-transparent"
+        scrolled ? "bg-white/80 backdrop-blur-xl border-bp-border shadow-sm" : "bg-white border-transparent"
       )}>
         <div className="px-6 h-full flex items-center justify-between">
            <Link href="/provider/dashboard" className="flex items-center gap-2 group">
@@ -166,7 +166,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Mobile Persistent Floating Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-6 inset-x-6 h-[72px] bg-bp-primary/95 backdrop-blur-2xl rounded-[32px] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.25)] ring-1 ring-white/10 z-50 flex items-center justify-around px-6">
+      <nav className="lg:hidden fixed bottom-6 inset-x-6 h-[72px] bg-bp-primary rounded-[32px] shadow-2xl z-50 flex items-center justify-around px-6">
          {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/')
             return (
