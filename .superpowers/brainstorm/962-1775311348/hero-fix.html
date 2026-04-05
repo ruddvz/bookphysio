@@ -1,0 +1,57 @@
+<h2>Hero Section Fix — Layout Options</h2>
+<p class="subtitle">Current issues: (1) overflow-hidden clips animated text on some viewports, (2) min-h calc(100vh-5rem) breaks in PWA standalone mode where 100vh ≠ available height, (3) massive font (96px) wraps badly on mid-size tablets.</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Current Hero — Problem Areas</div>
+    <div class="mockup-body" style="background:#f7f8f9;padding:24px;font-family:Inter,sans-serif;">
+      <div style="background:#0B3B32;color:white;border-radius:12px;padding:16px;margin-bottom:12px;font-size:11px;opacity:0.8">
+        ⚠️ <strong>overflow-hidden</strong> on section clips the animated word when it transitions — visible flicker/cut on Safari + PWA
+      </div>
+      <div style="background:#B45309;color:white;border-radius:12px;padding:16px;margin-bottom:12px;font-size:11px;opacity:0.8">
+        ⚠️ <strong>min-h: calc(100vh - 5rem)</strong> — PWA standalone mode has no browser chrome so 100vh is taller than expected, making hero overflow the screen without scroll
+      </div>
+      <div style="background:#7C3AED;color:white;border-radius:12px;padding:16px;font-size:11px;opacity:0.8">
+        ⚠️ <strong>text-[96px]</strong> heading — on 768–1024px tablets the heading wraps mid-word, the search bar gets pushed below the fold
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Viewport-safe + fluid type (Recommended)</h3>
+      <p>Replace <code>min-h calc(100vh-5rem)</code> with <code>min-h-[100svh]</code> (small viewport height — accounts for PWA/browser chrome). Move <code>overflow-hidden</code> off the outer section onto only the animated word span. Scale heading with <code>clamp()</code>: <strong>42px → 72px → 88px</strong> across breakpoints so it never wraps badly.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Fixes</h4><ul><li>PWA standalone no longer over-scrolls</li><li>Animated word no longer clipped</li><li>No mid-word wrap on tablets</li><li>Stats row always visible above fold</li></ul></div>
+        <div class="cons"><h4>Trade-offs</h4><ul><li><code>100svh</code> is not supported in very old browsers (pre-2023) — negligible for India mobile market</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Fixed height breakpoints + overflow fix only</h3>
+      <p>Keep <code>100vh</code> but add <code>env(safe-area-inset-bottom)</code> padding for PWA. Fix overflow by moving it from section to span only. Keep current font sizes but add a <code>md:text-[72px]</code> step to prevent tablet wrap.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Minimal change — fewer CSS properties touched</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li><code>env(safe-area-inset)</code> is unreliable in Android PWA</li><li>Doesn't fully solve the standalone viewport issue</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full responsive redesign — two-column on desktop</h3>
+      <p>Redesign hero to two columns on desktop (text left, illustration/stats right), single column on mobile. Remove full-viewport-height constraint entirely — hero is naturally tall but not forced to fill screen. Animated word stays, search bar stays prominent.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>More visual interest on desktop</li><li>No viewport height dependency at all</li><li>Search bar always above fold</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Bigger change — risk of breaking existing design feel</li><li>More work than the bug fix requires</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

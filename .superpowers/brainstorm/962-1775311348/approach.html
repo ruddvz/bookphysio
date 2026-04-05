@@ -1,0 +1,40 @@
+<h2>Overall Implementation Approach</h2>
+<p class="subtitle">We have 4 areas to tackle: Hero fix · Search cards + grid · Doctor profile pipeline · Dashboard bugs+polish. How should we sequence and scope the work?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Sequential Polish Pass (Recommended)</h3>
+      <p>One spec → one plan → implement in order: <strong>1) Hero fix</strong> → <strong>2) Search cards + photo</strong> → <strong>3) Doctor profile pipeline</strong> → <strong>4) Dashboard audit + fix</strong>. Each step is verifiable before the next begins. Cleanest git history, easiest to review.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Clear scope per commit</li><li>Easy to stop or revert mid-way</li><li>No dependency conflicts</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Profile photo upload (step 3) needed before step 2 can show real photos — some wiring is deferred</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Data-first then UI</h3>
+      <p>Start with the <strong>profile photo upload pipeline</strong> (Supabase Storage + provider profile save), then surface photos everywhere simultaneously: search cards, public profile, dashboard avatars. Hero and dashboard bugs are tackled after the data layer is solid.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Photos are real everywhere at once</li><li>No placeholder-to-real migration later</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Hero fix and dashboard bugs wait longer</li><li>More complex first step (backend + frontend)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Parallel sprints (two tracks)</h3>
+      <p><strong>Track 1:</strong> Hero fix + Search card UI upgrades (pure front-end, no backend needed, uses avatar initials as photo fallback). <strong>Track 2:</strong> Profile photo upload + provider profile enrichment + dashboard audit. Merged when both are green.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Fastest wall-clock time</li><li>UI improvements ship independently of backend</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More complex merge</li><li>Search cards ship twice (once with initials, once with photos)</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -119,9 +119,9 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative border-b border-bp-border bg-bp-surface/40 pb-[env(safe-area-inset-bottom)]" aria-label="Hero">
-      <div className="absolute left-1/2 top-0 h-[500px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.08),transparent_70%)]" />
-      <div className="bp-shell relative flex min-h-[100svh] flex-col justify-center py-16 md:py-24 lg:py-32">
+    <section className="relative border-b border-bp-border bg-bp-surface/40 overflow-hidden" aria-label="Hero">
+      <div className="absolute left-1/2 top-0 h-[600px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(18,179,160,0.12),transparent_70%)]" />
+      <div className="bp-shell relative flex min-h-[calc(100svh-5rem)] flex-col justify-center py-12 md:py-16 lg:py-20">
         <div className="mx-auto max-w-5xl text-center">
           <div className="mx-auto mb-8 inline-flex">
             <div className="rounded-full border border-bp-border bg-white/60 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent backdrop-blur-sm">
@@ -143,7 +143,7 @@ export default function HeroSection() {
             Book verified physiotherapists for home visits or in-clinic care in under 60 seconds.
           </p>
 
-          <div className="mt-12">
+          <div className="mt-8">
             <SearchBar
               condition={condition}
               location={location}
@@ -153,7 +153,7 @@ export default function HeroSection() {
             />
           </div>
 
-          <div className="mt-16 flex flex-wrap justify-center gap-10 transition-all">
+          <div className="mt-12 flex flex-wrap justify-center gap-8 md:gap-12 transition-all">
             {heroStats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="text-[20px] font-bold text-bp-primary">{stat.value}</p>

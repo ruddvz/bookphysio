@@ -44,100 +44,61 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-bp-surface min-h-screen flex flex-col font-sans selection:bg-bp-accent/10 selection:text-bp-accent">
       
-      {/* ── Practitioner Sidebar (Desktop) ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[240px] bg-white flex-col z-[60] border-r border-bp-border shadow-sm">
-        <div className="p-8">
-           <Link href="/provider/dashboard" className="flex items-center gap-3 group no-underline">
-              <div className="w-9 h-9 bg-bp-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-bp-accent/20 group-hover:scale-105 transition-transform">
-                 <Activity size={20} strokeWidth={3} />
-              </div>
-              <span className="text-[20px] font-bold text-bp-primary tracking-tighter">Practitioner</span>
-           </Link>
-        </div>
+      {/* ── Practitioner Sidebar (Compact) ── */}
+      <aside className={cn(
+        "hidden lg:flex fixed left-0 top-0 bottom-0 w-[80px] bg-white flex-col z-[60] border-r border-bp-border shadow-sm transition-all duration-300 items-center py-8"
+      )}>
+        <Link href="/provider/dashboard" className="mb-10 group no-underline">
+          <div className="w-12 h-12 bg-bp-accent rounded-2xl flex items-center justify-center text-white shadow-lg shadow-bp-accent/20 group-hover:scale-105 transition-transform">
+            <Activity size={24} strokeWidth={3} />
+          </div>
+        </Link>
 
-        <nav className="flex-1 px-4 space-y-2 mt-6">
-           <div className="px-4 mb-4">
-              <p className="text-[10px] font-bold text-bp-primary uppercase tracking-[0.2em] opacity-40">Management</p>
-           </div>
+        <nav className="flex-1 w-full px-3 space-y-4">
            {navItems.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href || pathname.startsWith(href + '/')
               return (
                  <Link
                     key={href}
                     href={href}
+                    title={label}
                     className={cn(
-                       "flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[14px] font-bold transition-all duration-300 group",
+                       "flex items-center justify-center w-full h-14 rounded-2xl transition-all duration-300 group",
                        isActive 
                           ? "bg-bp-accent/10 text-bp-accent shadow-sm" 
                           : "text-bp-body hover:text-bp-primary hover:bg-bp-surface"
                     )}
                  >
-                    <Icon size={18} strokeWidth={isActive ? 3 : 2} className={cn("transition-colors", isActive ? "text-bp-accent" : "text-bp-body/30 group-hover:text-bp-primary")} />
-                    <span>{label}</span>
+                    <Icon size={22} strokeWidth={isActive ? 3 : 2} className={cn("transition-colors", isActive ? "text-bp-accent" : "text-bp-body/30 group-hover:text-bp-primary")} />
                  </Link>
               )
            })}
         </nav>
 
-        <div className="p-4 mt-auto">
-           <div className="bg-bp-surface rounded-2xl p-5 border border-bp-border group hover:bg-white transition-all shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                 <div className="w-9 h-9 rounded-xl bg-bp-accent text-white flex items-center justify-center text-[12px] font-bold shadow-lg shadow-bp-accent/20">
-                    {initials}
-                 </div>
-                 <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold text-bp-primary truncate leading-none mb-1">{displayName}</p>
-                    <p className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest truncate">Verified Provider</p>
-                 </div>
-              </div>
-              <button
-                 onClick={handleSignOut}
-                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-bp-border text-bp-body text-[12px] font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 shadow-sm"
-              >
-                 <LogOut size={14} />
-                 End Session
-              </button>
-           </div>
+        <div className="w-full px-3 mt-auto space-y-4">
+           <button
+              title="Notifications"
+              className="w-full h-14 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-colors relative"
+           >
+              <Bell size={22} />
+              <div className="absolute top-4 right-4 w-2 h-2 bg-bp-secondary border-2 border-white rounded-full"></div>
+           </button>
+
+           <Link href="/provider/profile" title="Profile Settings" className="w-full h-14 rounded-full bg-bp-primary text-white flex items-center justify-center text-[12px] font-bold shadow-lg shadow-bp-primary/10 hover:scale-105 transition-transform">
+              {initials}
+           </Link>
+
+           <button
+              onClick={handleSignOut}
+              title="Sign Out"
+              className="w-full h-14 flex items-center justify-center rounded-2xl bg-white border border-bp-border text-bp-body hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-95 shadow-sm"
+           >
+              <LogOut size={22} />
+           </button>
         </div>
       </aside>
 
-      {/* ── Top Bar Control Center (Desktop Only) ── */}
-      <div className="hidden lg:flex fixed top-0 right-0 left-[240px] h-[80px] bg-white/70 backdrop-blur-md border-b border-bp-border z-40 items-center justify-between px-10">
-         <div className="flex items-center gap-6">
-            <div className="relative group">
-               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Search size={16} className="text-bp-body/40 group-focus-within:text-bp-accent transition-colors" />
-               </div>
-               <input 
-                  type="text" 
-                  placeholder="Universal patient search..."
-                  className="bg-bp-surface/50 border border-transparent focus:border-bp-accent/20 focus:bg-white font-bold text-[14px] text-bp-primary placeholder:text-bp-body/30 pl-12 pr-6 py-2.5 rounded-2xl w-[320px] outline-none transition-all"
-               />
-            </div>
-         </div>
-
-         <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-bp-accent/5 rounded-full border border-bp-accent/10 text-bp-accent">
-               <div className="w-2 h-2 bg-bp-accent rounded-full animate-pulse"></div>
-               <span className="text-[11px] font-bold uppercase tracking-widest leading-none">Practice In-Person</span>
-            </div>
-            <div className="h-8 w-px bg-bp-border ml-2"></div>
-                  <button
-                     type="button"
-                     title="Open notifications"
-                     aria-label="Open notifications"
-                     className="w-11 h-11 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-colors relative"
-                  >
-               <Bell size={20} />
-               <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-bp-secondary border-2 border-white rounded-full animate-bounce"></div>
-            </button>
-            <Link href="/provider/profile" className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-bp-surface transition-colors">
-               <div className="w-9 h-9 rounded-full bg-bp-primary text-white flex items-center justify-center text-[12px] font-bold">
-                  {initials}
-               </div>
-            </Link>
-         </div>
-      </div>
+      {/* ── Top Bar Removed in favor of Compact Sidebar ── */}
 
       {/* ── Mobile Navigation ── */}
       <header className={cn(
@@ -194,10 +155,10 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
          </div>
       )}
 
-      {/* ── Results/Main Area ── */}
+      {/* ── Main Area ── */}
       <main className={cn(
-        "flex-1 transition-all duration-500",
-        "lg:ml-[240px] lg:pt-[80px] pt-[72px]"
+        "flex-1 transition-all duration-300 bg-bp-surface min-h-screen",
+        "lg:ml-[80px] pt-[72px] lg:pt-0"
       )}>
          <div className="min-h-full">
             {children}
@@ -229,7 +190,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
          })}
       </nav>
 
-      <footer className="lg:ml-[240px] py-12 px-10 border-t border-bp-border bg-bp-surface">
+      <footer className="lg:ml-[80px] py-12 px-10 border-t border-bp-border bg-bp-surface">
          <div className="flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 group">
             <div className="flex items-center gap-3">
                <Activity size={16} />

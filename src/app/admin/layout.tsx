@@ -26,60 +26,50 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-bp-surface text-bp-primary font-sans">
       
-      {/* Sidebar Navigation */}
-      <aside className="sticky top-0 flex flex-col w-[260px] h-screen bg-white border-r border-bp-border shadow-sm shrink-0">
+      {/* Sidebar Navigation (Compact) */}
+      <aside className="sticky top-0 flex flex-col w-[80px] h-screen bg-white border-r border-bp-border shadow-sm shrink-0 items-center py-8">
         
         {/* Logo Area */}
-        <div className="px-6 py-6 border-b border-bp-border">
-          <Link href="/admin" className="flex items-center gap-2 group outline-none">
-            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-bp-accent text-white font-bold text-center leading-none">
-              BP
-            </div>
-            <span className="text-[20px] font-bold tracking-tight text-bp-primary group-hover:text-bp-accent transition-colors">
-              BookPhysio <span className="text-bp-accent font-semibold">Admin</span>
-            </span>
-          </Link>
-        </div>
+        <Link href="/admin" className="mb-12 group outline-none">
+          <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-bp-primary text-white font-bold text-[14px] shadow-lg shadow-bp-primary/20 group-hover:scale-105 transition-transform">
+            BP
+          </div>
+        </Link>
 
         {/* Navigation Links */}
-        <nav className="flex flex-col flex-1 gap-1 px-4 py-6 overflow-y-auto">
-          <p className="px-2 mb-2 text-[12px] font-semibold tracking-wider text-bp-body/60 uppercase">
-            Platform
-          </p>
-          
+        <nav className="flex flex-col flex-1 w-full gap-4 px-3">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-[15px] font-medium transition-all duration-200 outline-none
+                title={link.label}
+                className={`flex items-center justify-center w-full h-14 rounded-2xl transition-all duration-200 outline-none
                   ${isActive 
                     ? 'bg-bp-accent/10 text-bp-accent shadow-sm' 
-                    : 'text-bp-body hover:bg-[#F9FAFB] hover:text-bp-primary'
+                    : 'text-bp-body hover:bg-bp-surface hover:text-bp-primary'
                   }
                 `}
               >
-                <link.icon className={`w-5 h-5 ${isActive ? 'text-bp-accent' : 'text-bp-body/60'}`} />
-                {link.label}
+                <link.icon className={`w-5.5 h-5.5 ${isActive ? 'text-bp-accent' : 'text-bp-body/60'}`} />
               </Link>
             )
           })}
         </nav>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-bp-border space-y-2">
-          <button className="flex items-center w-full gap-3 px-3 py-2.5 rounded-2xl text-[14px] font-medium text-bp-body hover:bg-[#F9FAFB] hover:text-bp-primary transition-colors outline-none cursor-pointer">
-            <Settings className="w-5 h-5 text-bp-body/60" />
-            Settings
+        <div className="w-full px-3 mt-auto space-y-4">
+          <button title="Settings" className="flex items-center justify-center w-full h-14 rounded-2xl text-bp-body hover:bg-bp-surface hover:text-bp-primary transition-colors outline-none cursor-pointer">
+            <Settings className="w-5.5 h-5.5 text-bp-body/60" />
           </button>
           <button
             type="button"
             onClick={handleSignOut}
-            className="flex items-center w-full gap-3 px-3 py-2.5 rounded-2xl text-[14px] font-medium text-[#DC2626] hover:bg-[#FEF2F2] transition-colors outline-none cursor-pointer"
+            title="Log Out"
+            className="flex items-center justify-center w-full h-14 rounded-2xl text-red-500 hover:bg-red-50 transition-colors outline-none cursor-pointer border border-transparent hover:border-red-100"
           >
-            <LogOut className="w-5 h-5 text-[#DC2626]/80" />
-            Log out
+            <LogOut className="w-5.5 h-5.5" />
           </button>
         </div>
       </aside>

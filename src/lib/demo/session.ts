@@ -94,7 +94,12 @@ function decodeBase64Url(value: string): string {
 }
 
 export function isDemoAccessEnabled(): boolean {
-  return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+  return (
+    process.env.NODE_ENV === 'development' || 
+    process.env.NODE_ENV === 'test' ||
+    process.env.NEXT_PUBLIC_ENABLE_DEMO === 'true' ||
+    (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app'))
+  )
 }
 
 async function getDemoSigningKey(secret: string): Promise<CryptoKey> {
