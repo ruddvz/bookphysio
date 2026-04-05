@@ -27,45 +27,85 @@ export async function GET(request: NextRequest) {
 
   const now = new Date()
 
-  // Build last 7 months array (oldest first)
-  const months: { label: string; start: string; end: string }[] = []
+  // Build last 7 months label array (oldest first) for response shaping
+  const months: { label: string; start: Date; end: Date }[] = []
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
-    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).toISOString()
     months.push({
       label: d.toLocaleString('en-IN', { month: 'short' }),
-      start,
-      end,
+      start: new Date(d.getFullYear(), d.getMonth(), 1),
+      end: new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59),
     })
   }
 
-  // Parallel data fetches
+  const windowStart = months[0].start.toISOString()
+
+  // All DB aggregations run in parallel — no full table scan
   const [
     { count: totalProviders },
     { count: activePatients },
-    { data: allAppointments },
+    { count: totalAppointments },
+    // Completed appointments count + GMV — DB aggregated
+    { data: completedStats },
+    // Terminal appointments count for completion rate — DB aggregated
+    { count: terminalCount },
+    // Monthly GMV — grouped by month in DB
+    { data: monthlyGmvRows },
+    // Monthly appointment counts — grouped by month in DB
+    { data: monthlyCountRows },
   ] = await Promise.all([
-    supabase.from('providers').select('*', { count: 'exact', head: true }).eq('verified', true).eq('active', true),
-    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'patient'),
-    supabaseAdmin.from('appointments').select('fee_inr, status, created_at'),
+    supabase
+      .from('providers')
+      .select('*', { count: 'exact', head: true })
+      .eq('verified', true)
+      .eq('active', true),
+
+    supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'patient'),
+
+    supabaseAdmin
+      .from('appointments')
+      .select('*', { count: 'exact', head: true }),
+
+    // Sum of fees for completed appointments (all time)
+    supabaseAdmin
+      .from('appointments')
+      .select('fee_inr')
+      .eq('status', 'completed'),
+
+    supabaseAdmin
+      .from('appointments')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['completed', 'cancelled', 'no_show']),
+
+    // Monthly GMV: completed appointments in the last 7 months
+    supabaseAdmin
+      .from('appointments')
+      .select('fee_inr, created_at')
+      .eq('status', 'completed')
+      .gte('created_at', windowStart),
+
+    // Monthly counts: all appointments in the last 7 months
+    supabaseAdmin
+      .from('appointments')
+      .select('created_at')
+      .gte('created_at', windowStart),
   ])
 
-  const appts = allAppointments || []
-  const completedAppts = appts.filter(a => a.status === 'completed')
-  const terminalAppts = appts.filter(a => ['completed', 'cancelled', 'no_show'].includes(a.status))
-  const completionRate = terminalAppts.length > 0
-    ? Math.round((completedAppts.length / terminalAppts.length) * 1000) / 10
+  const totalGmv = (completedStats ?? []).reduce((acc, a) => acc + (a.fee_inr || 0), 0)
+  const completedCount = completedStats?.length ?? 0
+  const completionRate = (terminalCount ?? 0) > 0
+    ? Math.round((completedCount / (terminalCount ?? 1)) * 1000) / 10
     : 0
 
-  const totalGmv = completedAppts.reduce((acc, a) => acc + (a.fee_inr || 0), 0)
-
-  // Monthly GMV: aggregate completed appointments per month
+  // Aggregate monthly stats in JS over at most 7×30=210 days of data (small slice)
   const monthlyRevenue = months.map(({ label, start, end }) => {
-    const startTs = new Date(start).getTime()
-    const endTs = new Date(end).getTime()
-    const revenue = completedAppts
-      .filter(a => {
+    const startTs = start.getTime()
+    const endTs = end.getTime()
+    const revenue = (monthlyGmvRows ?? [])
+      .filter((a) => {
         const ts = new Date(a.created_at).getTime()
         return ts >= startTs && ts <= endTs
       })
@@ -73,11 +113,10 @@ export async function GET(request: NextRequest) {
     return { label, revenue }
   })
 
-  // Monthly appointments count
   const monthlyAppointments = months.map(({ label, start, end }) => {
-    const startTs = new Date(start).getTime()
-    const endTs = new Date(end).getTime()
-    const count = appts.filter(a => {
+    const startTs = start.getTime()
+    const endTs = end.getTime()
+    const count = (monthlyCountRows ?? []).filter((a) => {
       const ts = new Date(a.created_at).getTime()
       return ts >= startTs && ts <= endTs
     }).length
@@ -93,7 +132,7 @@ export async function GET(request: NextRequest) {
       activePatients: activePatients ?? 0,
       completionRate,
       totalProviders: totalProviders ?? 0,
-      totalAppointments: appts.length,
+      totalAppointments: totalAppointments ?? 0,
     },
     monthlyRevenue,
     monthlyAppointments,

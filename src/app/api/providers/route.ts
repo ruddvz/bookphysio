@@ -1,11 +1,19 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { searchFiltersSchema } from '@/lib/validations/search'
-import { apiRatelimit } from '@/lib/upstash'
+import { apiRatelimit, redis } from '@/lib/upstash'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
+
+const SEARCH_CACHE_TTL_SECONDS = 60
+
+function buildSearchCacheKey(params: Record<string, string>): string {
+  // Stable sort keys so cache hits regardless of param order
+  const sorted = Object.keys(params).sort().map((k) => `${k}=${params[k]}`).join('&')
+  return `bp:search:v1:${sorted}`
+}
 
 const SPECIALTY_ALIASES: Record<string, string> = {
   'Sports Physio': 'sports',
@@ -308,6 +316,19 @@ export async function GET(request: NextRequest) {
 
   const url = new URL(request.url)
   const params = Object.fromEntries(url.searchParams)
+
+  // Cache: check Upstash before hitting Supabase
+  const cacheKey = buildSearchCacheKey(params)
+  try {
+    const cached = await redis.get<SearchResponse>(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: { 'X-Cache': 'HIT' },
+      })
+    }
+  } catch (cacheError) {
+    console.error('[api/providers] Cache read degraded:', cacheError)
+  }
   if (params.visit_type !== 'in_clinic' && params.visit_type !== 'home_visit') {
     delete params.visit_type
   }
@@ -348,12 +369,15 @@ export async function GET(request: NextRequest) {
     p_limit: limit
   })
 
-  const shouldFallbackForQuery = !error && Boolean(query)
+  // If RPC doesn't support query yet, we force fallback if query is present
+  if (!error && query) {
+     // We can't easily filter by query in the current RPC v2
+     // So we'll force the fallback if a text query is present to ensure correct results
+     error = new Error('RPC does not support text query') as any
+  }
 
-  if (error || shouldFallbackForQuery) {
-    if (error) {
-      console.error('Supabase RPC error:', error)
-    }
+  if (error) {
+    console.error('Supabase RPC error:', error)
 
     const fallbackSearch = await searchProvidersWithoutRpc({
       supabase,
@@ -443,6 +467,13 @@ export async function GET(request: NextRequest) {
     limit,
   }
 
-  return NextResponse.json(response)
+  // Cache: write result for 60s (best-effort, don't fail request on cache error)
+  try {
+    await redis.set(cacheKey, response, { ex: SEARCH_CACHE_TTL_SECONDS })
+  } catch (cacheError) {
+    console.error('[api/providers] Cache write degraded:', cacheError)
+  }
+
+  return NextResponse.json(response, { headers: { 'X-Cache': 'MISS' } })
 
 }
