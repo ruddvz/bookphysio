@@ -2,61 +2,27 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, HelpCircle, LayoutGrid, LogIn, Menu, Sparkles, Stethoscope, UserPlus, X } from 'lucide-react'
+import { ChevronDown, Menu, X, ArrowRight, Stethoscope } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } from '@/lib/i18n/static-pages'
 import { cn } from '@/lib/utils'
 
 const SPECIALTIES = [
-  {
-    searchValue: 'Sports Physio',
-    labels: { en: 'Sports Physio', hi: 'स्पोर्ट्स फिजियो' },
-  },
-  {
-    searchValue: 'Neuro Physio',
-    labels: { en: 'Neuro Physio', hi: 'न्यूरो फिजियो' },
-  },
-  {
-    searchValue: 'Ortho Physio',
-    labels: { en: 'Ortho Physio', hi: 'ऑर्थो फिजियो' },
-  },
-  {
-    searchValue: 'Paediatric Physio',
-    labels: { en: 'Paediatric Physio', hi: 'पीडियाट्रिक फिजियो' },
-  },
-  {
-    searchValue: "Women's Health",
-    labels: { en: "Women's Health", hi: 'महिला स्वास्थ्य' },
-  },
-  {
-    searchValue: 'Geriatric Physio',
-    labels: { en: 'Geriatric Physio', hi: 'जेरियाट्रिक फिजियो' },
-  },
-] as const
+  { label: 'Sports Physio',     href: '/search?specialty=Sports+Physio',     emoji: '🏃' },
+  { label: 'Neuro Physio',      href: '/search?specialty=Neuro+Physio',      emoji: '🧠' },
+  { label: 'Ortho Physio',      href: '/search?specialty=Ortho+Physio',      emoji: '🦴' },
+  { label: 'Paediatric Physio', href: '/search?specialty=Paediatric+Physio', emoji: '👶' },
+  { label: "Women's Health",    href: '/search?specialty=Womens+Health',      emoji: '🌸' },
+  { label: 'Geriatric Physio',  href: '/search?specialty=Geriatric+Physio',  emoji: '🤝' },
+  { label: 'Post-Surgery Rehab',href: '/search?specialty=Post-Surgery+Rehab',emoji: '🏥' },
+  { label: 'Home Visit Physio', href: '/search?specialty=Home+Visit',         emoji: '🏠' },
+]
 
-const NAVBAR_COPY = {
-  en: {
-    homeLabel: 'BookPhysio home',
-    browse: 'Browse',
-    specialties: 'Specialties',
-    howItWorks: 'How it works',
-    forProviders: 'For providers',
-    logIn: 'Log in',
-    findCare: 'Find care',
-    mobileBrowse: 'Browse Specialties',
-  },
-  hi: {
-    homeLabel: 'BookPhysio होम',
-    browse: 'ब्राउज़',
-    specialties: 'विशेषज्ञताएं',
-    howItWorks: 'यह कैसे काम करता है',
-    forProviders: 'फिजियोथेरेपिस्ट्स के लिए',
-    logIn: 'लॉग इन',
-    findCare: 'देखभाल खोजें',
-    mobileBrowse: 'विशेषज्ञताएं ब्राउज़ करें',
-  },
-} as const
+const navLinks = [
+  { label: 'How it works', href: '/how-it-works' },
+  { label: 'For providers', href: '/doctor-signup' },
+]
 
 export default function Navbar({
   locale,
@@ -66,167 +32,244 @@ export default function Navbar({
   localeSwitchPath?: LocalizedStaticPath
 } = {}) {
   const [browseOpen, setBrowseOpen] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const effectiveLocale = locale ?? 'en'
-  const copy = NAVBAR_COPY[effectiveLocale]
-  const howItWorksHref = locale ? getLocalizedStaticHref(locale, '/how-it-works') : '/how-it-works'
   const searchHref = effectiveLocale === 'hi' ? '/hi/search' : '/search'
-  const loginHref = effectiveLocale === 'hi' ? '/hi/login' : '/login'
+  const loginHref  = effectiveLocale === 'hi' ? '/hi/login'  : '/login'
+  const howItWorksHref = locale ? getLocalizedStaticHref(locale, '/how-it-works') : '/how-it-works'
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setBrowseOpen(false)
       }
     }
-
+    window.addEventListener('scroll', handleScroll, { passive: true })
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
-  const closeMobile = () => setMobileMenuOpen(false)
-  const browseButtonClassName = cn(
-    'inline-flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-[14px] font-medium transition-all',
-    browseOpen
-      ? 'border-[#d3ebe5] bg-[#dcefe9] text-[#18312d] shadow-[0_12px_30px_-20px_rgba(15,118,104,0.45)]'
-      : 'border-white/70 bg-white/45 text-[#4f5e5a] hover:bg-white/80 hover:text-[#18312d]'
-  )
+  // Prevent body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-[#fffaf4]/90">
-      <div className="bp-shell py-2.5">
-        <div className="flex h-[68px] items-center justify-between gap-4 rounded-full border border-[#ede3d5] bg-[#fffaf4]/78 px-4 shadow-[0_18px_50px_-30px_rgba(24,49,45,0.34)] backdrop-blur-xl md:px-5">
-          <Link href="/" className="flex items-center text-[#18312d]" aria-label={copy.homeLabel}>
-            <BpLogo priority size="nav" />
-          </Link>
+    <>
+      <header
+        className={cn(
+          'fixed top-0 inset-x-0 z-[100] transition-all duration-300',
+          scrolled
+            ? 'bg-white/90 backdrop-blur-xl border-b border-indigo-100/60 shadow-sm shadow-indigo-100/40'
+            : 'bg-transparent'
+        )}
+      >
+        <div className="bp-container">
+          <div className="flex h-[68px] items-center justify-between gap-6">
 
-          <nav className="hidden items-center gap-2 lg:flex" aria-label="Main navigation">
-            <div className="relative" ref={dropdownRef}>
-              {browseOpen ? (
+            {/* Logo */}
+            <Link
+              href="/"
+              className="flex items-center gap-2 shrink-0 group"
+              aria-label="BookPhysio home"
+            >
+              <BpLogo priority size="nav" />
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+
+              {/* Browse dropdown */}
+              <div ref={dropdownRef} className="relative">
                 <button
                   type="button"
-                  onClick={() => setBrowseOpen(false)}
-                  aria-expanded="true"
-                  aria-controls="navbar-specialty-menu"
-                  className={browseButtonClassName}
+                  onClick={() => setBrowseOpen(!browseOpen)}
+                  aria-expanded={browseOpen}
+                  aria-controls="browse-dropdown"
+                  className={cn(
+                    'flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
+                    browseOpen
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60'
+                  )}
                 >
-                  {copy.browse}
-                  <ChevronDown className="h-4 w-4 rotate-180 transition-transform" />
+                  Browse
+                  <ChevronDown
+                    size={15}
+                    className={cn('transition-transform duration-200', browseOpen && 'rotate-180')}
+                  />
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setBrowseOpen(true)}
-                  aria-expanded="false"
-                  aria-controls="navbar-specialty-menu"
-                  className={browseButtonClassName}
-                >
-                  {copy.browse}
-                  <ChevronDown className="h-4 w-4 transition-transform" />
-                </button>
-              )}
 
-              {browseOpen && (
-                <div id="navbar-specialty-menu" className="absolute left-0 top-full mt-3 w-[280px] overflow-hidden rounded-[24px] border border-[#ddd3c6] bg-[#fffaf4]/95 p-2 shadow-[0_24px_50px_-30px_rgba(24,49,45,0.24)] backdrop-blur-xl">
-                  <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7d8a85]">{copy.specialties}</p>
-                  {SPECIALTIES.map((specialty) => (
-                    <Link
-                      key={specialty.searchValue}
-                      href={`${searchHref}?specialty=${encodeURIComponent(specialty.searchValue)}`}
-                      className="flex items-center justify-between rounded-[16px] px-3 py-3 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]"
-                      onClick={() => setBrowseOpen(false)}
-                    >
-                      {specialty.labels[effectiveLocale]}
-                      <Sparkles className="h-3.5 w-3.5 text-slate-300" />
-                    </Link>
-                  ))}
-                </div>
-              )}
+                {/* Mega dropdown */}
+                {browseOpen && (
+                  <div
+                    id="browse-dropdown"
+                    className="absolute left-0 top-full mt-2 w-[400px] bg-white rounded-2xl border border-indigo-100 shadow-2xl shadow-indigo-900/15 p-4 animate-slide-down"
+                  >
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
+                      Browse by Specialty
+                    </p>
+                    <div className="grid grid-cols-2 gap-1">
+                      {SPECIALTIES.map((s) => (
+                        <Link
+                          key={s.label}
+                          href={effectiveLocale === 'hi' ? `/hi${s.href}` : s.href}
+                          onClick={() => setBrowseOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-150"
+                        >
+                          <span className="text-base leading-none">{s.emoji}</span>
+                          {s.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-indigo-50">
+                      <Link
+                        href={searchHref}
+                        onClick={() => setBrowseOpen(false)}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-indigo-50/50 hover:bg-indigo-100/50 transition-all group"
+                      >
+                        <span className="text-[13px] font-semibold text-indigo-600 group-hover:text-indigo-800">
+                          View all physiotherapists →
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Static links */}
+              {navLinks.map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href === '/how-it-works' ? howItWorksHref : href}
+                  className="px-4 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60 transition-all duration-150"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Desktop Auth */}
+            <div className="hidden lg:flex items-center gap-3">
+              {locale && localeSwitchPath ? (
+                <LocaleSwitcher locale={locale} path={localeSwitchPath} />
+              ) : null}
+              <Link
+                href={loginHref}
+                className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-indigo-700 transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                href={searchHref}
+                className="bp-btn bp-btn-primary bp-btn-sm"
+              >
+                Find care
+                <ArrowRight size={14} />
+              </Link>
             </div>
 
-            <div className="flex items-center gap-1 rounded-full border border-white/70 bg-white/40 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
-              <Link href={howItWorksHref} className="rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                {copy.howItWorks}
-              </Link>
-              <Link href="/doctor-signup" className="rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                {copy.forProviders}
-              </Link>
-            </div>
-          </nav>
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl border border-indigo-100 bg-white text-slate-600 hover:text-indigo-700 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </div>
+      </header>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            {locale && localeSwitchPath ? <LocaleSwitcher locale={locale} path={localeSwitchPath} /> : null}
-            <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/40 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
-              <Link href={loginHref} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium text-[#4f5e5a] transition-all hover:bg-white hover:text-[#18312d]">
-                {copy.logIn}
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="lg:hidden fixed inset-0 z-[98] bg-slate-900/40 backdrop-blur-sm animate-fade-in"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Drawer */}
+          <div className="lg:hidden fixed inset-y-0 right-0 z-[99] w-[300px] bg-white shadow-2xl animate-slide-down flex flex-col">
+            <div className="flex items-center justify-between px-6 h-[68px] border-b border-slate-100">
+              <span className="text-[15px] font-bold text-slate-900">Menu</span>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-50 text-slate-600"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
+                Specialties
+              </p>
+              {SPECIALTIES.map((s) => (
+                <Link
+                  key={s.label}
+                  href={effectiveLocale === 'hi' ? `/hi${s.href}` : s.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                >
+                  <span className="text-base">{s.emoji}</span>
+                  {s.label}
+                </Link>
+              ))}
+
+              <div className="h-px bg-slate-100 my-4" />
+
+              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
+                Platform
+              </p>
+              <Link
+                href={howItWorksHref}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                How it works
               </Link>
-              <Link href={searchHref} className="inline-flex items-center gap-2 rounded-full bg-[#18312d] px-5 py-2.5 text-[14px] font-semibold text-white shadow-[0_16px_32px_-18px_rgba(24,49,45,0.58)] transition-all hover:bg-[#0f7668]">
-                {copy.findCare}
+              <Link
+                href="/doctor-signup"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <Stethoscope size={16} className="text-indigo-400" />
+                For providers
+              </Link>
+            </nav>
+
+            <div className="px-4 pb-8 space-y-3 border-t border-slate-100 pt-4">
+              <Link
+                href={loginHref}
+                onClick={() => setMobileOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                href={searchHref}
+                onClick={() => setMobileOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white text-[14px] font-semibold transition-colors"
+                style={{ background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)' }}
+              >
+                Find care
+                <ArrowRight size={14} />
               </Link>
             </div>
           </div>
-
-          {mobileMenuOpen ? (
-            <button
-              type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/60 text-[#4f5e5a] transition-all hover:border-[#0f7668]/30 hover:text-[#0f7668] lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="Toggle menu"
-              aria-controls="mobile-navigation"
-              aria-expanded="true"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/60 text-[#4f5e5a] transition-all hover:border-[#0f7668]/30 hover:text-[#0f7668] lg:hidden"
-              onClick={() => setMobileMenuOpen(true)}
-              aria-label="Toggle menu"
-              aria-controls="mobile-navigation"
-              aria-expanded="false"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {mobileMenuOpen && (
-        <div className="border-t border-[#ddd3c6] bg-[#fffaf4]/96 backdrop-blur-xl lg:hidden">
-          <nav id="mobile-navigation" className="bp-shell flex flex-col gap-4 py-5">
-            {locale && localeSwitchPath ? <LocaleSwitcher locale={locale} path={localeSwitchPath} className="w-fit" /> : null}
-            <div className="space-y-2">
-              <Link onClick={closeMobile} href={searchHref} className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                <LayoutGrid className="h-5 w-5 text-[#0f7668]" />
-                {copy.mobileBrowse}
-              </Link>
-              <Link onClick={closeMobile} href={howItWorksHref} className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                <HelpCircle className="h-5 w-5 text-[#0f7668]" />
-                {copy.howItWorks}
-              </Link>
-              <Link onClick={closeMobile} href="/doctor-signup" className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                <Stethoscope className="h-5 w-5 text-[#0f7668]" />
-                {copy.forProviders}
-              </Link>
-            </div>
-
-            <div className="h-px bg-[#ddd3c6]" />
-
-            <div className="space-y-2">
-              <Link onClick={closeMobile} href={loginHref} className="flex items-center gap-3 rounded-[18px] px-4 py-3 text-[15px] font-medium text-[#4f5e5a] transition-colors hover:bg-white hover:text-[#0f7668]">
-                <LogIn className="h-5 w-5 text-[#7d8a85]" />
-                {copy.logIn}
-              </Link>
-              <Link onClick={closeMobile} href={searchHref} className="flex items-center gap-3 rounded-[18px] bg-[#18312d] px-4 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#0f7668]">
-                <UserPlus className="h-5 w-5" />
-                {copy.findCare}
-              </Link>
-            </div>
-          </nav>
-        </div>
+        </>
       )}
-    </header>
+    </>
   )
 }

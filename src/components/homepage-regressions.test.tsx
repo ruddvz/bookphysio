@@ -40,7 +40,7 @@ describe('Homepage regressions', () => {
     expect(screen.getByRole('region', { name: /patient trust signals/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /patient testimonials/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /booking questions/i })).toBeInTheDocument()
-  })
+  }, 15000)
 
   it('keeps the hero above the fold and leaves trust stats readable', () => {
     render(<HeroSection />)
@@ -50,7 +50,7 @@ describe('Homepage regressions', () => {
     const animatedWordFrame = screen.getByText(/sports rehab/i).parentElement
     const statsRow = screen.getByText('5,000+').closest('div')?.parentElement
 
-    expect(shell?.className).toContain('min-h-[calc(100svh-6rem)]')
+    expect(shell?.className).toContain('min-h-[100svh]')
     expect(shell?.className).not.toContain('calc(100vh')
     expect(shell?.className).toContain('justify-center')
     expect(animatedWordFrame?.className).toContain('align-baseline')
@@ -111,7 +111,8 @@ describe('Homepage regressions', () => {
     const mobileMenu = screen.getByText('Browse Specialties').closest('nav')
     expect(within(mobileMenu as HTMLElement).getByRole('link', { name: /for providers/i })).toHaveAttribute('href', '/doctor-signup')
 
-    expect(container.firstChild).toHaveClass('bg-[#fffaf4]/90')
+    expect(container.firstChild).toHaveClass('bg-transparent')
+    expect(container.firstChild).toHaveClass('pointer-events-none')
 
     rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()

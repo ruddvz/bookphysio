@@ -1,18 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
-  Mail,
   Home,
   User,
   Settings,
   Shield,
-  HelpCircle,
   Clock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const footerConfig = {

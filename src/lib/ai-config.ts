@@ -10,7 +10,7 @@ const google = createGoogleGenerativeAI({
 })
 
 // 2. Define High-Speed Triage Models (Patient App)
-export const patientModels = google('gemini-1.5-flash')
+export const patientModels = google('gemini-2.0-flash')
 
 // 3. Define Advanced Clinical Reasoning Models (Provider App)
-export const providerModels = google('gemini-1.5-pro')
+export const providerModels = google('gemini-2.0-flash')

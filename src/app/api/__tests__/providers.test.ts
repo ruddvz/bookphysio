@@ -5,6 +5,8 @@ const providerDetailsInMock = vi.fn()
 const fallbackProvidersOrderMock = vi.fn()
 const rateLimitMock = vi.fn()
 const getRequestIpAddressMock = vi.fn()
+const redisGetMock = vi.fn()
+const redisSetMock = vi.fn()
 
 const fallbackProvidersBuilder = {
   eq: vi.fn(() => fallbackProvidersBuilder),
@@ -40,6 +42,10 @@ vi.mock('@/lib/supabase/server', () => ({
 
 vi.mock('@/lib/upstash', () => ({
   apiRatelimit: { limit: (...args: unknown[]) => rateLimitMock(...args) },
+  redis: {
+    get: (...args: unknown[]) => redisGetMock(...args),
+    set: (...args: unknown[]) => redisSetMock(...args),
+  },
 }))
 
 vi.mock('@/lib/server/runtime', () => ({
@@ -51,6 +57,8 @@ describe('GET /api/providers', () => {
     vi.clearAllMocks()
     rateLimitMock.mockResolvedValue({ success: true })
     getRequestIpAddressMock.mockReturnValue('203.0.113.10')
+    redisGetMock.mockResolvedValue(null)
+    redisSetMock.mockResolvedValue('OK')
     fallbackProvidersOrderMock.mockResolvedValue({ data: [], error: null })
     providerDetailsInMock.mockResolvedValue({ data: [], error: null })
     rpcMock.mockResolvedValue({ data: [], error: null })

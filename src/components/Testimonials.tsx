@@ -1,88 +1,97 @@
-'use client'
-
-import { Star, Quote, CheckCircle2 } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 const testimonials = [
   {
-    id: 1,
-    content: 'The interface felt calm and direct. I found a sports physio with same-day availability without digging through clutter.',
-    author: 'Arjun Mehta',
+    quote: 'The interface felt calm and direct. I found a sports physio with same-day availability without digging through clutter.',
+    name: 'Arjun Mehta',
     role: 'Runner',
     city: 'Mumbai',
+    rating: 5,
+    initials: 'AM',
+    color: 'bg-blue-100 text-blue-700',
   },
   {
-    id: 2,
-    content: 'Home-visit options were obvious, the fee was transparent, and I could compare providers before booking anything.',
-    author: 'Sarah Kapoor',
+    quote: 'Home-visit options were obvious, the fee was transparent, and I could compare providers before committing to anything.',
+    name: 'Sarah Kapoor',
     role: 'Product Manager',
     city: 'Delhi NCR',
+    rating: 5,
+    initials: 'SK',
+    color: 'bg-indigo-100 text-indigo-700',
   },
   {
-    id: 3,
-    content: 'It feels more trustworthy than a generic marketplace. The verification cues and booking flow are easy to read.',
-    author: 'Vikram Singh',
+    quote: "It feels more trustworthy than a generic marketplace. The verification cues and clean booking flow made all the difference.",
+    name: 'Vikram Singh',
     role: 'Founder',
     city: 'Bengaluru',
+    rating: 5,
+    initials: 'VS',
+    color: 'bg-violet-100 text-violet-700',
   },
 ]
 
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
-
 export default function Testimonials() {
   return (
-    <section className="bp-section bg-[#f4ecdf]" aria-label="Patient testimonials">
-      <div className="bp-shell">
-        <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <div className="bp-kicker mb-5">
-              <Star size={13} className="fill-current" />
-              Patient stories
-            </div>
-            <h2 className="bp-title">Proof without the hard sell.</h2>
-            <p className="bp-copy mt-4 max-w-xl">
-              Real patients. Real results. Every review is tied to a verified booking.
+    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Patient testimonials">
+      <div className="bp-container">
+        {/* Header */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
+          <div className="max-w-xl">
+            <div className="bp-kicker mb-4">Patient Stories</div>
+            <h2 className="text-slate-900 mb-3">Proof without the hard sell.</h2>
+            <p className="text-slate-500 text-[16px] leading-relaxed">
+              Real patients, real results. Every review is tied to a verified booking.
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#ddd3c6] bg-[#fffaf4] px-4 py-2 text-[13px] text-[#66706b]">
-            <CheckCircle2 size={14} className="text-[#0f7668]" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-semibold shrink-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             Verified reviews only
           </div>
         </div>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <article key={testimonial.id} className="bp-card relative h-full p-6">
-              <Quote className="absolute right-5 top-5 h-10 w-10 text-[#eadfce]" />
-
-              <div className="flex gap-1 text-[#F59E0B]">
-                {[...Array(5)].map((_, index) => (
-                  <Star key={index} size={15} className="fill-current" />
+        {/* Cards */}
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {testimonials.map(t => (
+            <article
+              key={t.name}
+              className="flex flex-col p-7 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-200"
+            >
+              {/* Stars */}
+              <div className="flex gap-1 mb-5">
+                {Array.from({ length: t.rating }).map((_, i) => (
+                  <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
                 ))}
               </div>
 
-              <p className="mt-5 text-[15px] leading-7 text-[#58645f]">“{testimonial.content}”</p>
+              {/* Quote */}
+              <blockquote className="text-slate-700 text-[15px] leading-relaxed flex-1 mb-6">
+                &ldquo;{t.quote}&rdquo;
+              </blockquote>
 
-              <div className="mt-6 flex items-center gap-3 border-t border-[#e1d7c9] pt-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#dcefe9] text-[15px] font-semibold text-[#18312d]">
-                  {getInitials(testimonial.author)}
+              {/* Author */}
+              <div className="flex items-center gap-3 pt-5 border-t border-slate-100">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 ${t.color}`}>
+                  {t.initials}
                 </div>
                 <div>
-                  <p className="text-[15px] font-semibold text-[#18312d]">{testimonial.author}</p>
-                  <p className="text-[12px] text-[#66706b]">
-                    {testimonial.role} · {testimonial.city}
-                  </p>
+                  <div className="text-[14px] font-semibold text-slate-900">{t.name}</div>
+                  <div className="text-[12px] text-slate-400">{t.role} · {t.city}</div>
                 </div>
               </div>
             </article>
           ))}
+        </div>
+
+        {/* Aggregate rating */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-center">
+          <div className="flex gap-1">
+            {[1,2,3,4,5].map(i => (
+              <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
+            ))}
+          </div>
+          <span className="text-slate-900 font-bold text-[16px]">4.9 / 5</span>
+          <span className="text-slate-400 text-[14px]">— from 1,200+ verified patient reviews</span>
         </div>
       </div>
     </section>

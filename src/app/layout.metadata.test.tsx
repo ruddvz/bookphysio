@@ -28,7 +28,7 @@ describe('RootLayout metadata regressions', () => {
 
     expect(metadata.openGraph).toMatchObject({
       title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
-      description: "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      description: "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
       siteName: 'BookPhysio',
       type: 'website',
       url: 'https://bookphysio.in',
@@ -47,7 +47,7 @@ describe('RootLayout metadata regressions', () => {
     expect(metadata.twitter).toEqual({
       card: 'summary_large_image',
       title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
-      description: "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      description: "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
       images: ['/opengraph-image'],
     })
   })

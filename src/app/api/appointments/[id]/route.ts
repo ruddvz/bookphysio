@@ -5,7 +5,7 @@ import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/boo
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
-import { getActiveBookingAppointmentHoldKey, redis } from '@/lib/upstash'
+import { getActiveBookingAppointmentHoldKey, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
 
@@ -28,11 +28,7 @@ async function clearActiveBookingHold(appointmentId: string) {
     const activeIpHoldKey = await redis.get<string>(appointmentHoldKey)
 
     if (typeof activeIpHoldKey === 'string' && activeIpHoldKey.trim()) {
-      const activeHoldValue = await redis.get<string>(activeIpHoldKey)
-
-      if (activeHoldValue === appointmentId) {
-        await redis.del(activeIpHoldKey)
-      }
+      await releaseRedisLockIfOwned(activeIpHoldKey, appointmentId)
     }
 
     await redis.del(appointmentHoldKey)
@@ -57,9 +53,6 @@ function withAppointmentDetailNotes<T extends { notes: string | null }>(
       })
     : payments ? [payments] : []
   const latestPayment = paymentRecords[0] ?? null
-  const paidPayment = paymentRecords.find((payment) => payment.status === 'paid') ?? null
-  const refundedPayment = paymentRecords.find((payment) => payment.status === 'refunded') ?? null
-  const effectivePayment = refundedPayment ?? paidPayment ?? latestPayment
 
   return {
     ...appointment,
@@ -68,9 +61,9 @@ function withAppointmentDetailNotes<T extends { notes: string | null }>(
     patient_reason: parsedNotes.patientReason,
     home_visit_address: parsedNotes.homeVisitAddress,
     legacy_notes: legacyNotes,
-    payment_status: effectivePayment?.status ?? null,
-    payment_amount_inr: effectivePayment?.amount_inr ?? null,
-    payment_gst_amount_inr: effectivePayment?.gst_amount_inr ?? null,
+    payment_status: latestPayment?.status ?? null,
+    payment_amount_inr: latestPayment?.amount_inr ?? null,
+    payment_gst_amount_inr: latestPayment?.gst_amount_inr ?? null,
   }
 }
 

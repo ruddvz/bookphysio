@@ -37,6 +37,16 @@ vi.mock('@/lib/upstash', () => ({
   },
   getActiveBookingIpHoldKey: (ipAddress: string) => `bp:booking:active-ip:${ipAddress}`,
   getActiveBookingAppointmentHoldKey: (appointmentId: string) => `bp:booking:active-appointment:${appointmentId}`,
+  getProviderAvailabilityRewriteLockKey: (providerId: string) => `bp:provider:availability-rewrite:${providerId}`,
+  releaseRedisLockIfOwned: async (key: string, expectedValue: string) => {
+    const currentValue = await redisGetMock(key)
+
+    if (currentValue === expectedValue) {
+      return redisDelMock(key)
+    }
+
+    return 0
+  },
   getActiveBookingHoldTtlSeconds: () => 1800,
 }))
 
@@ -330,6 +340,29 @@ describe('POST /api/appointments', () => {
 
     expect(response.status).toBe(409)
   expect(adminFromMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects bookings while the provider availability rewrite lock is active', async () => {
+    createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
+    redisState.set(
+      'bp:provider:availability-rewrite:11111111-1111-4111-8111-111111111111',
+      'lock-token',
+    )
+
+    const { POST } = await import('../appointments/route')
+    const response = await POST(new NextRequest('http://localhost/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider_id: '11111111-1111-4111-8111-111111111111',
+        availability_id: '33333333-3333-4333-8333-333333333333',
+        location_id: '22222222-2222-4222-8222-222222222222',
+        visit_type: 'in_clinic',
+      }),
+    }))
+
+    expect(response.status).toBe(503)
+    expect(adminFromMock).not.toHaveBeenCalled()
   })
 
   it('allows another booking when the patient already has a future appointment that was paid online', async () => {

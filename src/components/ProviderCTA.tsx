@@ -1,109 +1,138 @@
-'use client'
-
-import { TrendingUp, Users, Calendar, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import Link from 'next/link'
+import { TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from 'lucide-react'
 
 const bullets = [
-  { icon: Users, text: "Connect with thousands of patients seeking expert care" },
-  { icon: TrendingUp, text: "Smart scheduling reduces no-shows by up to 30%" },
-  { icon: Calendar, text: "Full integration with your existing clinic management" },
-];
+  { icon: Users,     text: 'Connect with thousands of patients seeking expert physio care' },
+  { icon: TrendingUp, text: 'Smart scheduling that reduces no-shows and fills empty slots' },
+  { icon: Calendar,  text: 'Manage your calendar, patient records, and earnings in one place' },
+]
+
+const mockAppts = [
+  { time: '9:00 AM',  patient: 'Rahul V.',  condition: 'Back Pain',  type: 'Clinic' },
+  { time: '10:30 AM', patient: 'Priya S.',  condition: 'ACL Rehab',  type: 'Home'   },
+  { time: '12:00 PM', patient: 'Ananya N.', condition: 'Neuro Rehab',type: 'Clinic' },
+]
 
 export default function ProviderCTA() {
   return (
-    <section className="py-16 md:py-24 bg-[#004D40] relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-bp-accent/20 rounded-full blur-[120px] -mr-32 -mt-32 opacity-60"></div>
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/20 rounded-full blur-[100px] -ml-20 -mb-20 opacity-40"></div>
-      
-      <div className="max-w-[1240px] mx-auto px-6 md:px-[60px] relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-16 md:gap-20">
-          
-          {/* Left Column: Premium Preview */}
-          <div className="w-full lg:w-1/2 group">
-             <div className="relative">
-                {/* Glow Effect */}
-                <div className="absolute -inset-4 bg-bp-accent/20 rounded-[48px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                
-                <div className="relative bg-bp-primary/40 p-4 rounded-[42px] border border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden scale-100 group-hover:scale-[1.02] transition-transform duration-700 ease-out">
-                   {/* CSS Dashboard Mockup — no image needed */}
-                   <div className="w-full rounded-[28px] bg-gradient-to-br from-bp-primary to-[#003830] p-6 flex flex-col gap-4">
-                      <div className="flex items-center justify-between mb-1">
-                         <div className="flex gap-2">
-                            <div className="w-3 h-3 rounded-full bg-red-400/60"></div>
-                            <div className="w-3 h-3 rounded-full bg-yellow-400/60"></div>
-                            <div className="w-3 h-3 rounded-full bg-green-400/60"></div>
-                         </div>
-                         <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold text-white/40 uppercase tracking-widest">Dashboard</div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                         {[['12', 'Today'], ['4.9★', 'Rating'], ['98%', 'Attend.']].map(([val, lbl]) => (
-                            <div key={lbl} className="bg-white/10 rounded-2xl p-4">
-                               <p className="text-[18px] font-bold text-white">{val}</p>
-                               <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{lbl}</p>
-                            </div>
-                         ))}
-                      </div>
-                      <div className="bg-white/5 rounded-2xl p-4 flex flex-col gap-2.5">
-                         {['9:00 AM · Rahul V. · Back Pain', '10:30 AM · Priya S. · ACL Rehab', '12:00 PM · Ananya N. · Neuro'].map((item) => (
-                            <div key={item} className="flex items-center gap-3">
-                               <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></div>
-                               <p className="text-[11px] font-bold text-white/60">{item}</p>
-                            </div>
-                         ))}
-                      </div>
-                   </div>
+    <section className="py-24 md:py-32 bg-slate-950 relative overflow-hidden" aria-label="For providers">
+      {/* Background glow */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-500/5 rounded-full blur-[100px]" />
 
-                   {/* Overlay Stats Card */}
-                   <div className="absolute top-6 right-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl">
-                      <div className="flex items-center gap-2 mb-1">
-                         <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                         <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Growth</p>
-                      </div>
-                      <p className="text-[20px] font-bold text-white">+142%</p>
-                      <p className="text-[10px] font-bold text-white/40">Patient volume</p>
-                   </div>
+      <div className="bp-container relative z-10">
+        <div className="grid gap-16 lg:grid-cols-2 items-center">
+
+          {/* Dashboard mockup */}
+          <div className="order-2 lg:order-1">
+            <div className="relative group">
+              {/* Glow ring */}
+              <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+
+              <div className="relative bg-slate-900 rounded-2xl border border-white/8 overflow-hidden shadow-2xl">
+                {/* Mock header */}
+                <div className="flex items-center gap-2 px-5 py-4 border-b border-white/5">
+                  <span className="w-3 h-3 rounded-full bg-red-500/40" />
+                  <span className="w-3 h-3 rounded-full bg-yellow-500/40" />
+                  <span className="w-3 h-3 rounded-full bg-green-500/40" />
+                  <span className="ml-3 text-[11px] text-slate-500 font-medium">BookPhysio Provider Dashboard</span>
                 </div>
-             </div>
+
+                <div className="p-5 space-y-4">
+                  {/* Stat cards */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { val: '12', label: 'Today' },
+                      { val: '4.9★', label: 'Rating' },
+                      { val: '₹2.4L', label: 'Month' },
+                    ].map(({ val, label }) => (
+                      <div key={label} className="bg-white/5 rounded-xl p-4 border border-white/5">
+                        <div className="text-white font-bold text-[18px] leading-none">{val}</div>
+                        <div className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest mt-1">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Today's schedule */}
+                  <div className="bg-white/3 rounded-xl border border-white/5 p-4 space-y-3">
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Today&apos;s Schedule</div>
+                    {mockAppts.map(appt => (
+                      <div key={appt.time} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
+                        <div className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
+                        <span className="text-indigo-400 text-[12px] font-bold w-16 shrink-0">{appt.time}</span>
+                        <span className="text-white text-[13px] font-medium flex-1">{appt.patient}</span>
+                        <span className="text-slate-500 text-[11px]">{appt.condition}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${appt.type === 'Home' ? 'bg-violet-500/10 text-violet-400' : 'bg-indigo-500/10 text-indigo-400'}`}>
+                          {appt.type}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Growth badge */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                      <span className="text-indigo-400 text-[12px] font-bold">Patient growth this month</span>
+                    </div>
+                    <span className="text-white font-bold text-[18px]">+142%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Copy & Action */}
-          <div className="w-full lg:w-1/2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/10 rounded-full text-[12px] font-bold text-emerald-400 uppercase tracking-widest mb-6">
-               Practice Solutions
+          {/* Copy column */}
+          <div className="order-1 lg:order-2 space-y-8">
+            <div className="bp-kicker" style={{ background: 'rgba(139,155,216,0.1)', borderColor: 'rgba(139,155,216,0.2)', color: '#C7CEEF' }}>
+              For Physiotherapists
             </div>
-            
-            <h2 className="text-[36px] md:text-[52px] font-bold text-white leading-[1.1] tracking-tight mb-8">
-              Grow your practice <span className="text-emerald-400 italic">instantly.</span>
-            </h2>
-            
-            <p className="text-[18px] md:text-[21px] font-bold text-white/50 leading-relaxed mb-10">
-              Join the elite network of physiotherapists using BookPhysio to fill their calendars, reduce overhead, and focus on patient recovery.
-            </p>
 
-            <div className="space-y-6 mb-12">
-              {bullets.map((bullet, i) => (
-                <div key={i} className="flex items-start gap-4 group/item">
-                  <div className="mt-1 p-2 bg-bp-primary/50 rounded-xl text-emerald-400 group-hover/item:bg-emerald-400 group-hover/item:text-[#004D40] transition-all">
-                    <bullet.icon size={20} strokeWidth={2.5} />
+            <div>
+              <h2 className="text-white text-[36px] md:text-[48px] font-extrabold tracking-tight leading-[1.05] mb-4">
+                Grow your practice,
+                <br />
+                <span className="text-gradient-lavender">effortlessly.</span>
+              </h2>
+              <p className="text-slate-400 text-[17px] leading-relaxed">
+                Join the network of IAP-verified physiotherapists using BookPhysio to fill their calendars, reduce admin, and focus on what matters — patient recovery.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {bullets.map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                    <Icon size={16} />
                   </div>
-                  <p className="text-[17px] font-bold text-white/90 leading-snug pt-1">{bullet.text}</p>
+                  <p className="text-slate-300 text-[15px] leading-relaxed">{text}</p>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-               <Link
+            <div className="flex items-center gap-3 pt-2">
+              <Link
                 href="/doctor-signup"
-                className="w-full sm:w-auto px-10 py-5 bg-white text-[#004D40] text-[18px] font-bold rounded-2xl shadow-xl shadow-bp-primary/20 hover:bg-emerald-50 hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center justify-center gap-3"
-               >
-                 Get Started
-                 <ArrowUpRight size={22} className="stroke-[3]" />
-               </Link>
+                className="flex items-center gap-2 px-7 py-4 bg-indigo-600 text-white rounded-xl font-bold text-[15px] hover:bg-indigo-500 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/20 group"
+              >
+                List your practice
+                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="flex items-center gap-2 px-5 py-4 text-slate-400 hover:text-white text-[14px] font-medium transition-colors"
+              >
+                Learn more
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-4 pt-2 border-t border-white/5">
+              <CheckCircle size={15} className="text-indigo-400 shrink-0" />
+              <span className="text-slate-500 text-[13px]">Free to list · Approval in 48 hours · No subscription fees</span>
             </div>
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

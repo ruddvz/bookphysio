@@ -2,17 +2,21 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Settings, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Settings, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import {
   type SlotStatus,
   type Slot,
+  type AvailabilitySlot,
+  type AppointmentSlot,
   HOURS,
   formatHour,
   getWeekDates,
   formatMonthRange,
   formatDay,
   isSameDay,
-  buildMockGrid
+  dateKey,
+  buildGridFromData,
 } from './calendar-utils'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
@@ -27,8 +31,7 @@ const SLOT_STYLES: Record<SlotStatus, string> = {
   empty: 'bg-white',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function SlotCell({ slot, hour: _hour }: { slot: Slot; hour: number }) {
+function SlotCell({ slot }: { slot: Slot }) {
   if (slot.status === 'empty') {
     return <div className="h-14 border border-dashed border-bp-border rounded-lg" />
   }
@@ -54,11 +57,41 @@ function SlotCell({ slot, hour: _hour }: { slot: Slot; hour: number }) {
   )
 }
 
+async function fetchAvailabilities(startDate: string, endDate: string): Promise<AvailabilitySlot[]> {
+  const res = await fetch(`/api/provider/availability?start=${startDate}&end=${endDate}`)
+  if (!res.ok) throw new Error('Failed to load availability slots')
+  const data = await res.json()
+  return data.slots ?? []
+}
+
+async function fetchAppointments(): Promise<AppointmentSlot[]> {
+  const res = await fetch('/api/appointments')
+  if (!res.ok) throw new Error('Failed to load appointments')
+  const data = await res.json()
+  return data.appointments ?? []
+}
+
 export default function ProviderCalendar() {
   const [anchor, setAnchor] = useState<Date>(() => new Date())
   const days = getWeekDates(anchor)
-  const grid = buildMockGrid(days)
   const today = new Date()
+
+  const startDate = dateKey(days[0])
+  const endDate = dateKey(days[6])
+
+  const { data: availabilities, isLoading: loadingSlots, isError: hasSlotsError } = useQuery({
+    queryKey: ['provider-calendar-slots', startDate, endDate],
+    queryFn: () => fetchAvailabilities(startDate, endDate),
+  })
+
+  const { data: appointments, isLoading: loadingAppts, isError: hasAppointmentsError } = useQuery({
+    queryKey: ['provider-calendar-appointments'],
+    queryFn: fetchAppointments,
+  })
+
+  const isLoading = loadingSlots || loadingAppts
+  const isError = hasSlotsError || hasAppointmentsError
+  const grid = buildGridFromData(days, availabilities ?? [], appointments ?? [])
 
   function prevWeek() {
     setAnchor((a) => { const d = new Date(a); d.setDate(d.getDate() - 7); return d })
@@ -134,51 +167,61 @@ export default function ProviderCalendar() {
           </div>
         </div>
 
-        {/* Grid */}
-        <div className="overflow-x-auto">
-          <div className="min-w-[640px]">
-            {/* Day headers */}
-            <div className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-bp-border">
-              <div />
-              {days.map((d) => {
-                const isToday = isSameDay(d, today)
-                return (
-                  <div
-                    key={d.toISOString()}
-                    className={`py-3 text-center ${isToday ? 'bg-bp-accent/10' : ''}`}
-                  >
-                    <div className={`text-[11px] font-medium uppercase tracking-wide ${isToday ? 'text-bp-accent' : 'text-bp-body/60'}`}>
-                      {formatDay(d)}
-                    </div>
-                    <div className={`text-[20px] font-bold mt-0.5 ${isToday ? 'text-bp-accent' : 'text-bp-primary'}`}>
-                      {d.getDate()}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Time rows */}
-            <div className="divide-y divide-[#F5F5F5]">
-              {HOURS.map((h) => (
-                <div key={h} className="grid grid-cols-[64px_repeat(7,1fr)] items-start gap-x-1 px-1 py-1">
-                  <div className="flex items-start justify-end pr-3 pt-1">
-                    <span className="text-[11px] text-bp-body/60 font-medium">{formatHour(h)}</span>
-                  </div>
-                  {days.map((d) => {
-                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-                    const slot = grid[key]?.[h] ?? { status: 'empty' as SlotStatus }
-                    return (
-                      <div key={d.toISOString()} className={isSameDay(d, today) ? 'bg-[#FAFFFE] rounded' : ''}>
-                        <SlotCell slot={slot} hour={h} />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+          </div>
+        ) : isError ? (
+          <div className="py-24 text-center">
+            <p className="text-[15px] font-bold text-red-500">Failed to load calendar data. Please refresh.</p>
+          </div>
+        ) : (
+          /* Grid */
+          <div className="overflow-x-auto">
+            <div className="min-w-[640px]">
+              {/* Day headers */}
+              <div className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-bp-border">
+                <div />
+                {days.map((d) => {
+                  const isToday = isSameDay(d, today)
+                  return (
+                    <div
+                      key={d.toISOString()}
+                      className={`py-3 text-center ${isToday ? 'bg-bp-accent/10' : ''}`}
+                    >
+                      <div className={`text-[11px] font-medium uppercase tracking-wide ${isToday ? 'text-bp-accent' : 'text-bp-body/60'}`}>
+                        {formatDay(d)}
                       </div>
-                    )
-                  })}
-                </div>
-              ))}
+                      <div className={`text-[20px] font-bold mt-0.5 ${isToday ? 'text-bp-accent' : 'text-bp-primary'}`}>
+                        {d.getDate()}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Time rows */}
+              <div className="divide-y divide-[#F5F5F5]">
+                {HOURS.map((h) => (
+                  <div key={h} className="grid grid-cols-[64px_repeat(7,1fr)] items-start gap-x-1 px-1 py-1">
+                    <div className="flex items-start justify-end pr-3 pt-1">
+                      <span className="text-[11px] text-bp-body/60 font-medium">{formatHour(h)}</span>
+                    </div>
+                    {days.map((d) => {
+                      const key = dateKey(d)
+                      const slot = grid[key]?.[h] ?? { status: 'empty' as SlotStatus }
+                      return (
+                        <div key={d.toISOString()} className={isSameDay(d, today) ? 'bg-[#FAFFFE] rounded' : ''}>
+                          <SlotCell slot={slot} />
+                        </div>
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

@@ -83,7 +83,7 @@ describe('ProviderDashboardHome', () => {
       if (url.includes('/api/profile')) {
         return jsonResponse({
           avatar_url: 'https://example.com/avatar.jpg',
-          icp_registration_no: 'ICP-12345',
+          iap_registration_no: 'IAP-12345',
         })
       }
 
@@ -127,7 +127,7 @@ describe('ProviderDashboardHome', () => {
       if (url.includes('/api/profile')) {
         return jsonResponse({
           avatar_url: 'https://example.com/avatar.jpg',
-          icp_registration_no: 'ICP-12345',
+          iap_registration_no: 'IAP-12345',
         })
       }
 
@@ -162,7 +162,7 @@ describe('ProviderDashboardHome', () => {
       if (url.includes('/api/profile')) {
         return jsonResponse({
           avatar_url: 'https://example.com/avatar.jpg',
-          icp_registration_no: 'ICP-12345',
+          iap_registration_no: 'IAP-12345',
         })
       }
 
@@ -235,7 +235,7 @@ describe('ProviderDashboardHome', () => {
       if (url.includes('/api/profile')) {
         return jsonResponse({
           avatar_url: null,
-          icp_registration_no: null,
+          iap_registration_no: null,
         })
       }
 

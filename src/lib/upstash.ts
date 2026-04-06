@@ -36,6 +36,22 @@ export const bookingUserRatelimit = new Ratelimit({
   prefix: 'bp:booking:user',
 })
 
+const releaseOwnedLockScript = redis.createScript<number>([
+  'local current = redis.call("GET", KEYS[1])',
+  'if current == ARGV[1] then',
+  '  return redis.call("DEL", KEYS[1])',
+  'end',
+  'return 0',
+].join('\n'))
+
+const refreshOwnedLockScript = redis.createScript<number>([
+  'local current = redis.call("GET", KEYS[1])',
+  'if current == ARGV[1] then',
+  '  return redis.call("EXPIRE", KEYS[1], tonumber(ARGV[2]))',
+  'end',
+  'return 0',
+].join('\n'))
+
 const BOOKING_HOLD_MAX_TTL_SECONDS = 2 * 60 * 60
 const BOOKING_HOLD_MIN_TTL_SECONDS = 5 * 60
 
@@ -45,6 +61,20 @@ export function getActiveBookingIpHoldKey(ipAddress: string, providerId: string)
 
 export function getActiveBookingAppointmentHoldKey(appointmentId: string): string {
   return `bp:booking:active-appointment:${appointmentId}`
+}
+
+export function getProviderAvailabilityRewriteLockKey(providerId: string): string {
+  return `bp:provider:availability-rewrite:${providerId}`
+}
+
+export async function releaseRedisLockIfOwned(lockKey: string, lockToken: string): Promise<boolean> {
+  const released = await releaseOwnedLockScript.eval([lockKey], [lockToken])
+  return released === 1
+}
+
+export async function refreshRedisLockIfOwned(lockKey: string, lockToken: string, ttlSeconds: number): Promise<boolean> {
+  const refreshed = await refreshOwnedLockScript.eval([lockKey], [lockToken, String(ttlSeconds)])
+  return refreshed === 1
 }
 
 export function getActiveBookingHoldTtlSeconds(startsAt: string | null | undefined): number {

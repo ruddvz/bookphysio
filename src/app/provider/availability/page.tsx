@@ -1,80 +1,139 @@
 'use client'
 
-import { useState } from 'react'
-import { Clock, Check, Settings, CheckCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Clock, Check, Settings, CheckCircle, Loader2, AlertCircle } from 'lucide-react'
+import {
+  cloneProviderSchedule,
+  DEFAULT_PROVIDER_SCHEDULE,
+  type DayName,
+  deriveProviderScheduleFromSlots,
+  getAmbiguousProviderScheduleDays,
+  getProviderAvailabilityWindow,
+  PROVIDER_AVAILABILITY_DAYS,
+  PROVIDER_SLOT_DURATIONS,
+  type ProviderAvailabilitySlot,
+  type ProviderSchedule,
+  validateProviderSchedule,
+} from '@/lib/provider-availability'
 
-type DayConfig = {
-  enabled: boolean
-  start: string
-  end: string
-}
+const AVAILABILITY_WEEKS = 4
 
-type Schedule = Record<string, DayConfig>
+async function fetchExistingAvailability(startDateKey: string, endDateKey: string) {
+  const response = await fetch(`/api/provider/availability?start=${startDateKey}&end=${endDateKey}`)
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-const DEFAULT_SCHEDULE: Schedule = {
-  Monday:    { enabled: true,  start: '09:00', end: '18:00' },
-  Tuesday:   { enabled: true,  start: '09:00', end: '18:00' },
-  Wednesday: { enabled: true,  start: '09:00', end: '18:00' },
-  Thursday:  { enabled: true,  start: '09:00', end: '18:00' },
-  Friday:    { enabled: true,  start: '09:00', end: '17:00' },
-  Saturday:  { enabled: false, start: '10:00', end: '14:00' },
-  Sunday:    { enabled: false, start: '10:00', end: '14:00' },
-}
-
-const DURATIONS = ['30', '45', '60']
-
-function timeToMinutes(t: string): number {
-  const [h, m] = t.split(':').map(Number)
-  return h * 60 + m
-}
-
-function validateSchedule(schedule: Schedule): Record<string, string> {
-  const errors: Record<string, string> = {}
-  for (const day of DAYS) {
-    const { enabled, start, end } = schedule[day]
-    if (!enabled) continue
-    if (timeToMinutes(end) <= timeToMinutes(start)) {
-      errors[day] = 'End time must be after start time'
-    }
+  if (!response.ok) {
+    throw new Error('Failed to load current availability')
   }
-  return errors
+
+  return response.json() as Promise<{ slots?: ProviderAvailabilitySlot[] }>
 }
 
 export default function ProviderAvailability() {
-  const [schedule, setSchedule] = useState<Schedule>(DEFAULT_SCHEDULE)
+  const [schedule, setSchedule] = useState<ProviderSchedule>(() => cloneProviderSchedule(DEFAULT_PROVIDER_SCHEDULE))
   const [duration, setDuration] = useState('30')
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [inferenceError, setInferenceError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [hasChanges, setHasChanges] = useState(false)
+  const [loadingExistingAvailability, setLoadingExistingAvailability] = useState(true)
 
-  function toggleDay(day: string) {
+  useEffect(() => {
+    let cancelled = false
+    const { startDateKey, endDateKey } = getProviderAvailabilityWindow(AVAILABILITY_WEEKS)
+
+    async function loadExistingAvailability() {
+      setLoadingExistingAvailability(true)
+      setSaveError(null)
+      setInferenceError(null)
+
+      try {
+        const data = await fetchExistingAvailability(startDateKey, endDateKey)
+
+        if (cancelled) {
+          return
+        }
+
+        const existingSlots = data.slots ?? []
+        const derived = deriveProviderScheduleFromSlots(existingSlots)
+        const ambiguousDays = getAmbiguousProviderScheduleDays(existingSlots)
+        setSchedule(derived.schedule)
+        setDuration(derived.duration)
+        setErrors({})
+        setHasChanges(false)
+
+        if (ambiguousDays.length > 0) {
+          setInferenceError(
+            `We cannot safely infer recurring hours for ${ambiguousDays.join(', ')} because only booked or blocked slots remain in the next 4 weeks. Wait for an open slot or contact support before editing.`,
+          )
+        }
+      } catch {
+        if (!cancelled) {
+          setInferenceError(null)
+          setSaveError('Failed to load your current availability. Refresh before editing to avoid overwriting active slots.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingExistingAvailability(false)
+        }
+      }
+    }
+
+    void loadExistingAvailability()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  function toggleDay(day: DayName) {
     setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], enabled: !prev[day].enabled } }))
     setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
     setSaved(false)
     setHasChanges(true)
   }
 
-  function updateTime(day: string, field: 'start' | 'end', value: string) {
+  function updateTime(day: DayName, field: 'start' | 'end', value: string) {
     setSchedule((prev) => ({ ...prev, [day]: { ...prev[day], [field]: value } }))
     setErrors((prev) => { const next = { ...prev }; delete next[day]; return next })
     setSaved(false)
     setHasChanges(true)
   }
 
-  function handleSave() {
-    const newErrors = validateSchedule(schedule)
+  async function handleSave() {
+    const newErrors = validateProviderSchedule(schedule)
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
     setErrors({})
-    setSaved(true)
-    setHasChanges(false)
+    setSaving(true)
+    setSaveError(null)
+    setSaved(false)
+
+    try {
+      const res = await fetch('/api/provider/availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedule, duration: parseInt(duration, 10), weeks: AVAILABILITY_WEEKS }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setSaveError((data as { error?: string }).error ?? 'Failed to save. Please try again.')
+      } else {
+        setSaved(true)
+        setHasChanges(false)
+      }
+    } catch {
+      setSaveError('Network error. Please check your connection and try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const enabledCount = DAYS.filter((d) => schedule[d].enabled).length
+  const enabledCount = PROVIDER_AVAILABILITY_DAYS.filter((dayName) => schedule[dayName].enabled).length
+  const disableEditing = loadingExistingAvailability || Boolean(inferenceError) || Boolean(saveError && !saved && !hasChanges)
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
@@ -91,7 +150,26 @@ export default function ProviderAvailability() {
       {saved && (
         <div className="flex items-center gap-3 bg-bp-accent/10 border border-bp-accent/20 rounded-[12px] px-5 py-4 mb-6">
           <CheckCircle className="w-5 h-5 text-bp-accent shrink-0" />
-          <p className="text-[15px] font-medium text-bp-accent">Availability saved successfully.</p>
+          <p className="text-[15px] font-medium text-bp-accent">Availability saved — slots generated for the next 4 weeks.</p>
+        </div>
+      )}
+      {saveError && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-[12px] px-5 py-4 mb-6">
+          <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+          <p className="text-[15px] font-medium text-red-600">{saveError}</p>
+        </div>
+      )}
+      {inferenceError && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-[12px] px-5 py-4 mb-6">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+          <p className="text-[15px] font-medium text-amber-700">{inferenceError}</p>
+        </div>
+      )}
+
+      {loadingExistingAvailability && (
+        <div className="flex items-center gap-3 bg-white border border-bp-border rounded-[12px] px-5 py-4 mb-6">
+          <Loader2 className="w-5 h-5 text-bp-accent shrink-0 animate-spin" />
+          <p className="text-[15px] font-medium text-bp-body">Loading your current schedule…</p>
         </div>
       )}
 
@@ -112,7 +190,7 @@ export default function ProviderAvailability() {
         </p>
 
         <div className="flex flex-col gap-3 mb-10">
-          {DAYS.map((day) => {
+          {PROVIDER_AVAILABILITY_DAYS.map((day) => {
             const { enabled, start, end } = schedule[day]
             const error = errors[day]
             return (
@@ -124,13 +202,17 @@ export default function ProviderAvailability() {
                 >
                   {/* Toggle + day name */}
                   <label className="flex items-center gap-3 cursor-pointer select-none min-w-[140px]">
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={enabled ? 'true' : 'false'}
+                    <input
+                      type="checkbox"
+                      checked={enabled}
                       aria-label={`Toggle ${day}`}
-                      onClick={() => toggleDay(day)}
-                      className={`relative w-10 h-6 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-bp-accent cursor-pointer ${
+                      disabled={disableEditing}
+                      onChange={() => toggleDay(day)}
+                      className="sr-only peer"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className={`relative w-10 h-6 rounded-full transition-colors outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-bp-accent ${
                         enabled ? 'bg-bp-accent' : 'bg-[#D1D5DB]'
                       }`}
                     >
@@ -139,7 +221,7 @@ export default function ProviderAvailability() {
                           enabled ? 'translate-x-5' : 'translate-x-1'
                         }`}
                       />
-                    </button>
+                    </span>
                     <span className={`text-[15px] font-medium ${enabled ? 'text-bp-primary' : 'text-[#9CA3AF]'}`}>
                       {day}
                     </span>
@@ -150,7 +232,7 @@ export default function ProviderAvailability() {
                     <input
                       type="time"
                       value={start}
-                      disabled={!enabled}
+                      disabled={!enabled || disableEditing}
                       aria-label={`${day} start time`}
                       onChange={(e) => updateTime(day, 'start', e.target.value)}
                       className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
@@ -163,7 +245,7 @@ export default function ProviderAvailability() {
                     <input
                       type="time"
                       value={end}
-                      disabled={!enabled}
+                      disabled={!enabled || disableEditing}
                       aria-label={`${day} end time`}
                       onChange={(e) => updateTime(day, 'end', e.target.value)}
                       className={`px-3 py-2 text-[14px] border rounded-lg outline-none w-[110px] transition-colors ${
@@ -195,10 +277,11 @@ export default function ProviderAvailability() {
           </p>
 
           <div className="flex gap-3 ml-[52px] mb-8">
-            {DURATIONS.map((mins) => (
+            {PROVIDER_SLOT_DURATIONS.map((mins) => (
               <button
                 key={mins}
                 type="button"
+                disabled={disableEditing}
                 onClick={() => { setDuration(mins); setSaved(false); setHasChanges(true) }}
                 className={`px-5 py-2.5 rounded-full text-[14px] font-semibold border transition-colors cursor-pointer outline-none ${
                   duration === mins
@@ -216,16 +299,16 @@ export default function ProviderAvailability() {
         <div className="flex justify-start">
           <button
             type="button"
-            onClick={handleSave}
-            disabled={!hasChanges}
+            onClick={() => { void handleSave() }}
+            disabled={!hasChanges || saving || disableEditing}
             className={`flex items-center gap-2 px-8 py-3 rounded-[24px] text-[16px] font-semibold transition-all outline-none ${
-              hasChanges 
-                ? 'bg-bp-accent hover:bg-bp-primary text-white cursor-pointer' 
+              hasChanges && !saving && !disableEditing
+                ? 'bg-bp-accent hover:bg-bp-primary text-white cursor-pointer'
                 : 'bg-[#F2F2F2] text-bp-body/60 cursor-not-allowed'
             }`}
           >
-            <Check className="w-5 h-5" />
-            Save Availability
+            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+            {saving ? 'Saving…' : 'Save Availability'}
           </button>
         </div>
       </div>

@@ -14,5 +14,5 @@ export interface PatientProfile extends UserProfile {
 
 export interface ProviderUserProfile extends UserProfile {
   role: 'provider'
-  icp_registration_no: string | null
+  iap_registration_no: string | null
 }

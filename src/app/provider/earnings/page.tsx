@@ -1,24 +1,97 @@
 'use client'
 
-import { IndianRupee, TrendingUp, Wallet, Receipt, Download, ArrowUpRight, Calendar } from 'lucide-react'
-import { useState } from 'react'
+import { IndianRupee, TrendingUp, Wallet, Receipt, Download, Calendar, Loader2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
-const TRANSACTIONS = [
-  { id: '1', date: '28 Mar 2026', patient: 'Rahul Sharma', amount: 800, gst: 144, net: 656, status: 'paid' },
-  { id: '2', date: '27 Mar 2026', patient: 'Priya Patel', amount: 1200, gst: 216, net: 984, status: 'pending' },
-  { id: '3', date: '25 Mar 2026', patient: 'Amit Kumar', amount: 800, gst: 144, net: 656, status: 'paid' },
-  { id: '4', date: '24 Mar 2026', patient: 'Sneha Gupta', amount: 1500, gst: 270, net: 1230, status: 'paid' },
-  { id: '5', date: '22 Mar 2026', patient: 'Vikram Singh', amount: 1000, gst: 180, net: 820, status: 'paid' },
-]
+interface AppointmentRow {
+  id: string
+  fee_inr: number
+  status: string
+  created_at: string
+  visit_type: string
+  payment_status: 'created' | 'paid' | 'failed' | 'refunded' | null
+  payment_amount_inr: number | null
+  payment_gst_amount_inr: number | null
+  patient: { full_name: string; avatar_url: string | null } | null
+  availabilities: { starts_at: string } | null
+}
 
-const SUMMARY = {
-  thisMonth: TRANSACTIONS.reduce((acc, t) => acc + t.amount, 0),
-  gstCollected: TRANSACTIONS.reduce((acc, t) => acc + t.gst, 0),
-  payoutAvailable: 4500, // Static mock for now
+interface Transaction {
+  id: string
+  date: string
+  patient: string
+  amount: number
+  gst: number
+  net: number
+  status: 'paid' | 'pending'
+}
+
+async function fetchAppointments(): Promise<{ appointments: AppointmentRow[] }> {
+  const res = await fetch('/api/appointments')
+  if (!res.ok) throw new Error('Failed to fetch appointments')
+  return res.json()
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+function buildTransactions(appointments: AppointmentRow[]): Transaction[] {
+  return appointments
+    .filter((a) => ['completed', 'confirmed'].includes(a.status))
+    .sort((a, b) => {
+      const dateA = a.availabilities?.starts_at || a.created_at
+      const dateB = b.availabilities?.starts_at || b.created_at
+      return new Date(dateB).getTime() - new Date(dateA).getTime()
+    })
+    .map((a) => {
+      const gst = a.payment_gst_amount_inr ?? Math.round(a.fee_inr * 0.18)
+      const net = a.payment_amount_inr != null ? a.payment_amount_inr - gst : a.fee_inr
+
+      return {
+        id: a.id,
+        date: formatDate(a.availabilities?.starts_at || a.created_at),
+        patient: a.patient?.full_name || 'Unknown',
+        amount: a.fee_inr,
+        gst,
+        net,
+        status: a.payment_status === 'paid' ? 'paid' as const : 'pending' as const,
+      }
+    })
 }
 
 export default function ProviderEarnings() {
-  const [transactions] = useState(TRANSACTIONS)
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['provider-appointments-earnings'],
+    queryFn: fetchAppointments,
+  })
+
+  const transactions = buildTransactions(data?.appointments ?? [])
+  const settledTransactions = transactions.filter((transaction) => transaction.status === 'paid')
+
+  const totalRevenue = settledTransactions.reduce((sum, t) => sum + t.amount, 0)
+  const totalGst = settledTransactions.reduce((sum, t) => sum + t.gst, 0)
+  const paidOut = settledTransactions.reduce((sum, t) => sum + t.net, 0)
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="max-w-[1040px] mx-auto px-6 py-12">
+        <p className="text-center text-red-500 font-bold">Failed to load earnings data. Please refresh.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
@@ -42,13 +115,10 @@ export default function ProviderEarnings() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-bp-accent/10 text-bp-accent">
               <IndianRupee className="w-5 h-5" />
             </div>
-            <p className="text-[14px] font-medium text-bp-body">This Month</p>
+            <p className="text-[14px] font-medium text-bp-body">Total Revenue</p>
           </div>
-          <p className="text-[32px] font-bold text-bp-primary">₹{SUMMARY.thisMonth}</p>
-          <div className="flex items-center gap-1 mt-2 text-[13px] text-bp-accent font-medium">
-            <ArrowUpRight className="w-4 h-4" />
-            <span>12% from last month</span>
-          </div>
+          <p className="text-[32px] font-bold text-bp-primary">₹{totalRevenue.toLocaleString('en-IN')}</p>
+          <p className="text-[13px] text-bp-body/60 mt-2">{settledTransactions.length} settled sessions</p>
         </div>
 
         <div className="bg-white rounded-[12px] border border-bp-border shadow-sm p-6 hover:shadow-md transition-shadow">
@@ -58,7 +128,7 @@ export default function ProviderEarnings() {
             </div>
             <p className="text-[14px] font-medium text-bp-body">GST Collected</p>
           </div>
-          <p className="text-[32px] font-bold text-bp-primary">₹{SUMMARY.gstCollected}</p>
+          <p className="text-[32px] font-bold text-bp-primary">₹{totalGst.toLocaleString('en-IN')}</p>
           <p className="text-[13px] text-bp-body/60 mt-2">18% GST on all sessions</p>
         </div>
 
@@ -67,26 +137,21 @@ export default function ProviderEarnings() {
             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#EFF6FF] text-[#2563EB]">
               <Wallet className="w-5 h-5" />
             </div>
-            <p className="text-[14px] font-medium text-bp-body">Payout Available</p>
+            <p className="text-[14px] font-medium text-bp-body">Net Earnings</p>
           </div>
-          <p className="text-[32px] font-bold text-bp-primary">₹{SUMMARY.payoutAvailable}</p>
-          <button className="text-[13px] text-[#2563EB] font-semibold hover:underline mt-2">
-            Withdraw Funds
-          </button>
+          <p className="text-[32px] font-bold text-bp-primary">₹{paidOut.toLocaleString('en-IN')}</p>
+          <p className="text-[13px] text-bp-body/60 mt-2">After GST deduction</p>
         </div>
       </div>
 
-      {/* Chart Placeholder */}
+      {/* Revenue Chart Placeholder */}
       <div className="bg-white rounded-[12px] border border-bp-border p-8 mb-10 shadow-sm relative overflow-hidden group">
         <h3 className="text-[18px] font-semibold text-bp-primary mb-6">Revenue Growth</h3>
         <div className="h-[200px] w-full bg-[#F9FAFB] rounded-lg border border-dashed border-bp-border flex flex-col items-center justify-center gap-3">
           <TrendingUp className="w-10 h-10 text-[#CED4DA]" />
           <div className="text-center">
             <p className="text-[15px] font-medium text-bp-body">Detailed Analytics</p>
-            <p className="text-[13px] text-[#9CA3AF]">Interactive charts arriving in Phase 9</p>
-          </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-5deg] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-             <span className="bg-bp-accent text-white text-[12px] font-bold px-3 py-1 rounded-full shadow-lg">COMING SOON</span>
+            <p className="text-[13px] text-[#9CA3AF]">Interactive charts coming soon</p>
           </div>
         </div>
       </div>
@@ -96,8 +161,8 @@ export default function ProviderEarnings() {
         <div className="px-6 py-5 border-b border-bp-border flex items-center justify-between">
           <h3 className="text-[18px] font-semibold text-bp-primary">Recent Transactions</h3>
           <div className="flex items-center gap-2 text-[14px] text-bp-body font-medium border border-bp-border px-3 py-1.5 rounded-lg bg-[#F9FAFB]">
-             <Calendar className="w-4 h-4 text-bp-body/60" />
-             Mar 2026
+            <Calendar className="w-4 h-4 text-bp-body/60" />
+            {transactions.length} total
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -118,9 +183,9 @@ export default function ProviderEarnings() {
                   <tr key={t.id} className="hover:bg-[#F9FAFB] transition-colors">
                     <td className="px-6 py-4 text-[14px] text-bp-primary">{t.date}</td>
                     <td className="px-6 py-4 font-medium text-[14px] text-bp-primary">{t.patient}</td>
-                    <td className="px-6 py-4 text-[14px] text-bp-primary text-right">₹{t.amount}</td>
-                    <td className="px-6 py-4 text-[14px] text-bp-body text-right">₹{t.gst}</td>
-                    <td className="px-6 py-4 text-[14px] font-bold text-bp-accent text-right">₹{t.net}</td>
+                    <td className="px-6 py-4 text-[14px] text-bp-primary text-right">₹{t.amount.toLocaleString('en-IN')}</td>
+                    <td className="px-6 py-4 text-[14px] text-bp-body text-right">₹{t.gst.toLocaleString('en-IN')}</td>
+                    <td className="px-6 py-4 text-[14px] font-bold text-bp-accent text-right">₹{t.net.toLocaleString('en-IN')}</td>
                     <td className="px-6 py-4">
                       {t.status === 'paid' ? (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-bp-accent/10 text-bp-accent border border-bp-accent/10">
@@ -141,7 +206,7 @@ export default function ProviderEarnings() {
                       <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
                         <TrendingUp className="w-7 h-7 text-[#9CA3AF]" />
                       </div>
-                      <p className="text-[15px] font-medium text-bp-primary mb-1">No recent transactions</p>
+                      <p className="text-[15px] font-medium text-bp-primary mb-1">No transactions yet</p>
                       <p className="text-[13px] text-[#9CA3AF]">Earnings will appear here after your first consultation.</p>
                     </div>
                   </td>

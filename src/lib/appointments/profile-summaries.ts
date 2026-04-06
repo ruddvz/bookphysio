@@ -1,4 +1,5 @@
 export interface AppointmentPatientSummary {
+  id: string
   full_name: string | null
   phone: string | null
   avatar_url: string | null
@@ -98,6 +99,7 @@ export async function fetchPatientSummaryMap(
     (data as PatientSummaryRow[]).map((row) => [
       row.id,
       {
+        id: row.id,
         full_name: row.full_name ?? null,
         phone: row.phone ?? null,
         avatar_url: row.avatar_url ?? null,

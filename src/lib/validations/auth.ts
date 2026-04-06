@@ -20,7 +20,7 @@ export const signupProviderSchema = z.object({
   iap_number: z.string().optional(),
   state_registration_number: z.string().optional(),
   state_name: z.string().optional(),
-  icp_registration_no: z.string().min(1, 'Registration number is required'),
+  iap_registration_no: z.string().min(1, 'Registration number is required'),
   specialty_ids: z.array(z.string().uuid()).min(1, 'Select at least one specialty'),
 })
 

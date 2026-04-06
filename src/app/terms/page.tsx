@@ -123,7 +123,7 @@ export default function TermsPage() {
                        <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none m-0">4.0 Provider Verification</h2>
                     </div>
                     <p className="text-[18px] leading-relaxed">
-                       We aim to verify all physiotherapists through their <span className="text-bp-primary font-bold">ICP (Indian Council of Physiotherapy)</span> registration. 
+                       We aim to verify all physiotherapists through their <span className="text-bp-primary font-bold">IAP (Indian Association of Physiotherapists) or State Council</span> registration. 
                        However, patients are advised to use their own judgment in choosing the right provider for their clinical needs. 
                        BookPhysio is not liable for any clinical outcome based on treatment decisions.
                     </p>

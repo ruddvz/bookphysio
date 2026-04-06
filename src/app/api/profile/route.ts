@@ -34,10 +34,31 @@ type ProviderProfileRow = {
   bio: string | null
   experience_years: number | null
   consultation_fee_inr: number | null
-  icp_registration_no: string | null
+  iap_registration_no: string | null
 }
 
+import { getDemoSessionFromCookies, getDemoProfileById } from '@/lib/demo/session'
+
 async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClient>>, user: { id: string; email?: string | null }) {
+  // Check if this is a demo user
+  const demoProfile = getDemoProfileById(user.id)
+  if (demoProfile) {
+    return {
+      id: demoProfile.id,
+      full_name: demoProfile.fullName,
+      phone: demoProfile.phone,
+      role: demoProfile.role,
+      avatar_url: demoProfile.avatarUrl,
+      created_at: demoProfile.createdAt,
+      email: demoProfile.email,
+      title: demoProfile.role === 'provider' ? 'Senior Physiotherapist' : null,
+      bio: demoProfile.role === 'provider' ? 'Experienced physiotherapist specializing in sports rehab and recovery.' : null,
+      experience_years: demoProfile.role === 'provider' ? 8 : null,
+      consultation_fee_inr: demoProfile.role === 'provider' ? 800 : null,
+      iap_registration_no: demoProfile.role === 'provider' ? 'IAP-DEMO-123' : null,
+    }
+  }
+
   const { data, error } = await supabase
     .from('users')
     .select('id, full_name, phone, role, avatar_url, created_at')
@@ -54,7 +75,7 @@ async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClien
   if (userProfile.role === 'provider') {
     const { data: providerData, error: providerError } = await supabase
       .from('providers')
-      .select('title, bio, experience_years, consultation_fee_inr, icp_registration_no')
+      .select('title, bio, experience_years, consultation_fee_inr, iap_registration_no')
       .eq('id', user.id)
       .maybeSingle()
 
@@ -72,14 +93,29 @@ async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClien
     bio: providerProfile?.bio ?? null,
     experience_years: providerProfile?.experience_years ?? null,
     consultation_fee_inr: providerProfile?.consultation_fee_inr ?? null,
-    icp_registration_no: providerProfile?.icp_registration_no ?? null,
+    iap_registration_no: providerProfile?.iap_registration_no ?? null,
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  
+  if (!user) {
+    // Fallback to demo session
+    const cookieStore = await cookies()
+    const demoSession = await getDemoSessionFromCookies({ get: (name: string) => cookieStore.get(name) })
+    
+    if (demoSession) {
+      const profile = await getProfilePayload(supabase, { 
+        id: demoSession.userId, 
+        email: getDemoProfileById(demoSession.userId)?.email 
+      })
+      if (profile) return NextResponse.json(profile)
+    }
+
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   let profile = null
 

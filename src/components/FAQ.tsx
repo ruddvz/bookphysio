@@ -2,39 +2,34 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { HelpCircle, Minus, Plus } from 'lucide-react'
+import { Plus, Minus, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const faqs = [
   {
     id: 1,
-    question: 'How do you verify physiotherapists?',
-    answer:
-      'Each provider goes through registration, qualification, and profile checks before appearing in search. That keeps the directory trust-first instead of open-ended.',
+    q: 'How do you verify physiotherapists?',
+    a: 'Every provider goes through a 3-step check — IAP/State Council registration number, degree upload (BPT/MPT), and identity verification — before appearing in search results. We then surface their credentials on the public profile so you can judge for yourself.',
   },
   {
     id: 2,
-    question: 'Can I book a home visit?',
-    answer:
-      'Yes. Home-visit availability is shown alongside in-clinic options so you can pick the format that fits the recovery plan and the day.',
+    q: 'Can I book a home visit?',
+    a: 'Yes. Home-visit availability is shown alongside in-clinic options on every provider card. You pick the format that fits your needs — no separate flows.',
   },
   {
     id: 3,
-    question: 'How are prices shown?',
-    answer:
-      'Fees are displayed as integer INR before booking. GST and payment details stay visible later in the flow, so there are no surprises.',
+    q: 'How are prices shown?',
+    a: 'Session fees are displayed in INR before booking — no hidden extras. GST and payment method details appear in the checkout, so there are zero surprises at the end.',
   },
   {
     id: 4,
-    question: 'What happens after I book?',
-    answer:
-      'You move into a simple booking flow with confirmation details, payment handling, and session information surfaced in one place.',
+    q: 'What happens after I book?',
+    a: 'You get an instant SMS confirmation with session details. The appointment appears in your patient dashboard where you can manage, reschedule, or cancel within the allowed window.',
   },
   {
     id: 5,
-    question: 'Can I cancel a session?',
-    answer:
-      'Yes. Once a booking is confirmed you can review the appointment details and cancel within the timeline shown in your dashboard.',
+    q: 'Can I cancel or reschedule a session?',
+    a: 'Yes. From your dashboard you can cancel or request a reschedule within the cancellation window set by the provider (usually 24 hours). Refund terms are shown before you confirm.',
   },
 ]
 
@@ -42,75 +37,92 @@ export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
-    <section className="bp-section bg-bp-surface/40" aria-label="Booking questions">
-      <div className="bp-shell">
-        <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <div className="bp-kicker mb-5">
-              <HelpCircle size={13} />
-              Help center
-            </div>
-            <h2 className="bp-title">Questions patients ask before they book.</h2>
-            <p className="bp-copy mt-4 max-w-xl">
-              Everything you need to know before booking your first session.
+    <section className="bg-white py-24 md:py-32" aria-label="Frequently asked questions">
+      <div className="bp-container">
+        <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr] items-start">
+
+          {/* Left: header + CTA */}
+          <div className="lg:sticky lg:top-28">
+            <div className="bp-kicker mb-4">Help Center</div>
+            <h2 className="text-slate-900 mb-4">Questions patients ask before they book.</h2>
+            <p className="text-slate-500 text-[16px] leading-relaxed mb-8">
+              Everything you need to know before booking your first session. Can&apos;t find an answer?
             </p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-indigo-600 text-white rounded-xl font-semibold text-[14px] hover:bg-indigo-700 transition-colors group w-fit"
+              >
+                Browse providers
+                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <Link
+                href="/faq"
+                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-indigo-200 hover:text-indigo-700 transition-colors w-fit"
+              >
+                View all FAQs
+              </Link>
+            </div>
           </div>
 
-          <Link
-            href="/search"
-            className="bp-button-primary"
-          >
-            Browse providers
-          </Link>
-        </div>
-
-        <div className="mt-10 space-y-4">
-          {faqs.map((faq) => {
-            const isOpen = openId === faq.id
-
-            return (
-              <div
-                key={faq.id}
-                className={cn(
-                  'bp-card overflow-hidden transition-all duration-300',
-                  isOpen ? 'border-[#0f7668]/20 shadow-[0_22px_50px_-30px_rgba(24,49,45,0.22)]' : 'hover:border-[#0f7668]/15'
-                )}
-              >
-                <button
-                  id={`faq-trigger-${faq.id}`}
-                  type="button"
-                  onClick={() => setOpenId(isOpen ? null : faq.id)}
-                  aria-expanded={isOpen}
-                  aria-controls={`faq-answer-${faq.id}`}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
-                >
-                  <span className={cn('text-[17px] font-semibold tracking-[-0.03em]', isOpen ? 'text-[#0f7668]' : 'text-[#18312d]')}>
-                    {faq.question}
-                  </span>
-                  <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all', isOpen ? 'border-[#0f7668] bg-[#dcefe9] text-[#0f7668]' : 'border-[#ddd3c6] bg-white text-[#7d8a85]')}>
-                    {isOpen ? <Minus size={18} /> : <Plus size={18} />}
-                  </span>
-                </button>
-
+          {/* Right: accordion */}
+          <div className="space-y-2">
+            {faqs.map(faq => {
+              const isOpen = openId === faq.id
+              return (
                 <div
-                  id={`faq-answer-${faq.id}`}
-                  role="region"
-                  aria-labelledby={`faq-trigger-${faq.id}`}
-                  aria-hidden={!isOpen}
-                  className={cn('grid overflow-hidden transition-all duration-300', isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]')}
+                  key={faq.id}
+                  className={cn(
+                    'rounded-xl border transition-all duration-200',
+                    isOpen
+                      ? 'border-indigo-200 bg-indigo-50/50'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  )}
                 >
+                  <button
+                    type="button"
+                    id={`faq-q-${faq.id}`}
+                    onClick={() => setOpenId(isOpen ? null : faq.id)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-a-${faq.id}`}
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                  >
+                    <span className={cn(
+                      'text-[15px] font-semibold transition-colors',
+                      isOpen ? 'text-indigo-700' : 'text-slate-900'
+                    )}>
+                      {faq.q}
+                    </span>
+                    <span className={cn(
+                      'flex h-7 w-7 items-center justify-center rounded-lg border transition-all shrink-0',
+                      isOpen
+                        ? 'border-indigo-200 bg-indigo-100 text-indigo-700'
+                        : 'border-slate-200 bg-white text-slate-400'
+                    )}>
+                      {isOpen ? <Minus size={14} /> : <Plus size={14} />}
+                    </span>
+                  </button>
+
                   <div
+                    id={`faq-a-${faq.id}`}
+                    role="region"
+                    aria-labelledby={`faq-q-${faq.id}`}
                     className={cn(
-                      'min-h-0 overflow-hidden px-6 text-[15px] leading-7 text-[#58645f] transition-all duration-300',
-                      isOpen ? 'pb-6 opacity-100' : 'invisible pb-0 opacity-0'
+                      'grid transition-all duration-300',
+                      isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                     )}
                   >
-                    {faq.answer}
+                    <div className={cn(
+                      'min-h-0 overflow-hidden px-5 text-[14px] leading-relaxed text-slate-600 transition-all duration-300',
+                      isOpen ? 'pb-5 opacity-100' : 'pb-0 opacity-0'
+                    )}>
+                      {faq.a}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>

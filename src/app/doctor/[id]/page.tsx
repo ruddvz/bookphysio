@@ -113,6 +113,11 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
   const reviews: ProviderReview[] = provider.reviews ?? []
 
+  const isStateVerified = provider.iap_registration_no?.startsWith('STATE_')
+  const stateName = isStateVerified ? provider.iap_registration_no?.split('_')[1] : null
+  const hasRegistration = !!provider.iap_registration_no
+  const verificationSource = isStateVerified ? `${stateName} Council` : 'IAP'
+
   return (
     <div className="bg-bp-surface min-h-screen selection:bg-bp-primary/10 selection:text-bp-primary font-sans">
       <Navbar />
@@ -192,7 +197,11 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                           </h1>
                           <p className="text-bp-primary font-bold text-[16px] flex items-center gap-2">
                             <GraduationCap size={18} className="text-bp-accent" />
-                            {provider.verified ? 'Verified physiotherapy provider' : provider.icp_registration_no ? 'ICP number listed on profile' : 'Physiotherapy provider'}
+                            {provider.verified 
+                              ? `${verificationSource} Verified physiotherapist` 
+                              : hasRegistration 
+                                ? `${verificationSource} registration under review` 
+                                : 'Physiotherapy provider'}
                           </p>
                         </div>
                       </div>
@@ -227,7 +236,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Star size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Verification</p>
-                     <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.verified ? 'Profile' : provider.icp_registration_no ? 'ICP' : 'Profile'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : provider.icp_registration_no ? 'Listed' : 'Listed'}</span></p>
+                     <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none whitespace-pre-wrap">{provider.verified ? verificationSource : (hasRegistration ? verificationSource : 'Profile')}<br/><span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : 'Pending'}</span></p>
                    </div>
                    <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-5 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500"><Clock size={22} strokeWidth={2.5} /></div>
@@ -288,14 +297,14 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                      Professional Credentials
                   </h2>
                   <div className="space-y-6">
-                    {provider.icp_registration_no && (
+                    {hasRegistration && (
                       <div className="flex items-center gap-5 p-5 rounded-[24px] bg-[#FBFCFD] border border-bp-border/30 group hover:border-bp-accent/40 transition-colors duration-500">
                         <div className="bg-white p-3.5 rounded-2xl border border-bp-border shadow-sm group-hover:scale-110 transition-transform duration-500">
-                          <ShieldCheck size={24} className="text-bp-accent" strokeWidth={3} />
+                          <CheckCircle2 size={24} className="text-emerald-600" strokeWidth={3} />
                         </div>
                         <div>
-                          <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] mb-1.5 leading-none">ICP Registration</p>
-                          <p className="text-[18px] font-bold text-bp-primary tracking-tight">{provider.icp_registration_no}</p>
+                          <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] mb-1.5 leading-none">{verificationSource} Registration</p>
+                          <p className="text-[16px] font-bold text-emerald-600 tracking-tight flex items-center gap-1.5">Validated on Record</p>
                         </div>
                       </div>
                     )}

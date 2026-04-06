@@ -1,37 +1,137 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ProviderEarnings from './page'
 
+const appointmentsResponse = {
+  appointments: [
+    {
+      id: '1',
+      fee_inr: 800,
+      status: 'completed',
+      created_at: '2026-03-28T10:00:00.000Z',
+      visit_type: 'in_clinic',
+      payment_status: 'paid',
+      payment_amount_inr: 944,
+      payment_gst_amount_inr: 144,
+      patient: { full_name: 'Rahul Sharma', avatar_url: null },
+      availabilities: { starts_at: '2026-03-28T10:00:00.000Z' },
+    },
+    {
+      id: '2',
+      fee_inr: 1200,
+      status: 'confirmed',
+      created_at: '2026-03-27T11:30:00.000Z',
+      visit_type: 'home_visit',
+      payment_status: 'created',
+      payment_amount_inr: 1416,
+      payment_gst_amount_inr: 216,
+      patient: { full_name: 'Priya Patel', avatar_url: null },
+      availabilities: { starts_at: '2026-03-27T11:30:00.000Z' },
+    },
+    {
+      id: '3',
+      fee_inr: 800,
+      status: 'completed',
+      created_at: '2026-03-25T09:00:00.000Z',
+      visit_type: 'in_clinic',
+      payment_status: 'paid',
+      payment_amount_inr: 944,
+      payment_gst_amount_inr: 144,
+      patient: { full_name: 'Amit Kumar', avatar_url: null },
+      availabilities: { starts_at: '2026-03-25T09:00:00.000Z' },
+    },
+    {
+      id: '4',
+      fee_inr: 1500,
+      status: 'completed',
+      created_at: '2026-03-24T17:00:00.000Z',
+      visit_type: 'home_visit',
+      payment_status: 'paid',
+      payment_amount_inr: 1770,
+      payment_gst_amount_inr: 270,
+      patient: { full_name: 'Sneha Gupta', avatar_url: null },
+      availabilities: { starts_at: '2026-03-24T17:00:00.000Z' },
+    },
+    {
+      id: '5',
+      fee_inr: 1000,
+      status: 'completed',
+      created_at: '2026-03-22T16:00:00.000Z',
+      visit_type: 'in_clinic',
+      payment_status: 'paid',
+      payment_amount_inr: 1180,
+      payment_gst_amount_inr: 180,
+      patient: { full_name: 'Vikram Singh', avatar_url: null },
+      availabilities: { starts_at: '2026-03-22T16:00:00.000Z' },
+    },
+  ],
+}
+
+function renderWithQueryClient() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  })
+
+  render(
+    <QueryClientProvider client={queryClient}>
+      <ProviderEarnings />
+    </QueryClientProvider>
+  )
+}
+
 describe('ProviderEarnings', () => {
-  it('renders summary stats with correct formatting', () => {
-    render(<ProviderEarnings />)
-    // Check for "This Month" value. Mock TRANSACTIONS total is 5300.
-    expect(screen.getByText(/₹5300/i)).toBeInTheDocument()
-    // Check for "GST Collected" value. Mock TRANSACTIONS GST total is 954.
-    expect(screen.getByText(/₹954/i)).toBeInTheDocument()
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => appointmentsResponse,
+      })
+    )
   })
 
-  it('renders transaction list with correct data', () => {
-    render(<ProviderEarnings />)
-    expect(screen.getByText(/Rahul Sharma/i)).toBeInTheDocument()
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('renders summary stats with correct formatting', async () => {
+    renderWithQueryClient()
+
+    await screen.findByText(/total revenue/i)
+    expect(screen.getAllByText('₹4,100')).toHaveLength(2)
+    expect(screen.getByText('₹738')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith('/api/appointments')
+    })
+  })
+
+  it('renders transaction list with correct data', async () => {
+    renderWithQueryClient()
+
+    expect(await screen.findByText(/Rahul Sharma/i)).toBeInTheDocument()
     expect(screen.getByText(/28 Mar 2026/i)).toBeInTheDocument()
-    // Check for net earning with teal text/bold
-    const netEarning = screen.getAllByText(/₹656/i)[0] // Rahul's net
-    expect(netEarning).toBeInTheDocument()
+    expect(screen.getAllByText(/₹800/i)[0]).toBeInTheDocument()
   })
 
-  it('displays status badges correctly', () => {
-    render(<ProviderEarnings />)
-    const paidBadges = screen.getAllByText(/Paid/i)
+  it('displays status badges correctly', async () => {
+    renderWithQueryClient()
+
+    const paidBadges = await screen.findAllByText(/Paid/i)
     const pendingBadges = screen.getAllByText(/Pending/i)
-    
+
     expect(paidBadges.length).toBeGreaterThan(0)
     expect(pendingBadges.length).toBeGreaterThan(0)
   })
 
-  it('shows chart placeholder', () => {
-    render(<ProviderEarnings />)
-    expect(screen.getByText(/Revenue Growth/i)).toBeInTheDocument()
-    expect(screen.getByText(/Interactive charts arriving in Phase 9/i)).toBeInTheDocument()
+  it('shows chart placeholder', async () => {
+    renderWithQueryClient()
+
+    expect(await screen.findByText(/Revenue Growth/i)).toBeInTheDocument()
+    expect(screen.getByText(/Interactive charts coming soon/i)).toBeInTheDocument()
   })
 })

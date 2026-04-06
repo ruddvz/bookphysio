@@ -14,8 +14,8 @@ const FAQS = [
         answer: 'Simply search for your condition or a physiotherapist, choose a provider, select your preferred date and time, and click "Book Session". You\'ll receive an OTP on your mobile to confirm.',
       },
       {
-        question: 'What is ICP Verified?',
-        answer: 'ICP (Indian Council of Physiotherapy) verification means we have manually checked the credentials, professional registration, and experience of the physiotherapist to ensure patient safety.',
+        question: 'What is IAP Verified?',
+        answer: 'IAP (Indian Association of Physiotherapists) or State Council verification means we have manually checked the credentials, professional registration, and experience of the physiotherapist to ensure patient safety.',
       },
       {
         question: 'Are home visits available?',
@@ -36,7 +36,7 @@ const FAQS = [
     items: [
       {
         question: 'How can I join BookPhysio as a provider?',
-        answer: 'Click on the "For Providers" button in the navigation or visit the Doctor Signup page. You will need to provide your ICP registration number and practice details.',
+        answer: 'Click on the "For Providers" button in the navigation or visit the Doctor Signup page. You will need to provide your IAP/State Council registration number and practice details.',
       },
       {
         question: 'What are the charges for listing?',

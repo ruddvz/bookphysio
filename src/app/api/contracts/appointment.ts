@@ -1,4 +1,5 @@
 import type { ProviderCard, ProviderLocation } from './provider'
+import type { PaymentStatus } from './payment'
 import type { UserProfile } from './user'
 
 export type VisitType = 'in_clinic' | 'home_visit'
@@ -14,7 +15,7 @@ export interface AppointmentSlot {
 
 export interface Appointment {
   id: string
-  patient: Pick<UserProfile, 'id' | 'full_name' | 'avatar_url'>
+  patient: Pick<UserProfile, 'id' | 'full_name' | 'phone' | 'avatar_url'>
   provider: ProviderCard
   slot: AppointmentSlot
   location: ProviderLocation | null
@@ -26,6 +27,9 @@ export interface Appointment {
   patient_reason?: string | null
   home_visit_address?: string | null
   legacy_notes?: string | null
+  payment_status?: PaymentStatus | null
+  payment_amount_inr?: number | null
+  payment_gst_amount_inr?: number | null
   created_at: string
 }
 

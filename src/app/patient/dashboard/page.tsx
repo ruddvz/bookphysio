@@ -2,7 +2,10 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { Heart, Calendar, Users, ArrowRight, CircleAlert, CalendarPlus, Activity, TrendingUp, ShieldCheck, Zap, MoreHorizontal, Clock, ArrowUpRight, MessageSquare, ChevronRight } from 'lucide-react'
+import {
+  Calendar, Users, Activity, MessageSquare, ArrowRight, ArrowUpRight,
+  CalendarPlus, Clock, CircleAlert, ShieldCheck, TrendingUp, Sparkles,
+} from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatApptDate, providerDisplayName } from './dashboard-utils'
@@ -10,26 +13,16 @@ import { DashboardSkeleton } from './DashboardSkeleton'
 import { DASHBOARD_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 type VisitType = 'in_clinic' | 'home_visit'
-
 interface Appointment {
   id: string
   status: string
   visit_type: VisitType
   fee_inr: number
   availabilities: { starts_at: string } | null
-  providers: {
-    users: { full_name: string } | null
-    specialties?: { name: string }[]
-  } | null
+  providers: { users: { full_name: string } | null; specialties?: { name: string }[] } | null
   locations: { city: string } | null
 }
-
-const VISIT_TYPE_LABELS: Record<VisitType, string> = {
-  in_clinic: 'In Clinic',
-  home_visit: 'Home Visit',
-}
-
-
+const VISIT_LABELS: Record<VisitType, string> = { in_clinic: 'In Clinic', home_visit: 'Home Visit' }
 
 export default function PatientDashboardHome({ locale }: { locale?: StaticLocale } = {}) {
   const t = DASHBOARD_COPY[locale ?? 'en']
@@ -37,465 +30,316 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-   const [referralCopied, setReferralCopied] = useState(false)
+  const [referralCopied, setReferralCopied] = useState(false)
 
-  const displayName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'there'
-
+  const first = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'there'
   const hour = new Date().getHours()
   const greeting = hour < 12 ? t.greetingMorning : hour < 17 ? t.greetingAfternoon : t.greetingEvening
-  const recoveryPlaceholder = 'Coming soon'
-  const recoveryPlaceholderDetail = 'Recovery insights unlock after more completed sessions.'
 
-   async function handleCopyReferralLink() {
-      if (typeof window === 'undefined') {
-         return
-      }
+  const fetchAppts = useCallback(async () => {
+    setLoading(true); setError(false)
+    try {
+      const r = await fetch('/api/appointments')
+      if (!r.ok) throw new Error()
+      const d: { appointments?: Appointment[] } = await r.json()
+      setAppointments(d.appointments ?? [])
+    } catch { setError(true) } finally { setLoading(false) }
+  }, [])
 
-      const referralLink = `${window.location.origin}/signup?ref=bp-${user?.id?.slice(-6) ?? 'demo'}`
-
-      try {
-         if (navigator.clipboard?.writeText) {
-            await navigator.clipboard.writeText(referralLink)
-         } else {
-            const textarea = document.createElement('textarea')
-            textarea.value = referralLink
-            textarea.setAttribute('readonly', 'true')
-            textarea.style.position = 'absolute'
-            textarea.style.left = '-9999px'
-            document.body.appendChild(textarea)
-            textarea.select()
-            document.execCommand('copy')
-            document.body.removeChild(textarea)
-         }
-
-         setReferralCopied(true)
-         window.setTimeout(() => setReferralCopied(false), 2200)
-      } catch {
-         setReferralCopied(false)
-      }
-   }
-
-   const fetchAppointments = useCallback(async () => {
-      setLoading(true)
-      setError(false)
-
-      try {
-         const response = await fetch('/api/appointments')
-         if (!response.ok) {
-            throw new Error('Failed to fetch appointments')
-         }
-         const data: { appointments?: Appointment[] } = await response.json()
-         setAppointments(data.appointments ?? [])
-      } catch {
-         setError(true)
-      } finally {
-         setLoading(false)
-      }
-   }, [])
-
-  useEffect(() => {
-      void fetchAppointments()
-   }, [fetchAppointments])
+  useEffect(() => { void fetchAppts() }, [fetchAppts])
 
   const now = new Date()
-  const upcoming = appointments.filter((a) => {
-    const start = a.availabilities?.starts_at
-    return a.status !== 'cancelled' && start && new Date(start) >= now
-  })
-  const past = appointments.filter((a) => {
-    const start = a.availabilities?.starts_at
-    return a.status === 'completed' || (start && new Date(start) < now)
-  })
-  const nextAppt = upcoming[0] ?? null
-   const snapshotCards = [
-      {
-         title: t.nextSession,
-         value: nextAppt?.availabilities?.starts_at ? formatApptDate(nextAppt.availabilities.starts_at) : t.noBookingYet,
-         detail: nextAppt ? providerDisplayName(nextAppt) : t.findNextMatch,
-         icon: Calendar,
-         href: '/patient/appointments',
-      },
-      {
-         title: t.recoveryPace,
-         value: null,
-         detail: recoveryPlaceholderDetail,
-         icon: Activity,
-         href: '/patient/motio',
-      },
-      {
-         title: t.careTeam,
-         value: `${past.length}`,
-         detail: t.previousSpecialists,
-         icon: Users,
-         href: '/search',
-      },
-      {
-         title: t.aiGuidance,
-         value: 'BookPhysio AI',
-         detail: t.triageSymptoms,
-         icon: MessageSquare,
-         href: '/patient/motio',
-      },
-   ]
+  const upcoming = appointments.filter(a => a.status !== 'cancelled' && a.availabilities?.starts_at && new Date(a.availabilities.starts_at) >= now)
+  const past = appointments.filter(a => a.status === 'completed' || (a.availabilities?.starts_at && new Date(a.availabilities.starts_at) < now))
+  const next = upcoming[0] ?? null
+
+  async function handleCopy() {
+    const link = `${window.location.origin}/signup?ref=bp-${user?.id?.slice(-6) ?? 'demo'}`
+    try {
+      await navigator.clipboard.writeText(link)
+      setReferralCopied(true)
+      setTimeout(() => setReferralCopied(false), 2200)
+    } catch { /* */ }
+  }
 
   if (loading) return <DashboardSkeleton />
-
-   if (error) {
-      return (
-         <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">
-            <EmptyState
-               title={t.errorTitle}
-               description={t.errorDesc}
-               icon={CircleAlert}
-               className="border border-bp-border bg-white rounded-3xl shadow-sm"
-               action={
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                     <button
-                        type="button"
-                        onClick={() => {
-                           void fetchAppointments()
-                        }}
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-accent px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
-                     >
-                        {t.retrySync}
-                     </button>
-                     <Link
-                        href="/search"
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-border bg-bp-surface px-8 py-4 text-[14px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent active:scale-[0.98]"
-                     >
-                        {t.bookNewTherapyBtn}
-                     </Link>
-                     <Link
-                        href="/patient/motio"
-                        className="inline-flex items-center justify-center gap-3 rounded-2xl border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
-                     >
-                        {t.askAI}
-                     </Link>
-                  </div>
-               }
-            />
-         </div>
-      )
-   }
+  if (error) return (
+    <div className="max-w-4xl mx-auto px-6 py-12">
+      <EmptyState
+        title={t.errorTitle}
+        description={t.errorDesc}
+        icon={CircleAlert}
+        action={
+          <button onClick={() => { void fetchAppts() }} className="bp-btn bp-btn-primary">
+            {t.retrySync}
+          </button>
+        }
+      />
+    </div>
+  )
 
   return (
-    <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-12 animate-in fade-in duration-700">
-      
-      {/* ── Top Section: Greeting & Quick Action ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="space-y-4">
-           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
-              <ShieldCheck size={12} strokeWidth={3} />
+    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+
+      {/* ── Header ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-[11px] font-bold uppercase tracking-wider">
+              <ShieldCheck size={11} />
               {t.verifiedPatient}
-           </div>
-           <h1 className="text-[36px] md:text-[48px] font-bold text-bp-primary leading-none tracking-tight">
-             {greeting}, <span className="text-bp-accent">{displayName}</span> 👋
-           </h1>
-           <p className="text-[16px] md:text-[18px] font-medium text-bp-body/60 max-w-[500px]">
-             {t.welcomeBack(upcoming.length)}
-           </p>
+            </span>
+          </div>
+          <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
+            {greeting}, <span className="text-teal-600">{first}</span> 👋
+          </h1>
+          <p className="text-slate-500 text-[15px] mt-1">
+            {t.welcomeBack(upcoming.length)}
+          </p>
         </div>
-            <div className="flex flex-wrap gap-3">
-               <Link
-                  href="/search"
-                  className="flex items-center gap-4 px-10 py-5 bg-bp-primary text-white text-[16px] font-bold rounded-[24px] hover:bg-bp-primary/95 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-bp-primary/10"
-               >
-                  {t.bookNewTherapy}
-                  <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-                      <CalendarPlus size={18} strokeWidth={3} />
-                  </div>
-               </Link>
-               <Link
-                  href="/patient/motio"
-                  className="flex items-center gap-4 px-8 py-5 bg-white border-2 border-bp-accent/30 text-bp-accent text-[16px] font-bold rounded-[24px] hover:bg-bp-accent/5 hover:border-bp-accent transition-all hover:scale-[1.02] active:scale-[0.97] shadow-lg shadow-bp-accent/5"
-               >
-                  {t.askAI}
-                  <div className="w-8 h-8 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent group-hover:scale-110 transition-transform">
-                      <MessageSquare size={18} strokeWidth={3} />
-                  </div>
-               </Link>
-            </div>
+        <div className="flex gap-3 shrink-0">
+          <Link
+            href="/search"
+            className="flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors group shadow-sm shadow-teal-600/20"
+          >
+            <CalendarPlus size={15} />
+            {t.bookNewTherapy}
+          </Link>
+          <Link
+            href="/patient/motio"
+            className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-teal-200 hover:text-teal-700 transition-colors"
+          >
+            <Sparkles size={15} />
+            {t.askAI}
+          </Link>
+        </div>
       </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
-            {snapshotCards.map((card) => {
-               const SnapshotIcon = card.icon
-
-               return (
-                  <Link
-                     key={card.title}
-                     href={card.href}
-                     className="group rounded-2xl border border-bp-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-xl shadow-bp-primary/5 active:scale-95"
-                  >
-                     <div className="flex items-center justify-between gap-4 mb-5">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-bp-accent/5 text-bp-accent transition-all group-hover:bg-bp-accent/10 group-hover:scale-110">
-                           <SnapshotIcon size={22} strokeWidth={2.5} />
-                        </div>
-                        <div className="h-8 w-8 rounded-full bg-bp-surface flex items-center justify-center text-bp-body/20 transition-all group-hover:text-bp-accent group-hover:bg-bp-accent/5">
-                           <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                        </div>
-                     </div>
-                     <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 leading-none">{card.title}</p>
-                     {card.value ? (
-                        <p className="mt-2 text-[22px] font-bold tracking-tighter text-bp-primary leading-tight">{card.value}</p>
-                     ) : (
-                        <p className="mt-2 text-[18px] font-bold tracking-tight text-bp-body/50 leading-tight">{recoveryPlaceholder}</p>
-                     )}
-                     <div className="mt-3 flex items-center gap-1.5 overflow-hidden">
-                         <p className="text-[12px] font-bold text-bp-body/60 truncate group-hover:text-bp-primary transition-colors">{card.detail}</p>
-                     </div>
-                  </Link>
-               )
-            })}
-         </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
-        
-        {/* ── Left Column: Activity & Care Team ── */}
-        <div className="space-y-10">
-          
-      {/* Recovery Progress Widget */}
-          <section className="bg-white rounded-3xl border border-bp-border p-8 md:p-10 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-bp-accent/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
-            
-            <div className="relative z-10">
-               <div className="flex items-center justify-between mb-10">
-                  <div className="flex flex-col gap-1">
-                     <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
-                        <Activity className="text-bp-accent" size={20} strokeWidth={3} />
-                        {t.recoveryJourney}
-                     </h2>
-                     <p className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest">{t.activeTreatment}</p>
-                  </div>
-                  <div className="p-3 bg-bp-accent/10 rounded-2xl text-bp-accent shadow-sm">
-                     <TrendingUp size={22} strokeWidth={3} />
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="space-y-6">
-                     <div className="space-y-2">
-                        <span className="text-[32px] font-bold text-bp-primary leading-none tracking-tight">{recoveryPlaceholder}</span>
-                        <div className="flex flex-col gap-1.5">
-                           <span className="text-[13px] font-bold text-bp-body/50 uppercase tracking-widest flex items-center gap-1">
-                              <Zap size={11} strokeWidth={4} />
-                              {t.recoveryPace}
-                           </span>
-                           <span className="text-[11px] font-bold text-bp-body/40 tracking-tight">{recoveryPlaceholderDetail}</span>
-                        </div>
-                     </div>
-                     <div className="h-5 w-full bg-bp-surface rounded-full overflow-hidden border border-bp-border p-1.5">
-                        <div className="h-full bg-bp-border/60 rounded-full w-[24%]"></div>
-                     </div>
-                  </div>
-                  <div className="bg-bp-surface/50 rounded-2xl p-6 border border-bp-border flex flex-col justify-center gap-3">
-                     <div className="bg-white p-4 rounded-2xl border border-bp-border shadow-sm flex items-center gap-4 hover:border-bp-accent/20 transition-colors">
-                        <div className="text-[24px]">🎯</div>
-                        <div>
-                           <p className="text-[15px] font-bold text-bp-primary leading-none mb-1.5">{t.weeklyGoal}</p>
-                           <p className="text-[13px] font-medium text-bp-body/60 italic">{t.weeklyGoalDetail}</p>
-                        </div>
-                     </div>
-                  </div>
-               </div>
+      {/* ── Stat Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: t.nextSession,
+            value: next?.availabilities?.starts_at ? formatApptDate(next.availabilities.starts_at).split(',')[0] : '—',
+            sub: next ? providerDisplayName(next) : t.findNextMatch,
+            icon: Calendar, iconBg: 'bg-teal-50', iconColor: 'text-teal-600',
+            href: '/patient/appointments',
+          },
+          {
+            label: 'Sessions done',
+            value: String(past.length),
+            sub: t.previousSpecialists,
+            icon: TrendingUp, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
+            href: '/patient/appointments',
+          },
+          {
+            label: t.careTeam,
+            value: String(new Set(past.map(a => providerDisplayName(a))).size),
+            sub: 'Unique providers',
+            icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
+            href: '/search',
+          },
+          {
+            label: t.aiGuidance,
+            value: 'Motio AI',
+            sub: t.triageSymptoms,
+            icon: MessageSquare, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
+            href: '/patient/motio',
+          },
+        ].map(card => (
+          <Link
+            key={card.label}
+            href={card.href}
+            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-teal-200 hover:shadow-md hover:shadow-teal-500/5 hover:-translate-y-0.5 transition-all"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
+                <card.icon size={18} className={card.iconColor} />
+              </div>
+              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-teal-500 transition-colors" />
             </div>
-          </section>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
+            <div className="text-[22px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
+            <div className="text-[12px] text-slate-400 truncate">{card.sub}</div>
+          </Link>
+        ))}
+      </div>
 
-          {/* Past Care Team */}
-          <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-sm relative group overflow-hidden">
-             <div className="absolute top-0 left-0 w-32 h-32 bg-bp-accent/5 rounded-full blur-[40px] -ml-16 -mt-16 transition-transform group-hover:scale-110"></div>
-             
-             <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                   <div className="flex flex-col gap-1">
-                      <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
-                         <Users className="text-bp-accent" size={20} strokeWidth={3} />
-                         {t.myHealthTeam}
-                      </h2>
-                      <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">{past.length} {t.previousSpecialists}</p>
-                   </div>
-                   <button aria-label="Open care team actions" title="Open care team actions" className="p-3 bg-bp-surface rounded-2xl text-bp-body/40 hover:text-bp-accent transition-all hover:scale-105 active:scale-95 shadow-sm">
-                      <MoreHorizontal size={20} strokeWidth={3} />
-                   </button>
+      {/* ── Two-column main ── */}
+      <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+
+        {/* Left: Upcoming + Past */}
+        <div className="space-y-6">
+
+          {/* Next Appointment */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-[17px] font-bold text-slate-900">Next Appointment</h2>
+              <Link href="/patient/appointments" className="text-[13px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 group">
+                View all <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+
+            {next ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-[16px]">
+                    {providerDisplayName(next).charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-slate-900 text-[15px]">{providerDisplayName(next)}</div>
+                    <div className="text-[12px] text-slate-400">{next.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</div>
+                  </div>
                 </div>
 
-                {past.length === 0 ? (
-                   <div className="py-12 text-center bg-bp-surface/50 rounded-[32px] border border-dashed border-bp-border/60">
-                      <div className="w-12 h-12 rounded-2xl bg-white mx-auto mb-4 flex items-center justify-center text-bp-body/10 border border-bp-border shadow-sm">
-                         <Users size={24} />
-                      </div>
-                      <p className="text-[14px] font-bold text-bp-body/40">{t.buildTeam}</p>
-                      <Link href="/search" className="text-[12px] font-bold text-bp-accent hover:underline mt-2 inline-block">{t.browseSpecialists}</Link>
-                   </div>
-                ) : (
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {past.slice(0, 4).map((a) => (
-                         <div key={a.id} className="group/item p-5 bg-white border border-bp-border rounded-2xl hover:shadow-lg hover:border-bp-accent/20 transition-all duration-300 flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-accent text-[20px] font-bold group-hover/item:bg-bp-accent/10 transition-colors">
-                               {providerDisplayName(a).charAt(0)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                               <p className="text-[16px] font-bold text-bp-primary truncate leading-tight mb-1">{providerDisplayName(a)}</p>
-                               <div className="flex items-center gap-1.5">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                  <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-wider truncate">{a.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</p>
-                               </div>
-                            </div>
-                            <Link 
-                               href={`/patient/appointments/${a.id}`} 
-                               className="w-11 h-11 rounded-2xl bg-bp-surface flex items-center justify-center text-bp-body/20 group-hover/item:bg-bp-primary group-hover/item:text-white transition-all shadow-sm group-hover/item:scale-105"
-                               aria-label={`View appointment with ${providerDisplayName(a)}`}
-                            >
-                               <ChevronRight size={20} strokeWidth={3} />
-                            </Link>
-                         </div>
-                      ))}
-                   </div>
-                )}
-             </div>
-          </section>
-          
-          {/* Growth & Referral Loop: Physio Journal */}
-          <section className="bg-gradient-to-br from-bp-primary to-bp-primary rounded-3xl p-8 md:p-10 shadow-2xl shadow-bp-primary/20 text-white relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700"></div>
-             
-             <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-1 space-y-6">
-                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
-                      <Heart size={12} strokeWidth={3} fill="currentColor" />
-                      {t.referralBadge}
-                   </div>
-                   <h2 className="text-[28px] md:text-[32px] font-bold leading-none tracking-tighter">
-                      {t.referralHeading}
-                   </h2>
-                   <p className="text-[15px] font-bold text-white/60 leading-relaxed max-w-[400px]">
-                      {t.referralBody}
-                   </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1">
+                      <Calendar size={11} /> Date
+                    </div>
+                    <div className="text-[14px] font-semibold text-slate-900">
+                      {formatApptDate(next.availabilities?.starts_at ?? '').split(',')[0]}
+                    </div>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1">
+                      <Clock size={11} /> Time
+                    </div>
+                    <div className="text-[14px] font-semibold text-slate-900">
+                      {new Date(next.availabilities?.starts_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                </div>
 
-                   <button onClick={handleCopyReferralLink} className="flex items-center gap-3 px-8 py-4 bg-bp-secondary text-white text-[14px] font-bold rounded-2xl hover:bg-bp-secondary/90 transition-all hover:scale-[1.03] active:scale-[0.97] shadow-xl shadow-bp-secondary/20 group/btn">
-                      {referralCopied ? t.referralCopied : t.copyReferralLink}
-                      <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
-                   </button>
+                <div className="flex gap-3">
+                  <Link
+                    href={`/patient/appointments/${next.id}`}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors"
+                  >
+                    Manage booking
+                  </Link>
+                  <div className="flex items-center gap-1.5 text-[12px] px-3 py-2 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-700 font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    {VISIT_LABELS[next.visit_type]}
+                  </div>
                 </div>
-                
-                <div className="hidden md:flex w-[240px] h-[180px] bg-white/5 backdrop-blur-md rounded-[32px] border border-white/10 items-center justify-center relative shadow-inner">
-                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                   <div className="flex flex-col md:flex-row items-center gap-6">
-                      <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-bp-accent shadow-2xl relative overflow-hidden group/star">
-                         <div className="absolute inset-0 bg-white/20 scale-0 group-hover/star:scale-150 transition-transform duration-700 rounded-full"></div>
-                         <Zap size={32} strokeWidth={3} fill="currentColor" className="relative z-10" />
-                      </div>
-                      <div className="text-center md:text-left">
-                         <p className="text-[20px] font-bold leading-none">₹500 Credit</p>
-                         <p className="text-[12px] font-bold tracking-widest uppercase text-white/40 mt-1">Verified Gift</p>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </section>
+              </div>
+            ) : (
+              <div className="py-10 text-center">
+                <Calendar size={32} className="text-slate-200 mx-auto mb-3" />
+                <p className="text-slate-400 text-[14px] font-medium mb-4">{t.noPendingSessions}</p>
+                <Link href="/search" className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[13px] hover:bg-teal-700 transition-colors">
+                  {t.startRecovery}
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Care Team */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-[17px] font-bold text-slate-900">My Care Team</h2>
+              <span className="text-[12px] text-slate-400">{past.length} providers</span>
+            </div>
+
+            {past.length === 0 ? (
+              <div className="py-8 text-center border border-dashed border-slate-200 rounded-xl">
+                <Users size={24} className="text-slate-200 mx-auto mb-2" />
+                <p className="text-slate-400 text-[13px]">{t.buildTeam}</p>
+                <Link href="/search" className="text-teal-600 text-[12px] font-semibold hover:underline mt-1 inline-block">{t.browseSpecialists}</Link>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-3">
+                {past.slice(0, 4).map(a => (
+                  <Link
+                    key={a.id}
+                    href={`/patient/appointments/${a.id}`}
+                    className="group flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-teal-200 hover:bg-teal-50 transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-[13px] group-hover:bg-teal-100 group-hover:text-teal-700 transition-colors">
+                      {providerDisplayName(a).charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-slate-900 truncate">{providerDisplayName(a)}</div>
+                      <div className="text-[11px] text-slate-400 truncate">{a.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</div>
+                    </div>
+                    <ArrowRight size={13} className="text-slate-300 group-hover:text-teal-500 transition-colors shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
+        {/* Right: Activity + Referral */}
+        <div className="space-y-5">
 
-        {/* ── Right Column: Upcoming & Support ── */}
-        <aside className="space-y-6 sticky top-28">
-           
-           {/* Primary Highlight: Next Appointment */}
-           <div className="bg-white border border-bp-border rounded-3xl p-8 md:p-10 shadow-sm text-bp-primary relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-bp-accent/5 rounded-full blur-[60px] -mr-24 -mt-24 transition-transform group-hover:scale-110"></div>
-              
-              <div className="relative z-10">
-                 <div className="flex justify-between items-start mb-10">
-                    <div className="flex flex-col gap-1">
-                       <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-[0.2em]">{t.nextBooking}</p>
-                       <h2 className="text-[22px] font-bold tracking-tighter">{t.activeUpcoming}</h2>
-                    </div>
-                    {nextAppt && (
-                       <div className="w-14 h-14 rounded-2xl bg-bp-surface flex items-center justify-center animate-pulse border border-bp-border">
-                          <Clock size={24} strokeWidth={3} className="text-bp-accent" />
-                       </div>
-                    )}
-                 </div>
-
-                 {nextAppt ? (
-                    <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
-                       <div className="flex items-center gap-5 px-6 py-5 bg-bp-surface rounded-2xl border border-bp-border backdrop-blur-sm group-hover:bg-bp-accent/5 transition-all">
-                          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-bp-primary text-[28px] font-bold shadow-sm border border-bp-border">
-                             {providerDisplayName(nextAppt).charAt(0)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                             <h3 className="text-[19px] font-bold leading-tight mb-1 animate-in fade-in slide-in-from-left-2 duration-700">{providerDisplayName(nextAppt)}</h3>
-                             <div className="flex items-center gap-2 opacity-60">
-                                <Activity size={14} strokeWidth={3} className="text-bp-accent" />
-                                <p className="text-[11px] font-bold uppercase tracking-widest truncate">
-                                   {nextAppt.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}
-                                </p>
-                             </div>
-                          </div>
-                       </div>
-
-                       <div className="grid grid-cols-2 gap-3">
-                          <div className="p-6 bg-bp-surface rounded-2xl border border-bp-border flex flex-col gap-3 group-hover:bg-bp-accent/5 transition-all group/item">
-                             <div className="w-8 h-8 rounded-xl bg-bp-accent/20 flex items-center justify-center text-bp-accent group-hover/item:scale-110 transition-transform">
-                                <Calendar size={16} strokeWidth={3} />
-                             </div>
-                             <div>
-                                <p className="text-[16px] font-bold leading-none">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[0]}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-bp-body/30 mt-1">{formatApptDate(nextAppt.availabilities?.starts_at ?? '').split(',')[1]}</p>
-                             </div>
-                          </div>
-                          <div className="p-6 bg-bp-surface rounded-2xl border border-bp-border flex flex-col gap-3 group-hover:bg-bp-accent/5 transition-all group/item">
-                             <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover/item:scale-110 transition-transform">
-                                <Clock size={16} strokeWidth={3} />
-                             </div>
-                             <div>
-                                <p className="text-[16px] font-bold leading-none">{new Date(nextAppt.availabilities?.starts_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-bp-body/30 mt-1">{VISIT_TYPE_LABELS[nextAppt.visit_type]}</p>
-                             </div>
-                          </div>
-                       </div>
-
-                       <div className="space-y-4 pt-4">
-                          <Link
-                             href={`/patient/appointments/${nextAppt.id}`}
-                             className="flex items-center justify-center gap-4 w-full py-6 bg-white text-bp-primary text-[15px] font-bold rounded-[28px] hover:bg-bp-surface transition-all hover:scale-[1.03] active:scale-[0.97] shadow-2xl group/btn"
-                          >
-                             {t.manageBooking}
-                             <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
-                          </Link>
-                          <div className="flex items-center justify-center gap-2 py-2 px-4 bg-white/5 rounded-full border border-white/5">
-                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                             <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">{t.appointmentConfirmed}</p>
-                          </div>
-                       </div>
-                    </div>
-                 ) : (
-                    <div className="py-20 text-center space-y-6">
-                       <div className="w-20 h-20 rounded-[30px] bg-white/10 flex items-center justify-center mx-auto grayscale opacity-50">
-                          <Calendar size={32} />
-                       </div>
-                       <p className="text-[16px] font-medium text-white/60">{t.noPendingSessions}</p>
-                       <Link href="/search" className="inline-block px-8 py-3 bg-white text-bp-primary rounded-full text-[14px] font-bold uppercase tracking-widest shadow-lg hover:bg-bp-surface transition-colors">{t.startRecovery}</Link>
-                    </div>
-                 )}
+          {/* Activity widget */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 text-[15px] mb-4 flex items-center gap-2">
+              <Activity size={16} className="text-teal-500" />
+              Recovery Progress
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-[12px] mb-2">
+                  <span className="text-slate-500 font-medium">Sessions completed</span>
+                  <span className="font-bold text-slate-900">{past.length}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-teal-500 rounded-full transition-all duration-700"
+                    style={{ width: `${Math.min((past.length / 10) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-           </div>
-
-           {/* Support Mini Widget */}
-           <Link href="/patient/motio" className="bg-bp-surface rounded-3xl p-8 border border-bp-border group cursor-pointer hover:bg-white hover:shadow-xl transition-all duration-300 block">
-              <div className="flex items-center gap-5">
-                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-accent shadow-sm transition-transform group-hover:rotate-12">
-                    <MessageSquare size={20} />
-                 </div>
-                 <div className="flex-1">
-                    <p className="text-[15px] font-bold text-bp-primary leading-none mb-1">{t.needHelp}</p>
-                    <p className="text-[12px] font-medium text-bp-body/40">{t.askAIShort}</p>
-                 </div>
-                 <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center text-bp-body/20 group-hover:text-bp-accent group-hover:border-bp-accent/20 transition-colors">
-                    <ChevronRight size={16} strokeWidth={3} />
-                 </div>
+              <div>
+                <div className="flex justify-between text-[12px] mb-2">
+                  <span className="text-slate-500 font-medium">Upcoming sessions</span>
+                  <span className="font-bold text-slate-900">{upcoming.length}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-violet-400 rounded-full transition-all duration-700"
+                    style={{ width: `${Math.min((upcoming.length / 5) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-           </Link>
-        </aside>
+            </div>
+          </div>
+
+          {/* AI chat widget */}
+          <Link
+            href="/patient/motio"
+            className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-200 hover:border-violet-200 hover:bg-violet-50 transition-all"
+          >
+            <div className="w-11 h-11 rounded-xl bg-violet-100 flex items-center justify-center text-violet-600 group-hover:scale-105 transition-transform">
+              <Sparkles size={20} />
+            </div>
+            <div className="flex-1">
+              <div className="text-[14px] font-semibold text-slate-900 mb-0.5">{t.needHelp}</div>
+              <div className="text-[12px] text-slate-400">{t.askAIShort}</div>
+            </div>
+            <ArrowRight size={15} className="text-slate-300 group-hover:text-violet-500 transition-colors shrink-0" />
+          </Link>
+
+          {/* Referral widget */}
+          <div className="p-5 rounded-2xl bg-slate-900 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-xl -mr-10 -mt-10" />
+            <div className="relative z-10">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-teal-400 mb-2">{t.referralBadge}</div>
+              <h3 className="text-[18px] font-bold mb-2 leading-tight">{t.referralHeading}</h3>
+              <p className="text-slate-400 text-[13px] leading-relaxed mb-4">{t.referralBody}</p>
+              <button
+                onClick={() => { void handleCopy() }}
+                className="w-full py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-[13px] font-semibold transition-colors"
+              >
+                {referralCopied ? '✓ Copied!' : t.copyReferralLink}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

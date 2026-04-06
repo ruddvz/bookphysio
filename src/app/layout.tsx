@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bookphysio.in"),
   title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
   description:
-    "India's first physio-only booking platform. Find and book ICP-verified physiotherapists for home visits and in-clinic sessions across 18 cities. Same-day slots available.",
+    "India's first physio-only booking platform. Find and book IAP-verified physiotherapists for home visits and in-clinic sessions across 18 cities. Same-day slots available.",
   keywords: "physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India",
   icons: {
     icon: "/icon.png?v=20260404b",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
     description:
-      "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
     siteName: "BookPhysio",
     type: "website",
     url: "https://bookphysio.in",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
     description:
-      "India's first physio-only platform. ICP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
     images: ["/opengraph-image"],
   },
 };

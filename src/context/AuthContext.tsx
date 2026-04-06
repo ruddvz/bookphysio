@@ -11,14 +11,14 @@ interface AuthContextValue {
   session: Session | null
   user: User | null
   loading: boolean
-  signOut: () => void
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue>({
   session: null,
   user: null,
   loading: true,
-  signOut: () => {},
+  signOut: async () => {},
 })
 
 /** Try to load a preview/demo session mirrored into localStorage by the demo-session route. */
@@ -49,14 +49,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const queryClient = useQueryClient()
 
-  function signOut() {
+  async function signOut() {
     setSession(null)
     queryClient.clear()
-    clearDemoSession().catch(() => {
-      // Ignore demo cleanup failures during sign-out.
-    })
     const supabase = createClient()
-    supabase.auth.signOut().catch(() => { /* noop on static export */ })
+
+    await Promise.allSettled([
+      clearDemoSession(),
+      supabase.auth.signOut(),
+    ])
   }
 
   useEffect(() => {

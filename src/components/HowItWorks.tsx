@@ -1,95 +1,111 @@
-'use client'
-
 import Link from 'next/link'
-import { ArrowRight, CalendarCheck, Search, ShieldCheck, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { Search, SlidersHorizontal, CalendarCheck, HeartPulse, ArrowRight, ShieldCheck } from 'lucide-react'
 
 const steps = [
   {
-    step: '01',
+    num: '01',
     icon: Search,
     title: 'Search with context',
-    description: 'Start with the condition, then narrow by city, visit type, or fee range without leaving the page.',
+    desc: 'Start with your condition, then filter by city, visit type, and fee.',
+    color: 'bg-indigo-50 text-indigo-600',
   },
   {
-    step: '02',
+    num: '02',
     icon: SlidersHorizontal,
-    title: 'Compare verified options',
-    description: 'Read credentials, reviews, and availability together so the shortlist stays easy to compare.',
+    title: 'Compare options',
+    desc: 'Read credentials, ratings, and live availability easily.',
+    color: 'bg-violet-50 text-violet-600',
   },
   {
-    step: '03',
+    num: '03',
     icon: CalendarCheck,
-    title: 'Book in a few taps',
-    description: 'Pick a slot, confirm the session, and keep the handoff focused on care instead of friction.',
+    title: 'Book instantly',
+    desc: 'Select a slot and get instant confirmation — no callbacks.',
+    color: 'bg-teal-50 text-teal-600',
+  },
+  {
+    num: '04',
+    icon: HeartPulse,
+    title: 'Start recovery',
+    desc: 'Meet your verified physio and begin your journey.',
+    color: 'bg-rose-50 text-rose-600',
   },
 ]
 
-function StepCard({ step, icon: Icon, title, description }: (typeof steps)[number]) {
-  return (
-    <div className="bp-card group flex h-full flex-col p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#0f7668]/20 md:p-7">
-      <div className="flex items-start justify-between gap-4">
-        <div className="inline-flex h-11 items-center rounded-xl border border-bp-border bg-white px-4 text-[12px] font-bold uppercase tracking-[0.18em] text-bp-body/40">
-          {step}
-        </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-bp-surface text-bp-accent transition-all duration-300 group-hover:scale-105 group-hover:bg-bp-accent/10">
-          <Icon size={20} />
-        </div>
-      </div>
-
-      <h3 className="mt-6 text-[24px] font-semibold tracking-[-0.04em] text-[#18312d] group-hover:text-[#0f7668]">
-        {title}
-      </h3>
-      <p className="mt-3 text-[15px] leading-7 text-[#66706b]">{description}</p>
-    </div>
-  )
-}
-
 export default function HowItWorks() {
   return (
-    <section className="bp-section border-y border-bp-border/10 bg-bp-surface" aria-label="How booking works">
-      <div className="bp-shell">
-        <div className="flex flex-col items-start gap-6 text-left lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <div className="bp-kicker mb-5">
-              <Sparkles size={13} />
-              Simple workflow
-            </div>
-            <h2 className="bp-title">The booking flow should read in one pass.</h2>
-            <p className="bp-copy mt-4 max-w-xl">
-              Find a verified physiotherapist, check their availability, and book your session in under 60 seconds.
-            </p>
-          </div>
-
-          <Link
-            href="/search"
-            className="bp-button-primary"
-          >
-            Start searching
-            <ArrowRight size={16} />
-          </Link>
+    <section className="py-24 md:py-32 relative" aria-label="How booking works">
+      <div className="bp-container z-10 relative">
+        {/* Header */}
+        <div className="max-w-2xl mb-16 mx-auto text-center">
+          <div className="bp-kicker mb-4 mx-auto">Simple Workflow</div>
+          <h2 className="text-slate-900 mb-4 tracking-tight">The booking flow reads in one pass.</h2>
+          <p className="text-slate-500 text-[17px] leading-relaxed">
+            Find a verified physiotherapist, check their availability, and book your session — fast and frictionless.
+          </p>
         </div>
 
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {steps.map((step) => (
-            <StepCard key={step.step} {...step} />
-          ))}
-        </div>
+        {/* Steps sequence */}
+        <div className="relative mt-8">
+          {/* Desktop Connecting Line */}
+          <div className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-[2px] bg-slate-100 -z-10" />
 
-        <div className="mt-8 flex flex-col gap-4 rounded-3xl border border-bp-border bg-white px-6 py-6 md:flex-row md:items-center md:justify-between shadow-xl shadow-bp-primary/5">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f7668]">Trust signal</p>
-            <p className="mt-2 text-[18px] font-semibold tracking-[-0.03em] text-[#18312d]">
-              Verified care, transparent fees, and booking that works on mobile.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {['ICP verified', 'Home visit ready', 'UPI accepted'].map((item) => (
-              <span key={item} className="bp-chip bp-chip-active">
-                <ShieldCheck size={14} />
-                {item}
-              </span>
+          <div className="grid gap-8 lg:gap-4 lg:grid-cols-4">
+            {steps.map(({ num, icon: Icon, title, desc, color }, i) => (
+              <div
+                key={num}
+                className="relative group flex flex-col items-center text-center px-2"
+              >
+                {/* Desktop Arrow Head overlay on line */}
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-[36px] -right-[12px] z-0 text-slate-300">
+                    <ArrowRight size={20} />
+                  </div>
+                )}
+
+                {/* Step number pill above icon */}
+                <div className="bg-white border-2 border-slate-100 text-slate-400 font-bold text-[11px] px-3 py-1 rounded-full mb-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative z-10 group-hover:border-indigo-200 group-hover:text-indigo-600 transition-colors">
+                  Step {num}
+                </div>
+
+                {/* Icon Circle */}
+                <div className={`w-[88px] h-[88px] rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-50 relative z-10 bg-white group-hover:-translate-y-1 transition-transform`}>
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center ${color}`}>
+                    <Icon size={24} />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <h3 className="text-slate-900 text-[18px] font-bold mb-3 group-hover:text-indigo-600 transition-colors">
+                  {title}
+                </h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed max-w-[220px]">{desc}</p>
+              </div>
             ))}
           </div>
+        </div>
+
+        {/* Bottom trust bar */}
+        <div className="mt-20 flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-5 rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/20 max-w-5xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
+            {[
+              { icon: ShieldCheck, text: 'IAP Verified', color: 'text-indigo-600' },
+              { icon: CalendarCheck, text: 'Instant Confirmation', color: 'text-teal-600' },
+              { icon: Search, text: 'No Hidden Fees', color: 'text-slate-500' },
+            ].map(({ icon: Icon, text, color }) => (
+              <div key={text} className={`flex items-center gap-2 text-[14px] font-semibold ${color}`}>
+                <Icon size={16} />
+                {text}
+              </div>
+            ))}
+          </div>
+          <Link
+            href="/search"
+            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 text-white rounded-full text-[14px] font-bold hover:bg-indigo-700 hover:-translate-y-0.5 shadow-lg shadow-indigo-600/30 transition-all group shrink-0 w-full md:w-auto"
+          >
+            Start searching
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
     </section>

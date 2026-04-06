@@ -20,7 +20,7 @@ export default function AdminListings() {
   }
 
   function exportQueue() {
-    const csv = ['Provider,ICP,City,Status', `Dr. Arun K,ICP-MH-12345,Mumbai,${reviewState}`].join('\n')
+    const csv = ['Provider,ICP,City,Status', `Dr. Arun K,IAP-MH-12345,Mumbai,${reviewState}`].join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
     const downloadUrl = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
@@ -133,7 +133,7 @@ export default function AdminListings() {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-[14px] font-mono text-bp-body">ICP-MH-12345</td>
+                <td className="px-6 py-4 text-[14px] font-mono text-bp-body">IAP-MH-12345</td>
                 <td className="px-6 py-4 text-[14px] text-bp-body">Mumbai</td>
                 <td className="px-6 py-4 text-[14px] text-bp-body">2 hours ago</td>
                 <td className="px-6 py-4">

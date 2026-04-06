@@ -69,7 +69,7 @@ export async function GET(
       slug,
       title,
       bio,
-      icp_registration_no,
+      iap_registration_no,
       rating_avg,
       rating_count,
       experience_years,
@@ -108,6 +108,17 @@ export async function GET(
     lng: primaryLocation?.lng ?? null,
   })
 
+  // Redact the registration number for public viewing
+  let redactedRegNo = data.iap_registration_no || null
+  if (redactedRegNo) {
+    if (redactedRegNo.startsWith('STATE_')) {
+      const parts = redactedRegNo.split('_')
+      redactedRegNo = `STATE_${parts[1]}_CONFIDENTIAL`
+    } else {
+      redactedRegNo = 'CONFIDENTIAL'
+    }
+  }
+
   // Map raw data to ProviderProfile
   const profile: ProviderProfile = {
     id: data.id,
@@ -124,7 +135,7 @@ export async function GET(
     visit_types: collectVisitTypes(locations),
     city: publicLocations[0]?.city ?? null,
     bio: data.bio,
-    icp_registration_no: data.icp_registration_no,
+    iap_registration_no: redactedRegNo,
     locations: publicLocations,
     verified: data.verified || false,
     lat: publicCoordinates.lat,

@@ -19,7 +19,6 @@ export function getWeekDates(anchor: Date): Date[] {
   const day = anchor.getDay() // 0 = Sunday
   const monday = new Date(anchor)
   monday.setDate(anchor.getDate() - ((day + 6) % 7))
-  // Clear time for consistency
   monday.setHours(0, 0, 0, 0)
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(monday)
@@ -49,43 +48,87 @@ export function isSameDay(a: Date, b: Date): boolean {
     a.getDate() === b.getDate()
 }
 
-export function buildMockGrid(days: Date[]): WeekGrid {
+export function dateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+export interface AvailabilitySlot {
+  starts_at: string
+  ends_at: string
+  is_booked: boolean
+  is_blocked: boolean
+}
+
+export interface AppointmentSlot {
+  visit_type: string
+  patient: { full_name: string } | null
+  availabilities: { starts_at: string } | null
+}
+
+const SLOT_PRIORITY: Record<SlotStatus, number> = {
+  empty: 0,
+  available: 1,
+  blocked: 2,
+  booked: 3,
+}
+
+function mergeSlot(existing: Slot | undefined, incoming: Slot): Slot {
+  if (!existing) {
+    return incoming
+  }
+
+  if (SLOT_PRIORITY[incoming.status] > SLOT_PRIORITY[existing.status]) {
+    return incoming
+  }
+
+  return existing
+}
+
+export function buildGridFromData(
+  days: Date[],
+  availabilities: AvailabilitySlot[],
+  appointments: AppointmentSlot[],
+): WeekGrid {
   const grid: WeekGrid = {}
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
 
-  days.forEach((d) => {
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  // Initialize empty grid
+  for (const d of days) {
+    const key = dateKey(d)
     grid[key] = {}
-    const isToday = isSameDay(d, today)
-    const isPast = d < today && !isToday
-    const dayOfWeek = d.getDay()
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+  }
 
-    HOURS.forEach((h) => {
-      if (isWeekend) {
-        grid[key][h] = { status: 'blocked' }
-        return
-      }
-      if (isPast) {
-        if (h === 10 || h === 14) grid[key][h] = { status: 'booked', patientName: 'Patient', visitType: 'in_clinic' }
-        else grid[key][h] = { status: 'empty' }
-        return
-      }
-      if (isToday) {
-        if (h === 9) grid[key][h] = { status: 'booked', patientName: 'Anil Kumar', visitType: 'in_clinic' }
-        else if (h === 11) grid[key][h] = { status: 'booked', patientName: 'Priya Nair', visitType: 'home_visit' }
-        else if (h === 14) grid[key][h] = { status: 'booked', patientName: 'Suresh Pillai', visitType: 'home_visit' }
-        else if (h === 13) grid[key][h] = { status: 'blocked' }
-        else grid[key][h] = { status: 'available' }
-        return
-      }
-      // Future days
-      if (h === 10 || h === 15) grid[key][h] = { status: 'booked', patientName: 'Patient', visitType: 'in_clinic' }
-      else if (h === 12) grid[key][h] = { status: 'blocked' }
-      else grid[key][h] = { status: 'available' }
-    })
-  })
+  // Map appointments by start hour+date for quick lookup
+  const apptMap = new Map<string, AppointmentSlot>()
+  for (const appt of appointments) {
+    if (!appt.availabilities?.starts_at) continue
+    const dt = new Date(appt.availabilities.starts_at)
+    const key = `${dateKey(dt)}-${dt.getHours()}`
+    apptMap.set(key, appt)
+  }
+
+  // Fill from availabilities
+  for (const slot of availabilities) {
+    const dt = new Date(slot.starts_at)
+    const key = dateKey(dt)
+    const hour = dt.getHours()
+
+    if (!grid[key]) continue
+    if (!HOURS.includes(hour)) continue
+
+    if (slot.is_blocked) {
+      grid[key][hour] = mergeSlot(grid[key][hour], { status: 'blocked' })
+    } else if (slot.is_booked) {
+      const apptKey = `${key}-${hour}`
+      const appt = apptMap.get(apptKey)
+      grid[key][hour] = mergeSlot(grid[key][hour], {
+        status: 'booked',
+        patientName: appt?.patient?.full_name ?? 'Patient',
+        visitType: (appt?.visit_type as Slot['visitType']) ?? 'in_clinic',
+      })
+    } else {
+      grid[key][hour] = mergeSlot(grid[key][hour], { status: 'available' })
+    }
+  }
 
   return grid
 }

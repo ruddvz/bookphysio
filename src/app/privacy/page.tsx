@@ -103,7 +103,7 @@ export default function PrivacyPage() {
                     <ul className="list-none p-0 space-y-6">
                       {[
                         'To facilitate and confirm clinical bookings with verified physiotherapists.',
-                        'To verify the ICP registration and credentials of providers.',
+                        'To verify the IAP/State Council registration and credentials of providers.',
                         'To calculate booking charges, prepare GST-compliant summaries, and support future online payment flows when they are enabled.',
                         'To send real-time appointment reminders and clinical updates via MSG91.'
                       ].map((item, i) => (

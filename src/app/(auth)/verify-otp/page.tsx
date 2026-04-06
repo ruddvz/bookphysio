@@ -87,7 +87,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
             href={localePath(locale ?? 'en', '/login')}
             className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-bold text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10"
           >
-            {t.loginHeading}
+            {t.loginBackToLogin}
             <ArrowRight className="w-5 h-5 text-bp-accent" />
           </Link>
           <Link

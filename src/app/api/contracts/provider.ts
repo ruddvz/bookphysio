@@ -42,7 +42,7 @@ export interface ProviderReview {
 
 export interface ProviderProfile extends ProviderCard {
   bio: string | null
-  icp_registration_no: string | null
+  iap_registration_no: string | null
   locations: ProviderLocation[]
   reviews?: ProviderReview[]
   gallery_images?: string[]

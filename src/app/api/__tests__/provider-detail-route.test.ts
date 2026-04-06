@@ -34,7 +34,7 @@ describe('GET /api/providers/[id]', () => {
         slug: 'demo-provider',
         title: 'Dr.',
         bio: 'Clinical specialist',
-        icp_registration_no: 'ICP-12345',
+        iap_registration_no: 'IAP-12345',
         rating_avg: 4.9,
         rating_count: 12,
         experience_years: 9,

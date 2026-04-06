@@ -71,7 +71,7 @@ describe('/api/profile route', () => {
         bio: 'Manual therapy specialist',
         experience_years: 8,
         consultation_fee_inr: 900,
-        icp_registration_no: 'ICP-12345',
+        iap_registration_no: 'IAP-12345',
       },
       error: null,
     })
@@ -106,7 +106,7 @@ describe('/api/profile route', () => {
       bio: string | null
       experience_years: number | null
       consultation_fee_inr: number | null
-      icp_registration_no: string | null
+      iap_registration_no: string | null
     }
 
     expect(body).toMatchObject({
@@ -116,7 +116,7 @@ describe('/api/profile route', () => {
       bio: 'Manual therapy specialist',
       experience_years: 8,
       consultation_fee_inr: 900,
-      icp_registration_no: 'ICP-12345',
+      iap_registration_no: 'IAP-12345',
     })
     expect(usersSelectChain.eq).toHaveBeenCalledWith('id', 'provider-1')
     expect(providersSelectChain.eq).toHaveBeenCalledWith('id', 'provider-1')
@@ -139,13 +139,13 @@ describe('/api/profile route', () => {
     const response = await GET()
     const body = await response.json() as {
       role: string
-      icp_registration_no: string | null
+      iap_registration_no: string | null
       bio?: string | null
     }
 
     expect(response.status).toBe(200)
     expect(body.role).toBe('patient')
-    expect(body.icp_registration_no).toBeNull()
+    expect(body.iap_registration_no).toBeNull()
     expect(body.bio ?? null).toBeNull()
     expect(providersTable.select).not.toHaveBeenCalled()
   })

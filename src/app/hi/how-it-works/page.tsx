@@ -33,7 +33,7 @@ const PROVIDER_STEPS = [
   {
     icon: Building2,
     title: 'प्रैक्टिस रजिस्टर करें',
-    text: 'अपना प्रोफेशनल प्रोफाइल, ICP नंबर और क्लिनिक विवरण जोड़ें।',
+    text: 'अपना प्रोफेशनल प्रोफाइल, IAP/State Council नंबर और क्लिनिक विवरण जोड़ें।',
   },
   {
     icon: CalendarRange,

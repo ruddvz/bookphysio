@@ -88,7 +88,7 @@ describe('FeaturedDoctors', () => {
       expect.any(Function),
       { revalidateOnFocus: false }
     )
-    expect(screen.getByRole('heading', { name: 'Featured Physiotherapists' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: /top-rated on bookphysio/i })).toBeTruthy()
   })
 
   it('sorts featured doctors by rating and links each card to the doctor profile', () => {

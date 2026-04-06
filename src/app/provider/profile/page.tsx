@@ -16,7 +16,7 @@ interface ProfileForm {
   experience_years: string
   avatar_url: string | null
   title: ProviderTitle | null
-  icp_registration_no: string | null
+  iap_registration_no: string | null
 }
 
 interface ProfileResponse {
@@ -26,7 +26,7 @@ interface ProfileResponse {
   experience_years?: number | null
   avatar_url?: string | null
   title?: ProviderTitle | null
-  icp_registration_no?: string | null
+  iap_registration_no?: string | null
 }
 
 const EMPTY_FORM: ProfileForm = {
@@ -36,7 +36,7 @@ const EMPTY_FORM: ProfileForm = {
   experience_years: '',
   avatar_url: null,
   title: null,
-  icp_registration_no: null,
+  iap_registration_no: null,
 }
 
 function toFormState(data: ProfileResponse): ProfileForm {
@@ -53,7 +53,7 @@ function toFormState(data: ProfileResponse): ProfileForm {
         : '',
     avatar_url: data.avatar_url ?? null,
     title: data.title ?? null,
-    icp_registration_no: data.icp_registration_no ?? null,
+    iap_registration_no: data.iap_registration_no ?? null,
   }
 }
 
@@ -400,11 +400,11 @@ export default function ProviderProfile() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="icp-registration" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">ICP Registration</label>
+                  <label htmlFor="icp-registration" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">IAP/State Council Registration</label>
                   <input
                     id="icp-registration"
                     type="text"
-                    value={formData.icp_registration_no ?? ''}
+                    value={formData.iap_registration_no ?? ''}
                     readOnly
                     className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary/70 outline-none transition-all"
                     placeholder="Verification pending"
@@ -531,9 +531,9 @@ export default function ProviderProfile() {
               <div className="flex items-center gap-4 p-4 bg-bp-surface rounded-2xl border border-bp-border group/item transition-all hover:bg-white hover:shadow-lg">
                 <Award size={20} className="text-bp-accent" />
                 <div className="flex flex-col">
-                  <span className="text-[13px] font-bold text-bp-primary">ICP Medical ID</span>
+                  <span className="text-[13px] font-bold text-bp-primary">IAP/State Council ID</span>
                   <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
-                    {formData.icp_registration_no ? 'Verified ✓' : 'Pending'}
+                    {formData.iap_registration_no ? 'Verified ✓' : 'Pending'}
                   </span>
                 </div>
               </div>

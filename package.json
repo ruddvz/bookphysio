@@ -10,7 +10,8 @@
     "ping:indexnow": "node scripts/ping-indexnow.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "seed": "node scripts/seed-demo-data.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.55",

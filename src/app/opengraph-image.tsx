@@ -88,7 +88,7 @@ export default function OGImage() {
             marginBottom: 48,
           }}
         >
-          ICP-verified providers · Home visits · Same-day slots · 18 cities
+          IAP-verified providers · Home visits · Same-day slots · 18 cities
         </div>
 
         {/* Stats row */}

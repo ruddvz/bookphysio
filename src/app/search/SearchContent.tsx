@@ -12,7 +12,6 @@ import SearchFilters from './SearchFilters'
 import { Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
-import { cn } from '@/lib/utils'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
@@ -21,7 +20,7 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
   home_visit: 'Home Visit',
 }
 
-const DEMO_RESULTS = [
+export const DEMO_RESULTS = [
   {
     title: 'Sports Rehab Starter',
     specialty: 'ACL and runner return-to-play',
@@ -108,19 +107,6 @@ function providerToDoctor(p: ProviderCard): Doctor {
   }
 }
 
-const POPULAR_CITIES = [
-  { name: 'Mumbai', icon: '🏙️' },
-  { name: 'Delhi', icon: '🏛️' },
-  { name: 'Bangalore', icon: '💻' },
-  { name: 'Chennai', icon: '🌊' },
-  { name: 'Hyderabad', icon: '🕌' },
-  { name: 'Pune', icon: '📚' },
-  { name: 'Kolkata', icon: '🎭' },
-  { name: 'Ahmedabad', icon: '🏗️' },
-  { name: 'Jaipur', icon: '🏰' },
-  { name: 'Surat', icon: '💎' },
-]
-
 const CONDITION_SPECIALTY_MAP: Record<string, string> = {
   'sports rehab': 'Sports Physio',
   'sports injury': 'Sports Physio',
@@ -188,18 +174,6 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const condition = searchParams.get('condition')
   const conditionFilters = useMemo(() => resolveConditionFilters(condition), [condition])
 
-  // Handle city selection from chips
-  const handleCitySelect = (selectedCity: string) => {
-    const params = new URLSearchParams(searchParams)
-    if (selectedCity === city) {
-      params.delete('city')
-    } else {
-      params.set('city', selectedCity)
-    }
-    params.delete('location')
-    router.push(`/search?${params.toString()}`)
-  }
-
   const specialty = searchParams.get('specialty') ?? conditionFilters.specialty
   const visit_type = searchParams.get('visit_type') ?? conditionFilters.visitType
   const max_fee = searchParams.get('max_fee')
@@ -242,8 +216,8 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     <div className="flex flex-col min-h-screen bg-bp-surface selection:bg-bp-accent/10 selection:text-bp-accent">
       
       {/* ── Search Header ── */}
-      <header className="z-30 bg-white border-b border-bp-border flex-shrink-0">
-        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-6 md:py-8">
+      <header className="z-30 bg-[#fffaf4]/90 backdrop-blur-xl border-b border-[#ede3d5]/60 flex-shrink-0 sticky top-[88px]">
+        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-5 md:py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-bp-body/60">
@@ -268,33 +242,6 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
           <SearchFilters total={total} />
         </div>
       </header>
-
-      {/* ── City Chips Bar ── */}
-      <div className="bg-white border-b border-bp-border">
-        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-4">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-            <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest whitespace-nowrap mr-2">
-              <MapPin size={12} className="inline -mt-0.5 mr-1" />
-              {t.citiesLabel}
-            </span>
-            {POPULAR_CITIES.map((c) => (
-              <button
-                key={c.name}
-                onClick={() => handleCitySelect(c.name)}
-                className={cn(
-                  "flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-bold whitespace-nowrap transition-all active:scale-[0.98] border",
-                  city === c.name
-                    ? "bg-bp-primary text-white border-bp-primary shadow-lg shadow-bp-primary/10"
-                    : "bg-bp-surface text-bp-body border-bp-border hover:border-bp-accent/30 hover:bg-bp-accent/5 hover:text-bp-primary"
-                )}
-              >
-                <span className="text-[14px]">{c.icon}</span>
-                {c.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* ── Main Results ── */}
       <main className="flex-1">

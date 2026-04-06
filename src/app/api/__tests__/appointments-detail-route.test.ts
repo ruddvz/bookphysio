@@ -25,6 +25,15 @@ vi.mock('@/lib/upstash', () => ({
     del: (...args: unknown[]) => redisDelMock(...args),
   },
   getActiveBookingAppointmentHoldKey: (appointmentId: string) => `bp:booking:active-appointment:${appointmentId}`,
+  releaseRedisLockIfOwned: async (key: string, expectedValue: string) => {
+    const currentValue = await redisGetMock(key)
+
+    if (currentValue === expectedValue) {
+      return redisDelMock(key)
+    }
+
+    return 0
+  },
 }))
 
 function createAdminReadChain(result: unknown[] | Record<string, unknown>) {
@@ -88,6 +97,10 @@ describe('/api/appointments/[id] route', () => {
           status: 'confirmed',
           fee_inr: 1560,
           notes: storedNotes,
+          payments: [
+            { status: 'refunded', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
+            { status: 'paid', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
+          ],
           created_at: '2026-01-01T09:00:00.000Z',
           availabilities: { starts_at: '2026-01-02T09:00:00.000Z', ends_at: '2026-01-02T09:30:00.000Z', slot_duration_mins: 30 },
           locations: null,
@@ -106,6 +119,10 @@ describe('/api/appointments/[id] route', () => {
         status: 'confirmed',
         fee_inr: 1560,
         notes: storedNotes,
+        payments: [
+          { status: 'refunded', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
+          { status: 'paid', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
+        ],
         created_at: '2026-01-01T09:00:00.000Z',
         availabilities: { starts_at: '2026-01-02T09:00:00.000Z', ends_at: '2026-01-02T09:30:00.000Z', slot_duration_mins: 30 },
         locations: null,
@@ -135,6 +152,8 @@ describe('/api/appointments/[id] route', () => {
       home_visit_address: '12 Palm Street, Bengaluru',
       patient_profile: { full_name: 'Patient One' },
       legacy_notes: null,
+      payment_status: 'paid',
+      payment_amount_inr: 1560,
     })
   })
 

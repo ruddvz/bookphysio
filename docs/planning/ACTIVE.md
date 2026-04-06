@@ -22,6 +22,7 @@
 - [x] Stale `NEXT_PUBLIC_MAPBOX_TOKEN` removed from Vercel environment variables
 - [~] Repo fix ready for next deploy: empty-state `GET /api/auth/demo-session` now returns `204` so public pages stop logging a 404 when no demo session exists
 - [~] Public providers search no longer 500s in production; a runtime fallback is deployed while the forward Supabase RPC migration still needs authenticated apply access
+- [~] Forward Supabase migration added to restrict public `availabilities` reads to unbooked slots for verified active providers; authenticated apply access is still required before calling production fully rolled out
 - [~] Production smoke pass completed on apex domain; public pages, sitemap, robots, and providers API return `200`
 - [ ] External follow-up: Google Search Console verification + sitemap submission
 - [ ] External follow-up: Bing Webmaster Tools submission

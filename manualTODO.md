@@ -1,114 +1,150 @@
-# bookphysio.in — Manual TODO
+# bookphysio.in — Manual Release Checklist
 
-Things that require access outside the codebase (Supabase Dashboard, DNS, Google Console, etc.)
+Only the tasks that require external dashboard access are listed here.
+
+If you want the shortest path, do only the `Required Now` section first.
 
 ---
 
-## 1. Push to Vercel (run this now)
+## Required Now
 
+### 1. Apply Supabase migrations 025–029
+
+Reason: these include security fixes and the public availability privacy fix. The app code is already green locally, but production is not fully safe until these DB changes are applied.
+
+Important:
+- The `supabase/migrations/` folder is the full history of the database, not a checklist of things to rerun on every deploy.
+- If you are creating a brand-new database, you apply all migrations from the beginning.
+- If you are updating the existing production database, you apply only the migrations that have not already been run there.
+- For this project, the production database is already in use, so the pending forward migrations are `025` through `029`, not `001` through `029` again.
+
+Project:
+- Supabase project ref: `wcihggtkdflyjkbqajvg`
+- Dashboard URL pattern: `https://supabase.com/dashboard/project/wcihggtkdflyjkbqajvg`
+
+Optional verification first:
+Run this in Supabase SQL Editor if you want to see which migrations are already recorded on production:
+
+```sql
+select version, name
+from supabase_migrations.schema_migrations
+order by version;
+```
+
+How to do it:
+1. Open the Supabase dashboard for the production project.
+2. Go to `SQL Editor`.
+3. Click `New query`.
+4. In VS Code, open each file below, copy its full contents, paste into the SQL editor, and click `Run`.
+5. Wait for success before moving to the next file.
+6. Run them in this exact order:
+
+Required migration files:
+- `supabase/migrations/025_fix_handle_new_user_role.sql`
+- `supabase/migrations/026_incremental_rating_trigger.sql`
+- `supabase/migrations/027_notifications_ttl.sql`
+- `supabase/migrations/028_payments_gateway_column.sql`
+- `supabase/migrations/029_restrict_public_availability_read.sql`
+
+What they do:
+- `025`: blocks admin-role escalation during signup.
+- `026`: switches provider ratings to an incremental update model.
+- `027`: adds notification expiry and cleanup support.
+- `028`: adds the `payments.gateway` column.
+- `029`: restricts public availability reads to unbooked slots for verified active providers.
+
+If any migration fails:
+- Stop.
+- Copy the exact SQL error.
+- Bring it back here and I can help you fix it.
+
+### 2. Deploy the verified code
+
+After the migrations succeed, deploy the repo state.
+
+If you want to do it yourself:
 ```bash
 git push
 ```
 
-Vercel auto-deploys on push. You currently have 2 commits ahead of origin.
+Vercel auto-deploys on push.
+
+If you prefer, tell me once step 1 is done and I can handle the deploy-side work from here.
 
 ---
 
-## 2. Apply DB Migrations (Supabase Dashboard → SQL Editor)
+## Optional But Recommended After Release
 
-Run these **in order**. Each file is in `supabase/migrations/`.
+### 3. Enable notification cleanup cron
 
-### 025 — Security: Block admin privilege escalation via signup (CRITICAL — do this first)
-```
-supabase/migrations/025_fix_handle_new_user_role.sql
-```
-Fixes a hole where any user could set `role: 'admin'` in signup metadata. After this, only `'provider'` is whitelisted from metadata; everything else defaults to `'patient'`.
+Only after migration `027` is applied.
 
-### 026 — Performance: Incremental rating trigger
-```
-supabase/migrations/026_incremental_rating_trigger.sql
-```
-Replaces a full `SELECT AVG(rating)` table scan on every review insert with an O(1) running-total approach. Includes a one-time backfill of `rating_sum` from existing reviews — safe to run on live data.
-
-### 027 — Maintenance: Notifications TTL + cleanup function
-```
-supabase/migrations/027_notifications_ttl.sql
-```
-Adds a 90-day expiry to notifications. Creates `cleanup_expired_notifications()` function.
-
-### 028 — Feature: Payments gateway column
-```
-supabase/migrations/028_payments_gateway_column.sql
-```
-Adds `gateway` column to `payments` table (default `'razorpay'`). Needed for future multi-gateway support.
-
----
-
-## 3. Enable Notification Cleanup Cron (optional — after applying 027)
-
-In Supabase Dashboard → SQL Editor, run:
+In Supabase Dashboard → `SQL Editor`, run:
 
 ```sql
 SELECT cron.schedule('cleanup-notifications', '0 3 * * *', 'SELECT cleanup_expired_notifications()');
 ```
 
-Only works if the `pg_cron` extension is enabled (Database → Extensions → pg_cron → Enable).
+If `pg_cron` is not enabled yet:
+1. Go to `Database` → `Extensions`
+2. Enable `pg_cron`
+3. Re-run the SQL above
+
+### 4. Add a JWT role custom claim hook
+
+Reason: removes one DB round-trip on authenticated requests.
+
+In Supabase Dashboard:
+1. Go to `Authentication` → `Hooks`
+2. Add a custom access token hook
+3. Inject the user `role` claim into the JWT payload
+
+This is a performance improvement, not a release blocker.
 
 ---
 
-## 4. JWT Custom Claim for Role (performance win — no code needed)
+## External Follow-Up
 
-In Supabase Dashboard → **Authentication → Hooks**, add a custom access token hook that injects `role` into the JWT payload. This eliminates a DB round-trip on every authenticated request (RLS policies currently call `auth_role()` which queries the DB).
-
-Supabase has a built-in hook editor for this — no migrations needed.
-
----
-
-## 5. DNS: Add www subdomain
+### 5. Add the `www` DNS record
 
 At your domain registrar, add:
+
+```text
+A  www.bookphysio.in  -> 76.76.21.21
 ```
-A  www.bookphysio.in  →  76.76.21.21
-```
-Or point nameservers to Vercel's nameservers (preferred — lets Vercel manage SSL).
 
----
+Or move DNS fully to Vercel nameservers if you want Vercel to manage this.
 
-## 6. Google Search Console
+### 6. Submit the site to Google Search Console
 
-1. Go to https://search.google.com/search-console
+1. Go to `https://search.google.com/search-console`
 2. Add property: `bookphysio.in`
-3. Verify via DNS TXT record or HTML file
+3. Verify ownership
 4. Submit sitemap: `https://bookphysio.in/sitemap.xml`
 
----
+### 7. Submit the site to Bing Webmaster Tools
 
-## 7. Bing Webmaster Tools
-
-1. Go to https://www.bing.com/webmasters
+1. Go to `https://www.bing.com/webmasters`
 2. Add site: `bookphysio.in`
 3. Submit sitemap: `https://bookphysio.in/sitemap.xml`
 
+### 8. Add real production provider data
+
+Production currently returns zero search results because there are no real providers in the live DB.
+
+Do this only when you have real provider records ready.
+
+Options:
+- Supabase Dashboard → `Table Editor` → `providers`
+- Apply a reviewed production-safe seed/import process
+
+Do not run the current `supabase/seed.sql` on production unless you explicitly want mock/demo-like records there.
+
 ---
 
-## 8. Seed Production Provider Data
+## Fastest Real-World Order
 
-The production DB currently returns zero results from `/api/providers`. Once you have real providers, they need to be inserted via:
-- Supabase Dashboard → Table Editor → `providers`
-- Or run `supabase/seed.sql` against production (review it first — it inserts mock data)
-
----
-
-## Status
-
-| # | Task | Priority |
-|---|------|----------|
-| 1 | `git push` | Do now |
-| 2 | Apply migration 025 | Critical (security) |
-| 2 | Apply migrations 026–028 | High (performance/feature) |
-| 3 | pg_cron cleanup schedule | Low |
-| 4 | JWT custom claim hook | Medium (performance) |
-| 5 | www DNS | Medium |
-| 6 | Google Search Console | Medium |
-| 7 | Bing Webmaster | Low |
-| 8 | Seed providers | When ready |
+1. Apply migrations `025` → `029` in Supabase SQL Editor.
+2. Tell me they succeeded, or paste the first error if one fails.
+3. Then deploy the verified code.
+4. Do SEO/DNS/provider-data follow-up later.

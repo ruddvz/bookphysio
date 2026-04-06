@@ -1,104 +1,117 @@
 import Link from 'next/link'
-import { BadgeCheck, Clock3, Home, MapPin, ReceiptText, ShieldCheck, Sparkles } from 'lucide-react'
+import { BadgeCheck, Clock3, Home, MapPin, ShieldCheck, ArrowRight } from 'lucide-react'
 
 const features = [
   {
     icon: BadgeCheck,
-    title: 'Verified clinicians',
-    description: 'Every profile surfaces registration, experience, and patient feedback before it hits search.',
+    title: 'IAP Verified Clinicians',
+    desc: 'Every profile shows registration number, degree, and patient feedback — before it hits search.',
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50',
   },
   {
     icon: Home,
-    title: 'Home visits included',
-    description: 'Book care where the patient needs it, without separating in-clinic and at-home flows.',
+    title: 'Home Visits Included',
+    desc: 'Book care where the patient needs it — home and clinic options always shown side by side.',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50',
   },
   {
     icon: Clock3,
-    title: 'Same-day slots',
-    description: 'Availability appears in-line so the choice feels immediate, not buried in a calendar.',
+    title: 'Same-Day Slots',
+    desc: 'Availability shows inline so your booking feels immediate, not buried inside a full calendar.',
+    color: 'text-amber-600',
+    bg: 'bg-amber-50',
   },
   {
-    icon: ReceiptText,
-    title: 'Transparent pricing',
-    description: 'Fees, GST, and payment type stay visible up front so the booking flow stays trust-first.',
+    icon: ShieldCheck,
+    title: 'Transparent Pricing',
+    desc: 'Fees, GST, and payment method stay visible upfront. No surprises at checkout.',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50',
   },
 ]
 
-function FeatureCard({ icon: Icon, title, description }: (typeof features)[number]) {
-  return (
-    <div className="bp-card-soft p-5 transition-all duration-300 hover:-translate-y-1 hover:border-bp-accent/20 hover:bg-white">
-      <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-bp-surface text-bp-accent">
-        <Icon size={20} />
-      </div>
-      <h3 className="mt-4 text-[20px] font-semibold tracking-[-0.03em] text-bp-primary">{title}</h3>
-      <p className="mt-2 text-[14px] leading-6 text-bp-body/80">{description}</p>
-    </div>
-  )
-}
+const cities = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad']
 
 export default function HealthSystems() {
   return (
-    <section className="bp-section bg-bp-surface/30" aria-label="Patient trust signals">
-      <div className="bp-shell">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div className="max-w-xl">
-            <div className="bp-kicker mb-5">
-              <Sparkles size={13} />
-              Built for trust
-            </div>
-            <h2 className="bp-title">Everything a patient should see before booking.</h2>
-            <p className="bp-copy mt-4">
-              Every detail patients need to feel confident - credentials, visit format, fees, and availability - shown upfront.
+    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Platform trust signals">
+      <div className="bp-container">
+        <div className="grid gap-16 lg:grid-cols-2 items-center">
+
+          {/* Left column */}
+          <div>
+            <div className="bp-kicker mb-4">Built for Trust</div>
+            <h2 className="text-slate-900 mb-4">Everything a patient needs to feel confident.</h2>
+            <p className="text-slate-500 text-[16px] leading-relaxed mb-8">
+              Credentials, visit format, fees, and availability — shown upfront, not buried in steps.
             </p>
 
-            <div className="mt-8 space-y-3">
-              {['ICP verified providers', 'In-clinic + home visit modes', 'Transparent INR pricing', 'Mobile-first booking flow'].map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-[20px] border border-bp-border bg-white px-4 py-3 text-[14px] text-bp-body">
-                  <ShieldCheck size={16} className="text-bp-accent" />
+            <div className="space-y-3 mb-8">
+              {[
+                'ICP registered & verified',
+                'In-clinic + home visit modes',
+                'Transparent INR pricing',
+                'Mobile-first booking flow',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-3 text-[14px] font-medium text-slate-700">
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                    <ShieldCheck size={12} className="text-indigo-600" />
+                  </div>
                   {item}
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/search"
-                className="bp-button-primary"
-              >
+            <div className="flex flex-wrap gap-3">
+              <Link href="/search" className="bp-btn bp-btn-primary">
                 Browse providers
+                <ArrowRight size={14} />
               </Link>
-              <Link
-                href="/how-it-works"
-                className="bp-button-secondary"
-              >
-                See how booking works
+              <Link href="/how-it-works" className="bp-btn bp-btn-secondary">
+                See how it works
               </Link>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              {features.map((feature) => (
-                <FeatureCard key={feature.title} {...feature} />
+          {/* Right column */}
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {features.map(({ icon: Icon, title, desc, color, bg }) => (
+                <div
+                  key={title}
+                  className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+                >
+                  <div className={`w-11 h-11 rounded-xl ${bg} flex items-center justify-center mb-4`}>
+                    <Icon size={20} className={color} />
+                  </div>
+                  <h3 className="text-slate-900 font-semibold text-[15px] mb-1.5">{title}</h3>
+                  <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
+                </div>
               ))}
             </div>
 
-            <div className="bp-card flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-bp-primary text-white">
-                  <MapPin size={20} />
+            {/* Coverage card */}
+            <div className="p-5 rounded-2xl border border-slate-200 bg-white">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center">
+                  <MapPin size={18} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-bp-body/60">Coverage</p>
-                  <p className="text-[18px] font-semibold tracking-[-0.03em] text-bp-primary">18 Indian cities and growing</p>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Coverage</div>
+                  <div className="text-[15px] font-semibold text-slate-900">18 Indian cities & growing</div>
                 </div>
               </div>
-
               <div className="flex flex-wrap gap-2">
-                {['Mumbai', 'Delhi', 'Bengaluru', 'Pune'].map((city) => (
-                  <span key={city} className="bp-chip">
+                {cities.map(city => (
+                  <Link
+                    key={city}
+                    href={`/search?location=${encodeURIComponent(city)}`}
+                    className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-medium hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-colors"
+                  >
                     {city}
-                  </span>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -9,12 +9,21 @@ import {
   getActiveBookingAppointmentHoldKey,
   getActiveBookingHoldTtlSeconds,
   getActiveBookingIpHoldKey,
+  getProviderAvailabilityRewriteLockKey,
   redis,
+  releaseRedisLockIfOwned,
 } from '@/lib/upstash'
 import { buildAppointmentNotes, getVisitTypeConsultationFee } from '@/lib/booking/policy'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
+
+type PaymentRecord = {
+  status: 'created' | 'paid' | 'failed' | 'refunded'
+  amount_inr: number
+  gst_amount_inr: number
+  created_at?: string
+}
 
 function jsonNoStore(body: unknown, init?: ResponseInit) {
   const response = NextResponse.json(body, init)
@@ -22,11 +31,24 @@ function jsonNoStore(body: unknown, init?: ResponseInit) {
   return response
 }
 
-function withSanitizedAppointmentNotes<T extends { notes: string | null }>(appointment: T) {
+function withSanitizedAppointmentNotes<T extends { notes: string | null; payments?: PaymentRecord[] | PaymentRecord | null }>(appointment: T) {
+  const payments = Array.isArray(appointment.payments)
+    ? [...appointment.payments]
+    : appointment.payments ? [appointment.payments] : []
+  const sortedPayments = payments.sort((left, right) => {
+    const rightCreatedAt = right.created_at ? Date.parse(right.created_at) : 0
+    const leftCreatedAt = left.created_at ? Date.parse(left.created_at) : 0
+    return rightCreatedAt - leftCreatedAt
+  })
+  const latestPayment = sortedPayments[0] ?? null
+
   return {
     ...appointment,
     notes: null,
     provider_notes: null,
+    payment_status: latestPayment?.status ?? null,
+    payment_amount_inr: latestPayment?.amount_inr ?? null,
+    payment_gst_amount_inr: latestPayment?.gst_amount_inr ?? null,
   }
 }
 
@@ -35,11 +57,18 @@ async function releaseBookingHoldIfOwned(holdKey: string | null, expectedValue: 
     return
   }
 
-  const currentValue = await redis.get<string>(holdKey)
-
-  if (currentValue === expectedValue) {
-    await redis.del(holdKey)
+  try {
+    await releaseRedisLockIfOwned(holdKey, expectedValue)
+  } catch (error) {
+    console.error('[api/appointments] Failed to release booking hold:', error)
   }
+}
+
+async function isProviderAvailabilityBeingUpdated(providerId: string) {
+  const availabilityRewriteLockKey = getProviderAvailabilityRewriteLockKey(providerId)
+  const activeAvailabilityRewrite = await redis.get<string>(availabilityRewriteLockKey)
+
+  return typeof activeAvailabilityRewrite === 'string' && activeAvailabilityRewrite.trim().length > 0
 }
 
 export async function POST(request: NextRequest) {
@@ -83,6 +112,15 @@ export async function POST(request: NextRequest) {
 
   if (visit_type === 'home_visit' && !patient_address?.trim()) {
     return jsonNoStore({ error: 'A patient address is required for home visits.' }, { status: 400 })
+  }
+
+  try {
+    if (await isProviderAvailabilityBeingUpdated(provider_id)) {
+      return jsonNoStore({ error: 'Provider availability is being updated. Please retry in a few seconds.' }, { status: 503 })
+    }
+  } catch (error) {
+    console.error('[api/appointments] Availability rewrite lock unavailable:', error)
+    return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
   }
 
   const { data: existingBookings, error: existingBookingsError } = await supabaseAdmin
@@ -165,6 +203,17 @@ export async function POST(request: NextRequest) {
       console.error('[api/appointments] Active booking hold unavailable:', error)
       return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
     }
+  }
+
+  try {
+    if (await isProviderAvailabilityBeingUpdated(provider_id)) {
+      await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+      return jsonNoStore({ error: 'Provider availability is being updated. Please retry in a few seconds.' }, { status: 503 })
+    }
+  } catch (error) {
+    await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+    console.error('[api/appointments] Availability rewrite lock unavailable:', error)
+    return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
   }
 
   const { data: reservedSlot, error: reserveError } = await supabaseAdmin
@@ -281,7 +330,7 @@ export async function GET(request: NextRequest) {
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
   const appointmentQuery = supabaseAdmin
     .from('appointments')
-    .select('*, availabilities (*), locations (*)')
+    .select('*, availabilities (*), locations (*), payments (status, amount_inr, gst_amount_inr, created_at)')
     .eq(role === 'provider' ? 'provider_id' : 'patient_id', user.id)
 
   const { data, error } = await appointmentQuery.order('created_at', { ascending: false })
@@ -307,7 +356,9 @@ export async function GET(request: NextRequest) {
           ...appointment,
           patient: patientSummary
             ? {
+                id: patientSummary.id,
                 full_name: patientSummary.full_name,
+                phone: patientSummary.phone,
                 avatar_url: patientSummary.avatar_url,
               }
             : null,

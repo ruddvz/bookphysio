@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  buildGridFromData,
+  dateKey,
   formatHour,
   getWeekDates,
   isSameDay,
@@ -48,5 +50,66 @@ describe('Provider Calendar Utils', () => {
     const range = formatMonthRange(days)
     expect(range).toContain('Mar')
     expect(range).toContain('Apr')
+  })
+
+  it('keeps booked slots visible when a later slot in the same hour is available', () => {
+    const day = new Date(2026, 2, 30)
+    const bookedStart = new Date(2026, 2, 30, 9, 0)
+    const laterAvailableStart = new Date(2026, 2, 30, 9, 30)
+
+    const grid = buildGridFromData(
+      [day],
+      [
+        {
+          starts_at: bookedStart.toISOString(),
+          ends_at: new Date(2026, 2, 30, 9, 30).toISOString(),
+          is_booked: true,
+          is_blocked: false,
+        },
+        {
+          starts_at: laterAvailableStart.toISOString(),
+          ends_at: new Date(2026, 2, 30, 10, 0).toISOString(),
+          is_booked: false,
+          is_blocked: false,
+        },
+      ],
+      [
+        {
+          visit_type: 'in_clinic',
+          patient: { full_name: 'Booked Patient' },
+          availabilities: { starts_at: bookedStart.toISOString() },
+        },
+      ],
+    )
+
+    expect(grid[dateKey(day)][9]).toMatchObject({
+      status: 'booked',
+      patientName: 'Booked Patient',
+    })
+  })
+
+  it('keeps blocked slots visible when a later slot in the same hour is available', () => {
+    const day = new Date(2026, 2, 30)
+
+    const grid = buildGridFromData(
+      [day],
+      [
+        {
+          starts_at: new Date(2026, 2, 30, 10, 0).toISOString(),
+          ends_at: new Date(2026, 2, 30, 10, 30).toISOString(),
+          is_booked: false,
+          is_blocked: true,
+        },
+        {
+          starts_at: new Date(2026, 2, 30, 10, 30).toISOString(),
+          ends_at: new Date(2026, 2, 30, 11, 0).toISOString(),
+          is_booked: false,
+          is_blocked: false,
+        },
+      ],
+      [],
+    )
+
+    expect(grid[dateKey(day)][10]).toMatchObject({ status: 'blocked' })
   })
 })

@@ -40,7 +40,7 @@ describe('ProviderProfile', () => {
       bio: 'Manual therapy focus',
       experience_years: 8,
       consultation_fee_inr: 900,
-      icp_registration_no: 'ICP-12345',
+      iap_registration_no: 'IAP-12345',
     })))
 
     render(<ProviderProfile />)
@@ -49,7 +49,7 @@ describe('ProviderProfile', () => {
     expect(screen.getByDisplayValue('Manual therapy focus')).toBeInTheDocument()
     expect(screen.getByDisplayValue('900')).toBeInTheDocument()
     expect(screen.getByDisplayValue('8')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('ICP-12345')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('IAP-12345')).toBeInTheDocument()
   })
 
   it('persists edited profile fields through /api/profile', async () => {
@@ -67,7 +67,7 @@ describe('ProviderProfile', () => {
         bio: 'Manual therapy focus',
         experience_years: 8,
         consultation_fee_inr: 900,
-        icp_registration_no: 'ICP-12345',
+        iap_registration_no: 'IAP-12345',
       })
     })
 

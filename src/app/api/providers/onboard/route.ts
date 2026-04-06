@@ -10,7 +10,10 @@ const onboardSchema = z.object({
     email: z.string().optional(),
   }),
   step2: z.object({
-    icpNumber: z.string(),
+    registrationType: z.enum(['IAP', 'STATE']).default('IAP'),
+    iapNumber: z.string().optional(),
+    stateRegistrationNumber: z.string().optional(),
+    stateName: z.string().optional(),
     degree: z.string(),
     experienceYears: z.string(),
     specialties: z.array(z.string()),
@@ -69,7 +72,9 @@ export async function POST(request: NextRequest) {
         id: user.id, // ID matches user ID
         title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
-        icp_registration_no: step2.icpNumber,
+        iap_registration_no: step2.registrationType === 'STATE' 
+          ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
+          : (step2.iapNumber || ''),
         consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
         verified: false,
         active: false, // Inactive until admin approves

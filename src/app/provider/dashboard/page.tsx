@@ -2,59 +2,41 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { CalendarDays, Clock, CircleAlert, Activity, TrendingUp, BarChart3, ArrowRight, Zap, Target, Calendar, ArrowUpRight, CheckCircle2, MessageSquare } from 'lucide-react'
-import type { ProviderUserProfile } from '@/app/api/contracts/user'
+import {
+  Calendar, Clock, CircleAlert, ArrowRight, ArrowUpRight,
+  BarChart3, Users, MessageSquare, CheckCircle2, TrendingUp,
+  CalendarCheck, AlertCircle,
+} from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { cn } from '@/lib/utils'
 import { PROVIDER_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 import {
-  filterToday,
-  filterThisWeek,
-  getNextAppointment,
-  formatSlotTime,
-  patientDisplayName,
-  type ProviderAppointment,
+  filterToday, filterThisWeek, getNextAppointment,
+  formatSlotTime, patientDisplayName, type ProviderAppointment,
 } from './provider-dashboard-utils'
 
-const VISIT_TYPE_LABELS: Record<string, string> = {
-  in_clinic: 'Clinic Visit',
-  home_visit: 'Home Session',
+const VISIT_LABELS: Record<string, { label: string; color: string }> = {
+  in_clinic:  { label: 'Clinic',     color: 'bg-teal-50 text-teal-700 border-teal-100' },
+  home_visit: { label: 'Home Visit', color: 'bg-violet-50 text-violet-700 border-violet-100' },
 }
 
-const VISIT_TYPE_COLORS: Record<string, string> = {
-  in_clinic: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
-  home_visit: 'bg-bp-secondary/10 text-bp-secondary border-bp-secondary/20',
-}
-
-type DashboardTab = 'today' | 'week'
-
-type ProfileSummary = Pick<ProviderUserProfile, 'avatar_url' | 'icp_registration_no'>
-
-function parseProfileSummary(data: unknown): ProfileSummary | null {
-   if (!data || typeof data !== 'object') {
-      return null
-   }
-
-   const record = data as Record<string, unknown>
-
-   return {
-      avatar_url: typeof record.avatar_url === 'string' ? record.avatar_url : null,
-      icp_registration_no: typeof record.icp_registration_no === 'string' ? record.icp_registration_no : null,
-   }
+const STATUS_COLORS: Record<string, string> = {
+  confirmed:  'bg-emerald-50 text-emerald-700 border-emerald-100',
+  pending:    'bg-amber-50 text-amber-700 border-amber-100',
+  cancelled:  'bg-red-50 text-red-600 border-red-100',
+  completed:  'bg-slate-50 text-slate-500 border-slate-100',
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-16">
-      <Skeleton className="h-12 w-64 mb-10 rounded-[24px] bg-bp-border/40" />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-40 rounded-[40px] bg-bp-border/30" />
-        ))}
+    <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+      <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
+      <div className="grid grid-cols-3 gap-4">
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />)}
       </div>
-      <Skeleton className="h-96 rounded-[40px] bg-bp-border/20" />
+      <Skeleton className="h-80 rounded-2xl bg-slate-100" />
     </div>
   )
 }
@@ -65,345 +47,301 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
   const [appointments, setAppointments] = useState<ProviderAppointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [activeTab, setActiveTab] = useState<DashboardTab>('today')
-  const [profile, setProfile] = useState<ProfileSummary | null>(null)
+  const [tab, setTab] = useState<'today' | 'week'>('today')
+  const [isOnline, setIsOnline] = useState(true)
 
-   const rawDisplayName = typeof user?.user_metadata?.full_name === 'string' ? user.user_metadata.full_name : 'Doctor'
-   const displayName = rawDisplayName.replace(/^Dr\.?\s+/i, '').split(' ')[0] ?? 'Doctor'
-
+  const first = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Doctor'
   const hour = new Date().getHours()
-  const greeting = hour < 12 ? t.greetingMorning : hour < 17 ? t.greetingAfternoon : t.greetingEvening
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-    const loadDashboard = useCallback(async () => {
-    setLoading(true)
-    setError(false)
-      try {
-         const appointmentsResponse = await fetch('/api/appointments')
-         if (!appointmentsResponse.ok) {
-            throw new Error('Failed to fetch appointments')
-         }
+  const fetchAppts = useCallback(async () => {
+    setLoading(true); setError(false)
+    try {
+      const r = await fetch('/api/provider/appointments')
+      if (!r.ok) throw new Error()
+      const d: { appointments?: ProviderAppointment[] } = await r.json()
+      setAppointments(d.appointments ?? [])
+    } catch { setError(true) } finally { setLoading(false) }
+  }, [])
 
-         const data: { appointments?: ProviderAppointment[] } = await appointmentsResponse.json()
-         setAppointments(data.appointments ?? [])
-      } catch {
-         setError(true)
-         setLoading(false)
-         return
-      }
-
-      try {
-         const profileResponse = await fetch('/api/profile')
-         if (!profileResponse.ok) {
-            setProfile(null)
-         } else {
-            setProfile(parseProfileSummary(await profileResponse.json()))
-         }
-      } catch {
-         setProfile(null)
-      } finally {
-         setLoading(false)
-      }
-   }, [])
-
-  useEffect(() => {
-      void loadDashboard()
-   }, [loadDashboard])
+  useEffect(() => { void fetchAppts() }, [fetchAppts])
 
   if (loading) return <DashboardSkeleton />
 
-   if (error) {
-      return (
-         <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
-            <EmptyState
-               title={t.errorTitle}
-               description={t.errorDesc}
-               icon={CircleAlert}
-               className="border border-bp-border bg-white rounded-[40px] shadow-sm"
-               action={
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                     <button
-                        type="button"
-                        onClick={() => {
-                           void loadDashboard()
-                        }}
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] bg-bp-primary px-8 py-4 text-[14px] font-bold text-white transition-all hover:bg-bp-accent active:scale-[0.98]"
-                     >
-                        {t.retrySync}
-                     </button>
-                     <Link
-                        href="/provider/calendar"
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-border bg-bp-surface px-8 py-4 text-[14px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent active:scale-[0.98]"
-                     >
-                        {t.openCalendar}
-                     </Link>
-                     <Link
-                        href="/provider/ai-assistant"
-                        className="inline-flex items-center justify-center gap-3 rounded-[24px] border border-bp-accent/20 bg-white px-8 py-4 text-[14px] font-bold text-bp-accent transition-all hover:bg-bp-accent/5 active:scale-[0.98]"
-                     >
-                        {t.askAI}
-                     </Link>
-                  </div>
-               }
-            />
-         </div>
-      )
-   }
+  if (error) return (
+    <div className="max-w-4xl mx-auto px-6 py-12">
+      <EmptyState
+        title="Couldn't load dashboard"
+        description="There may be a connection issue. Please try again."
+        icon={CircleAlert}
+        action={
+          <button onClick={() => { void fetchAppts() }} className="bp-btn bp-btn-primary">
+            Retry
+          </button>
+        }
+      />
+    </div>
+  )
 
-  const todayAppts = filterToday(appointments)
-  const weekAppts = filterThisWeek(appointments)
-  const nextAppt = getNextAppointment(todayAppts)
-
-   // Unique patients this week
-   const weekPatientCount = new Set(
-      weekAppts.map((appointment) => appointment.patient?.full_name?.trim() || appointment.id),
-   ).size
-
-   const checklistItems = [
-      { label: t.checklistClinicalProfile, sub: t.checklistClinicalProfileSub, href: '/provider/profile', done: Boolean(profile?.avatar_url) },
-      { label: t.checklistAvailability, sub: t.checklistAvailabilitySub, href: '/provider/availability', done: false },
-      { label: t.checklistVerification, sub: t.checklistVerificationSub, href: '/provider/profile', done: Boolean(profile?.icp_registration_no) },
-   ]
-
-  // Sort timeline chronologically
-   const timelineSource = activeTab === 'today' ? todayAppts : weekAppts
-   const timeline = [...timelineSource].sort((a, b) => {
-    const as = a.availabilities?.starts_at ?? ''
-    const bs = b.availabilities?.starts_at ?? ''
-    return as < bs ? -1 : 1
-  })
-
-  const tabs: { key: DashboardTab; label: string }[] = [
-    { key: 'today', label: t.tabToday },
-    { key: 'week', label: t.tabThisWeek },
-  ]
+  const todayAppts  = filterToday(appointments)
+  const weekAppts   = filterThisWeek(appointments)
+  const nextAppt    = getNextAppointment(appointments)
+  const earned      = appointments.filter(a => a.status === 'completed').reduce((s, a) => s + (a.fee_inr ?? 0), 0)
+  const shownAppts  = tab === 'today' ? todayAppts : weekAppts
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-10 py-24 md:py-32 animate-in fade-in duration-700 relative z-10">
-      <div className="absolute left-1/2 top-0 h-[600px] max-w-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_center,rgba(24,49,45,0.05),transparent_70%)] pointer-events-none" />
+    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
 
-      {/* ── Practitioner Briefing ── */}
-      <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
-        <div className="space-y-6">
-           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/40 backdrop-blur-md border border-white rounded-full text-[11px] font-bold uppercase text-bp-accent tracking-[0.2em] shadow-sm ring-1 ring-bp-primary/5">
-              <Activity size={12} strokeWidth={3} />
-              {t.clinicStatus}
-           </div>
-           <h1 className="text-[40px] md:text-[56px] font-bold text-bp-primary leading-[1.1] tracking-tight">
-             {greeting}, <span className="text-bp-accent">Dr. {displayName}</span> 🩺
-           </h1>
-           <p className="text-[17px] font-bold text-bp-body/40 max-w-[540px] leading-relaxed">
-             {t.tagline}
-           </p>
-        </div>
-        <div className="flex flex-wrap gap-4">
-           <Link href="/provider/calendar" className="flex items-center justify-center gap-3 h-16 px-10 bg-bp-primary text-white text-[15px] font-bold rounded-full hover:bg-bp-accent hover:shadow-xl hover:shadow-bp-primary/20 transition-all active:scale-[0.98]">
-              <Calendar size={18} strokeWidth={3} />
-              {t.openCalendar}
-           </Link>
-           <Link href="/provider/ai-assistant" className="flex items-center justify-center gap-3 h-16 px-8 bg-white/50 backdrop-blur-xl border border-white text-bp-primary text-[15px] font-bold rounded-full hover:bg-white hover:text-bp-accent transition-all active:scale-[0.98] shadow-sm">
-              <MessageSquare size={18} strokeWidth={3} />
-              {t.askAI}
-           </Link>
-        </div>
-      </div>
-
-      {/* ── Core Insight Hub (Stats) ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-
-        {/* Agenda Card */}
-        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10 hover:-translate-y-1">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-bp-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
-           <div className="relative z-10 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-8">
-                 <div className="w-12 h-12 rounded-2xl bg-bp-accent/10 text-bp-primary flex items-center justify-center shadow-inner">
-                    <CalendarDays size={22} strokeWidth={3} />
-                 </div>
-                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">{t.tabToday}</span>
-              </div>
-              <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">{t.appointmentFlow}</p>
-              <h3 className="text-[42px] font-bold text-bp-primary leading-none tracking-tight mb-2">{todayAppts.length}</h3>
-              <p className="text-[14px] font-medium text-bp-body/60 mt-auto">{t.estimatedSession(todayAppts.length * 45)}</p>
-           </div>
+      {/* ── Header ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
+            {greeting}, Dr. <span className="text-teal-600">{first}</span>
+          </h1>
+          <p className="text-slate-500 text-[15px] mt-1">
+            {todayAppts.length > 0
+              ? `You have ${todayAppts.length} session${todayAppts.length > 1 ? 's' : ''} scheduled today.`
+              : 'No sessions scheduled today. Your calendar is free.'}
+          </p>
         </div>
 
-        {/* Priority Highlight: Next Patient */}
-        <div className="group bg-bp-primary rounded-[40px] p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.3)] relative overflow-hidden text-white transition-all hover:scale-[1.02]">
-           <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-[60px] -mr-24 -mb-24"></div>
-           <div className="relative z-10 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-8">
-                 <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md text-white flex items-center justify-center border border-white/10">
-                    <Clock size={22} strokeWidth={3} />
-                 </div>
-                 {nextAppt && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                       <Zap size={10} fill="currentColor" />
-                       {t.upNext}
-                    </div>
-                 )}
-              </div>
-              <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1">{t.incomingSession}</p>
-              {nextAppt ? (
-                 <>
-                    <h3 className="text-[40px] font-bold leading-[0.9] tracking-tight mb-4">{formatSlotTime(nextAppt.availabilities?.starts_at || '')}</h3>
-                    <div className="flex items-center gap-3 mt-auto">
-                       <div className="w-8 h-8 rounded-full bg-white text-bp-primary flex items-center justify-center text-[11px] font-bold">{patientDisplayName(nextAppt).charAt(0)}</div>
-                       <p className="text-[15px] font-bold truncate">{patientDisplayName(nextAppt)}</p>
-                    </div>
-                 </>
-              ) : (
-                 <>
-                    <h3 className="text-[32px] font-bold leading-none tracking-tight mb-4 opacity-30">{t.noPending}</h3>
-                    <p className="text-[13px] font-medium text-white/50 mt-auto">{t.agendaComplete}</p>
-                 </>
-              )}
-           </div>
-        </div>
-
-        {/* Weekly Progress */}
-        <div className="group bg-white rounded-[40px] border border-bp-border p-8 shadow-[0_32px_64px_-24px_rgba(24,49,45,0.06)] relative overflow-hidden transition-all hover:border-bp-accent/10">
-           <div className="relative z-10 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-8">
-                 <div className="w-12 h-12 rounded-2xl bg-bp-surface text-bp-primary flex items-center justify-center border border-bp-border">
-                    <TrendingUp size={22} strokeWidth={3} />
-                 </div>
-                 <BarChart3 className="text-bp-body/20" size={24} />
-              </div>
-              <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">{t.weeklyReach}</p>
-              <h3 className="text-[42px] font-bold text-bp-primary leading-none tracking-tight mb-4">{weekPatientCount}</h3>
-              <div className="mt-auto flex items-center justify-between gap-4">
-                 <div className="flex-1 h-1.5 bg-bp-surface rounded-full overflow-hidden">
-                    <div className="h-full bg-bp-accent rounded-full w-[65%]"></div>
-                 </div>
-                 <span className="text-[12px] font-bold">{t.percentTarget(65)}</span>
-              </div>
-           </div>
+        {/* Online toggle */}
+        <div className="flex items-center gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsOnline(!isOnline)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2.5 rounded-xl border font-semibold text-[13px] transition-all',
+              isOnline
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                : 'bg-slate-50 border-slate-200 text-slate-500'
+            )}
+          >
+            <span className={cn('w-2 h-2 rounded-full', isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300')} />
+            {isOnline ? 'Accepting patients' : 'Paused'}
+          </button>
+          <Link
+            href="/provider/availability"
+            className="flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors"
+          >
+            <CalendarCheck size={15} />
+            Manage availability
+          </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
-
-        {/* ── Schedule Timeline ── */}
-        <section className="bg-white rounded-[40px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.04)]">
-           <div className="flex items-center justify-between mb-10">
-              <div className="flex flex-col gap-1">
-                 <h2 className="text-[20px] font-bold text-bp-primary tracking-tight flex items-center gap-3">
-                    <Target className="text-bp-accent" size={20} strokeWidth={3} />
-                    {t.practiceAgenda}
-                 </h2>
-                 <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">{t.confirmedRoadmap}</p>
+      {/* ── Stat Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Today's sessions",
+            value: String(todayAppts.length),
+            sub: `${todayAppts.filter(a => a.status === 'confirmed').length} confirmed`,
+            icon: Calendar, iconBg: 'bg-teal-50', iconColor: 'text-teal-600',
+            href: '/provider/appointments',
+          },
+          {
+            label: "This week",
+            value: String(weekAppts.length),
+            sub: 'Total appointments',
+            icon: TrendingUp, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
+            href: '/provider/calendar',
+          },
+          {
+            label: 'Total patients',
+            value: String(new Set(appointments.map(a => a.patient_id ?? '')).size),
+            sub: 'Unique patients served',
+            icon: Users, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
+            href: '/provider/patients',
+          },
+          {
+            label: 'Total earned',
+            value: `₹${(earned / 1000).toFixed(1)}k`,
+            sub: 'From completed sessions',
+            icon: BarChart3, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
+            href: '/provider/earnings',
+          },
+        ].map(card => (
+          <Link
+            key={card.label}
+            href={card.href}
+            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-teal-200 hover:shadow-md hover:shadow-teal-500/5 hover:-translate-y-0.5 transition-all"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
+                <card.icon size={18} className={card.iconColor} />
               </div>
-              <div className="flex gap-2">
-                 {tabs.map(({ key, label }) => (
-                    <button
-                       key={key}
-                       type="button"
-                       onClick={() => {
-                          setActiveTab(key)
-                       }}
-                       className={cn("px-4 py-2 rounded-xl text-[12px] font-bold transition-all",
-                          key === activeTab ? "bg-bp-accent text-white shadow-lg shadow-bp-primary/10" : "text-bp-body/40 hover:text-bp-body font-bold")}
-                    >
-                       {label}
-                    </button>
-                 ))}
-              </div>
-           </div>
+              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-teal-500 transition-colors" />
+            </div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
+            <div className="text-[24px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
+            <div className="text-[12px] text-slate-400">{card.sub}</div>
+          </Link>
+        ))}
+      </div>
 
-           {timeline.length === 0 ? (
-              <EmptyState
-                 title={t.emptyCalendarTitle}
-                 description={t.emptyCalendarDesc}
-                 icon={Calendar}
-                 className="py-16 border-0 bg-bp-surface/50 rounded-[30px]"
-              />
-           ) : (
-              <div className="space-y-4">
-                 {timeline.map((appt) => (
-                    <div key={appt.id} className="group p-5 bg-white border border-bp-border/50 rounded-[30px] hover:border-bp-accent/10 hover:shadow-xl transition-all duration-300 flex items-center gap-6">
-                       <div className="flex-shrink-0 w-20 flex flex-col items-center justify-center p-2 bg-bp-surface rounded-2xl group-hover:bg-bp-accent/5 transition-colors">
-                          <span className="text-[15px] font-bold text-bp-primary group-hover:text-bp-accent transition-colors">{formatSlotTime(appt.availabilities?.starts_at || '')}</span>
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <p className="text-[17px] font-bold text-bp-primary truncate group-hover:translate-x-1 transition-transform">{patientDisplayName(appt)}</p>
-                          <div className="flex items-center gap-3 mt-1">
-                             <span className={cn("px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-transparent", VISIT_TYPE_COLORS[appt.visit_type])}>
-                                {VISIT_TYPE_LABELS[appt.visit_type]}
-                             </span>
-                             <div className="w-1 h-1 bg-bp-border rounded-full"></div>
-                             <span className="text-[12px] font-bold text-bp-body/40">{t.regularCheckup}</span>
-                          </div>
-                       </div>
-                       <Link
-                         href="/provider/appointments"
-                         className="w-12 h-12 rounded-2xl bg-bp-surface flex items-center justify-center text-bp-body/20 group-hover:bg-bp-primary group-hover:text-white transition-all shadow-sm"
-                       >
-                          <ArrowRight size={20} strokeWidth={3} />
-                       </Link>
+      {/* ── Main 2-col ── */}
+      <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
+
+        {/* Left: Today's/Week's schedule */}
+        <div className="bg-white rounded-2xl border border-slate-200">
+          {/* Tab header */}
+          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100">
+            <div className="flex gap-1 p-1 bg-slate-50 rounded-lg">
+              {(['today', 'week'] as const).map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTab(t)}
+                  className={cn(
+                    'px-4 py-1.5 rounded-md text-[13px] font-semibold transition-all',
+                    tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  )}
+                >
+                  {t === 'today' ? 'Today' : 'This Week'}
+                </button>
+              ))}
+            </div>
+            <Link href="/provider/calendar" className="text-[13px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 group">
+              Full calendar
+              <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+
+          {/* Appointment list */}
+          <div className="divide-y divide-slate-50">
+            {shownAppts.length === 0 ? (
+              <div className="py-12 text-center">
+                <Calendar size={28} className="text-slate-200 mx-auto mb-3" />
+                <p className="text-slate-400 text-[14px]">
+                  {tab === 'today' ? 'No sessions today.' : 'No sessions this week.'}
+                </p>
+                <Link href="/provider/availability" className="text-teal-600 text-[13px] font-semibold hover:underline mt-1 inline-block">
+                  Update your availability →
+                </Link>
+              </div>
+            ) : (
+              shownAppts.map(appt => {
+                const vt = VISIT_LABELS[appt.visit_type ?? 'in_clinic'] ?? VISIT_LABELS.in_clinic
+                const sc = STATUS_COLORS[appt.status ?? 'pending'] ?? STATUS_COLORS.pending
+                return (
+                  <Link
+                    key={appt.id}
+                    href={`/provider/appointments/${appt.id}`}
+                    className="flex items-center gap-5 px-6 py-4 hover:bg-slate-50 transition-colors group"
+                  >
+                    {/* Time */}
+                    <div className="shrink-0 text-center">
+                      <div className="text-[15px] font-bold text-slate-900">
+                        {appt.availabilities?.starts_at
+                          ? new Date(appt.availabilities.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : '—'}
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        {formatSlotTime(appt)}
+                      </div>
                     </div>
-                 ))}
-              </div>
-           )}
-        </section>
 
-        {/* ── Setup & Support Area ── */}
-        <aside className="space-y-8 sticky top-28">
-
-           {/* Setup Checklist (Clinical Onboarding) */}
-           <div className="bg-bp-surface rounded-[40px] p-8 md:p-10 border border-bp-border">
-              <div className="flex justify-between items-center mb-8">
-                 <h3 className="text-[18px] font-bold text-bp-primary tracking-tight">{t.practiceReadiness}</h3>
-                 <div className="p-2 bg-white rounded-xl border border-bp-border text-bp-accent">
-                    <CheckCircle2 size={16} strokeWidth={3} />
-                 </div>
-              </div>
-
-              <div className="space-y-6">
-                 {checklistItems.map((item, i) => (
-                    <div key={i} className="flex items-center gap-4 group/item">
-                       <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2",
-                          item.done ? "bg-bp-accent border-bp-accent text-white" : "bg-white border-bp-border text-transparent"
-                       )}>
-                          <CheckCircle2 size={12} strokeWidth={4} />
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <p className={cn("text-[14px] font-bold", item.done ? "text-bp-body/40 line-through" : "text-bp-primary")}>{item.label}</p>
-                          <p className="text-[11px] font-bold text-bp-body/20 uppercase underline-offset-4">{item.sub}</p>
-                       </div>
-                       {!item.done && (
-                          <Link href={item.href} className="p-2 rounded-xl bg-white border border-bp-border text-bp-body/20 hover:text-bp-accent hover:border-bp-accent/50 transition-all">
-                             <ArrowRight size={14} strokeWidth={3} />
-                          </Link>
-                       )}
+                    {/* Avatar */}
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[13px] shrink-0">
+                      {patientDisplayName(appt).charAt(0)}
                     </div>
-                 ))}
-              </div>
-           </div>
 
-           {/* Earnings Insight Preview */}
-           <div className="bg-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
-
-              <div className="relative z-10">
-                 <div className="flex items-center justify-between mb-8">
-                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-none">{t.earningsOutlook}</p>
-                    <div className="flex h-11 min-w-11 items-center justify-center rounded-2xl bg-white/5 px-3 text-[20px] font-bold text-emerald-400">
-                       ₹
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-900 text-[14px]">{patientDisplayName(appt)}</div>
+                      <div className="text-[12px] text-slate-400 truncate">
+                        {appt.conditions?.join(', ') ?? 'Physiotherapy session'}
+                      </div>
                     </div>
-                 </div>
 
-                 <div className="space-y-6">
-                    <div>
-                       <h4 className="text-[28px] font-bold tracking-tight leading-none mb-1">{t.earningsComingSoon}</h4>
-                       <p className="text-[13px] font-bold text-white/40">{t.earningsNote}</p>
+                    {/* Badges */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={cn('text-[11px] font-semibold px-2.5 py-1 rounded-lg border', vt.color)}>
+                        {vt.label}
+                      </span>
+                      <span className={cn('text-[11px] font-semibold px-2.5 py-1 rounded-lg border capitalize', sc)}>
+                        {appt.status ?? 'pending'}
+                      </span>
                     </div>
-                    <Link href="/provider/earnings" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all">
-                       <span className="text-[14px] font-bold uppercase tracking-widest text-white/80">{t.viewAnalytics}</span>
-                       <ArrowUpRight size={20} className="text-white/20 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
-                    </Link>
-                 </div>
+
+                    <ArrowRight size={14} className="text-slate-200 group-hover:text-teal-500 transition-colors shrink-0" />
+                  </Link>
+                )
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Right: Quick actions + Next appt */}
+        <div className="space-y-5">
+
+          {/* Next appointment */}
+          {nextAppt && (
+            <div className="bg-white rounded-2xl border border-slate-200 p-5">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-teal-600 mb-3">Next Session</div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 font-bold">
+                  {patientDisplayName(nextAppt).charAt(0)}
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-900 text-[14px]">{patientDisplayName(nextAppt)}</div>
+                  <div className="text-[12px] text-slate-400 flex items-center gap-1">
+                    <Clock size={11} />
+                    {nextAppt.availabilities?.starts_at
+                      ? new Date(nextAppt.availabilities.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : 'TBD'}
+                  </div>
+                </div>
               </div>
-           </div>
-        </aside>
+              <Link
+                href={`/provider/appointments/${nextAppt.id}`}
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white rounded-xl text-[13px] font-semibold hover:bg-teal-700 transition-colors"
+              >
+                View session details
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+          )}
+
+          {/* Quick actions */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-4">Quick Actions</div>
+            <div className="space-y-2">
+              {[
+                { label: 'Update availability', href: '/provider/availability', icon: CheckCircle2, color: 'text-teal-600' },
+                { label: 'View messages',        href: '/provider/messages',     icon: MessageSquare, color: 'text-blue-600' },
+                { label: 'View all patients',    href: '/provider/patients',     icon: Users,         color: 'text-violet-600' },
+                { label: 'Earnings report',      href: '/provider/earnings',     icon: BarChart3,     color: 'text-amber-600' },
+              ].map(({ label, href, icon: Icon, color }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
+                >
+                  <Icon size={16} className={color} />
+                  <span className="text-[13px] font-medium text-slate-700 flex-1">{label}</span>
+                  <ArrowRight size={13} className="text-slate-200 group-hover:text-slate-400 transition-colors" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Pending approvals alert */}
+          {appointments.filter(a => a.status === 'pending').length > 0 && (
+            <div className="flex items-start gap-3 p-5 bg-amber-50 rounded-2xl border border-amber-100">
+              <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <div className="text-[13px] font-semibold text-amber-900 mb-1">
+                  {appointments.filter(a => a.status === 'pending').length} pending confirmation{appointments.filter(a => a.status === 'pending').length > 1 ? 's' : ''}
+                </div>
+                <Link href="/provider/appointments" className="text-amber-700 text-[12px] font-medium hover:underline">
+                  Review requests →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -142,6 +142,10 @@ describe('GET /api/appointments', () => {
         status: 'confirmed',
         fee_inr: 1200,
         notes: 'Legacy note',
+        payments: [
+          { status: 'refunded', amount_inr: 1200, gst_amount_inr: 216, created_at: '2026-03-10T09:00:00.000Z' },
+          { status: 'paid', amount_inr: 1200, gst_amount_inr: 216, created_at: '2026-03-12T09:00:00.000Z' },
+        ],
       }],
       users: [{ id: 'patient-2', full_name: 'Patient Two', phone: '+919999999999', avatar_url: null }],
     })
@@ -156,7 +160,10 @@ describe('GET /api/appointments', () => {
           id: 'appt-2',
           notes: null,
           provider_notes: null,
-          patient: { full_name: 'Patient Two', avatar_url: null },
+          payment_status: 'paid',
+          payment_amount_inr: 1200,
+          payment_gst_amount_inr: 216,
+          patient: { id: 'patient-2', full_name: 'Patient Two', phone: '+919999999999', avatar_url: null },
         },
       ],
     })

@@ -5,7 +5,7 @@
 >
 > **STATUS AS OF 2026-04-04: Phase 14 COMPLETE ✅ · Phase 15 rollout mostly complete · Phase 11.6 IN PROGRESS**
 > Production hosting target is Vercel. Apex is live, analytics/robots/IndexNow are wired, and the providers API has a production fallback in place.
-> Remaining Phase 15 blockers are external-console work (`www` DNS, Search Console, Bing Webmaster) plus applying the forward Supabase RPC migration with authenticated DB access. The repo also includes a next-deploy fix for the public-page demo-session empty-state 404 noise.
+> Remaining Phase 15 blockers are external-console work (`www` DNS, Search Console, Bing Webmaster) plus applying the forward Supabase migrations that still need authenticated DB access (the providers RPC repair and the public-availability RLS restriction). The repo also includes a next-deploy fix for the public-page demo-session empty-state 404 noise.
 
 ---
 
