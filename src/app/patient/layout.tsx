@@ -6,7 +6,7 @@ import { ReactNode, useState } from 'react'
 import {
   LayoutDashboard, Calendar, MessageSquare,
   User, Bell, LogOut, Menu, X, ChevronRight, Search,
-  CreditCard,
+  CreditCard, FileHeart,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,7 @@ import BpLogo from '@/components/BpLogo'
 const navItems = [
   { href: '/patient/dashboard',      label: 'Dashboard',     icon: LayoutDashboard },
   { href: '/patient/appointments',   label: 'Appointments',  icon: Calendar },
+  { href: '/patient/records',        label: 'Care Summary',  icon: FileHeart },
   { href: '/patient/messages',       label: 'Messages',      icon: MessageSquare },
   { href: '/patient/payments',       label: 'Payments',      icon: CreditCard },
   { href: '/patient/profile',        label: 'Profile',       icon: User },

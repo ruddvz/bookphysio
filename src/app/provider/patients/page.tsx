@@ -2,83 +2,15 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Search, Users, Loader2, AlertCircle, Phone } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { Search, Users, Loader2, AlertCircle, Phone, UserPlus } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { AddPatientModal } from '@/components/clinical/AddPatientModal'
+import type { PatientRosterRow } from '@/lib/clinical/types'
 
-interface AppointmentRow {
-  id: string
-  status: string
-  visit_type: string
-  created_at: string
-  availabilities: { starts_at: string } | null
-  patient: {
-    id: string
-    full_name: string
-    phone: string | null
-    avatar_url: string | null
-  } | null
-}
-
-interface PatientRecord {
-  id: string
-  full_name: string
-  phone: string | null
-  lastVisit: string | null
-  totalVisits: number
-  lastAppointmentId: string
-  latestAppointmentAt: string
-}
-
-async function fetchAppointments(): Promise<{ appointments: AppointmentRow[] }> {
-  const res = await fetch('/api/appointments')
+async function fetchRoster(): Promise<{ patients: PatientRosterRow[] }> {
+  const res = await fetch('/api/provider/patients')
   if (!res.ok) throw new Error('Failed to fetch')
   return res.json()
-}
-
-function buildPatientRecords(appointments: AppointmentRow[]): PatientRecord[] {
-  const map = new Map<string, PatientRecord>()
-  const ignoredStatuses = new Set(['cancelled', 'no_show'])
-
-  const sorted = [...appointments].sort((a, b) => {
-    const dateA = a.availabilities?.starts_at ?? a.created_at
-    const dateB = b.availabilities?.starts_at ?? b.created_at
-    return new Date(dateB).getTime() - new Date(dateA).getTime()
-  })
-
-  for (const appt of sorted) {
-    if (!appt.patient?.id || ignoredStatuses.has(appt.status)) continue
-
-    const patientId = appt.patient.id
-    const existing = map.get(patientId)
-    const appointmentAt = appt.availabilities?.starts_at ?? appt.created_at
-    const isCompletedVisit = appt.status === 'completed'
-
-    if (!existing) {
-      const patientName = appt.patient.full_name?.trim() || 'Unknown Patient'
-
-      map.set(patientId, {
-        id: patientId,
-        full_name: patientName,
-        phone: appt.patient.phone ?? null,
-        lastVisit: isCompletedVisit ? appointmentAt : null,
-        totalVisits: isCompletedVisit ? 1 : 0,
-        lastAppointmentId: appt.id,
-        latestAppointmentAt: appointmentAt,
-      })
-    } else {
-      map.set(patientId, {
-        ...existing,
-        totalVisits: existing.totalVisits + (isCompletedVisit ? 1 : 0),
-        lastVisit: existing.lastVisit ?? (isCompletedVisit ? appointmentAt : null),
-      })
-    }
-  }
-
-  return Array.from(map.values()).sort((a, b) => {
-    const leftSortValue = a.lastVisit ?? a.latestAppointmentAt
-    const rightSortValue = b.lastVisit ?? b.latestAppointmentAt
-    return new Date(rightSortValue).getTime() - new Date(leftSortValue).getTime()
-  })
 }
 
 function formatDate(iso: string | null) {
@@ -92,7 +24,6 @@ function formatDate(iso: string | null) {
 
 function formatPhone(phone: string | null) {
   if (!phone) return '—'
-  // Ensure +91 prefix is shown
   const digits = phone.replace(/\D/g, '')
   if (digits.length === 12 && digits.startsWith('91')) {
     return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`
@@ -105,22 +36,21 @@ function formatPhone(phone: string | null) {
 
 export default function ProviderPatients() {
   const [search, setSearch] = useState('')
+  const [showAdd, setShowAdd] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['provider-patients'],
-    queryFn: fetchAppointments,
+    queryKey: ['provider-patient-roster'],
+    queryFn: fetchRoster,
   })
 
-  const allPatients = useMemo(
-    () => buildPatientRecords(data?.appointments ?? []),
-    [data]
-  )
+  const allPatients = data?.patients ?? []
 
   const patients = useMemo(() => {
     if (!search.trim()) return allPatients
     const q = search.toLowerCase()
     return allPatients.filter(
-      (p) => p.full_name.toLowerCase().includes(q) || (p.phone ?? '').includes(q)
+      (p) => p.patient_name.toLowerCase().includes(q) || (p.patient_phone ?? '').includes(q)
     )
   }, [allPatients, search])
 
@@ -128,22 +58,32 @@ export default function ProviderPatients() {
     <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">
-            Patient Records
-          </h1>
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">Patient Records</h1>
           <p className="text-[15px] text-bp-body">
-            {isLoading ? 'Loading…' : `${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''} in your directory`}
+            {isLoading
+              ? 'Loading…'
+              : `${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''} in your directory`}
           </p>
         </div>
-        <div className="relative shrink-0">
-          <input
-            type="search"
-            placeholder="Search by name or phone…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
-          />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search by name or phone…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full md:w-[260px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
+            />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-full text-[14px] font-semibold hover:bg-emerald-700 transition-colors"
+          >
+            <UserPlus className="w-4 h-4" />
+            Add Patient
+          </button>
         </div>
       </div>
 
@@ -168,49 +108,58 @@ export default function ProviderPatients() {
               <thead className="bg-[#F9FAFB] border-b border-bp-border">
                 <tr>
                   <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Patient</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Phone (+91)</th>
+                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Phone</th>
+                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Chief Complaint</th>
                   <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Last Visit</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Total Visits</th>
+                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Visits</th>
                   <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5E5E5]">
                 {patients.length > 0 ? (
                   patients.map((p) => (
-                    <tr key={p.id} className="hover:bg-[#F9FAFB] transition-colors">
+                    <tr key={p.profile_id} className="hover:bg-[#F9FAFB] transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center text-[14px] font-bold shrink-0">
-                            {p.full_name.charAt(0).toUpperCase()}
+                            {p.patient_name.charAt(0).toUpperCase()}
                           </div>
-                          <span className="text-[14px] font-medium text-slate-900">{p.full_name}</span>
+                          <div>
+                            <p className="text-[14px] font-medium text-slate-900">{p.patient_name}</p>
+                            {p.patient_age && (
+                              <p className="text-[12px] text-slate-500">Age {p.patient_age}</p>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5 text-[14px] text-bp-body">
-                          {p.phone && <Phone className="w-3.5 h-3.5 text-bp-body/40" />}
-                          {formatPhone(p.phone)}
+                          {p.patient_phone && <Phone className="w-3.5 h-3.5 text-bp-body/40" />}
+                          {formatPhone(p.patient_phone)}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[14px] text-bp-body">{formatDate(p.lastVisit)}</td>
+                      <td className="px-6 py-4 text-[14px] text-bp-body max-w-[240px] truncate">
+                        {p.chief_complaint ?? '—'}
+                      </td>
+                      <td className="px-6 py-4 text-[14px] text-bp-body">{formatDate(p.last_visit_date)}</td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-600">
-                          {p.totalVisits} visit{p.totalVisits !== 1 ? 's' : ''}
+                          {p.visit_count} visit{p.visit_count !== 1 ? 's' : ''}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link
-                          href={`/provider/appointments/${p.lastAppointmentId}`}
+                          href={`/provider/patients/${p.profile_id}`}
                           className="text-[13px] font-semibold text-emerald-600 hover:text-slate-900 transition-colors"
                         >
-                          View last appointment
+                          Open chart →
                         </Link>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-16 text-center">
+                    <td colSpan={6} className="py-16 text-center">
                       <div className="flex flex-col items-center">
                         <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
                           <Users className="w-7 h-7 text-[#9CA3AF]" />
@@ -219,7 +168,7 @@ export default function ProviderPatients() {
                           {search ? 'No patients match your search' : 'No patients yet'}
                         </p>
                         <p className="text-[13px] text-[#9CA3AF]">
-                          {search ? 'Try a different name or phone number.' : 'Patients appear here after their first appointment.'}
+                          {search ? 'Try a different name or phone number.' : 'Add your first patient to get started.'}
                         </p>
                       </div>
                     </td>
@@ -229,6 +178,17 @@ export default function ProviderPatients() {
             </table>
           </div>
         </div>
+      )}
+
+      {showAdd && (
+        <AddPatientModal
+          onClose={() => setShowAdd(false)}
+          onCreated={(profileId) => {
+            setShowAdd(false)
+            queryClient.invalidateQueries({ queryKey: ['provider-patient-roster'] })
+            window.location.href = `/provider/patients/${profileId}`
+          }}
+        />
       )}
     </div>
   )

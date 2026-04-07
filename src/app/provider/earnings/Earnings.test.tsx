@@ -171,42 +171,9 @@ describe('ProviderEarnings', () => {
     expect(screen.getByText(/Interactive charts coming soon/i)).toBeInTheDocument()
   })
 
-  it('updates the generated bill preview when GST is toggled off and on', async () => {
+  it('links to the bill generator page', async () => {
     renderWithQueryClient()
-
-    fireEvent.click(await screen.findByRole('button', { name: /generate bill/i }))
-
-    fireEvent.change(screen.getByLabelText(/patient name/i), {
-      target: { value: 'Rahul Sharma' },
-    })
-    fireEvent.change(screen.getByLabelText(/amount/i), {
-      target: { value: '900' },
-    })
-
-    const includeGstToggle = screen.getByRole('checkbox', { name: /include gst/i })
-
-    fireEvent.click(includeGstToggle)
-    fireEvent.click(screen.getByRole('button', { name: /generate pdf/i }))
-
-    expect(await screen.findByText(/Dr Priya Iyer/i)).toBeInTheDocument()
-    const previewWithoutGst = getBillPreview()
-
-    expect(previewWithoutGst.queryByText(/GST \(18%\)/i)).not.toBeInTheDocument()
-    expect(previewWithoutGst.getAllByText('₹900')).toHaveLength(2)
-    expect(previewWithoutGst.queryByText('₹162')).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: /edit/i }))
-    fireEvent.click(screen.getByRole('checkbox', { name: /include gst/i }))
-    fireEvent.click(screen.getByRole('button', { name: /generate pdf/i }))
-
-    const previewWithGst = getBillPreview()
-
-    expect(previewWithGst.getByText(/GST \(18%\)/i)).toBeInTheDocument()
-    expect(previewWithGst.getByText('₹162')).toBeInTheDocument()
-    expect(previewWithGst.getByText('₹1,062')).toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(window.print).toHaveBeenCalledTimes(2)
-    })
+    const link = await screen.findByRole('link', { name: /generate bill/i })
+    expect(link).toHaveAttribute('href', '/provider/bills/new')
   })
 })

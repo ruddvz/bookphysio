@@ -1,18 +1,25 @@
 import { describe, it, expect } from 'vitest'
 import {
-  buildGridFromData,
+  HOURS,
   dateKey,
   formatHour,
   getWeekDates,
   isSameDay,
-  formatMonthRange
+  formatMonthRange,
+  timeToHour,
 } from '../calendar-utils'
 
-describe('Provider Calendar Utils', () => {
+describe('Provider Schedule Utils', () => {
+  it('HOURS spans 8 AM to 8 PM inclusive', () => {
+    expect(HOURS[0]).toBe(8)
+    expect(HOURS[HOURS.length - 1]).toBe(20)
+    expect(HOURS).toHaveLength(13)
+  })
+
   it('formatHour formats correctly', () => {
-    expect(formatHour(9)).toBe('9 AM')
+    expect(formatHour(8)).toBe('8 AM')
     expect(formatHour(12)).toBe('12 PM')
-    expect(formatHour(14)).toBe('2 PM')
+    expect(formatHour(20)).toBe('8 PM')
   })
 
   it('isSameDay correctly identifies same days', () => {
@@ -26,90 +33,31 @@ describe('Provider Calendar Utils', () => {
   it('getWeekDates returns 7 consecutive days starting from Monday', () => {
     const wednesday = new Date(2026, 2, 11) // March 11, 2026 is Wednesday
     const week = getWeekDates(wednesday)
-    
-    expect(week.length).toBe(7)
-    // First day should be Monday (March 9, 2026)
-    expect(week[0].getDay()).toBe(1)
+    expect(week).toHaveLength(7)
+    expect(week[0].getDay()).toBe(1) // Monday
     expect(week[0].getDate()).toBe(9)
     expect(week[6].getDay()).toBe(0) // Sunday
   })
 
   it('formatMonthRange handles single month', () => {
-    const days = [
-      new Date(2026, 2, 9),
-      new Date(2026, 2, 15)
-    ]
+    const days = [new Date(2026, 2, 9), new Date(2026, 2, 15)]
     expect(formatMonthRange(days)).toContain('March')
   })
 
   it('formatMonthRange handles month spillover', () => {
-    const days = [
-      new Date(2026, 2, 30), // March
-      new Date(2026, 3, 5)   // April
-    ]
+    const days = [new Date(2026, 2, 30), new Date(2026, 3, 5)]
     const range = formatMonthRange(days)
     expect(range).toContain('Mar')
     expect(range).toContain('Apr')
   })
 
-  it('keeps booked slots visible when a later slot in the same hour is available', () => {
-    const day = new Date(2026, 2, 30)
-    const bookedStart = new Date(2026, 2, 30, 9, 0)
-    const laterAvailableStart = new Date(2026, 2, 30, 9, 30)
-
-    const grid = buildGridFromData(
-      [day],
-      [
-        {
-          starts_at: bookedStart.toISOString(),
-          ends_at: new Date(2026, 2, 30, 9, 30).toISOString(),
-          is_booked: true,
-          is_blocked: false,
-        },
-        {
-          starts_at: laterAvailableStart.toISOString(),
-          ends_at: new Date(2026, 2, 30, 10, 0).toISOString(),
-          is_booked: false,
-          is_blocked: false,
-        },
-      ],
-      [
-        {
-          visit_type: 'in_clinic',
-          patient: { full_name: 'Booked Patient' },
-          availabilities: { starts_at: bookedStart.toISOString() },
-        },
-      ],
-    )
-
-    expect(grid[dateKey(day)][9]).toMatchObject({
-      status: 'booked',
-      patientName: 'Booked Patient',
-    })
+  it('dateKey produces YYYY-MM-DD format', () => {
+    expect(dateKey(new Date(2026, 0, 5))).toBe('2026-01-05')
   })
 
-  it('keeps blocked slots visible when a later slot in the same hour is available', () => {
-    const day = new Date(2026, 2, 30)
-
-    const grid = buildGridFromData(
-      [day],
-      [
-        {
-          starts_at: new Date(2026, 2, 30, 10, 0).toISOString(),
-          ends_at: new Date(2026, 2, 30, 10, 30).toISOString(),
-          is_booked: false,
-          is_blocked: true,
-        },
-        {
-          starts_at: new Date(2026, 2, 30, 10, 30).toISOString(),
-          ends_at: new Date(2026, 2, 30, 11, 0).toISOString(),
-          is_booked: false,
-          is_blocked: false,
-        },
-      ],
-      [],
-    )
-
-    expect(grid[dateKey(day)][10]).toMatchObject({ status: 'blocked' })
+  it('timeToHour parses HH:MM strings', () => {
+    expect(timeToHour('08:00')).toBe(8)
+    expect(timeToHour('14:30')).toBe(14)
+    expect(timeToHour('20:00')).toBe(20)
   })
 })

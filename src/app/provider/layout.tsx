@@ -13,7 +13,7 @@ import BpLogo from '@/components/BpLogo'
 
 const navItems = [
   { href: '/provider/dashboard',   label: 'Overview',      icon: LayoutDashboard },
-  { href: '/provider/calendar',    label: 'Calendar',      icon: Calendar },
+  { href: '/provider/calendar',    label: 'Schedule',      icon: Calendar },
   { href: '/provider/messages',    label: 'Messages',      icon: MessageSquare },
   { href: '/provider/patients',    label: 'Patients',      icon: Users },
   { href: '/provider/earnings',    label: 'Earnings',      icon: BarChart3 },
