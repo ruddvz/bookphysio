@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
+import { FemaleDoctorIllustration, MaleDoctorIllustration } from '@/components/DoctorIllustrations'
 
 const ROTATING_WORDS = [
   'sports rehab',
@@ -58,6 +59,7 @@ function SearchField({
   const filtered = value
     ? options.filter(o => o.toLowerCase().includes(value.toLowerCase()))
     : options
+  const listboxId = `${id}-options`
 
   return (
     <div ref={ref} className="relative flex-1">
@@ -78,8 +80,10 @@ function SearchField({
             id={id}
             type="text"
             role="combobox"
+            aria-controls={listboxId}
             aria-expanded={showOptions}
             aria-autocomplete="list"
+            aria-haspopup="listbox"
             value={value}
             onChange={e => { onChange(e.target.value); onOpenOptions() }}
             onFocus={onOpenOptions}
@@ -94,12 +98,13 @@ function SearchField({
       </div>
 
       {showOptions && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[24px] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
+        <div id={listboxId} role="listbox" className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[24px] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
           {filtered.slice(0, 10).map(opt => (
             <button
               key={opt}
               type="button"
               role="option"
+              aria-selected={opt === value}
               onClick={() => { onSelect(opt); onCloseOptions() }}
               className="w-full text-left px-5 py-3.5 text-[15px] font-semibold text-slate-700 hover:bg-[#EEF0FD] hover:text-[#6B7BF5] rounded-xl transition-colors"
             >
@@ -163,7 +168,17 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="bp-container relative z-10 pt-28 pb-20">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr_260px] 2xl:grid-cols-[300px_1fr_300px] items-end gap-6 max-w-7xl mx-auto">
+
+          {/* Left doctor — female physio */}
+          <div className="hidden xl:flex justify-end items-end self-end pb-2" aria-hidden="true">
+            <div className="w-[220px] 2xl:w-[260px] opacity-0 animate-doctor-left">
+              <FemaleDoctorIllustration />
+            </div>
+          </div>
+
+          {/* Center content */}
+          <div className="text-center">
 
           {/* Kicker */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-200 bg-white/70 backdrop-blur-sm text-indigo-500 text-[12px] font-bold uppercase tracking-widest mb-8 animate-fade-up shadow-sm">
@@ -288,7 +303,16 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
-        </div>
+          </div>{/* end center column */}
+
+          {/* Right doctor — male physio */}
+          <div className="hidden xl:flex justify-start items-end self-end pb-2" aria-hidden="true">
+            <div className="w-[220px] 2xl:w-[260px] opacity-0 animate-doctor-right">
+              <MaleDoctorIllustration />
+            </div>
+          </div>
+
+        </div>{/* end 3-col grid */}
       </div>
 
       {/* Floating trust badges */}
