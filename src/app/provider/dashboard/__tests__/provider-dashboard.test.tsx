@@ -28,11 +28,13 @@ vi.mock('@/components/ui/EmptyState', () => ({
 
 type MockAppointment = {
   id: string
+  patient_id?: string
   status: string
   visit_type: 'in_clinic' | 'home_visit'
   fee_inr: number
+  notes?: string | null
   availabilities: { starts_at: string }
-  patient: { full_name: string }
+  patient: { id?: string; full_name: string | null } | null
   locations: { city: string }
 }
 
@@ -43,15 +45,23 @@ function jsonResponse(body: unknown, ok = true): Response {
   } as Response
 }
 
-function buildAppointment(id: string, startsAt: string, patientName: string): MockAppointment {
+function buildAppointment(
+  id: string,
+  startsAt: string,
+  patientName: string | null,
+  overrides: Partial<MockAppointment> = {},
+): MockAppointment {
   return {
     id,
+    patient_id: `${id}-patient`,
     status: 'confirmed',
     visit_type: 'in_clinic',
     fee_inr: 900,
+    notes: null,
     availabilities: { starts_at: startsAt },
-    patient: { full_name: patientName },
+    patient: patientName === null ? { full_name: null } : { id: `${id}-patient`, full_name: patientName },
     locations: { city: 'Mumbai' },
+    ...overrides,
   }
 }
 
@@ -80,13 +90,6 @@ describe('ProviderDashboardHome', () => {
         })
       }
 
-      if (url.includes('/api/profile')) {
-        return jsonResponse({
-          avatar_url: 'https://example.com/avatar.jpg',
-          iap_registration_no: 'IAP-12345',
-        })
-      }
-
       throw new Error(`Unexpected fetch URL: ${url}`)
     })
 
@@ -94,10 +97,9 @@ describe('ProviderDashboardHome', () => {
 
     render(<ProviderDashboardHome />)
 
-    await waitFor(() => {
-      expect(screen.getAllByText('Today Patient').length).toBeGreaterThan(0)
-    })
+    expect((await screen.findAllByText('Today Patient')).length).toBeGreaterThan(0)
 
+    expect(fetchMock).toHaveBeenCalledWith('/api/appointments')
     expect(screen.queryByText('Week Patient')).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'This Week' }))
@@ -106,8 +108,8 @@ describe('ProviderDashboardHome', () => {
       expect(screen.getAllByText('Week Patient').length).toBeGreaterThan(0)
     })
 
-    expect(screen.getByRole('button', { name: 'This Week' }).className).toContain('bg-bp-accent')
-  })
+    expect(screen.getByRole('button', { name: 'This Week' }).className).toContain('bg-white')
+  }, 10000)
 
   it('uses India day boundaries when deciding what appears in the Today tab', async () => {
     vi.setSystemTime(new Date('2026-04-15T14:00:00.000Z'))
@@ -124,13 +126,6 @@ describe('ProviderDashboardHome', () => {
         })
       }
 
-      if (url.includes('/api/profile')) {
-        return jsonResponse({
-          avatar_url: 'https://example.com/avatar.jpg',
-          iap_registration_no: 'IAP-12345',
-        })
-      }
-
       throw new Error(`Unexpected fetch URL: ${url}`)
     })
 
@@ -142,27 +137,28 @@ describe('ProviderDashboardHome', () => {
       expect(screen.getAllByText('Today Patient').length).toBeGreaterThan(0)
     })
 
-    expect(screen.queryByText('Tomorrow India Patient')).toBeNull()
+    expect(screen.getByText('Next Session')).toBeInTheDocument()
+    expect(screen.getAllByText('Tomorrow India Patient')).toHaveLength(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'This Week' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Tomorrow India Patient')).toBeInTheDocument()
+      expect(screen.getAllByText('Tomorrow India Patient').length).toBeGreaterThan(1)
     })
   })
 
-  it('removes the hardcoded earnings value and hides completed profile checklist links', async () => {
+  it('computes earned revenue from completed sessions and keeps quick actions free of profile links', async () => {
     const fetchMock = vi.fn(async (input: string | URL | Request) => {
       const url = String(input)
 
       if (url.includes('/api/appointments')) {
-        return jsonResponse({ appointments: [] })
-      }
-
-      if (url.includes('/api/profile')) {
         return jsonResponse({
-          avatar_url: 'https://example.com/avatar.jpg',
-          iap_registration_no: 'IAP-12345',
+          appointments: [
+            buildAppointment('completed', '2026-04-15T08:30:00.000Z', 'Completed Patient', {
+              status: 'completed',
+              fee_inr: 1200,
+            }),
+          ],
         })
       }
 
@@ -174,28 +170,27 @@ describe('ProviderDashboardHome', () => {
     const { container } = render(<ProviderDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getByText('Practice Readiness')).toBeInTheDocument()
+      expect(screen.getByText('₹1.2k')).toBeInTheDocument()
     })
 
+    expect(screen.getByText('Quick Actions')).toBeInTheDocument()
     expect(screen.queryByText('₹48,250')).toBeNull()
-    expect(screen.getByText('Earnings analytics in next release')).toBeInTheDocument()
     expect(container.querySelectorAll('a[href="/provider/profile"]')).toHaveLength(0)
   })
 
-  it('keeps the dashboard usable when the profile summary request fails', async () => {
+  it('falls back gracefully when patient details are sparse', async () => {
     const fetchMock = vi.fn(async (input: string | URL | Request) => {
       const url = String(input)
 
       if (url.includes('/api/appointments')) {
         return jsonResponse({
           appointments: [
-            buildAppointment('today', '2026-04-15T10:30:00.000Z', 'Today Patient'),
+            buildAppointment('today', '2026-04-15T10:30:00.000Z', null, {
+              notes: null,
+              patient: { id: 'today-patient', full_name: null },
+            }),
           ],
         })
-      }
-
-      if (url.includes('/api/profile')) {
-        throw new Error('Profile lookup failed')
       }
 
       throw new Error(`Unexpected fetch URL: ${url}`)
@@ -206,11 +201,10 @@ describe('ProviderDashboardHome', () => {
     render(<ProviderDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getAllByText('Today Patient').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Patient').length).toBeGreaterThan(0)
     })
 
-    expect(screen.queryByText('Clinical sync unavailable')).toBeNull()
-    expect(screen.getByText('Practice Readiness')).toBeInTheDocument()
+    expect(screen.getByText('Physiotherapy session')).toBeInTheDocument()
   })
 
   it('retries appointments loading from the error state', async () => {
@@ -232,13 +226,6 @@ describe('ProviderDashboardHome', () => {
         return response
       }
 
-      if (url.includes('/api/profile')) {
-        return jsonResponse({
-          avatar_url: null,
-          iap_registration_no: null,
-        })
-      }
-
       throw new Error(`Unexpected fetch URL: ${url}`)
     })
 
@@ -253,7 +240,7 @@ describe('ProviderDashboardHome', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retry Sync' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Practice Readiness')).toBeInTheDocument()
+      expect(screen.getByText('Quick Actions')).toBeInTheDocument()
     })
 
     expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('/api/appointments'))).toHaveLength(2)

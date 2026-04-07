@@ -50,7 +50,7 @@ export default function HealthSystems() {
 
             <div className="space-y-3 mb-8">
               {[
-                'ICP registered & verified',
+                'IAP or State Council verified',
                 'In-clinic + home visit modes',
                 'Transparent INR pricing',
                 'Mobile-first booking flow',

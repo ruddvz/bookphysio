@@ -52,12 +52,12 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
 
   const first = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Doctor'
   const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const greeting = hour < 12 ? t.greetingMorning : hour < 17 ? t.greetingAfternoon : t.greetingEvening
 
   const fetchAppts = useCallback(async () => {
     setLoading(true); setError(false)
     try {
-      const r = await fetch('/api/provider/appointments')
+      const r = await fetch('/api/appointments')
       if (!r.ok) throw new Error()
       const d: { appointments?: ProviderAppointment[] } = await r.json()
       setAppointments(d.appointments ?? [])
@@ -71,12 +71,12 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
   if (error) return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <EmptyState
-        title="Couldn't load dashboard"
-        description="There may be a connection issue. Please try again."
+        title={t.errorTitle}
+        description={t.errorDesc}
         icon={CircleAlert}
         action={
           <button onClick={() => { void fetchAppts() }} className="bp-btn bp-btn-primary">
-            Retry
+            {t.retrySync}
           </button>
         }
       />
@@ -149,7 +149,11 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
           },
           {
             label: 'Total patients',
-            value: String(new Set(appointments.map(a => a.patient_id ?? '')).size),
+            value: String(new Set(
+              appointments
+                .map((a) => a.patient?.id ?? a.patient_id)
+                .filter((patientId): patientId is string => Boolean(patientId))
+            ).size),
             sub: 'Unique patients served',
             icon: Users, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
             href: '/provider/patients',
@@ -198,7 +202,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                     tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                   )}
                 >
-                  {t === 'today' ? 'Today' : 'This Week'}
+                  {t === 'today' ? PROVIDER_COPY[locale ?? 'en'].tabToday : PROVIDER_COPY[locale ?? 'en'].tabThisWeek}
                 </button>
               ))}
             </div>
@@ -238,7 +242,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                           : '—'}
                       </div>
                       <div className="text-[11px] text-slate-400">
-                        {formatSlotTime(appt)}
+                        {appt.availabilities?.starts_at ? formatSlotTime(appt.availabilities.starts_at) : '—'}
                       </div>
                     </div>
 
@@ -251,7 +255,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-slate-900 text-[14px]">{patientDisplayName(appt)}</div>
                       <div className="text-[12px] text-slate-400 truncate">
-                        {appt.conditions?.join(', ') ?? 'Physiotherapy session'}
+                        {appt.notes?.trim() || 'Physiotherapy session'}
                       </div>
                     </div>
 

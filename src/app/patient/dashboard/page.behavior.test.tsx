@@ -44,13 +44,13 @@ describe('PatientDashboardHome', () => {
     vi.clearAllMocks()
   })
 
-  it('shows a coming-soon placeholder instead of the old hardcoded recovery metric', async () => {
+  it('shows the Motio AI guidance card instead of the old hardcoded recovery metric', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ appointments: [] })))
 
     render(<PatientDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getAllByText(/coming soon/i).length).toBeGreaterThan(0)
+      expect(screen.getByText('Motio AI')).toBeInTheDocument()
     })
 
     expect(screen.queryByText('72%')).toBeNull()

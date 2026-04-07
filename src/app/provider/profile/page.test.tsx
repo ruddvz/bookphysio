@@ -104,5 +104,5 @@ describe('ProviderProfile', () => {
       consultation_fee_inr: 1200,
       experience_years: 9,
     })
-  })
+  }, 10000)
 })

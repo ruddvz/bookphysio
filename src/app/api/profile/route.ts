@@ -1,5 +1,7 @@
+import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getDemoProfileById, getDemoSessionFromCookies } from '@/lib/demo/session'
 import { z } from 'zod'
 
 const avatarUrlSchema = z.string().url().max(2048).refine((value) => {
@@ -36,8 +38,6 @@ type ProviderProfileRow = {
   consultation_fee_inr: number | null
   iap_registration_no: string | null
 }
-
-import { getDemoSessionFromCookies, getDemoProfileById } from '@/lib/demo/session'
 
 async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClient>>, user: { id: string; email?: string | null }) {
   // Check if this is a demo user
@@ -97,7 +97,7 @@ async function getProfilePayload(supabase: Awaited<ReturnType<typeof createClien
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { Search, UserCheck, CalendarDays, Sparkles, Building2, CalendarRange, WalletCards, ArrowRight, Activity } from 'lucide-react'
+import { Search, UserCheck, CalendarDays, Building2, CalendarRange, WalletCards, ArrowRight, Activity } from 'lucide-react'
 
 const PATIENT_STEPS = [
   {
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
               How to Book a Physiotherapist<br /><span className="text-[#6B7BF5]">Online in India</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-[18px] leading-relaxed text-[#55586B]">
-              Book a physio session in 4 clear steps - no calls, no waiting, and no guesswork about who to trust. It's fast, frictionless, and secure.
+              Book a physio session in 4 clear steps - no calls, no waiting, and no guesswork about who to trust. It&apos;s fast, frictionless, and secure.
             </p>
 
             <div className="mt-12 mx-auto inline-flex items-center gap-1.5 rounded-full bg-[#F4F2FA] p-1.5 shadow-sm border border-[#E2E4EB]">

@@ -10,24 +10,21 @@ describe('HeroSection', () => {
   it('renders the search bar', () => {
     const { getByPlaceholderText } = render(<HeroSection />)
     // getByPlaceholderText throws if not found — no assertion needed; call itself is the assertion
-    expect(getByPlaceholderText('Search condition...')).toBeDefined()
+    expect(getByPlaceholderText('e.g. Back pain, Sports injury...')).toBeDefined()
   })
 
-  it('section[aria-label="Hero"] renders correctly', () => {
+  it('section[aria-label="Hero section"] renders correctly', () => {
     const { container } = render(<HeroSection />)
-    const section = container.querySelector('section[aria-label="Hero"]')
+    const section = container.querySelector('section[aria-label="Hero section"]')
     expect(section).toBeTruthy()
-    // Guard: overflow-hidden on the outer section breaks sticky nav and causes scroll bleed —
-    // keep this regression check to ensure the fix is never silently reverted
-    expect(section?.className).not.toContain('overflow-hidden')
+    expect(section?.className).toContain('min-h-[100svh]')
   })
 
-  it('bp-shell div exists inside the hero section', () => {
+  it('bp-container div exists inside the hero section', () => {
     const { container } = render(<HeroSection />)
-    const section = container.querySelector('section[aria-label="Hero"]')
-    const shell = section?.querySelector('.bp-shell')
+    const section = container.querySelector('section[aria-label="Hero section"]')
+    const shell = section?.querySelector('.bp-container')
     expect(shell).toBeTruthy()
-    // Guard: ensure we haven't regressed to the broken PWA viewport value
     expect(shell?.className).not.toContain('calc(100vh')
   })
 

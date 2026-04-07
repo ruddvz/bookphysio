@@ -7,11 +7,13 @@ import { formatIndiaDateInput, formatIndiaTime, getIndiaWeekdayShort, parseIndia
 
 export interface ProviderAppointment {
   id: string
+  patient_id?: string | null
   status: string
   visit_type: 'in_clinic' | 'home_visit' | string
   fee_inr: number
+  notes?: string | null
   availabilities: { starts_at: string; ends_at?: string } | null
-  patient?: { full_name?: string | null } | null
+  patient?: { id?: string | null; full_name?: string | null } | null
   providers?: unknown
   locations?: { city: string } | null
 }

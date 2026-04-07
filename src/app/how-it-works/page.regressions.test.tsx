@@ -15,7 +15,7 @@ describe('How It Works page regressions', () => {
   it('renders a compact hero with a top CTA and patient flow by default', () => {
     render(<HowItWorksPage />)
 
-    expect(screen.getByRole('heading', { name: /how to book a physiotherapist online in india/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /how to book a physiotherapist/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /start searching/i })).toHaveAttribute('href', '/search')
     expect(screen.getByText(/Book a physio session in 4 clear steps/i)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /choose provider/i })).toBeInTheDocument()
@@ -25,12 +25,11 @@ describe('How It Works page regressions', () => {
   it('switches to the provider flow and keeps the provider CTA adjacent to the content', () => {
     render(<HowItWorksPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /for physiotherapists/i }))
+    fireEvent.click(screen.getByRole('button', { name: /for providers/i }))
 
     expect(screen.getByRole('heading', { name: /register practice/i })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: /choose provider/i })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /join as a physiotherapist/i })).toHaveAttribute('href', '/doctor-signup')
-    expect(screen.getByRole('link', { name: /list your practice now/i })).toHaveAttribute('href', '/doctor-signup')
+    expect(screen.getByRole('link', { name: /join as a provider/i })).toHaveAttribute('href', '/doctor-signup')
     expect(screen.queryByText(/placeholder/i)).not.toBeInTheDocument()
   })
 

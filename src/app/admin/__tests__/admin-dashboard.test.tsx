@@ -26,14 +26,13 @@ describe('AdminDashboardHome', () => {
     render(<AdminDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getByText('42 pending')).toBeInTheDocument()
+      expect(screen.getByText('Pending Approvals').closest('a')).toHaveTextContent('42')
     })
 
     expect(screen.queryByText('18 pending')).toBeNull()
-    expect(screen.getByText('Profiles waiting on review').closest('div')).toHaveTextContent('42')
   })
 
-  it('shows the illustrative revenue label', async () => {
+  it('shows the live GMV card value', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
       activeProviders: 5000,
       pendingApprovals: 42,
@@ -44,11 +43,11 @@ describe('AdminDashboardHome', () => {
     render(<AdminDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getAllByText(/illustrative/i).length).toBeGreaterThan(0)
+      expect(screen.getByText('GMV This Month').closest('a')).toHaveTextContent('₹5.0L')
     })
 
-    expect(screen.getByText('Confirmed sessions this week').closest('div')).toHaveTextContent('Illustrative')
-    expect(screen.getByText('Profiles waiting on review').closest('div')).toHaveTextContent('Live')
+    expect(screen.queryByText(/illustrative/i)).toBeNull()
+    expect(screen.getByText('Platform Revenue')).toBeInTheDocument()
   })
 
   it('links the queue preview to the full listings screen', async () => {
@@ -62,17 +61,22 @@ describe('AdminDashboardHome', () => {
     render(<AdminDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: /view all/i })).toHaveAttribute('href', '/admin/listings')
+      expect(screen.getByText('Active Providers').closest('a')).toHaveTextContent('5,000')
     })
+
+    expect(screen.getByRole('link', { name: /view all/i })).toHaveAttribute('href', '/admin/listings')
   })
 
-  it('shows an explicit error state when live admin stats fail to load', async () => {
+  it('shows an explicit warning when live admin stats fail to load', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network failed')))
 
     render(<AdminDashboardHome />)
 
     await waitFor(() => {
-      expect(screen.getByText('Admin stats unavailable')).toBeInTheDocument()
+      expect(screen.getByText(/Live admin stats unavailable/i)).toBeInTheDocument()
     })
+
+    expect(screen.getByText('Active Providers').closest('a')).toHaveTextContent('—')
+    expect(screen.getByText('Platform Overview')).toBeInTheDocument()
   })
 })

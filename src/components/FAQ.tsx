@@ -106,6 +106,7 @@ export default function FAQ() {
                   <div
                     id={`faq-a-${faq.id}`}
                     role="region"
+                    aria-hidden={!isOpen}
                     aria-labelledby={`faq-q-${faq.id}`}
                     className={cn(
                       'grid transition-all duration-300',

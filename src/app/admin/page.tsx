@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import {
   Users, TrendingUp, BarChart3, ShieldCheck, Clock,
   ArrowRight, ArrowUpRight, UserPlus, CheckCircle2,
-  AlertCircle, Activity, MessageSquare, Loader2,
+  Activity, MessageSquare, Loader2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -50,17 +50,23 @@ const STATUS_LABELS: Record<string, string> = {
 export default function AdminDashboardHome() {
   const [stats, setStats] = useState({ activeProviders: 0, pendingApprovals: 0, totalPatients: 0, gmvMtd: 0 })
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
     let mounted = true
     const load = async () => {
       try {
+        if (mounted) setLoadFailed(false)
         const r = await fetch('/api/admin/stats')
-        if (r.ok) {
-          const d: typeof stats = await r.json()
-          if (mounted) setStats(d)
+        if (!r.ok) {
+          throw new Error('Failed to load admin stats')
         }
-      } catch { /* use defaults */ } finally {
+
+        const d: typeof stats = await r.json()
+        if (mounted) setStats(d)
+      } catch {
+        if (mounted) setLoadFailed(true)
+      } finally {
         if (mounted) setLoading(false)
       }
     }
@@ -68,11 +74,13 @@ export default function AdminDashboardHome() {
     return () => { mounted = false }
   }, [])
 
+  const showLiveStats = !loading && !loadFailed
+
   const kpis = [
-    { label: 'Active Providers', value: loading ? '—' : stats.activeProviders.toLocaleString(), icon: ShieldCheck, iconBg: 'bg-teal-50', iconColor: 'text-teal-600', href: '/admin/listings' },
-    { label: 'Pending Approvals', value: loading ? '—' : String(stats.pendingApprovals), icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', href: '/admin/listings', urgent: stats.pendingApprovals > 0 },
-    { label: 'Total Patients', value: loading ? '—' : stats.totalPatients.toLocaleString(), icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', href: '/admin/users' },
-    { label: 'GMV This Month', value: loading ? '—' : `₹${(stats.gmvMtd / 100_000).toFixed(1)}L`, icon: BarChart3, iconBg: 'bg-violet-50', iconColor: 'text-violet-600', href: '/admin/analytics' },
+    { label: 'Active Providers', value: showLiveStats ? stats.activeProviders.toLocaleString() : '—', icon: ShieldCheck, iconBg: 'bg-teal-50', iconColor: 'text-teal-600', href: '/admin/listings' },
+    { label: 'Pending Approvals', value: showLiveStats ? String(stats.pendingApprovals) : '—', icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', href: '/admin/listings', urgent: showLiveStats && stats.pendingApprovals > 0 },
+    { label: 'Total Patients', value: showLiveStats ? stats.totalPatients.toLocaleString() : '—', icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', href: '/admin/users' },
+    { label: 'GMV This Month', value: showLiveStats ? `₹${(stats.gmvMtd / 100_000).toFixed(1)}L` : '—', icon: BarChart3, iconBg: 'bg-violet-50', iconColor: 'text-violet-600', href: '/admin/analytics' },
   ]
 
   return (
@@ -102,6 +110,12 @@ export default function AdminDashboardHome() {
           </Link>
         </div>
       </div>
+
+      {loadFailed && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-[14px] font-medium text-amber-900">
+          Live admin stats unavailable. Dashboard chrome is visible, but KPI values could not be loaded.
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

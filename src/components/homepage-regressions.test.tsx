@@ -37,24 +37,24 @@ describe('Homepage regressions', () => {
     expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /patient trust signals/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /patient testimonials/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /booking questions/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)
 
   it('keeps the hero above the fold and leaves trust stats readable', () => {
     render(<HeroSection />)
 
-    const hero = screen.getByRole('region', { name: /hero/i })
-    const shell = hero.querySelector('.bp-shell')
+    const hero = screen.getByRole('region', { name: /hero section/i })
+    const shell = hero.querySelector('.bp-container')
     const animatedWordFrame = screen.getByText(/sports rehab/i).parentElement
     const statsRow = screen.getByText('5,000+').closest('div')?.parentElement
 
-    expect(shell?.className).toContain('min-h-[100svh]')
+    expect(hero.className).toContain('min-h-[100svh]')
+    expect(hero.className).toContain('justify-center')
+    expect(shell).toBeTruthy()
     expect(shell?.className).not.toContain('calc(100vh')
-    expect(shell?.className).toContain('justify-center')
-    expect(animatedWordFrame?.className).toContain('align-baseline')
-    expect(animatedWordFrame?.className).not.toContain('align-top')
+    expect(animatedWordFrame?.className).toContain('items-end')
     expect(statsRow?.className).not.toContain('grayscale')
     expect(statsRow?.className).not.toContain('opacity-70')
   })
@@ -70,12 +70,12 @@ describe('Homepage regressions', () => {
       </>
     )
 
-    expect(screen.getByText('Everything you need to know before booking your first session.')).toBeInTheDocument()
-    expect(screen.getByText('Find a verified physiotherapist, check their availability, and book your session in under 60 seconds.')).toBeInTheDocument()
-    expect(screen.getByText("Choose your care category and we'll surface verified physiotherapists in your city.")).toBeInTheDocument()
-    expect(screen.getByText('Every detail patients need to feel confident - credentials, visit format, fees, and availability - shown upfront.')).toBeInTheDocument()
-    expect(screen.getByText('Real patients. Real results. Every review is tied to a verified booking.')).toBeInTheDocument()
-    expect(screen.getByText('Can I cancel a session?')).toBeInTheDocument()
+    expect(screen.getByText(/Everything you need to know before booking your first session/i)).toBeInTheDocument()
+    expect(screen.getByText(/Find a verified physiotherapist, check their availability, and book your session/i)).toBeInTheDocument()
+    expect(screen.getByText(/Choose a specialty and we'll surface IAP-verified physiotherapists near you/i)).toBeInTheDocument()
+    expect(screen.getByText(/Credentials, visit format, fees, and availability/i)).toBeInTheDocument()
+    expect(screen.getByText(/Real patients, real results. Every review is tied to a verified booking./i)).toBeInTheDocument()
+    expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
 
     expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
     expect(container).not.toHaveTextContent('Search, compare, and confirm should feel like one continuous action.')
@@ -89,12 +89,12 @@ describe('Homepage regressions', () => {
 
     const openQuestion = screen.getByRole('button', { name: /how do you verify physiotherapists/i })
     const closedQuestion = screen.getByRole('button', { name: /can i book a home visit/i })
-    const closedAnswer = document.getElementById('faq-answer-2')
+    const closedAnswer = document.getElementById('faq-a-2')
 
     expect(openQuestion).toHaveAttribute('aria-expanded', 'true')
-    expect(openQuestion).toHaveAttribute('aria-controls', 'faq-answer-1')
+    expect(openQuestion).toHaveAttribute('aria-controls', 'faq-a-1')
     expect(closedQuestion).toHaveAttribute('aria-expanded', 'false')
-    expect(closedQuestion).toHaveAttribute('aria-controls', 'faq-answer-2')
+    expect(closedQuestion).toHaveAttribute('aria-controls', 'faq-a-2')
     expect(closedAnswer).toHaveAttribute('aria-hidden', 'true')
     expect(closedAnswer?.className).toContain('grid-rows-[0fr]')
     expect(closedAnswer?.firstElementChild?.className).toContain('pb-0')
@@ -108,11 +108,11 @@ describe('Homepage regressions', () => {
     expect(brandLink.querySelector('img[alt="BookPhysio.in"]')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }))
-    const mobileMenu = screen.getByText('Browse Specialties').closest('nav')
+    const mobileMenu = screen.getByText('Specialties').closest('nav')
     expect(within(mobileMenu as HTMLElement).getByRole('link', { name: /for providers/i })).toHaveAttribute('href', '/doctor-signup')
 
     expect(container.firstChild).toHaveClass('bg-transparent')
-    expect(container.firstChild).toHaveClass('pointer-events-none')
+    expect(container.firstChild).toHaveClass('fixed')
 
     rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()
@@ -125,11 +125,12 @@ describe('Homepage regressions', () => {
   it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {
     const { container: specialties } = render(<TopSpecialties />)
 
-    for (const cta of screen.getAllByText('Explore specialists')) {
-      expect(cta.className).toContain('text-[#0b5c52]')
+    for (const cta of screen.getAllByText(/find specialists/i)) {
+      expect(cta.className).toContain('text-slate-400')
+      expect(cta.className).toContain('group-hover:text-indigo-600')
     }
 
-    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(6)
+    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(7)
 
     const { container: workflow } = render(<HowItWorks />)
     expect(workflow.querySelector('.lucide-sliders-horizontal')).toBeInTheDocument()
