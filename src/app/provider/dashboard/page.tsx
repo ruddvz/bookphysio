@@ -18,7 +18,7 @@ import {
 } from './provider-dashboard-utils'
 
 const VISIT_LABELS: Record<string, { label: string; color: string }> = {
-  in_clinic:  { label: 'Clinic',     color: 'bg-teal-50 text-teal-700 border-teal-100' },
+  in_clinic:  { label: 'Clinic',     color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
   home_visit: { label: 'Home Visit', color: 'bg-violet-50 text-violet-700 border-violet-100' },
 }
 
@@ -96,7 +96,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
-            {greeting}, Dr. <span className="text-teal-600">{first}</span>
+            {greeting}, Dr. <span className="text-emerald-600">{first}</span>
           </h1>
           <p className="text-slate-500 text-[15px] mt-1">
             {todayAppts.length > 0
@@ -122,7 +122,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
           </button>
           <Link
             href="/provider/availability"
-            className="flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold text-[14px] hover:bg-emerald-700 transition-colors"
           >
             <CalendarCheck size={15} />
             Manage availability
@@ -137,7 +137,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
             label: "Today's sessions",
             value: String(todayAppts.length),
             sub: `${todayAppts.filter(a => a.status === 'confirmed').length} confirmed`,
-            icon: Calendar, iconBg: 'bg-teal-50', iconColor: 'text-teal-600',
+            icon: Calendar, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
             href: '/provider/appointments',
           },
           {
@@ -169,13 +169,13 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
           <Link
             key={card.label}
             href={card.href}
-            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-teal-200 hover:shadow-md hover:shadow-teal-500/5 hover:-translate-y-0.5 transition-all"
+            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-emerald-200 hover:shadow-md hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
                 <card.icon size={18} className={card.iconColor} />
               </div>
-              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-teal-500 transition-colors" />
+              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-emerald-500 transition-colors" />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
             <div className="text-[24px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
@@ -206,7 +206,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                 </button>
               ))}
             </div>
-            <Link href="/provider/calendar" className="text-[13px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 group">
+            <Link href="/provider/calendar" className="text-[13px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 group">
               Full calendar
               <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
@@ -220,7 +220,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                 <p className="text-slate-400 text-[14px]">
                   {tab === 'today' ? 'No sessions today.' : 'No sessions this week.'}
                 </p>
-                <Link href="/provider/availability" className="text-teal-600 text-[13px] font-semibold hover:underline mt-1 inline-block">
+                <Link href="/provider/availability" className="text-emerald-600 text-[13px] font-semibold hover:underline mt-1 inline-block">
                   Update your availability →
                 </Link>
               </div>
@@ -269,7 +269,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
                       </span>
                     </div>
 
-                    <ArrowRight size={14} className="text-slate-200 group-hover:text-teal-500 transition-colors shrink-0" />
+                    <ArrowRight size={14} className="text-slate-200 group-hover:text-emerald-500 transition-colors shrink-0" />
                   </Link>
                 )
               })
@@ -283,9 +283,9 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
           {/* Next appointment */}
           {nextAppt && (
             <div className="bg-white rounded-2xl border border-slate-200 p-5">
-              <div className="text-[11px] font-bold uppercase tracking-widest text-teal-600 mb-3">Next Session</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 mb-3">Next Session</div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 font-bold">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
                   {patientDisplayName(nextAppt).charAt(0)}
                 </div>
                 <div>
@@ -300,7 +300,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
               </div>
               <Link
                 href={`/provider/appointments/${nextAppt.id}`}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white rounded-xl text-[13px] font-semibold hover:bg-teal-700 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-600 text-white rounded-xl text-[13px] font-semibold hover:bg-emerald-700 transition-colors"
               >
                 View session details
                 <ArrowRight size={13} />
@@ -313,7 +313,7 @@ export default function ProviderDashboardHome({ locale }: { locale?: StaticLocal
             <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-4">Quick Actions</div>
             <div className="space-y-2">
               {[
-                { label: 'Update availability', href: '/provider/availability', icon: CheckCircle2, color: 'text-teal-600' },
+                { label: 'Update availability', href: '/provider/availability', icon: CheckCircle2, color: 'text-emerald-600' },
                 { label: 'View messages',        href: '/provider/messages',     icon: MessageSquare, color: 'text-blue-600' },
                 { label: 'View all patients',    href: '/provider/patients',     icon: Users,         color: 'text-violet-600' },
                 { label: 'Earnings report',      href: '/provider/earnings',     icon: BarChart3,     color: 'text-amber-600' },

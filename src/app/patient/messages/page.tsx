@@ -97,56 +97,43 @@ export default function PatientMessages() {
   }, [messagesData, queryClient, selectedConversationId])
 
   return (
-    <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-8 h-[calc(100vh-100px)] flex flex-col animate-in fade-in duration-700">
-      
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-6 h-[calc(100vh-56px)] flex flex-col animate-in fade-in duration-500">
+
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[32px] font-bold text-bp-primary tracking-tighter leading-none mb-2">
-            Care Messages
+          <h1 className="text-[28px] font-bold text-slate-900 tracking-tight leading-none mb-1">
+            Messages
           </h1>
-          <p className="text-[15px] font-medium text-bp-body">Direct access to your physiotherapy experts.</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="flex -space-x-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-bp-surface flex items-center justify-center text-[12px] font-bold text-bp-accent">
-                   {['SK', 'PS', 'RV'][i-1]}
-                </div>
-              ))}
-              <div className="w-10 h-10 rounded-full border-2 border-white bg-bp-accent/10 flex items-center justify-center text-[10px] font-bold text-bp-accent">
-                 +5
-              </div>
-           </div>
-           <p className="text-[12px] font-bold text-bp-body/40 border-l border-bp-border pl-4 uppercase tracking-widest">Active Experts</p>
+          <p className="text-[14px] text-slate-500">Communicate with your physiotherapy providers.</p>
         </div>
       </div>
 
-      <div className="flex-1 bg-white rounded-[32px] border border-bp-border shadow-2xl flex overflow-hidden relative">
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-lg flex overflow-hidden relative">
         
         {/* ── Left Pane: Conversations ── */}
         <div className={cn(
-          "w-full md:w-[380px] border-r border-bp-border flex flex-col bg-bp-surface/50 shrink-0 transition-all",
+          "w-full md:w-[360px] border-r border-slate-200 flex flex-col bg-slate-50/50 shrink-0 transition-all",
           selectedConversationId && "hidden md:flex"
         )}>
-          <div className="p-6 border-b border-bp-border bg-white">
+          <div className="p-4 border-b border-slate-200 bg-white">
             <div className="relative group">
-              <input 
-                type="search" 
-                placeholder="Search conversations..." 
-                className="w-full pl-12 pr-4 py-3.5 bg-bp-surface border border-bp-border rounded-[18px] text-[14px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all"
+              <input
+                type="search"
+                placeholder="Search conversations..."
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-bp-body/40 group-focus-within:text-bp-accent" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500" />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <div className="flex-1 overflow-y-auto p-3 space-y-1">
             {conversationsLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-bp-accent" />
+                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
               </div>
             ) : conversations.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-[14px] font-medium text-bp-body/40">No conversations yet</p>
+                <p className="text-[14px] text-slate-400">No conversations yet</p>
               </div>
             ) : (
               conversations.map((chat) => (
@@ -154,33 +141,33 @@ export default function PatientMessages() {
                   key={chat.id}
                   onClick={() => setSelectedConversationId(chat.id)}
                   className={cn(
-                    "w-full p-4 rounded-[24px] flex items-center gap-4 transition-all duration-300 group",
-                    selectedConversationId === chat.id ? "bg-white shadow-xl shadow-bp-primary/5 translate-x-2 border border-bp-accent/10" : "hover:bg-white/60"
+                    "w-full p-3 rounded-xl flex items-center gap-3 transition-all group",
+                    selectedConversationId === chat.id ? "bg-white shadow-sm border border-blue-100" : "hover:bg-white/80"
                   )}
                 >
                   <div className="relative shrink-0">
                     <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center text-[18px] font-bold transition-transform duration-500 group-hover:scale-105",
-                      selectedConversationId === chat.id ? "bg-bp-accent text-white" : "bg-white border border-bp-border text-bp-body/40"
+                      "w-11 h-11 rounded-xl flex items-center justify-center text-[15px] font-bold",
+                      selectedConversationId === chat.id ? "bg-blue-600 text-white" : "bg-white border border-slate-200 text-slate-400"
                     )}>
                       {(chat.other_user?.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[15px] font-bold text-bp-primary truncate">{chat.other_user?.full_name || 'Unknown'}</span>
-                      <span className="text-[11px] font-bold text-bp-body/40 whitespace-nowrap ml-2">{formatConversationTimestamp(chat.last_message_at || chat.created_at)}</span>
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className="text-[14px] font-semibold text-slate-900 truncate">{chat.other_user?.full_name || 'Unknown'}</span>
+                      <span className="text-[11px] text-slate-400 whitespace-nowrap ml-2">{formatConversationTimestamp(chat.last_message_at || chat.created_at)}</span>
                     </div>
-                    <p className="text-[13px] font-bold text-bp-body/40 truncate leading-tight mb-1">{chat.other_user?.role === 'provider' ? 'Physiotherapist' : 'Patient'}</p>
+                    <p className="text-[12px] text-slate-400 truncate leading-tight mb-0.5">{chat.other_user?.role === 'provider' ? 'Physiotherapist' : 'Patient'}</p>
                     <p className={cn(
                       "text-[13px] truncate",
-                      chat.unread_count > 0 ? "text-bp-accent font-bold" : "text-bp-body/40 font-medium"
+                      chat.unread_count > 0 ? "text-blue-600 font-semibold" : "text-slate-400"
                     )}>
                       {chat.last_message?.content || 'No messages yet'}
                     </p>
                   </div>
                   {chat.unread_count > 0 && (
-                    <div className="w-6 h-6 rounded-full bg-bp-accent text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-bp-accent/30">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
                       {chat.unread_count}
                     </div>
                   )}
@@ -198,45 +185,43 @@ export default function PatientMessages() {
           {activeChat ? (
             <>
               {/* Chat Header */}
-              <div className="px-8 py-5 border-b border-bp-border flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
-                <div className="flex items-center gap-4">
-                  <button aria-label="Back to conversation list" title="Back to conversation list" onClick={() => setSelectedConversationId(null)} className="md:hidden p-2 -ml-2 text-bp-body/40 hover:text-bp-primary">
-                     <UserCircle size={24} />
+              <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div className="flex items-center gap-3">
+                  <button aria-label="Back to conversation list" title="Back to conversation list" onClick={() => setSelectedConversationId(null)} className="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-900">
+                     <UserCircle size={22} />
                   </button>
-                  <div className="w-12 h-12 rounded-xl bg-bp-accent/10 flex items-center justify-center text-bp-accent font-bold text-[18px]">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[16px]">
                     {(activeChat?.other_user?.full_name || 'U').charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-[17px] font-bold text-bp-primary leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
-                    <div className="flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-bp-border" />
-                       <span className="text-[12px] font-bold text-bp-body/40 tracking-tight">
-                         Away
-                       </span>
+                    <h3 className="text-[15px] font-semibold text-slate-900 leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
+                    <div className="flex items-center gap-1.5">
+                       <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                       <span className="text-[11px] text-slate-400">Away</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button aria-label="Voice call unavailable" title="Voice call unavailable" className="p-3 rounded-xl hover:bg-bp-surface text-bp-body/40 transition-colors" disabled><Phone size={20} /></button>
-                  <button aria-label="Video call unavailable" title="Video call unavailable" className="p-3 rounded-xl hover:bg-bp-surface text-bp-body/40 transition-colors" disabled><Video size={20} /></button>
-                  <button aria-label="More actions unavailable" title="More actions unavailable" className="p-3 rounded-xl hover:bg-bp-surface text-bp-body/40 transition-colors" disabled><MoreVertical size={20} /></button>
+                <div className="flex items-center gap-1">
+                  <button aria-label="Voice call unavailable" title="Voice call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><Phone size={18} /></button>
+                  <button aria-label="Video call unavailable" title="Video call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><Video size={18} /></button>
+                  <button aria-label="More actions unavailable" title="More actions unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><MoreVertical size={18} /></button>
                 </div>
               </div>
 
               {/* Messages Grid */}
-              <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#F9FBFC]/30">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-bp-accent" />
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-[14px] font-medium text-bp-body/40">No messages yet. Start the conversation!</p>
+                    <p className="text-[14px] text-slate-400">No messages yet. Start the conversation!</p>
                   </div>
                 ) : (
                   <>
-                    <div className="text-center py-4">
-                      <span className="px-4 py-1.5 bg-bp-surface rounded-full text-[11px] font-bold text-bp-body/40 uppercase tracking-widest">
+                    <div className="text-center py-3">
+                      <span className="px-3 py-1 bg-slate-100 rounded-full text-[11px] text-slate-400 uppercase tracking-wider">
                         {formatConversationDateDivider(messages[0]?.created_at || '')}
                       </span>
                     </div>
@@ -249,19 +234,19 @@ export default function PatientMessages() {
                           isSent ? "ml-auto items-end" : "mr-auto items-start"
                         )}>
                           <div className={cn(
-                            "px-6 py-4 rounded-[24px] shadow-sm relative group transition-all duration-300",
+                            "px-5 py-3 rounded-2xl shadow-sm",
                             isSent
-                              ? "bg-bp-primary text-white rounded-tr-none"
-                              : "bg-white border border-bp-border text-bp-primary rounded-tl-none"
+                              ? "bg-blue-600 text-white rounded-tr-sm"
+                              : "bg-white border border-slate-200 text-slate-900 rounded-tl-sm"
                           )}>
-                            <p className="text-[15px] font-medium leading-relaxed">{msg.content}</p>
+                            <p className="text-[14px] leading-relaxed">{msg.content}</p>
                           </div>
-                          <div className="flex items-center gap-2 mt-2 px-2">
-                            <span className="text-[11px] font-bold text-bp-body/40">
+                          <div className="flex items-center gap-1.5 mt-1.5 px-1">
+                            <span className="text-[11px] text-slate-400">
                               {formatConversationMessageTime(msg.created_at)}
                             </span>
                             {isSent && (
-                              msg.read_at ? <CheckCheck size={14} className="text-bp-accent" /> : <Clock size={14} className="text-bp-body/30" />
+                              msg.read_at ? <CheckCheck size={13} className="text-blue-500" /> : <Clock size={13} className="text-slate-300" />
                             )}
                           </div>
                         </div>
@@ -273,10 +258,10 @@ export default function PatientMessages() {
               </div>
 
               {/* Input Area */}
-              <div className="p-6 md:p-8 bg-white border-t border-bp-border">
-                <div className="relative flex items-center gap-4 max-w-[900px] mx-auto">
-                   <button aria-label="Attachments unavailable" title="Attachments unavailable" className="w-12 h-12 rounded-full border border-bp-border flex items-center justify-center text-bp-body/40 hover:bg-bp-surface transition-colors shrink-0" disabled>
-                      <Paperclip size={20} />
+              <div className="p-4 md:p-6 bg-white border-t border-slate-200">
+                <div className="relative flex items-center gap-3 max-w-[900px] mx-auto">
+                   <button aria-label="Attachments unavailable" title="Attachments unavailable" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors shrink-0" disabled>
+                      <Paperclip size={18} />
                    </button>
                    <div className="flex-1 relative">
                      <textarea
@@ -293,7 +278,7 @@ export default function PatientMessages() {
                          }
                        }}
                        disabled={sendMessageMutation.isPending}
-                       className="w-full pl-6 pr-16 py-4 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary focus:bg-white focus:border-bp-accent focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all resize-none disabled:bg-bp-surface disabled:text-bp-body/40"
+                       className="w-full pl-5 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none disabled:bg-slate-50 disabled:text-slate-400"
                      />
                      <button
                        onClick={() => {
@@ -302,34 +287,24 @@ export default function PatientMessages() {
                          }
                        }}
                        disabled={sendMessageMutation.isPending || !messageText.trim()}
-                       className="absolute right-2 top-2 w-10 h-10 bg-bp-accent text-white rounded-full flex items-center justify-center shadow-lg shadow-bp-accent/30 hover:bg-bp-primary transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                       className="absolute right-2 top-1.5 w-9 h-9 bg-blue-600 text-white rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                      >
-                        {sendMessageMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                        {sendMessageMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                      </button>
                    </div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-bp-surface/30">
+            <div className="flex-1 flex items-center justify-center bg-slate-50/30">
               <div className="text-center px-10 max-w-sm">
-                <div className="w-24 h-24 mx-auto rounded-[32px] bg-white border border-bp-border shadow-xl flex items-center justify-center mb-8 rotate-3">
-                  <MessageSquare size={40} className="text-bp-accent" strokeWidth={2.5} />
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-6">
+                  <MessageSquare size={28} className="text-blue-500" />
                 </div>
-                <h2 className="text-[24px] font-bold text-bp-primary tracking-tight mb-3">Direct Care Access</h2>
-                <p className="text-[15px] font-medium text-bp-body/40 leading-relaxed">
-                  Select a provider from your care network to start a secure conversation about your treatment.
+                <h2 className="text-[20px] font-bold text-slate-900 tracking-tight mb-2">Select a conversation</h2>
+                <p className="text-[14px] text-slate-500 leading-relaxed">
+                  Choose a provider from your conversations to start messaging.
                 </p>
-                <div className="mt-10 grid grid-cols-2 gap-3">
-                  <div className="p-4 bg-white rounded-2xl border border-bp-border text-center">
-                    <p className="text-[18px] font-bold text-bp-primary">3</p>
-                    <p className="text-[9px] font-bold text-bp-body/40 uppercase tracking-widest mt-1">Experts</p>
-                  </div>
-                  <div className="p-4 bg-white rounded-2xl border border-bp-border text-center">
-                    <p className="text-[18px] font-bold text-bp-accent">24h</p>
-                    <p className="text-[9px] font-bold text-bp-body/40 uppercase tracking-widest mt-1">Avg Response</p>
-                  </div>
-                </div>
               </div>
             </div>
           )}

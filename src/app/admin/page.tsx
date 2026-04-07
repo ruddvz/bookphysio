@@ -77,27 +77,27 @@ export default function AdminDashboardHome() {
   const showLiveStats = !loading && !loadFailed
 
   const kpis = [
-    { label: 'Active Providers', value: showLiveStats ? stats.activeProviders.toLocaleString() : '—', icon: ShieldCheck, iconBg: 'bg-teal-50', iconColor: 'text-teal-600', href: '/admin/listings' },
+    { label: 'Active Providers', value: showLiveStats ? stats.activeProviders.toLocaleString() : '—', icon: ShieldCheck, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', href: '/admin/listings' },
     { label: 'Pending Approvals', value: showLiveStats ? String(stats.pendingApprovals) : '—', icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600', href: '/admin/listings', urgent: showLiveStats && stats.pendingApprovals > 0 },
     { label: 'Total Patients', value: showLiveStats ? stats.totalPatients.toLocaleString() : '—', icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600', href: '/admin/users' },
     { label: 'GMV This Month', value: showLiveStats ? `₹${(stats.gmvMtd / 100_000).toFixed(1)}L` : '—', icon: BarChart3, iconBg: 'bg-violet-50', iconColor: 'text-violet-600', href: '/admin/analytics' },
   ]
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-700 text-[11px] font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-[11px] font-bold uppercase tracking-wider">
               Admin Command Center
             </span>
           </div>
-          <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-[24px] md:text-[28px] font-bold text-slate-900 tracking-tight">
             Platform Overview
           </h1>
-          <p className="text-slate-500 text-[15px] mt-1">Real-time snapshot of the BookPhysio platform.</p>
+          <p className="text-slate-500 text-[14px] mt-0.5">Real-time snapshot of the BookPhysio platform.</p>
         </div>
         <div className="flex gap-3 shrink-0">
           <Link href="/admin/listings" className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-semibold text-[14px] hover:bg-slate-800 transition-colors">
@@ -159,7 +159,7 @@ export default function AdminDashboardHome() {
               <h2 className="text-[17px] font-bold text-slate-900">Platform Revenue</h2>
               <p className="text-[13px] text-slate-400">Last 7 days GMV</p>
             </div>
-            <Link href="/admin/analytics" className="text-[13px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 group">
+            <Link href="/admin/analytics" className="text-[13px] font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 group">
               Full report <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
@@ -173,8 +173,8 @@ export default function AdminDashboardHome() {
                     className={cn(
                       'w-full rounded-lg transition-all duration-500',
                       i === REVENUE_BARS.length - 1
-                        ? 'bg-teal-500'
-                        : 'bg-slate-100 hover:bg-teal-100'
+                        ? 'bg-amber-500'
+                        : 'bg-slate-100 hover:bg-amber-100'
                     )}
                     style={{ height: `${pct}%` }}
                   />
@@ -206,7 +206,7 @@ export default function AdminDashboardHome() {
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-900 text-[15px]">Action Queue</h3>
-              <Link href="/admin/listings" className="text-[12px] text-teal-600 font-semibold hover:underline">
+              <Link href="/admin/listings" className="text-[12px] text-amber-600 font-semibold hover:underline">
                 View all
               </Link>
             </div>
@@ -233,7 +233,7 @@ export default function AdminDashboardHome() {
             <h3 className="font-bold text-slate-900 text-[15px] mb-4">Platform Health</h3>
             <div className="space-y-4">
               {[
-                { label: 'Provider verification rate', value: 98, color: 'bg-teal-500' },
+                { label: 'Provider verification rate', value: 98, color: 'bg-emerald-500' },
                 { label: 'Booking conversion',         value: 72, color: 'bg-blue-500' },
                 { label: 'Session completion',          value: 94, color: 'bg-emerald-500' },
               ].map(({ label, value, color }) => (

@@ -34,20 +34,28 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-[#F6FAF9]">
 
-      {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[240px] bg-white border-r border-slate-100 flex-col z-50">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-emerald-100/80 flex-col z-50">
 
         {/* Logo */}
-        <div className="px-5 h-16 flex items-center border-b border-slate-100">
+        <div className="px-6 h-16 flex items-center border-b border-emerald-50">
           <Link href="/provider/dashboard">
             <BpLogo size="nav" />
           </Link>
         </div>
 
+        {/* Provider badge */}
+        <div className="px-5 py-3 border-b border-emerald-50">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-[11px] font-bold uppercase tracking-wider">
+            <UserCheck size={11} />
+            Provider Portal
+          </div>
+        </div>
+
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5" aria-label="Provider navigation">
+        <nav className="flex-1 px-3 py-5 space-y-1" aria-label="Provider navigation">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + '/')
             return (
@@ -55,42 +63,52 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
+                  'flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
                   active
-                    ? 'bg-teal-50 text-teal-700 font-semibold'
+                    ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-sm'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 )}
               >
-                <Icon size={17} className={active ? 'text-teal-600' : 'text-slate-400'} />
+                <Icon size={18} className={active ? 'text-emerald-600' : 'text-slate-400'} />
                 {label}
-                {active && <ChevronRight size={13} className="ml-auto text-teal-400" />}
+                {active && <ChevronRight size={14} className="ml-auto text-emerald-400" />}
               </Link>
             )
           })}
         </nav>
 
         {/* Footer nav */}
-        <div className="px-3 py-4 border-t border-slate-100 space-y-0.5">
+        <div className="px-3 py-4 border-t border-emerald-50 space-y-1">
           <Link
             href="/provider/notifications"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            className={cn(
+              "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-colors",
+              pathname === '/provider/notifications'
+                ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            )}
           >
-            <Bell size={17} className="text-slate-400" />
+            <Bell size={18} className={pathname === '/provider/notifications' ? 'text-emerald-600' : 'text-slate-400'} />
             Notifications
           </Link>
           <Link
             href="/provider/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            className={cn(
+              "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-colors",
+              pathname === '/provider/profile'
+                ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            )}
           >
-            <Settings size={17} className="text-slate-400" />
+            <Settings size={18} className={pathname === '/provider/profile' ? 'text-emerald-600' : 'text-slate-400'} />
             Settings
           </Link>
           <button
             type="button"
             onClick={() => { void handleSignOut() }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
           >
-            <LogOut size={17} className="text-slate-400" />
+            <LogOut size={18} className="text-slate-400" />
             Sign out
           </button>
         </div>
@@ -99,9 +117,9 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         <div className="px-3 pb-4">
           <Link
             href="/provider/profile"
-            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-teal-200 hover:bg-teal-50 transition-all group"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-200 hover:bg-emerald-50 transition-all group"
           >
-            <div className="w-9 h-9 rounded-full bg-teal-700 flex items-center justify-center text-white text-[13px] font-bold shrink-0">
+            <div className="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-[13px] font-bold shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
@@ -111,13 +129,13 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                 Active provider
               </div>
             </div>
-            <ChevronRight size={14} className="text-slate-300 group-hover:text-teal-500 transition-colors" />
+            <ChevronRight size={14} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
           </Link>
         </div>
       </aside>
 
-      {/* ── Mobile Header ── */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-50 h-16 bg-white border-b border-slate-100 flex items-center px-4 gap-4">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 inset-x-0 z-50 h-14 bg-white border-b border-emerald-100 flex items-center px-4 gap-3">
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -128,7 +146,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         <Link href="/provider/dashboard" className="flex-1">
           <BpLogo size="nav" />
         </Link>
-        <Link href="/provider/profile" className="w-9 h-9 rounded-full bg-teal-700 flex items-center justify-center text-white text-[12px] font-bold">
+        <Link href="/provider/profile" className="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-[12px] font-bold">
           {initials}
         </Link>
       </header>
@@ -137,11 +155,11 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
       {mobileOpen && (
         <>
           <div className="lg:hidden fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="lg:hidden fixed inset-y-0 left-0 z-[70] w-[260px] bg-white shadow-xl flex flex-col">
-            <div className="px-5 h-16 flex items-center border-b border-slate-100">
+          <div className="lg:hidden fixed inset-y-0 left-0 z-[70] w-[280px] bg-white shadow-xl flex flex-col">
+            <div className="px-6 h-14 flex items-center border-b border-emerald-50">
               <BpLogo size="nav" />
             </div>
-            <nav className="flex-1 px-3 py-4 space-y-0.5">
+            <nav className="flex-1 px-3 py-4 space-y-1">
               {navItems.map(({ href, label, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(href + '/')
                 return (
@@ -150,23 +168,23 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                     href={href}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-3 rounded-lg text-[14px] font-medium transition-colors',
-                      active ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors',
+                      active ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'
                     )}
                   >
-                    <Icon size={17} className={active ? 'text-teal-600' : 'text-slate-400'} />
+                    <Icon size={18} className={active ? 'text-emerald-600' : 'text-slate-400'} />
                     {label}
                   </Link>
                 )
               })}
             </nav>
-            <div className="px-3 pb-6 border-t border-slate-100 pt-3">
+            <div className="px-3 pb-6 border-t border-emerald-50 pt-3">
               <button
                 type="button"
                 onClick={() => { setMobileOpen(false); void handleSignOut() }}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-[14px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium text-red-600 hover:bg-red-50 transition-colors"
               >
-                <LogOut size={17} />
+                <LogOut size={18} />
                 Sign out
               </button>
             </div>
@@ -174,8 +192,8 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         </>
       )}
 
-      {/* ── Mobile Bottom Nav ── */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-slate-100 px-2 pb-safe">
+      {/* Mobile Bottom Nav */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-emerald-100 px-2 pb-safe">
         <div className="flex">
           {navItems.slice(0, 5).map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(href + '/')
@@ -185,7 +203,7 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
                 href={href}
                 className={cn(
                   'flex-1 flex flex-col items-center gap-1 py-3 transition-colors',
-                  active ? 'text-teal-600' : 'text-slate-400'
+                  active ? 'text-emerald-600' : 'text-slate-400'
                 )}
               >
                 <Icon size={20} />
@@ -196,8 +214,8 @@ export default function ProviderLayout({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      {/* ── Main ── */}
-      <main className="flex-1 lg:ml-[240px] pt-16 lg:pt-0 pb-20 lg:pb-0 min-h-screen">
+      {/* Main */}
+      <main className="flex-1 lg:ml-[260px] pt-14 lg:pt-0 pb-20 lg:pb-0 min-h-screen">
         {children}
       </main>
     </div>

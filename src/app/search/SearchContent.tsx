@@ -9,7 +9,7 @@ import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Search as SearchIcon, MapPin, SlidersHorizontal, ChevronRight, Activity, Zap, ArrowRight, Sparkles, Calendar } from 'lucide-react'
+import { Search as SearchIcon, MapPin, ChevronRight, Activity, ArrowRight, Sparkles, Calendar } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
@@ -49,7 +49,7 @@ export const DEMO_RESULTS = [
     city: 'Mumbai',
     fee: '₹1,200',
     nextSlot: 'Today · Evening',
-    icon: Zap,
+    icon: Activity,
     href: '/search?visit_type=home_visit',
     coverage: 'Bandra, Juhu, Andheri',
     verified: true
@@ -216,29 +216,25 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     <div className="flex flex-col min-h-screen bg-bp-surface selection:bg-bp-accent/10 selection:text-bp-accent">
       
       {/* ── Search Header ── */}
-      <header className="z-30 bg-[#fffaf4]/90 backdrop-blur-xl border-b border-[#ede3d5]/60 flex-shrink-0 sticky top-[88px]">
-        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-5 md:py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-bp-body/60">
-                <Link href="/" className="hover:text-bp-accent transition-colors">{t.breadcrumbRoot}</Link>
-                <ChevronRight size={12} strokeWidth={4} />
-                <span className="text-bp-accent bg-bp-accent/5 px-2.5 py-1 rounded-lg border border-bp-accent/10">{displayLocation}</span>
-                {specialty && (
-                  <>
-                    <ChevronRight size={12} strokeWidth={4} />
-                    <span className="text-bp-body">{specialty}</span>
-                  </>
-                )}
-              </div>
-              <h1 className="text-[32px] md:text-[42px] font-bold text-bp-primary tracking-tighter leading-none flex items-center gap-4">
-                {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
-                {loading && <div className="w-8 h-8 rounded-full border-4 border-bp-surface border-t-bp-accent animate-spin shrink-0" />}
-              </h1>
-              <p className="text-[15px] font-medium text-bp-body/70 tracking-tight leading-relaxed">{t.subheading(displayLocation)}</p>
-            </div>
+      <header className="z-30 bg-white/90 backdrop-blur-xl border-b border-bp-border/60 flex-shrink-0 sticky top-[56px]">
+        <div className="max-w-[1142px] mx-auto px-6 md:px-10 py-4">
+          <div className="flex items-center gap-2 text-[12px] text-bp-body/50 mb-3">
+            <Link href="/" className="hover:text-bp-accent transition-colors">{t.breadcrumbRoot}</Link>
+            <ChevronRight size={12} />
+            <span>{displayLocation}</span>
+            {specialty && (
+              <>
+                <ChevronRight size={12} />
+                <span>{specialty}</span>
+              </>
+            )}
           </div>
-          
+          <div className="flex items-center gap-4 mb-4">
+            <h1 className="text-[24px] md:text-[32px] font-bold text-bp-primary tracking-tight leading-none">
+              {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
+            </h1>
+            {loading && <div className="w-6 h-6 rounded-full border-3 border-bp-surface border-t-bp-accent animate-spin shrink-0" />}
+          </div>
           <SearchFilters total={total} />
         </div>
       </header>
@@ -331,16 +327,10 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                               </div>
                             </div>
 
-                            <div className="relative mt-6 flex items-center justify-between border-t border-bp-border/60 pt-5">
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-1.5 w-1.5 rounded-full bg-bp-accent" />
-                                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-accent/80">
-                                  Verified Professional
-                                </span>
-                              </div>
+                            <div className="relative mt-6 flex items-center justify-end border-t border-bp-border/60 pt-5">
                               <div className="flex items-center gap-3">
                                 <span className="text-[16px] font-bold text-bp-primary">{result.fee}</span>
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bp-surface text-bp-body/40 group-hover:bg-bp-secondary group-hover:text-white transition-all duration-300">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent group-hover:text-white transition-all duration-300">
                                   <ArrowRight size={16} strokeWidth={3} />
                                 </div>
                               </div>
@@ -363,9 +353,9 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               />
             </div>
           ) : (
-            <div className="flex flex-col gap-8 pb-32 animate-in fade-in duration-1000">
+            <div className="flex flex-col gap-6 pb-20 animate-in fade-in duration-700">
               {error && (
-                <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-4 rounded-2xl border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                     <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
@@ -382,18 +372,6 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                   </button>
                 </div>
               )}
-              <div className="flex items-center justify-between px-2 mb-2">
-                <div className="flex items-center gap-3">
-                   <div className="p-1.5 bg-bp-accent/10 rounded-lg text-bp-accent"><Zap size={16} strokeWidth={3} /></div>
-                   <p className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.15em]">{t.verifiedProfessionals}</p>
-                </div>
-                <div className="md:hidden">
-                  <button className="flex items-center gap-2 text-[14px] font-bold text-bp-accent px-4 py-2 bg-bp-accent/10 rounded-xl border border-bp-accent/20">
-                     <SlidersHorizontal size={14} strokeWidth={3} />
-                     Sort
-                  </button>
-                </div>
-              </div>
               {doctors.map((doctor) => (
                 <div key={doctor.id} id={`doctor-${doctor.id}`}>
                   <DoctorCard
@@ -407,16 +385,6 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
               {/* Explore More — shown below results as a discovery section */}
               <FeaturedDoctors />
-
-              {/* End of List */}
-              <div className="py-16 text-center border-t border-bp-border mt-8 bg-bp-surface/50 rounded-[32px] px-8">
-                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-body/40 tracking-widest">
-                   {t.safetyVerified}
-                </div>
-                <p className="text-[18px] font-bold text-bp-body/60 italic max-w-[500px] mx-auto leading-relaxed">
-                  {t.closingQuote}
-                </p>
-              </div>
             </div>
           )}
         </div>

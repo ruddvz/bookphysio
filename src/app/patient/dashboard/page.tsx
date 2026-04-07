@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Calendar, Users, Activity, MessageSquare, ArrowRight, ArrowUpRight,
-  CalendarPlus, Clock, CircleAlert, ShieldCheck, TrendingUp, Sparkles,
+  CalendarPlus, Clock, CircleAlert, ShieldCheck, TrendingUp,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -85,13 +85,13 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-[11px] font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-[11px] font-bold uppercase tracking-wider">
               <ShieldCheck size={11} />
               {t.verifiedPatient}
             </span>
           </div>
           <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
-            {greeting}, <span className="text-teal-600">{first}</span> 👋
+            {greeting}, <span className="text-blue-600">{first}</span> 👋
           </h1>
           <p className="text-slate-500 text-[15px] mt-1">
             {t.welcomeBack(upcoming.length)}
@@ -100,17 +100,17 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
         <div className="flex gap-3 shrink-0">
           <Link
             href="/search"
-            className="flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors group shadow-sm shadow-teal-600/20"
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-[14px] hover:bg-blue-700 transition-colors group shadow-sm shadow-blue-600/20"
           >
             <CalendarPlus size={15} />
             {t.bookNewTherapy}
           </Link>
           <Link
-            href="/patient/motio"
-            className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-teal-200 hover:text-teal-700 transition-colors"
+            href="/patient/messages"
+            className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-blue-200 hover:text-blue-700 transition-colors"
           >
-            <Sparkles size={15} />
-            {t.askAI}
+            <MessageSquare size={15} />
+            Messages
           </Link>
         </div>
       </div>
@@ -122,7 +122,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
             label: t.nextSession,
             value: next?.availabilities?.starts_at ? formatApptDate(next.availabilities.starts_at).split(',')[0] : '—',
             sub: next ? providerDisplayName(next) : t.findNextMatch,
-            icon: Calendar, iconBg: 'bg-teal-50', iconColor: 'text-teal-600',
+            icon: Calendar, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
             href: '/patient/appointments',
           },
           {
@@ -140,23 +140,23 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
             href: '/search',
           },
           {
-            label: t.aiGuidance,
-            value: 'Motio AI',
-            sub: t.triageSymptoms,
+            label: 'Messages',
+            value: 'Chat',
+            sub: 'Talk to your care team',
             icon: MessageSquare, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
-            href: '/patient/motio',
+            href: '/patient/messages',
           },
         ].map(card => (
           <Link
             key={card.label}
             href={card.href}
-            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-teal-200 hover:shadow-md hover:shadow-teal-500/5 hover:-translate-y-0.5 transition-all"
+            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-blue-200 hover:shadow-md hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all"
           >
             <div className="flex items-center justify-between mb-4">
               <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
                 <card.icon size={18} className={card.iconColor} />
               </div>
-              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-teal-500 transition-colors" />
+              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-blue-500 transition-colors" />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
             <div className="text-[22px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
@@ -175,7 +175,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-[17px] font-bold text-slate-900">Next Appointment</h2>
-              <Link href="/patient/appointments" className="text-[13px] font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1 group">
+              <Link href="/patient/appointments" className="text-[13px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 group">
                 View all <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
@@ -183,7 +183,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
             {next ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-[16px]">
+                  <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[16px]">
                     {providerDisplayName(next).charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -214,7 +214,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                 <div className="flex gap-3">
                   <Link
                     href={`/patient/appointments/${next.id}`}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-teal-600 text-white rounded-xl font-semibold text-[14px] hover:bg-teal-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl font-semibold text-[14px] hover:bg-blue-700 transition-colors"
                   >
                     Manage booking
                   </Link>
@@ -228,7 +228,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
               <div className="py-10 text-center">
                 <Calendar size={32} className="text-slate-200 mx-auto mb-3" />
                 <p className="text-slate-400 text-[14px] font-medium mb-4">{t.noPendingSessions}</p>
-                <Link href="/search" className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 text-white rounded-xl font-semibold text-[13px] hover:bg-teal-700 transition-colors">
+                <Link href="/search" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-[13px] hover:bg-blue-700 transition-colors">
                   {t.startRecovery}
                   <ArrowRight size={13} />
                 </Link>
@@ -247,7 +247,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
               <div className="py-8 text-center border border-dashed border-slate-200 rounded-xl">
                 <Users size={24} className="text-slate-200 mx-auto mb-2" />
                 <p className="text-slate-400 text-[13px]">{t.buildTeam}</p>
-                <Link href="/search" className="text-teal-600 text-[12px] font-semibold hover:underline mt-1 inline-block">{t.browseSpecialists}</Link>
+                <Link href="/search" className="text-blue-600 text-[12px] font-semibold hover:underline mt-1 inline-block">{t.browseSpecialists}</Link>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 gap-3">
@@ -255,16 +255,16 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                   <Link
                     key={a.id}
                     href={`/patient/appointments/${a.id}`}
-                    className="group flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-teal-200 hover:bg-teal-50 transition-all"
+                    className="group flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all"
                   >
-                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-[13px] group-hover:bg-teal-100 group-hover:text-teal-700 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold text-[13px] group-hover:bg-blue-100 group-hover:text-blue-700 transition-colors">
                       {providerDisplayName(a).charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-semibold text-slate-900 truncate">{providerDisplayName(a)}</div>
                       <div className="text-[11px] text-slate-400 truncate">{a.providers?.specialties?.[0]?.name ?? 'Physiotherapist'}</div>
                     </div>
-                    <ArrowRight size={13} className="text-slate-300 group-hover:text-teal-500 transition-colors shrink-0" />
+                    <ArrowRight size={13} className="text-slate-300 group-hover:text-blue-500 transition-colors shrink-0" />
                   </Link>
                 ))}
               </div>
@@ -278,7 +278,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
           {/* Activity widget */}
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <h3 className="font-bold text-slate-900 text-[15px] mb-4 flex items-center gap-2">
-              <Activity size={16} className="text-teal-500" />
+              <Activity size={16} className="text-blue-500" />
               Recovery Progress
             </h3>
             <div className="space-y-4">
@@ -289,7 +289,7 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-teal-500 rounded-full transition-all duration-700"
+                    className="h-full bg-blue-500 rounded-full transition-all duration-700"
                     style={{ width: `${Math.min((past.length / 10) * 100, 100)}%` }}
                   />
                 </div>
@@ -309,31 +309,31 @@ export default function PatientDashboardHome({ locale }: { locale?: StaticLocale
             </div>
           </div>
 
-          {/* AI chat widget */}
+          {/* Need Help widget */}
           <Link
-            href="/patient/motio"
-            className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-200 hover:border-violet-200 hover:bg-violet-50 transition-all"
+            href="/patient/messages"
+            className="group flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50/50 transition-all"
           >
-            <div className="w-11 h-11 rounded-xl bg-violet-100 flex items-center justify-center text-violet-600 group-hover:scale-105 transition-transform">
-              <Sparkles size={20} />
+            <div className="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
+              <MessageSquare size={20} />
             </div>
             <div className="flex-1">
-              <div className="text-[14px] font-semibold text-slate-900 mb-0.5">{t.needHelp}</div>
-              <div className="text-[12px] text-slate-400">{t.askAIShort}</div>
+              <div className="text-[14px] font-semibold text-slate-900 mb-0.5">Need help?</div>
+              <div className="text-[12px] text-slate-400">Message your care team</div>
             </div>
-            <ArrowRight size={15} className="text-slate-300 group-hover:text-violet-500 transition-colors shrink-0" />
+            <ArrowRight size={15} className="text-slate-300 group-hover:text-blue-500 transition-colors shrink-0" />
           </Link>
 
           {/* Referral widget */}
           <div className="p-5 rounded-2xl bg-slate-900 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-xl -mr-10 -mt-10" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-xl -mr-10 -mt-10" />
             <div className="relative z-10">
-              <div className="text-[11px] font-bold uppercase tracking-widest text-teal-400 mb-2">{t.referralBadge}</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-blue-400 mb-2">{t.referralBadge}</div>
               <h3 className="text-[18px] font-bold mb-2 leading-tight">{t.referralHeading}</h3>
               <p className="text-slate-400 text-[13px] leading-relaxed mb-4">{t.referralBody}</p>
               <button
                 onClick={() => { void handleCopy() }}
-                className="w-full py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-[13px] font-semibold transition-colors"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[13px] font-semibold transition-colors"
               >
                 {referralCopied ? '✓ Copied!' : t.copyReferralLink}
               </button>

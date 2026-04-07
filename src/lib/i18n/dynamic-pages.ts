@@ -6,7 +6,7 @@ export type { StaticLocale }
 
 export const SEARCH_COPY = {
   en: {
-    breadcrumbRoot: 'Find Physios',
+    breadcrumbRoot: 'Search',
     headingLoading: 'Sourcing Top Experts',
     headingResults: (total: number) => `${total} Top Experts Found`,
     headingEmpty: 'Search Results',
@@ -31,7 +31,7 @@ export const SEARCH_COPY = {
     demoPreviewNote: 'These cards show how live results will look once providers match.',
   },
   hi: {
-    breadcrumbRoot: 'फिजियो खोजें',
+    breadcrumbRoot: 'खोजें',
     headingLoading: 'शीर्ष विशेषज्ञ खोजे जा रहे हैं',
     headingResults: (total: number) => `${total} शीर्ष विशेषज्ञ मिले`,
     headingEmpty: 'खोज परिणाम',

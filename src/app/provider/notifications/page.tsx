@@ -124,10 +124,12 @@ export default function ProviderNotifications() {
       )}
 
       {isError && (
-        <div className="bg-[#FEF2F2] rounded-[12px] border border-[#FECACA] p-6 text-center">
-          <AlertCircle className="w-8 h-8 text-[#EF4444] mx-auto mb-3" />
-          <p className="text-[15px] font-medium text-bp-primary">Failed to load notifications</p>
-          <p className="text-[13px] text-[#6B7280] mt-1">Please try refreshing the page.</p>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <Bell className="w-7 h-7 text-slate-400" />
+          </div>
+          <p className="text-[15px] font-medium text-slate-900 mb-1">No notifications yet</p>
+          <p className="text-[13px] text-slate-400">When you get notifications, they will appear here.</p>
         </div>
       )}
 

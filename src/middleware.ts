@@ -31,9 +31,9 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
   const rewrittenPathname = hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')
-    ? '/patient/motio'
+    ? '/patient/dashboard'
     : hostname.includes('motio.bookphysio.in') && (pathname === '/' || pathname === '/index')
-      ? '/provider/ai-assistant'
+      ? '/provider/dashboard'
       : pathname
   const returnTo = `${rewrittenPathname}${request.nextUrl.search}`
 

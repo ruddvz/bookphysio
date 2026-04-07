@@ -277,11 +277,11 @@ export default function ProviderProfile() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b border-bp-border pb-12">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-bp-accent flex items-center justify-center text-white shadow-xl shadow-bp-accent/20 transform -rotate-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-xl shadow-bp-accent/20 transform -rotate-3">
               <Briefcase size={24} strokeWidth={2.5} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-bp-accent">Registry Management</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600">Registry Management</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-[11px] font-bold text-emerald-600">Active Listing</span>
@@ -289,7 +289,7 @@ export default function ProviderProfile() {
             </div>
           </div>
           <h1 className="text-[42px] lg:text-[48px] font-bold text-bp-primary tracking-tighter leading-none">
-            Practice <span className="text-bp-accent">Profile</span>
+            Practice <span className="text-emerald-600">Profile</span>
           </h1>
           <p className="text-[16px] font-medium text-bp-body max-w-xl leading-relaxed">
             Manage your professional presence, specialty credentials, and service area coverage.
@@ -297,7 +297,7 @@ export default function ProviderProfile() {
         </div>
 
         <div className="flex items-center gap-4 bg-bp-surface p-2 rounded-[24px] border border-bp-border">
-          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-accent bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
+          <button type="button" className="px-6 py-3 text-[13px] font-bold text-emerald-600 bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
           <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-body hover:text-bp-primary transition-colors rounded-[18px]">Analytics</button>
         </div>
       </div>
@@ -307,11 +307,31 @@ export default function ProviderProfile() {
         <div className="lg:col-span-2 space-y-12">
           <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 group/section">
             <h3 className="text-[22px] font-bold text-bp-primary tracking-tight mb-8 flex items-center gap-3">
-              <User size={22} className="text-bp-accent" />
+              <User size={22} className="text-emerald-600" />
               Personal Details
             </h3>
 
             <div className="space-y-8">
+              {/* Photo encouragement banner */}
+              {!avatarSrc && (
+                <div className="flex items-center gap-4 px-5 py-4 bg-emerald-50 border border-emerald-100 rounded-[16px]">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0">
+                    <User size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-semibold text-slate-900">A professional photo helps patients trust you</p>
+                    <p className="text-[13px] text-slate-500">Upload a clear, well-lit headshot to improve your profile visibility.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="shrink-0 px-4 py-2 bg-emerald-600 text-white text-[13px] font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
+                  >
+                    Upload Photo
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-center gap-6 mb-4">
                 <div className="relative group/avatar">
                   {avatarSrc ? (
@@ -326,7 +346,7 @@ export default function ProviderProfile() {
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 rounded-[32px] bg-bp-accent/10 text-bp-accent flex items-center justify-center text-2xl font-bold border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
+                    <div className="w-24 h-24 rounded-[32px] bg-emerald-600/10 text-emerald-600 flex items-center justify-center text-2xl font-bold border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
                       {initials}
                     </div>
                   )}
@@ -363,7 +383,7 @@ export default function ProviderProfile() {
                     type="text"
                     value={formData.full_name}
                     onChange={(event) => updateFormField('full_name', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="Enter full name"
                     disabled={loadingProfile}
                   />
@@ -377,7 +397,7 @@ export default function ProviderProfile() {
                     min="0"
                     value={formData.consultation_fee_inr}
                     onChange={(event) => updateFormField('consultation_fee_inr', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="e.g. 900"
                     disabled={loadingProfile}
                   />
@@ -394,7 +414,7 @@ export default function ProviderProfile() {
                     min="0"
                     value={formData.experience_years}
                     onChange={(event) => updateFormField('experience_years', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-bp-accent outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="e.g. 8"
                     disabled={loadingProfile}
                   />
@@ -417,7 +437,7 @@ export default function ProviderProfile() {
                 <textarea
                   id="professional-bio"
                   rows={4}
-                  className="w-full p-6 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary leading-relaxed focus:bg-white focus:border-bp-accent outline-none transition-all resize-none"
+                  className="w-full p-6 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary leading-relaxed focus:bg-white focus:border-emerald-600 outline-none transition-all resize-none"
                   value={formData.bio}
                   onChange={(event) => updateFormField('bio', event.target.value)}
                   placeholder="Tell patients about your specific experience and approach..."
@@ -429,7 +449,7 @@ export default function ProviderProfile() {
 
           {/* ── Service Area (8.9 Target) ── */}
           <section className="bg-bp-primary rounded-[48px] p-10 text-white relative overflow-hidden group/area">
-            <div className="absolute right-0 top-0 w-[400px] h-full bg-bp-accent opacity-10 translate-x-1/2 rounded-full blur-[100px] group-hover/area:opacity-20 transition-opacity duration-1000" />
+            <div className="absolute right-0 top-0 w-[400px] h-full bg-emerald-600 opacity-10 translate-x-1/2 rounded-full blur-[100px] group-hover/area:opacity-20 transition-opacity duration-1000" />
 
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -469,7 +489,7 @@ export default function ProviderProfile() {
                     <button
                       type="button"
                       disabled
-                      className="absolute right-2 top-2 bottom-2 px-6 bg-bp-accent/50 text-white text-[12px] font-bold rounded-xl transition-all uppercase tracking-widest disabled:cursor-not-allowed"
+                      className="absolute right-2 top-2 bottom-2 px-6 bg-emerald-600/50 text-white text-[12px] font-bold rounded-xl transition-all uppercase tracking-widest disabled:cursor-not-allowed"
                     >
                       Soon
                     </button>
@@ -484,7 +504,7 @@ export default function ProviderProfile() {
                   <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 relative overflow-hidden group/metrics">
                     <div className="flex items-center justify-between mb-8">
                       <span className="text-[11px] font-bold text-bp-body uppercase tracking-widest">Active Corridors</span>
-                      <Activity size={16} className="text-bp-accent" />
+                      <Activity size={16} className="text-emerald-600" />
                     </div>
                     <div className="space-y-6">
                       <div className="flex justify-between items-end">
@@ -492,7 +512,7 @@ export default function ProviderProfile() {
                         <span className="text-[18px] font-bold">Preview</span>
                       </div>
                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-bp-accent/50 w-[28%] rounded-full" />
+                        <div className="h-full bg-emerald-600/50 w-[28%] rounded-full" />
                       </div>
                     </div>
                     <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
@@ -500,14 +520,14 @@ export default function ProviderProfile() {
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[12px] font-bold">Live sync pending</span>
                       </div>
-                      <span className="text-[10px] font-bold uppercase text-bp-accent tracking-widest">Preview</span>
+                      <span className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest">Preview</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-12 flex items-center gap-4 p-5 bg-bp-accent/20 rounded-[28px] border border-bp-accent/30 backdrop-blur-sm">
-                <div className="w-10 h-10 bg-bp-accent rounded-xl flex items-center justify-center shadow-lg"><Info size={20} /></div>
+              <div className="mt-12 flex items-center gap-4 p-5 bg-emerald-600/20 rounded-[28px] border border-emerald-600/30 backdrop-blur-sm">
+                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg"><Info size={20} /></div>
                 <p className="text-[13px] font-medium text-emerald-100/80 leading-snug">
                   Coverage zones will appear here once availability and operations sync finish wiring to your live provider profile.
                 </p>
@@ -519,7 +539,7 @@ export default function ProviderProfile() {
         {/* ── Right Column: Credentials & Help ── */}
         <div className="space-y-8">
           <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-8 group/card">
-            <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
+            <div className="w-14 h-14 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
               <ShieldCheck size={28} strokeWidth={2.5} />
             </div>
             <h4 className="text-[20px] font-bold text-bp-primary tracking-tight mb-3">Verification Hub</h4>
@@ -529,7 +549,7 @@ export default function ProviderProfile() {
 
             <div className="space-y-4 mb-8">
               <div className="flex items-center gap-4 p-4 bg-bp-surface rounded-2xl border border-bp-border group/item transition-all hover:bg-white hover:shadow-lg">
-                <Award size={20} className="text-bp-accent" />
+                <Award size={20} className="text-emerald-600" />
                 <div className="flex flex-col">
                   <span className="text-[13px] font-bold text-bp-primary">IAP/State Council ID</span>
                   <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
@@ -552,25 +572,25 @@ export default function ProviderProfile() {
           </section>
 
           <section className="bg-emerald-50 rounded-[40px] p-8 border border-emerald-100">
-            <h4 className="text-[18px] font-bold text-bp-accent tracking-tight mb-4 flex items-center gap-2">
+            <h4 className="text-[18px] font-bold text-emerald-600 tracking-tight mb-4 flex items-center gap-2">
               <Globe size={18} />
               Global Status
             </h4>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
-                <span className="text-[13px] font-bold text-bp-accent/70">Profile Strength</span>
-                <span className="text-[13px] font-bold text-bp-accent">Live soon</span>
+                <span className="text-[13px] font-bold text-emerald-600/70">Profile Strength</span>
+                <span className="text-[13px] font-bold text-emerald-600">Live soon</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
-                <span className="text-[13px] font-bold text-bp-accent/70">Search Visibility</span>
-                <span className="text-[13px] font-bold text-bp-accent">Preview</span>
+                <span className="text-[13px] font-bold text-emerald-600/70">Search Visibility</span>
+                <span className="text-[13px] font-bold text-emerald-600">Preview</span>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-[13px] font-bold text-bp-accent/70">City Hub</span>
-                <span className="text-[13px] font-bold text-bp-accent">After sync</span>
+                <span className="text-[13px] font-bold text-emerald-600/70">City Hub</span>
+                <span className="text-[13px] font-bold text-emerald-600">After sync</span>
               </div>
             </div>
-            <button type="button" className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-bp-accent text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
+            <button type="button" className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-emerald-600 text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
               View Public Profile
             </button>
           </section>
@@ -617,7 +637,7 @@ export default function ProviderProfile() {
               void handleSave()
             }}
             disabled={!canSave}
-            className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-bp-accent text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
+            className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-emerald-600 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
           >
             {saveStatus === 'saving' ? 'Saving...' : 'Push Updates Live'}
           </button>

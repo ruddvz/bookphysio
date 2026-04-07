@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import {
   LayoutDashboard, ListChecks, Users, BarChart3,
-  ChevronRight, LogOut, Shield,
+  ChevronRight, LogOut, Shield, Menu, X, Settings,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -22,6 +22,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router   = useRouter()
   const { user, signOut } = useAuth()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const displayName = (user?.user_metadata?.full_name as string | undefined) ?? 'Admin'
   const initials    = displayName.split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase() ?? '').join('') || '?'
@@ -31,26 +32,27 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-[#F1F3F5]">
 
-      {/* ── Sidebar ── */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[240px] bg-white border-r border-slate-100 flex-col z-50">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[260px] bg-slate-900 flex-col z-50">
 
-        <div className="px-5 h-16 flex items-center border-b border-slate-100">
-          <Link href="/admin">
+        {/* Logo */}
+        <div className="px-6 h-16 flex items-center border-b border-slate-700/50">
+          <Link href="/admin" className="flex items-center gap-3">
             <BpLogo size="nav" />
           </Link>
         </div>
 
         {/* Admin badge */}
-        <div className="px-5 py-3 border-b border-slate-100">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg text-red-700 text-[11px] font-bold uppercase tracking-wider">
+        <div className="px-5 py-3 border-b border-slate-700/50">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-[11px] font-bold uppercase tracking-wider">
             <Shield size={11} />
             Admin Panel
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-5 space-y-1">
           {navItems.map(({ href, label, icon: Icon, exact }) => {
             const active = exact ? pathname === href : (pathname === href || pathname.startsWith(href + '/'))
             return (
@@ -58,45 +60,104 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
+                  'flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
                   active
-                    ? 'bg-red-50 text-red-700 font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-white/10 text-white font-semibold'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
                 )}
               >
-                <Icon size={17} className={active ? 'text-red-600' : 'text-slate-400'} />
+                <Icon size={18} className={active ? 'text-amber-400' : 'text-slate-500'} />
                 {label}
-                {active && <ChevronRight size={13} className="ml-auto text-red-400" />}
+                {active && <ChevronRight size={14} className="ml-auto text-amber-400/60" />}
               </Link>
             )
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t border-slate-100">
+        <div className="px-3 py-4 border-t border-slate-700/50">
           <button
             type="button"
             onClick={() => { void handleSignOut() }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
           >
-            <LogOut size={17} className="text-slate-400" />
+            <LogOut size={18} className="text-slate-500" />
             Sign out
           </button>
         </div>
 
         <div className="px-3 pb-4">
-          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-50 border border-slate-200">
-            <div className="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center text-white text-[13px] font-bold shrink-0">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-slate-700/50">
+            <div className="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center text-white text-[13px] font-bold shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-semibold text-slate-900 truncate">{displayName}</div>
-              <div className="text-[11px] text-red-500 font-medium">Administrator</div>
+              <div className="text-[13px] font-semibold text-white truncate">{displayName}</div>
+              <div className="text-[11px] text-amber-400/80 font-medium">Administrator</div>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 lg:ml-[240px] min-h-screen">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 inset-x-0 z-50 h-14 bg-slate-900 border-b border-slate-700/50 flex items-center px-4 gap-3">
+        <button
+          type="button"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="w-9 h-9 rounded-lg border border-slate-600 flex items-center justify-center text-slate-300"
+        >
+          {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+        </button>
+        <Link href="/admin" className="flex-1 flex items-center gap-2">
+          <BpLogo size="nav" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">Admin</span>
+        </Link>
+        <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white text-[11px] font-bold">
+          {initials}
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <>
+          <div className="lg:hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="lg:hidden fixed inset-y-0 left-0 z-[70] w-[280px] bg-slate-900 shadow-xl flex flex-col">
+            <div className="px-6 h-14 flex items-center border-b border-slate-700/50">
+              <BpLogo size="nav" />
+            </div>
+            <nav className="flex-1 px-3 py-4 space-y-1">
+              {navItems.map(({ href, label, icon: Icon, exact }) => {
+                const active = exact ? pathname === href : (pathname === href || pathname.startsWith(href + '/'))
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors',
+                      active ? 'bg-white/10 text-white font-semibold' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                    )}
+                  >
+                    <Icon size={18} className={active ? 'text-amber-400' : 'text-slate-500'} />
+                    {label}
+                  </Link>
+                )
+              })}
+            </nav>
+            <div className="px-3 pb-6 border-t border-slate-700/50 pt-3">
+              <button
+                type="button"
+                onClick={() => { setMobileOpen(false); void handleSignOut() }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut size={18} />
+                Sign out
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      <main className="flex-1 lg:ml-[260px] pt-14 lg:pt-0 min-h-screen">
         {children}
       </main>
     </div>
