@@ -64,8 +64,8 @@ describe('ProviderAvailability', () => {
   it('shows error if end time is before start time', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const startInput = screen.getByLabelText(/Monday start time/i)
-    const endInput = screen.getByLabelText(/Monday end time/i)
+    const startInput = screen.getByLabelText(/Monday slot 1 start time/i)
+    const endInput = screen.getByLabelText(/Monday slot 1 end time/i)
     
     fireEvent.change(startInput, { target: { value: '18:00' } })
     fireEvent.change(endInput, { target: { value: '09:00' } })
@@ -140,8 +140,8 @@ describe('ProviderAvailability', () => {
     render(<ProviderAvailability />)
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Monday start time/i)).toHaveValue('09:00')
-      expect(screen.getByLabelText(/Monday end time/i)).toHaveValue('10:00')
+      expect(screen.getByLabelText(/Monday slot 1 start time/i)).toHaveValue('09:00')
+      expect(screen.getByLabelText(/Monday slot 1 end time/i)).toHaveValue('10:00')
     })
 
     expect(screen.getByText(/1 of 7 days active/i)).toBeInTheDocument()
@@ -153,7 +153,7 @@ describe('ProviderAvailability', () => {
     const durationBtn = await screen.findByText(/60 mins/i, {}, { timeout: 10000 })
     fireEvent.click(durationBtn)
     
-    expect(durationBtn).toHaveClass('bg-bp-accent')
+    expect(durationBtn).toHaveClass('bg-emerald-600')
     expect(await screen.findByRole('button', { name: /Save Availability/i }, { timeout: 10000 })).toBeEnabled()
   }, 15000)
 

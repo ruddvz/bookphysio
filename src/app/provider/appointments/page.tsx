@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 const STATUS_STYLES: Record<string, string> = {
   confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
-  completed: 'bg-bp-accent/10 text-bp-accent border-bp-accent/20',
+  completed: 'bg-emerald-600/10 text-emerald-600 border-emerald-600/20',
   cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
   no_show: 'bg-red-50 text-red-600 border-red-100',
 }
@@ -97,12 +97,12 @@ function ProviderAppointmentsContent() {
     <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-emerald-600 tracking-widest shadow-sm">
             <Activity size={12} strokeWidth={3} />
             Session Management Hub
           </div>
-          <h1 className="text-[36px] md:text-[42px] font-bold text-bp-primary leading-none tracking-tighter">
-            Patient <span className="text-bp-accent">Consultations</span>
+          <h1 className="text-[36px] md:text-[42px] font-bold text-slate-900 leading-none tracking-tighter">
+            Patient <span className="text-emerald-600">Consultations</span>
           </h1>
           <p className="text-[15px] font-bold text-bp-body/40 max-w-[500px]">
             View and manage your practice sessions and patient follow-ups.
@@ -110,7 +110,7 @@ function ProviderAppointmentsContent() {
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="relative group w-full sm:w-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-bp-body/40 group-focus-within:text-bp-accent transition-colors">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-bp-body/40 group-focus-within:text-emerald-600 transition-colors">
               <Search size={18} />
             </div>
             <input
@@ -118,10 +118,10 @@ function ProviderAppointmentsContent() {
               placeholder="Search patients..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full sm:w-[280px] pl-12 pr-6 py-4 rounded-[22px] border border-bp-border bg-white font-bold text-[14px] text-bp-primary placeholder:text-bp-body/40 focus:border-bp-accent/20 focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all shadow-sm"
+              className="w-full sm:w-[280px] pl-12 pr-6 py-4 rounded-[22px] border border-bp-border bg-white font-bold text-[14px] text-slate-900 placeholder:text-bp-body/40 focus:border-emerald-600/20 focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all shadow-sm"
             />
           </div>
-          <button className="h-[58px] px-8 bg-white border border-bp-border rounded-[22px] flex items-center gap-3 text-[14px] font-bold text-bp-primary hover:bg-bp-surface transition-all shadow-sm">
+          <button className="h-[58px] px-8 bg-white border border-bp-border rounded-[22px] flex items-center gap-3 text-[14px] font-bold text-slate-900 hover:bg-bp-surface transition-all shadow-sm">
             <Filter size={18} />
             Insights
           </button>
@@ -136,7 +136,7 @@ function ProviderAppointmentsContent() {
             className={cn(
               "px-10 py-3.5 rounded-[24px] text-[14px] font-bold tracking-tight transition-all duration-300 capitalize",
               activeTab === t
-                ? "bg-bp-primary text-white shadow-xl shadow-gray-900/10 ring-1 ring-black/5"
+                ? "bg-slate-900 text-white shadow-xl shadow-gray-900/10 ring-1 ring-black/5"
                 : "text-bp-body/40 hover:text-bp-body font-bold"
             )}
           >
@@ -148,7 +148,7 @@ function ProviderAppointmentsContent() {
       <div className="bg-white rounded-[44px] border border-bp-border overflow-hidden shadow-[0_32px_80px_-24px_rgba(0,0,0,0.06)] relative px-0 md:px-6 py-6 transition-all duration-500">
         {isLoading && (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+            <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
           </div>
         )}
 
@@ -189,11 +189,11 @@ function ProviderAppointmentsContent() {
                       <tr key={appt.id} className="group hover:scale-[1.005] transition-all duration-300">
                         <td className="px-6 py-5 bg-[#FCFCFC] border-y border-l border-bp-border rounded-l-[32px]">
                           <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-bp-accent/10 flex items-center justify-center text-bp-accent text-[18px] font-bold shadow-sm group-hover:scale-105 transition-transform">
+                            <div className="w-14 h-14 rounded-2xl bg-emerald-600/10 flex items-center justify-center text-emerald-600 text-[18px] font-bold shadow-sm group-hover:scale-105 transition-transform">
                               {initial}
                             </div>
                             <div>
-                              <p className="text-[17px] font-bold text-bp-primary tracking-tight leading-none mb-1.5">{patientName}</p>
+                              <p className="text-[17px] font-bold text-slate-900 tracking-tight leading-none mb-1.5">{patientName}</p>
                               <div className="flex items-center gap-2">
                                 <div className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border shadow-sm", STATUS_STYLES[appt.status] || STATUS_STYLES.pending)}>
                                   {appt.status}
@@ -205,7 +205,7 @@ function ProviderAppointmentsContent() {
                         <td className="px-6 py-5 bg-[#FCFCFC] border-y border-bp-border">
                           {startsAt ? (
                             <div className="space-y-1">
-                              <div className="flex items-center gap-2 text-[15px] font-bold text-bp-primary">
+                              <div className="flex items-center gap-2 text-[15px] font-bold text-slate-900">
                                 <CalendarDays size={16} className="text-bp-body/30" />
                                 {formatDate(startsAt)}
                               </div>
@@ -224,20 +224,20 @@ function ProviderAppointmentsContent() {
                               const Icon = VISIT_TYPE_ICONS[appt.visit_type] || Activity
                               return <Icon size={16} className="text-bp-body/40" />
                             })()}
-                            <span className="text-[12px] font-bold text-bp-primary uppercase tracking-widest">{appt.visit_type.replace('_', ' ')}</span>
+                            <span className="text-[12px] font-bold text-slate-900 uppercase tracking-widest">{appt.visit_type.replace('_', ' ')}</span>
                           </div>
                         </td>
                         <td className="px-6 py-5 bg-[#FCFCFC] border-y border-bp-border">
-                          <span className="text-[15px] font-bold text-bp-primary">₹{appt.fee_inr}</span>
+                          <span className="text-[15px] font-bold text-slate-900">₹{appt.fee_inr}</span>
                         </td>
                         <td className="px-6 py-5 bg-[#FCFCFC] border-y border-r border-bp-border rounded-r-[32px] text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button className="w-12 h-12 bg-white border border-bp-border rounded-2xl flex items-center justify-center text-bp-body/40 hover:text-bp-accent hover:border-bp-accent/20 transition-all shadow-sm">
+                            <button className="w-12 h-12 bg-white border border-bp-border rounded-2xl flex items-center justify-center text-bp-body/40 hover:text-emerald-600 hover:border-emerald-600/20 transition-all shadow-sm">
                               <MoreHorizontal size={20} />
                             </button>
-                            <Link href={`/provider/appointments/${appt.id}`} className="h-12 px-6 bg-bp-primary text-white rounded-2xl text-[13px] font-bold flex items-center gap-3 hover:bg-bp-accent transition-all shadow-lg active:scale-95 group/view">
+                            <Link href={`/provider/appointments/${appt.id}`} className="h-12 px-6 bg-slate-900 text-white rounded-2xl text-[13px] font-bold flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-lg active:scale-95 group/view">
                               View
-                              <ArrowUpRight size={18} strokeWidth={3} className="text-bp-accent/70 group-hover/view:rotate-12 transition-transform" />
+                              <ArrowUpRight size={18} strokeWidth={3} className="text-emerald-600/70 group-hover/view:rotate-12 transition-transform" />
                             </Link>
                           </div>
                         </td>

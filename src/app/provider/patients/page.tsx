@@ -128,7 +128,7 @@ export default function ProviderPatients() {
     <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-[32px] font-bold text-bp-primary tracking-tight mb-1">
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">
             Patient Records
           </h1>
           <p className="text-[15px] text-bp-body">
@@ -141,7 +141,7 @@ export default function ProviderPatients() {
             placeholder="Search by name or phone…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-bp-primary focus:border-bp-accent focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
+            className="w-full md:w-[280px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
         </div>
@@ -149,14 +149,14 @@ export default function ProviderPatients() {
 
       {isLoading && (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
         </div>
       )}
 
       {isError && (
         <div className="bg-[#FEF2F2] rounded-[12px] border border-[#FECACA] p-6 text-center">
           <AlertCircle className="w-8 h-8 text-[#EF4444] mx-auto mb-3" />
-          <p className="text-[15px] font-medium text-bp-primary">Failed to load patient records</p>
+          <p className="text-[15px] font-medium text-slate-900">Failed to load patient records</p>
           <p className="text-[13px] text-[#6B7280] mt-1">Please try refreshing the page.</p>
         </div>
       )}
@@ -180,10 +180,10 @@ export default function ProviderPatients() {
                     <tr key={p.id} className="hover:bg-[#F9FAFB] transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-bp-accent/10 text-bp-accent flex items-center justify-center text-[14px] font-bold shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center text-[14px] font-bold shrink-0">
                             {p.full_name.charAt(0).toUpperCase()}
                           </div>
-                          <span className="text-[14px] font-medium text-bp-primary">{p.full_name}</span>
+                          <span className="text-[14px] font-medium text-slate-900">{p.full_name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -194,14 +194,14 @@ export default function ProviderPatients() {
                       </td>
                       <td className="px-6 py-4 text-[14px] text-bp-body">{formatDate(p.lastVisit)}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-bp-accent/10 text-bp-accent">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-600">
                           {p.totalVisits} visit{p.totalVisits !== 1 ? 's' : ''}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/provider/appointments/${p.lastAppointmentId}`}
-                          className="text-[13px] font-semibold text-bp-accent hover:text-bp-primary transition-colors"
+                          className="text-[13px] font-semibold text-emerald-600 hover:text-slate-900 transition-colors"
                         >
                           View last appointment
                         </Link>
@@ -215,7 +215,7 @@ export default function ProviderPatients() {
                         <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
                           <Users className="w-7 h-7 text-[#9CA3AF]" />
                         </div>
-                        <p className="text-[15px] font-medium text-bp-primary mb-1">
+                        <p className="text-[15px] font-medium text-slate-900 mb-1">
                           {search ? 'No patients match your search' : 'No patients yet'}
                         </p>
                         <p className="text-[13px] text-[#9CA3AF]">

@@ -22,7 +22,7 @@ const STATUS_CONFIG = {
   paid:      { label: 'Paid',      cls: 'bg-green-100 text-green-700',  icon: CheckCircle2 },
   created:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-700', icon: Clock       },
   failed:    { label: 'Failed',    cls: 'bg-red-100 text-red-700',      icon: XCircle     },
-  refunded:  { label: 'Refunded', cls: 'bg-bp-accent/10 text-bp-accent',    icon: Download    },
+  refunded:  { label: 'Refunded', cls: 'bg-blue-600/10 text-blue-600',    icon: Download    },
 } as const
 
 export default function PatientPayments() {
@@ -41,14 +41,14 @@ export default function PatientPayments() {
     <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-[32px] font-bold text-bp-primary tracking-tight mb-1">Payment History</h1>
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">Payment History</h1>
           <p className="text-[15px] text-bp-body">Track all your consultation payments and receipts.</p>
         </div>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       ) : isError ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
@@ -62,7 +62,7 @@ export default function PatientPayments() {
               <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
                 <CreditCard className="w-7 h-7 text-[#9CA3AF]" />
               </div>
-              <p className="text-[15px] font-medium text-bp-primary mb-1">No payment history</p>
+              <p className="text-[15px] font-medium text-slate-900 mb-1">No payment history</p>
               <p className="text-[13px] text-[#9CA3AF]">Your payment records will appear here after your first consultation.</p>
             </div>
           </div>
@@ -96,10 +96,10 @@ export default function PatientPayments() {
 
                   return (
                     <tr key={p.id} className="hover:bg-[#FAFAFA] transition-colors">
-                      <td className="px-6 py-4 text-[14px] text-bp-primary">{dateStr}</td>
-                      <td className="px-6 py-4 text-[14px] font-medium text-bp-primary">{providerLabel}</td>
+                      <td className="px-6 py-4 text-[14px] text-slate-900">{dateStr}</td>
+                      <td className="px-6 py-4 text-[14px] font-medium text-slate-900">{providerLabel}</td>
                       <td className="px-6 py-4 text-[14px] text-bp-body">{visitLabel}</td>
-                      <td className="px-6 py-4 text-[14px] font-semibold text-bp-primary">
+                      <td className="px-6 py-4 text-[14px] font-semibold text-slate-900">
                         ₹{(p.amount_inr).toLocaleString('en-IN')}
                       </td>
                       <td className="px-6 py-4 text-[14px] text-bp-body">
@@ -114,7 +114,7 @@ export default function PatientPayments() {
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/patient/appointments/${p.appointment_id}`}
-                          className="text-[13px] font-semibold text-bp-accent hover:underline"
+                          className="text-[13px] font-semibold text-blue-600 hover:underline"
                         >
                           View
                         </Link>

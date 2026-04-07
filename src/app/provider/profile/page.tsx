@@ -288,7 +288,7 @@ export default function ProviderProfile() {
               </div>
             </div>
           </div>
-          <h1 className="text-[42px] lg:text-[48px] font-bold text-bp-primary tracking-tighter leading-none">
+          <h1 className="text-[42px] lg:text-[48px] font-bold text-slate-900 tracking-tighter leading-none">
             Practice <span className="text-emerald-600">Profile</span>
           </h1>
           <p className="text-[16px] font-medium text-bp-body max-w-xl leading-relaxed">
@@ -298,7 +298,7 @@ export default function ProviderProfile() {
 
         <div className="flex items-center gap-4 bg-bp-surface p-2 rounded-[24px] border border-bp-border">
           <button type="button" className="px-6 py-3 text-[13px] font-bold text-emerald-600 bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
-          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-body hover:text-bp-primary transition-colors rounded-[18px]">Analytics</button>
+          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-body hover:text-slate-900 transition-colors rounded-[18px]">Analytics</button>
         </div>
       </div>
 
@@ -306,7 +306,7 @@ export default function ProviderProfile() {
         {/* ── Left Column: Form ── */}
         <div className="lg:col-span-2 space-y-12">
           <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 group/section">
-            <h3 className="text-[22px] font-bold text-bp-primary tracking-tight mb-8 flex items-center gap-3">
+            <h3 className="text-[22px] font-bold text-slate-900 tracking-tight mb-8 flex items-center gap-3">
               <User size={22} className="text-emerald-600" />
               Personal Details
             </h3>
@@ -353,7 +353,7 @@ export default function ProviderProfile() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute -bottom-2 -right-2 w-10 h-10 bg-bp-primary text-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg hover:bg-black transition-colors"
+                    className="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg hover:bg-black transition-colors"
                     title="Change Avatar"
                   >
                     <User size={16} />
@@ -368,7 +368,7 @@ export default function ProviderProfile() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-[18px] font-bold text-bp-primary">{displayName}</h4>
+                  <h4 className="text-[18px] font-bold text-slate-900">{displayName}</h4>
                   <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest">{expertiseLabel}</p>
                   {avatarError ? <p className="text-[12px] font-bold text-rose-500">{avatarError}</p> : null}
                   {!avatarError && loadError ? <p className="text-[12px] font-bold text-amber-600">{loadError}</p> : null}
@@ -383,7 +383,7 @@ export default function ProviderProfile() {
                     type="text"
                     value={formData.full_name}
                     onChange={(event) => updateFormField('full_name', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="Enter full name"
                     disabled={loadingProfile}
                   />
@@ -397,7 +397,7 @@ export default function ProviderProfile() {
                     min="0"
                     value={formData.consultation_fee_inr}
                     onChange={(event) => updateFormField('consultation_fee_inr', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="e.g. 900"
                     disabled={loadingProfile}
                   />
@@ -414,7 +414,7 @@ export default function ProviderProfile() {
                     min="0"
                     value={formData.experience_years}
                     onChange={(event) => updateFormField('experience_years', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary focus:bg-white focus:border-emerald-600 outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
                     placeholder="e.g. 8"
                     disabled={loadingProfile}
                   />
@@ -426,7 +426,7 @@ export default function ProviderProfile() {
                     type="text"
                     value={formData.iap_registration_no ?? ''}
                     readOnly
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-bp-primary/70 outline-none transition-all"
+                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900/70 outline-none transition-all"
                     placeholder="Verification pending"
                   />
                 </div>
@@ -437,7 +437,7 @@ export default function ProviderProfile() {
                 <textarea
                   id="professional-bio"
                   rows={4}
-                  className="w-full p-6 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-bp-primary leading-relaxed focus:bg-white focus:border-emerald-600 outline-none transition-all resize-none"
+                  className="w-full p-6 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-slate-900 leading-relaxed focus:bg-white focus:border-emerald-600 outline-none transition-all resize-none"
                   value={formData.bio}
                   onChange={(event) => updateFormField('bio', event.target.value)}
                   placeholder="Tell patients about your specific experience and approach..."
@@ -448,7 +448,7 @@ export default function ProviderProfile() {
           </section>
 
           {/* ── Service Area (8.9 Target) ── */}
-          <section className="bg-bp-primary rounded-[48px] p-10 text-white relative overflow-hidden group/area">
+          <section className="bg-slate-900 rounded-[48px] p-10 text-white relative overflow-hidden group/area">
             <div className="absolute right-0 top-0 w-[400px] h-full bg-emerald-600 opacity-10 translate-x-1/2 rounded-full blur-[100px] group-hover/area:opacity-20 transition-opacity duration-1000" />
 
             <div className="relative z-10">
@@ -542,7 +542,7 @@ export default function ProviderProfile() {
             <div className="w-14 h-14 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
               <ShieldCheck size={28} strokeWidth={2.5} />
             </div>
-            <h4 className="text-[20px] font-bold text-bp-primary tracking-tight mb-3">Verification Hub</h4>
+            <h4 className="text-[20px] font-bold text-slate-900 tracking-tight mb-3">Verification Hub</h4>
             <p className="text-[14px] font-medium text-bp-body/40 leading-relaxed mb-8">
               Your medical registration is the primary trust signal for patients.
             </p>
@@ -551,7 +551,7 @@ export default function ProviderProfile() {
               <div className="flex items-center gap-4 p-4 bg-bp-surface rounded-2xl border border-bp-border group/item transition-all hover:bg-white hover:shadow-lg">
                 <Award size={20} className="text-emerald-600" />
                 <div className="flex flex-col">
-                  <span className="text-[13px] font-bold text-bp-primary">IAP/State Council ID</span>
+                  <span className="text-[13px] font-bold text-slate-900">IAP/State Council ID</span>
                   <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
                     {formData.iap_registration_no ? 'Verified ✓' : 'Pending'}
                   </span>
@@ -566,7 +566,7 @@ export default function ProviderProfile() {
               </div>
             </div>
 
-            <button type="button" className="w-full py-4 bg-bp-primary hover:bg-black text-white text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
+            <button type="button" className="w-full py-4 bg-slate-900 hover:bg-black text-white text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
               Update Documents <ArrowRight size={14} />
             </button>
           </section>
@@ -604,7 +604,7 @@ export default function ProviderProfile() {
             <Check size={24} strokeWidth={3} />
           </div>
           <div>
-            <p className="text-[15px] font-bold text-bp-primary">
+            <p className="text-[15px] font-bold text-slate-900">
               {saveStatus === 'saved'
                 ? 'Changes saved'
                 : saveStatus === 'error'
@@ -637,7 +637,7 @@ export default function ProviderProfile() {
               void handleSave()
             }}
             disabled={!canSave}
-            className="flex-1 sm:flex-none px-12 py-5 bg-bp-primary hover:bg-emerald-600 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
+            className="flex-1 sm:flex-none px-12 py-5 bg-slate-900 hover:bg-emerald-600 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
           >
             {saveStatus === 'saving' ? 'Saving...' : 'Push Updates Live'}
           </button>

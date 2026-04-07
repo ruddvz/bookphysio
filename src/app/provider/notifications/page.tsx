@@ -13,9 +13,9 @@ interface Notification {
 }
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
-  appointment_confirmed: <Calendar className="w-5 h-5 text-bp-accent" />,
+  appointment_confirmed: <Calendar className="w-5 h-5 text-emerald-600" />,
   appointment_cancelled: <AlertCircle className="w-5 h-5 text-[#EF4444]" />,
-  new_appointment: <UserPlus className="w-5 h-5 text-bp-accent" />,
+  new_appointment: <UserPlus className="w-5 h-5 text-emerald-600" />,
   payment_received: <CreditCard className="w-5 h-5 text-[#2563EB]" />,
   payment_success: <CreditCard className="w-5 h-5 text-[#2563EB]" />,
   new_message: <MessageSquare className="w-5 h-5 text-[#7C3AED]" />,
@@ -24,9 +24,9 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 }
 
 const TYPE_BG: Record<string, string> = {
-  appointment_confirmed: 'bg-bp-accent/10',
+  appointment_confirmed: 'bg-emerald-600/10',
   appointment_cancelled: 'bg-[#FEF2F2]',
-  new_appointment: 'bg-bp-accent/10',
+  new_appointment: 'bg-emerald-600/10',
   payment_received: 'bg-[#EFF6FF]',
   payment_success: 'bg-[#EFF6FF]',
   new_message: 'bg-[#F5F3FF]',
@@ -99,7 +99,7 @@ export default function ProviderNotifications() {
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-[32px] font-bold text-bp-primary tracking-tight">Notifications</h1>
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight">Notifications</h1>
           {unreadCount > 0 && (
             <p className="text-[14px] text-bp-body mt-1">{unreadCount} unread</p>
           )}
@@ -109,7 +109,7 @@ export default function ProviderNotifications() {
             type="button"
             onClick={() => markAllMutation.mutate()}
             disabled={markAllMutation.isPending}
-            className="flex items-center gap-2 text-[14px] font-semibold text-bp-accent hover:text-bp-primary cursor-pointer bg-transparent border-none outline-none transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 text-[14px] font-semibold text-emerald-600 hover:text-slate-900 cursor-pointer bg-transparent border-none outline-none transition-colors disabled:opacity-50"
           >
             <CheckCheck className="w-4 h-4" />
             Mark all as read
@@ -119,7 +119,7 @@ export default function ProviderNotifications() {
 
       {isLoading && (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
         </div>
       )}
 
@@ -140,7 +140,7 @@ export default function ProviderNotifications() {
               <div className="w-14 h-14 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
                 <Bell className="w-7 h-7 text-[#9CA3AF]" />
               </div>
-              <p className="text-[15px] font-medium text-bp-primary mb-1">You&apos;re all caught up</p>
+              <p className="text-[15px] font-medium text-slate-900 mb-1">You&apos;re all caught up</p>
               <p className="text-[13px] text-[#9CA3AF]">No notifications yet.</p>
             </div>
           ) : (
@@ -151,7 +151,7 @@ export default function ProviderNotifications() {
                 className={`rounded-[12px] border shadow-sm p-5 flex gap-4 items-start transition-colors ${
                   n.read
                     ? 'bg-white border-bp-border'
-                    : 'bg-[#FAFFFE] border-[#B2DFDB] cursor-pointer hover:border-bp-accent'
+                    : 'bg-[#FAFFFE] border-[#B2DFDB] cursor-pointer hover:border-emerald-600'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${getIconBg(n.type)}`}>
@@ -159,11 +159,11 @@ export default function ProviderNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className={`text-[15px] font-semibold ${n.read ? 'text-bp-body' : 'text-bp-primary'}`}>
+                    <h3 className={`text-[15px] font-semibold ${n.read ? 'text-bp-body' : 'text-slate-900'}`}>
                       {n.title}
                     </h3>
                     {!n.read && (
-                      <span className="w-2 h-2 rounded-full bg-bp-accent shrink-0 mt-1.5" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0 mt-1.5" />
                     )}
                   </div>
                   <p className="text-[13px] text-bp-body mt-0.5">{n.body}</p>
