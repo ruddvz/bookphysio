@@ -34,6 +34,7 @@ interface BillForm {
   services: string
   amount: string
   notes: string
+  includeGst: boolean
 }
 
 interface ProviderProfile {
@@ -49,6 +50,7 @@ const EMPTY_BILL: BillForm = {
   services: '',
   amount: '',
   notes: '',
+  includeGst: true,
 }
 
 async function fetchAppointments(): Promise<{ appointments: AppointmentRow[] }> {
@@ -101,7 +103,7 @@ function BillPreview({ bill, providerName, providerReg }: {
   providerReg: string | null
 }) {
   const amount = parseInt(bill.amount, 10) || 0
-  const gst = Math.round(amount * 0.18)
+  const gst = bill.includeGst ? Math.round(amount * 0.18) : 0
   const total = amount + gst
 
   return (
@@ -134,10 +136,12 @@ function BillPreview({ bill, providerName, providerReg }: {
           <span className="text-slate-500">Subtotal</span>
           <span className="font-semibold text-slate-900">{'\u20B9'}{amount.toLocaleString('en-IN')}</span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-slate-500">GST (18%)</span>
-          <span className="font-semibold text-slate-900">{'\u20B9'}{gst.toLocaleString('en-IN')}</span>
-        </div>
+        {bill.includeGst && (
+          <div className="flex justify-between">
+            <span className="text-slate-500">GST (18%)</span>
+            <span className="font-semibold text-slate-900">{'\u20B9'}{gst.toLocaleString('en-IN')}</span>
+          </div>
+        )}
         <div className="flex justify-between border-t border-slate-200 pt-2 text-[16px]">
           <span className="font-bold text-slate-900">Total</span>
           <span className="font-bold text-emerald-600">{'\u20B9'}{total.toLocaleString('en-IN')}</span>
@@ -232,6 +236,16 @@ function GenerateBillModal({ onClose, providerName, providerReg }: {
               <label htmlFor="bill-services" className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">Services Provided</label>
               <textarea id="bill-services" rows={3} value={bill.services} onChange={(e) => updateField('services', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-lg text-[14px] text-slate-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 outline-none transition-all resize-none" placeholder="e.g. Shoulder rehab session, ultrasound therapy" />
             </div>
+
+            <label className="flex items-center gap-3 px-4 py-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+              <input
+                type="checkbox"
+                checked={bill.includeGst}
+                onChange={(e) => updateField('includeGst', e.target.checked)}
+                className="w-4 h-4 accent-emerald-600"
+              />
+              <span className="text-[14px] text-slate-900 font-medium">Include GST (18%)</span>
+            </label>
 
             <div className="space-y-1.5">
               <label htmlFor="bill-notes" className="text-[12px] font-semibold text-slate-500 uppercase tracking-wider">Notes</label>

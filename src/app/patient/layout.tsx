@@ -6,7 +6,7 @@ import { ReactNode, useState } from 'react'
 import {
   LayoutDashboard, Calendar, MessageSquare,
   User, Bell, LogOut, Menu, X, ChevronRight, Search,
-  CreditCard, HelpCircle,
+  CreditCard,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'

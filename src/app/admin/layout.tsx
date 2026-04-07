@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useState } from 'react'
 import {
   LayoutDashboard, ListChecks, Users, BarChart3,
-  ChevronRight, LogOut, Shield, Menu, X, Settings,
+  ChevronRight, LogOut, Shield, Menu, X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'

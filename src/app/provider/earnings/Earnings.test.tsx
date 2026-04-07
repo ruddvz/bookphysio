@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ProviderEarnings from './page'
@@ -68,6 +68,12 @@ const appointmentsResponse = {
   ],
 }
 
+const profileResponse = {
+  full_name: 'Dr Priya Iyer',
+  consultation_fee_inr: 900,
+  iap_registration_no: 'IAP-2026-44',
+}
+
 function renderWithQueryClient() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -83,18 +89,48 @@ function renderWithQueryClient() {
   )
 }
 
+function getBillPreview() {
+  const previewRoot = screen.getByText(/Dr Priya Iyer/i).closest('.print-bill')
+
+  expect(previewRoot).not.toBeNull()
+
+  return within(previewRoot as HTMLElement)
+}
+
 describe('ProviderEarnings', () => {
   beforeEach(() => {
+    vi.spyOn(window, 'print').mockImplementation(() => {})
+
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => appointmentsResponse,
+      vi.fn().mockImplementation((input: string | URL | Request) => {
+        const url = typeof input === 'string'
+          ? input
+          : input instanceof URL
+            ? input.toString()
+            : input.url
+
+        if (url === '/api/appointments') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => appointmentsResponse,
+          })
+        }
+
+        if (url === '/api/profile') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => profileResponse,
+          })
+        }
+
+        return Promise.reject(new Error(`Unhandled fetch request in test: ${url}`))
       })
     )
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
 
@@ -133,5 +169,44 @@ describe('ProviderEarnings', () => {
 
     expect(await screen.findByText(/Revenue Growth/i)).toBeInTheDocument()
     expect(screen.getByText(/Interactive charts coming soon/i)).toBeInTheDocument()
+  })
+
+  it('updates the generated bill preview when GST is toggled off and on', async () => {
+    renderWithQueryClient()
+
+    fireEvent.click(await screen.findByRole('button', { name: /generate bill/i }))
+
+    fireEvent.change(screen.getByLabelText(/patient name/i), {
+      target: { value: 'Rahul Sharma' },
+    })
+    fireEvent.change(screen.getByLabelText(/amount/i), {
+      target: { value: '900' },
+    })
+
+    const includeGstToggle = screen.getByRole('checkbox', { name: /include gst/i })
+
+    fireEvent.click(includeGstToggle)
+    fireEvent.click(screen.getByRole('button', { name: /generate pdf/i }))
+
+    expect(await screen.findByText(/Dr Priya Iyer/i)).toBeInTheDocument()
+    const previewWithoutGst = getBillPreview()
+
+    expect(previewWithoutGst.queryByText(/GST \(18%\)/i)).not.toBeInTheDocument()
+    expect(previewWithoutGst.getAllByText('₹900')).toHaveLength(2)
+    expect(previewWithoutGst.queryByText('₹162')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /edit/i }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /include gst/i }))
+    fireEvent.click(screen.getByRole('button', { name: /generate pdf/i }))
+
+    const previewWithGst = getBillPreview()
+
+    expect(previewWithGst.getByText(/GST \(18%\)/i)).toBeInTheDocument()
+    expect(previewWithGst.getByText('₹162')).toBeInTheDocument()
+    expect(previewWithGst.getByText('₹1,062')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(window.print).toHaveBeenCalledTimes(2)
+    })
   })
 })
