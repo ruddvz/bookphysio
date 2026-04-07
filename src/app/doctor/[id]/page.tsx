@@ -57,7 +57,7 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
   )
 }
 
-const cardClass = 'bg-white rounded-[32px] border border-bp-border p-8 mb-8 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all duration-500 relative overflow-hidden'
+const cardClass = 'bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 mb-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] relative'
 
 // ---------------------------------------------------------------------------
 // Page component
@@ -71,15 +71,22 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
   if (!provider) {
     return (
-      <div className="min-h-screen bg-bp-surface flex flex-col items-center justify-center gap-6">
-        <div className="w-20 h-20 bg-bp-primary/10 rounded-full flex items-center justify-center text-bp-primary">
-           <UserCheck size={40} />
+      <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center gap-5 px-6">
+        <div className="w-14 h-14 bg-[#E6F4F3] rounded-full flex items-center justify-center text-[#00766C]">
+          <UserCheck size={28} />
         </div>
-        <div className="text-center px-6">
-           <h1 className="text-2xl font-bold text-bp-primary mb-2">Expert Not Found</h1>
-           <p className="text-bp-body font-medium max-w-xs">We couldn&apos;t find the specialist you&apos;re looking for. Please try searching for another expert.</p>
+        <div className="text-center">
+          <h1 className="text-[22px] font-bold text-[#1A1C29] mb-1.5">Expert not found</h1>
+          <p className="text-[14px] text-slate-600 max-w-sm leading-relaxed">
+            We couldn&apos;t find the specialist you&apos;re looking for. Please try searching for another expert.
+          </p>
         </div>
-        <Link href="/search" className="px-8 py-3 bg-bp-primary text-white font-bold rounded-2xl hover:scale-105 transition-transform shadow-xl shadow-bp-primary/10">Back to search</Link>
+        <Link
+          href="/search"
+          className="rounded-full bg-[#00766C] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_12px_rgba(0,118,108,0.18)]"
+        >
+          Back to search
+        </Link>
       </div>
     )
   }
@@ -141,7 +148,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               {/* 1. Hero Section (Ultra Premium) */}
               <div className={cn(cardClass, "p-0 bg-transparent border-none shadow-none mb-10 overflow-visible")}>
                 {/* Visual Cover Layer */}
-                <div className="h-40 md:h-56 bg-bp-primary relative rounded-[40px] shadow-2xl shadow-bp-primary/5 overflow-hidden">
+                <div className="h-40 md:h-56 bg-bp-primary relative rounded-2xl shadow-2xl shadow-bp-primary/5 overflow-hidden">
                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
                    <div className="absolute -right-20 -top-20 w-80 h-80 bg-bp-accent/20 rounded-full blur-3xl animate-pulse"></div>
                    <div className="absolute left-10 bottom-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
@@ -159,21 +166,21 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-end">
                     {/* Avatar with Ring */}
                     <div className="relative group">
-                      <div className="absolute inset-0 bg-bp-accent rounded-[48px] blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700"></div>
+                      <div className="absolute inset-0 bg-bp-accent rounded-2xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-700"></div>
                       {provider.avatar_url ? (
-                        <div className="relative p-1.5 bg-white rounded-[48px] shadow-2xl border border-bp-border/40">
+                        <div className="relative p-1.5 bg-white rounded-2xl shadow-2xl border border-bp-border/40">
                           <Image
                             src={provider.avatar_url}
                             alt={nameWithTitle}
                             width={160}
                             height={160}
-                            className="w-28 h-28 md:w-40 md:h-40 rounded-[40px] object-cover bg-bp-surface border-4 border-white"
+                            className="w-28 h-28 md:w-40 md:h-40 rounded-2xl object-cover bg-bp-surface border-4 border-white"
                             priority
                           />
                         </div>
                       ) : (
-                        <div className="relative p-1.5 bg-white rounded-[48px] shadow-2xl border border-bp-border/40">
-                           <div className="w-28 h-28 md:w-40 md:h-40 rounded-[40px] bg-gradient-to-br from-bp-surface to-bp-border/20 text-bp-primary flex items-center justify-center text-[40px] md:text-[56px] font-bold border-4 border-white shrink-0 shadow-inner" aria-hidden="true">
+                        <div className="relative p-1.5 bg-white rounded-2xl shadow-2xl border border-bp-border/40">
+                           <div className="w-28 h-28 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-bp-surface to-bp-border/20 text-bp-primary flex items-center justify-center text-[40px] md:text-[56px] font-bold border-4 border-white shrink-0 shadow-inner" aria-hidden="true">
                             {initials}
                            </div>
                         </div>
@@ -223,22 +230,22 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
                 {/* Quick Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-10 mt-12 pb-12">
-                   <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
+                   <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Sparkles size={22} strokeWidth={2.5} /></div>
                       <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Experience</p>
                       <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.experience_years ?? 5}+ <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">Years</span></p>
                    </div>
-                   <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
+                   <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Building2 size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Patient Reviews</p>
                      <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.rating_count > 0 ? provider.rating_count : 'New'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.rating_count === 1 ? 'Review' : 'Reviews'}</span></p>
                    </div>
-                   <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
+                   <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Star size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Verification</p>
                      <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none whitespace-pre-wrap">{provider.verified ? verificationSource : (hasRegistration ? verificationSource : 'Profile')}<br/><span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : 'Pending'}</span></p>
                    </div>
-                   <div className="bg-[#FBFCFD] p-6 rounded-[32px] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
+                   <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
                       <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-5 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500"><Clock size={22} strokeWidth={2.5} /></div>
                      <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Availability</p>
                      <p className="text-[22px] font-bold text-emerald-600 tracking-tighter leading-none">{provider.next_available_slot ? 'Slots' : 'Check'} <span className="text-[14px] opacity-60 tracking-normal font-bold">{provider.next_available_slot ? 'Open' : 'Schedule'}</span></p>
@@ -281,7 +288,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                     </h2>
                     <div className="flex flex-wrap gap-2.5">
                       {provider.specialties.map((spec) => (
-                        <span key={spec.id} className="bg-white text-bp-primary text-[14px] font-bold px-5 py-3 rounded-[18px] border border-bp-border/40 shadow-sm hover:border-bp-primary hover:shadow-md transition-all duration-300 cursor-default">
+                        <span key={spec.id} className="bg-white text-bp-primary text-[14px] font-bold px-5 py-3 rounded-xl border border-bp-border/40 shadow-sm hover:border-bp-primary hover:shadow-md transition-all duration-300 cursor-default">
                           {spec.name}
                         </span>
                       ))}
@@ -298,7 +305,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   </h2>
                   <div className="space-y-6">
                     {hasRegistration && (
-                      <div className="flex items-center gap-5 p-5 rounded-[24px] bg-[#FBFCFD] border border-bp-border/30 group hover:border-bp-accent/40 transition-colors duration-500">
+                      <div className="flex items-center gap-5 p-5 rounded-xl bg-[#FBFCFD] border border-bp-border/30 group hover:border-bp-accent/40 transition-colors duration-500">
                         <div className="bg-white p-3.5 rounded-2xl border border-bp-border shadow-sm group-hover:scale-110 transition-transform duration-500">
                           <CheckCircle2 size={24} className="text-emerald-600" strokeWidth={3} />
                         </div>
@@ -333,7 +340,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                        Verified outcomes and recovery stories from patients under professional care.
                     </p>
                   </div>
-                  <div className="flex items-center gap-8 p-6 bg-white rounded-[32px] border border-bp-border/30 shadow-sm relative overflow-hidden group">
+                  <div className="flex items-center gap-8 p-6 bg-white rounded-2xl border border-bp-border/30 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-bp-primary/[0.03] rounded-bl-[60px] -z-0"></div>
                     <div className="text-right relative z-10">
                        <div className="text-[44px] font-bold text-bp-primary leading-none tracking-tighter">{(provider.rating_avg ?? 0).toFixed(1)}</div>
@@ -350,7 +357,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                 <div className="grid grid-cols-1 gap-8 px-2 lg:px-4">
                   {reviews.length > 0 ? (
                     reviews.filter((r) => r.comment).slice(0, 5).map((review) => (
-                      <article key={review.id} className="group p-8 lg:p-10 rounded-[40px] bg-white border border-bp-border/20 hover:border-bp-primary/30 hover:shadow-[0_12px_48px_-8px_rgba(0,118,108,0.05)] transition-all duration-700 relative overflow-hidden">
+                      <article key={review.id} className="group p-8 lg:p-10 rounded-2xl bg-white border border-bp-border/20 hover:border-bp-primary/30 hover:shadow-[0_12px_48px_-8px_rgba(0,118,108,0.05)] transition-all duration-700 relative overflow-hidden">
                         <div className="flex justify-between items-start mb-8 relative z-10">
                           <div className="flex items-center gap-5">
                             <div className="w-14 h-14 rounded-2xl bg-bp-surface border border-bp-border/40 flex items-center justify-center text-bp-primary text-xl font-bold shadow-inner shadow-black/[0.02]">
@@ -377,7 +384,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                       </article>
                     ))
                   ) : (
-                    <div className="py-24 text-center bg-white rounded-[40px] border-2 border-dashed border-bp-border/40">
+                    <div className="py-24 text-center bg-white rounded-2xl border-2 border-dashed border-bp-border/40">
                        <div className="w-20 h-20 bg-bp-surface rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-bp-border/20"><Mail className="text-bp-border" size={32} /></div>
                        <h3 className="text-[18px] font-bold text-bp-primary/70 mb-2 tracking-tight">Clinical Outcomes Pending</h3>
                        <p className="text-bp-body/40 text-[15px] font-bold max-w-sm mx-auto">Be among the first to document your professional recovery journey with {nameWithTitle}.</p>

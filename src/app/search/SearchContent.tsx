@@ -14,6 +14,7 @@ import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
+import { formatIndiaDateTime } from '@/lib/india-date'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
@@ -92,7 +93,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     distance: p.distance ?? '',
     isLive: !!p.next_available_slot, // Mark as live if there is a detected slot
     nextSlot: p.next_available_slot
-      ? new Date(p.next_available_slot).toLocaleString('en-IN', {
+      ? formatIndiaDateTime(p.next_available_slot, {
           weekday: 'short',
           month: 'short',
           day: 'numeric',
@@ -165,6 +166,7 @@ function resolveConditionFilters(condition: string | null): {
 
 export default function SearchContent({ locale }: { locale?: StaticLocale } = {}) {
   const t = SEARCH_COPY[locale ?? 'en']
+  const searchBasePath = locale === 'hi' ? '/hi/search' : '/search'
   const searchParams = useSearchParams()
   const router = useRouter()
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
@@ -235,7 +237,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
             </h1>
             {loading && <div className="w-6 h-6 rounded-full border-3 border-bp-surface border-t-bp-accent animate-spin shrink-0" />}
           </div>
-          <SearchFilters total={total} />
+          <SearchFilters total={total} basePath={searchBasePath} />
         </div>
       </header>
 
@@ -257,7 +259,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                 action={
                   <div className="w-full max-w-5xl space-y-6">
                     {error && (
-                      <div className="flex flex-col gap-4 rounded-[28px] border border-amber-100 bg-amber-50/70 p-5 text-left md:flex-row md:items-center md:justify-between">
+                      <div className="flex flex-col gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-left md:flex-row md:items-center md:justify-between">
                         <div>
                           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-700">{t.errorTitle}</p>
                           <p className="mt-1 text-[14px] font-medium leading-relaxed text-amber-900/80">
@@ -268,7 +270,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                           onClick={() => {
                             void mutate()
                           }}
-                          className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent"
+                          className="inline-flex items-center justify-center rounded-full bg-[#00766C] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#005A52]"
                         >
                           {t.retrySearch}
                         </button>
@@ -286,54 +288,48 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     <div className="grid gap-6 md:grid-cols-2">
                       {DEMO_RESULTS.map((result) => {
                         const ResultIcon = result.icon
+                        const resultHref = locale === 'hi'
+                          ? result.href.replace('/search', '/hi/search')
+                          : result.href
 
                         return (
                           <Link
                             key={result.title}
-                            href={result.href}
-                            className="group relative overflow-hidden rounded-[30px] border border-bp-border bg-white p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-bp-accent/30 hover:shadow-2xl"
+                            href={resultHref}
+                            className="group rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 text-left shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
                           >
-                            <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-bp-accent/5 blur-2xl transition-all group-hover:scale-150" />
-                            <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-bp-secondary/5 blur-2xl" />
-
-                            <div className="relative flex items-start justify-between gap-4">
+                            <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0 flex-1">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-bp-accent/10 bg-bp-accent/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-bp-accent">
+                                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#FEE9DD] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#C4532A]">
                                   <Sparkles size={10} />
                                   Preview
                                 </div>
-                                <h3 className="mt-4 text-[20px] font-bold leading-tight tracking-tight text-bp-primary group-hover:text-bp-accent transition-colors">{result.title}</h3>
-                                <p className="mt-2 text-[14px] font-medium leading-relaxed text-bp-body/80">{result.specialty}</p>
+                                <h3 className="mt-3 text-[16px] font-semibold leading-tight text-[#1A1C29]">{result.title}</h3>
+                                <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{result.specialty}</p>
                               </div>
-                              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-bp-accent/10 text-bp-accent shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:bg-bp-accent group-hover:text-white group-hover:shadow-bp-accent/20">
-                                <ResultIcon size={24} strokeWidth={2.5} />
+                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C]">
+                                <ResultIcon size={20} strokeWidth={2.2} />
                               </div>
                             </div>
 
-                            <div className="relative mt-6 space-y-3">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent/10 group-hover:text-bp-accent transition-colors">
-                                  <MapPin size={14} />
-                                </div>
-                                <span className="text-[13px] font-bold text-bp-body truncate">{result.coverage}</span>
+                            <div className="mt-4 space-y-2">
+                              <div className="flex items-center gap-2 text-[13px] text-slate-600">
+                                <MapPin size={14} className="text-slate-400" />
+                                <span className="truncate">{result.coverage}</span>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent/10 group-hover:text-bp-accent transition-colors">
-                                  <Calendar size={14} />
-                                </div>
-                                <span className="text-[13px] font-bold text-bp-body">
-                                  Next: <span className="text-bp-accent">{result.nextSlot}</span>
+                              <div className="flex items-center gap-2 text-[13px] text-slate-600">
+                                <Calendar size={14} className="text-slate-400" />
+                                <span>
+                                  Next: <span className="text-[#00766C] font-semibold">{result.nextSlot}</span>
                                 </span>
                               </div>
                             </div>
 
-                            <div className="relative mt-6 flex items-center justify-end border-t border-bp-border/60 pt-5">
-                              <div className="flex items-center gap-3">
-                                <span className="text-[16px] font-bold text-bp-primary">{result.fee}</span>
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bp-surface text-bp-body/40 group-hover:bg-bp-accent group-hover:text-white transition-all duration-300">
-                                  <ArrowRight size={16} strokeWidth={3} />
-                                </div>
-                              </div>
+                            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+                              <span className="text-[15px] font-semibold text-[#1A1C29] tabular-nums">{result.fee}</span>
+                              <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#00766C] group-hover:gap-2 transition-all">
+                                View <ArrowRight size={14} />
+                              </span>
                             </div>
                           </Link>
                         )
@@ -342,8 +338,9 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
                     <div className="flex justify-center">
                       <button
-                        onClick={() => router.push('/search')}
-                        className="px-12 py-5 bg-bp-primary text-white text-[16px] font-bold rounded-btn hover:bg-bp-accent shadow-2xl active:scale-[0.98] transition-all transform hover:-translate-y-1"
+                        type="button"
+                        onClick={() => router.push(searchBasePath)}
+                        className="rounded-full bg-[#00766C] px-8 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_12px_rgba(0,118,108,0.18)]"
                       >
                         {t.clearFilters}
                       </button>
@@ -366,7 +363,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     onClick={() => {
                       void mutate()
                     }}
-                    className="inline-flex items-center justify-center rounded-btn bg-bp-primary px-5 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent"
+                    className="inline-flex items-center justify-center rounded-full bg-[#00766C] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#005A52]"
                   >
                     {t.retrySearch}
                   </button>

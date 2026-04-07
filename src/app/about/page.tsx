@@ -3,10 +3,30 @@ import Footer from '@/components/Footer'
 import { ShieldCheck, IndianRupee, Globe, Heart } from 'lucide-react'
 
 const benefits = [
-  { title: 'Verified Experts', text: 'Every therapist on our platform is verified for credentials and clinical experience.', icon: ShieldCheck },
-  { title: 'Clinical Depth', text: 'Specialized focus on orthopedic, neurological, and pediatric rehabilitation.', icon: Heart },
-  { title: 'Transparent Pricing', text: 'Know exactly what you pay before you book. No hidden clinical charges.', icon: IndianRupee },
-  { title: 'India-Wide Reach', text: 'Connecting expert care to every corner of India, from clinics to your home.', icon: Globe },
+  {
+    title: 'Verified Experts',
+    text: 'Every therapist on our platform is verified for credentials and clinical experience.',
+    icon: ShieldCheck,
+    tint: 'bg-[#E6F4F3] text-[#00766C]',
+  },
+  {
+    title: 'Clinical Depth',
+    text: 'Specialized focus on orthopedic, neurological, and pediatric rehabilitation.',
+    icon: Heart,
+    tint: 'bg-[#FEE9DD] text-[#C4532A]',
+  },
+  {
+    title: 'Transparent Pricing',
+    text: 'Know exactly what you pay before you book. No hidden clinical charges.',
+    icon: IndianRupee,
+    tint: 'bg-[#E7EEFB] text-[#2F5EC4]',
+  },
+  {
+    title: 'India-Wide Reach',
+    text: 'Connecting expert care to every corner of India, from clinics to your home.',
+    icon: Globe,
+    tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
+  },
 ]
 
 export default function AboutPage() {
@@ -14,79 +34,96 @@ export default function AboutPage() {
     <>
       <Navbar locale="en" localeSwitchPath="/about" />
 
-      <main className="bg-white min-h-screen">
-        {/* Full-width Hero Section */}
-        <section className="bg-[#111111] text-white py-32 sm:py-48 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-bp-primary/20 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-bp-accent/10 rounded-full blur-[120px] -ml-64 -mb-64"></div>
-          
-          <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[12px] font-bold uppercase tracking-[0.2em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-               Verified Marketplace
+      <main className="bg-[#FAFAFA] min-h-screen">
+        {/* Hero */}
+        <section className="bg-white border-b border-slate-200/70">
+          <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+              Verified Marketplace
             </div>
-            <h1 className="text-[52px] sm:text-[84px] font-bold mb-10 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-              India&apos;s focused platform for <span className="text-bp-primary">Physiotherapy.</span>
+            <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
+              India&apos;s focused platform for{' '}
+              <span className="text-[#00766C]">Physiotherapy</span>
             </h1>
-            <p className="text-[18px] sm:text-[22px] leading-relaxed max-w-[800px] mx-auto text-white/60 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-              We help patients discover verified physiotherapists, compare visit options, and book clearly across India.
+            <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[720px] mx-auto text-slate-600">
+              We help patients discover verified physiotherapists, compare visit options, and book
+              clearly across India.
             </p>
           </div>
         </section>
 
-        {/* Story Section */}
-        <section className="py-32">
-          <div className="max-w-[1142px] mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center mb-32">
-              <div className="relative">
-                <div className="w-1.5 h-12 bg-bp-accent rounded-full mb-8"></div>
-                <h2 className="text-[44px] font-bold text-bp-primary mb-8 tracking-tighter leading-tight">A New Paradigm in Rehabilitation</h2>
-                <div className="space-y-6">
-                  <p className="text-[19px] leading-[1.8] text-bp-body/70 font-medium">
-                    BookPhysio.in is India&apos;s leading platform dedicated exclusively to physiotherapy.
-                    We understand that recovery requires more than just a session—it requires specialized expertise and continuity.
+        {/* Story */}
+        <section className="py-12 lg:py-16">
+          <div className="max-w-[1142px] mx-auto px-6 space-y-12 lg:space-y-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-12 items-center">
+              <div>
+                <div className="w-10 h-1 bg-[#FF6B35] rounded-full mb-5" />
+                <h2 className="text-[24px] lg:text-[28px] font-bold text-[#1A1C29] tracking-tight leading-tight">
+                  A new paradigm in rehabilitation
+                </h2>
+                <div className="mt-5 space-y-4 text-[15px] text-slate-600 leading-relaxed">
+                  <p>
+                    BookPhysio.in is India&apos;s leading platform dedicated exclusively to
+                    physiotherapy. Recovery requires more than just a session — it requires
+                    specialized expertise and continuity.
                   </p>
-                  <p className="text-[19px] leading-[1.8] text-bp-body/70 font-medium">
-                    Our platform connects patients with verified provider profiles and clearly listed credentials
-                    for both in-clinic and home-visit care, making it easier to choose and book the right provider.
+                  <p>
+                    Our platform connects patients with verified provider profiles and clearly
+                    listed credentials for both in-clinic and home-visit care, making it easier to
+                    choose and book the right provider.
                   </p>
                 </div>
               </div>
-              <div className="aspect-square bg-bp-surface border border-bp-border/40 rounded-[48px] flex items-center justify-center p-12 text-[#9CA3AF] relative group overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)]">
-                 <div className="absolute inset-0 bg-gradient-to-br from-bp-primary/5 to-transparent group-hover:from-bp-primary/10 transition-all duration-700"></div>
-                 <div className="text-center relative z-10 scale-110 group-hover:scale-125 transition-transform duration-1000">
-                    <Globe className="w-24 h-24 mx-auto mb-6 text-bp-primary/20" />
-                    <p className="text-[14px] font-bold text-bp-primary uppercase tracking-[0.3em]">National Care Network</p>
-                 </div>
+              <div className="aspect-square bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="text-center">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center mb-4">
+                    <Globe className="w-8 h-8" />
+                  </div>
+                  <p className="text-[12px] font-semibold text-[#00766C] uppercase tracking-[0.2em]">
+                    National care network
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="mb-32">
-              <div className="text-center max-w-2xl mx-auto mb-20">
-                 <p className="text-[12px] font-bold text-bp-accent uppercase tracking-[0.3em] mb-4">Precision Pillars</p>
-                 <h2 className="text-[40px] font-bold text-bp-primary tracking-tighter leading-none">Why Experts Choose Us</h2>
+            <div>
+              <div className="text-center max-w-xl mx-auto mb-8 lg:mb-10">
+                <p className="text-[11px] font-semibold text-[#FF6B35] uppercase tracking-[0.2em] mb-2">
+                  Precision pillars
+                </p>
+                <h2 className="text-[24px] lg:text-[28px] font-bold text-[#1A1C29] tracking-tight">
+                  Why experts choose us
+                </h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {benefits.map(({ title, text, icon: Icon }, idx) => (
-                  <div key={idx} className="flex flex-col p-10 bg-white border border-bp-border/40 rounded-[32px] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] hover:border-bp-primary/30 transition-all duration-500 group">
-                    <div className="w-16 h-16 rounded-2xl bg-bp-surface flex items-center justify-center mb-8 group-hover:bg-bp-primary group-hover:text-white transition-all duration-500">
-                      <Icon className="w-8 h-8" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                {benefits.map(({ title, text, icon: Icon, tint }) => (
+                  <div
+                    key={title}
+                    className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
+                  >
+                    <div
+                      className={`w-11 h-11 rounded-full flex items-center justify-center ${tint}`}
+                    >
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <h3 className="text-[22px] font-bold text-bp-primary mb-4 tracking-tight">{title}</h3>
-                    <p className="text-[16px] leading-relaxed text-bp-body/60 font-medium">{text}</p>
+                    <h3 className="mt-4 text-[16px] font-semibold text-[#1A1C29]">{title}</h3>
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{text}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="text-center p-20 bg-[#111111] rounded-[64px] border border-white/5 relative overflow-hidden group">
-               <div className="absolute inset-0 bg-gradient-to-br from-bp-primary/20 to-transparent opacity-50"></div>
-               <div className="relative z-10">
-                  <Heart className="w-16 h-16 text-bp-accent mx-auto mb-8 animate-pulse" />
-                  <h2 className="text-[48px] font-bold text-white mb-6 tracking-tighter">Leading Clinical Recovery</h2>
-                  <p className="text-[20px] text-white/50 max-w-[700px] mx-auto font-medium leading-relaxed">
-                    We are dedicated to making physiotherapy discovery and booking clearer for patients and providers alike.
-                  </p>
-               </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 lg:p-12 text-center shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+              <div className="mx-auto w-12 h-12 rounded-full bg-[#FEE9DD] text-[#FF6B35] flex items-center justify-center mb-4">
+                <Heart className="w-6 h-6" />
+              </div>
+              <h2 className="text-[22px] lg:text-[26px] font-bold text-[#1A1C29] tracking-tight">
+                Leading clinical recovery
+              </h2>
+              <p className="mt-3 text-[14px] lg:text-[15px] text-slate-600 max-w-[640px] mx-auto leading-relaxed">
+                We are dedicated to making physiotherapy discovery and booking clearer for patients
+                and providers alike.
+              </p>
             </div>
           </div>
         </section>

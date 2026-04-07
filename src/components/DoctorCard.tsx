@@ -20,6 +20,10 @@ import {
 
 export interface Doctor {
   id: string
+  profileHref?: string
+  disableProfileLink?: boolean
+  primaryActionLabel?: string
+  secondaryActionLabel?: string
   name: string
   credentials: string
   specialty: string
@@ -118,7 +122,10 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
   const handleBook = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    router.push(`/doctor/${doctor.id}`)
+    if (doctor.disableProfileLink) {
+      return
+    }
+    router.push(doctor.profileHref ?? `/doctor/${doctor.id}`)
   }
 
   return (
@@ -232,9 +239,10 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
               <button
                 onClick={handleBook}
-                className="inline-flex items-center gap-2 rounded-full bg-bp-primary px-6 py-3 text-[14px] font-bold text-white transition-all hover:bg-bp-primary/90 active:scale-[0.98] shadow-lg shadow-bp-primary/10"
+                disabled={doctor.disableProfileLink}
+                className="inline-flex items-center gap-2 rounded-full bg-bp-primary px-6 py-3 text-[14px] font-bold text-white transition-all hover:bg-bp-primary/90 active:scale-[0.98] shadow-lg shadow-bp-primary/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-bp-primary"
               >
-                View profile
+                {doctor.primaryActionLabel ?? (doctor.disableProfileLink ? 'Profile preview soon' : 'View profile')}
                 <ArrowRight size={16} />
               </button>
             </div>
@@ -316,9 +324,10 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
           <button
             onClick={handleBook}
+            disabled={doctor.disableProfileLink}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-bp-accent px-4 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent/90 active:scale-[0.99] shadow-lg shadow-bp-accent/10"
           >
-            Book Appointment
+            {doctor.secondaryActionLabel ?? 'Book Appointment'}
             <ArrowRight size={16} />
           </button>
         </div>

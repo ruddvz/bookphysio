@@ -23,7 +23,7 @@ const FAQS = [
       },
       {
         question: 'सेशन की पेमेंट कैसे होती है?',
-        answer: 'फिलहाल कुछ बुकिंग्स BookPhysio के जरिए रिज़र्व होती हैं और भुगतान विज़िट के दौरान प्रदाता को किया जाता है। जहां ऑनलाइन भुगतान उपलब्ध होगा, वह चेकआउट पर स्पष्ट रूप से दिखेगा।',
+        answer: 'ज़्यादातर बुकिंग्स में BookPhysio के जरिए ऑनलाइन चेकआउट उपलब्ध है। अगर किसी सेशन में पेमेंट विज़िट के दौरान करनी हो, तो वह विकल्प बुकिंग कन्फर्म करने से पहले साफ़ तौर पर दिखाया जाता है।',
       },
       {
         question: 'क्या मैं अपनी बुकिंग कैंसल या रीशेड्यूल कर सकता/सकती हूँ?',
@@ -80,94 +80,104 @@ export default function HindiFAQPage() {
       />
       <Navbar locale="hi" localeSwitchPath="/faq" />
 
-      <main lang="hi" className="bg-white min-h-screen">
-        <section className="bg-[#111111] text-white py-32 sm:py-48 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-bp-primary/15 rounded-full blur-[140px] -mr-80 -mt-80 animate-pulse duration-[10s]"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-bp-accent/5 rounded-full blur-[100px] -ml-40 -mb-40"></div>
-
-          <div className="max-w-[1142px] mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-[12px] font-bold uppercase tracking-[0.3em] mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              क्लिनिकल सपोर्ट डेस्क
+      <main lang="hi" className="bg-[#FAFAFA] min-h-screen">
+        <section className="bg-white border-b border-slate-200/70">
+          <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+              सपोर्ट डेस्क
             </div>
-            <h1 className="text-[56px] sm:text-[88px] font-bold mb-8 tracking-tighter leading-[0.9] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-              हम <span className="text-bp-primary italic">कैसे मदद करें?</span>
+            <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
+              हम कैसे <span className="text-[#00766C]">मदद करें?</span>
             </h1>
-            <p className="text-[18px] sm:text-[24px] leading-relaxed max-w-[750px] mx-auto text-white/50 font-medium animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-              बुकिंग, सत्यापन, विज़िट प्रकार और प्लेटफॉर्म नीतियों से जुड़े सबसे सामान्य सवालों के जवाब यहां दिए गए हैं।
+            <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[680px] mx-auto text-slate-600">
+              बुकिंग नीतियों, प्रदाता सत्यापन मानकों और प्लेटफॉर्म से जुड़े सबसे सामान्य सवालों के जवाब यहां दिए गए हैं।
             </p>
           </div>
         </section>
 
-        <section className="py-24 sm:py-40 bg-white">
+        <section className="py-12 lg:py-16">
           <div className="max-w-[1142px] mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
-              <div className="lg:col-span-4 sticky top-32 group">
-                <div className="space-y-16">
-                  <div>
-                    <h2 className="text-[12px] font-bold text-bp-primary uppercase tracking-[0.4em] mb-12">FAQ इंडेक्स</h2>
-                    <ul className="space-y-6">
-                      {FAQS.map((category) => (
-                        <li key={category.category}>
-                          <a
-                            href={`#${category.category}`}
-                            className="text-[20px] font-bold text-bp-primary hover:text-bp-primary transition-all flex items-center gap-4 group/item"
-                          >
-                            {category.category}
-                            <div className="w-1.5 h-1.5 rounded-full bg-bp-primary opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="p-10 bg-bp-surface rounded-[40px] border border-bp-border/40 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-bp-primary/5 rounded-full blur-2xl -mr-16 -mt-16"></div>
-                    <Sparkles className="w-10 h-10 text-bp-primary mb-8 animate-bounce duration-[3s]" />
-                    <h3 className="text-[24px] font-bold text-bp-primary mb-5 tracking-tight">बुकिंग में मदद चाहिए?</h3>
-                    <p className="text-[17px] text-bp-body/60 font-medium leading-relaxed mb-8">
-                      हमारी टीम बुकिंग फ्लो, प्रदाता सत्यापन और प्लेटफॉर्म उपयोग से जुड़े सवालों में सहायता कर सकती है।
-                    </p>
-                    <a
-                      href="mailto:support@bookphysio.in"
-                      className="block w-full py-5 bg-[#111111] text-white rounded-full font-bold text-[14px] uppercase tracking-[0.2em] text-center hover:bg-bp-primary hover:shadow-xl transition-all duration-500"
-                    >
-                      सपोर्ट से संपर्क करें
-                    </a>
-                  </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+              <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
+                <div>
+                  <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-4">
+                    श्रेणियाँ
+                  </h2>
+                  <ul className="space-y-2">
+                    {FAQS.map((category, index) => (
+                      <li key={category.category}>
+                        <a
+                          href={`#faq-section-${index}`}
+                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
+                        >
+                          {category.category}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
 
-              <div className="lg:col-span-8 space-y-32">
-                {FAQS.map((category) => (
-                  <div key={category.category} id={category.category} className="scroll-mt-32">
-                    <div className="flex items-center gap-5 mb-12">
-                      <div className="w-2.5 h-2.5 rounded-full bg-bp-accent shadow-[0_0_12px_rgba(255,107,53,0.4)]"></div>
-                      <h2 className="text-[36px] font-bold text-bp-primary tracking-tighter leading-none">{category.category}</h2>
-                    </div>
-                    <div className="space-y-6">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                  <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <h3 className="mt-4 text-[15px] font-semibold text-[#1A1C29]">
+                    बुकिंग में मदद चाहिए?
+                  </h3>
+                  <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
+                    हमारी टीम बुकिंग फ्लो, प्रदाता सत्यापन और प्लेटफॉर्म उपयोग से जुड़े सवालों में सहायता कर सकती है।
+                  </p>
+                  <a
+                    href="mailto:support@bookphysio.in"
+                    className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-[#00766C] px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-[#005A52] transition-colors"
+                  >
+                    सपोर्ट से संपर्क करें
+                  </a>
+                </div>
+              </aside>
+
+              <div className="lg:col-span-8 space-y-10 lg:space-y-12">
+                {FAQS.map((category, categoryIndex) => (
+                  <div key={category.category} id={`faq-section-${categoryIndex}`} className="scroll-mt-28">
+                    <h2 className="text-[22px] lg:text-[24px] font-bold text-[#1A1C29] tracking-tight mb-5">
+                      {category.category}
+                    </h2>
+                    <div className="space-y-3">
                       {category.items.map((item, idx) => {
-                        const id = `${category.category}-${idx}`
+                        const id = `${categoryIndex}-${idx}`
                         const isOpen = openIndex === id
 
                         return (
                           <div
                             key={id}
-                            className={`group border ${isOpen ? 'border-bp-primary/40 bg-bp-surface/30 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)]' : 'border-bp-border/40 bg-white hover:border-bp-primary/20 hover:shadow-lg'} rounded-[32px] overflow-hidden transition-all duration-700`}
+                            className={`rounded-2xl border bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors ${
+                              isOpen ? 'border-[#00766C]/40' : 'border-slate-200'
+                            }`}
                           >
                             <button
                               onClick={() => toggle(id)}
-                              className="w-full text-left px-10 py-8 flex items-center justify-between focus:outline-none"
+                              className="w-full text-left px-5 lg:px-6 py-4 lg:py-5 flex items-center justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] focus-visible:ring-offset-2 rounded-2xl"
                             >
-                              <span className={`text-[21px] font-bold tracking-tight ${isOpen ? 'text-bp-primary' : 'text-bp-body/80'} group-hover:text-bp-primary transition-all duration-500`}>
+                              <span className="text-[15px] font-semibold text-[#1A1C29]">
                                 {item.question}
                               </span>
-                              <div className={`w-12 h-12 rounded-full border ${isOpen ? 'bg-bp-primary border-bp-primary' : 'border-bp-border/60'} flex items-center justify-center shrink-0 transition-all duration-500`}>
-                                <ChevronDown className={`w-6 h-6 ${isOpen ? 'text-white rotate-180' : 'text-bp-body/30'}`} />
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                                  isOpen ? 'bg-[#00766C] text-white' : 'bg-slate-100 text-slate-500'
+                                }`}
+                              >
+                                <ChevronDown
+                                  className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                                />
                               </div>
                             </button>
-                            <div className={`grid transition-all duration-700 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div
+                              className={`grid transition-all duration-300 ease-out ${
+                                isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                              }`}
+                            >
                               <div className="overflow-hidden">
-                                <div className="px-10 pb-10 text-[18px] text-bp-body/60 font-medium leading-[1.8] border-t border-bp-border/10 mt-4 pt-8">
+                                <div className="px-5 lg:px-6 pb-5 lg:pb-6 text-[14px] text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
                                   {item.answer}
                                 </div>
                               </div>

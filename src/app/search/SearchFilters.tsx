@@ -116,7 +116,7 @@ function FilterDropdown({
 // Main export — horizontal bar (desktop) + drawer trigger (mobile)
 // ---------------------------------------------------------------------------
 
-export default function SearchFilters({ total = 0 }: { total?: number }) {
+export default function SearchFilters({ total = 0, basePath = '/search' }: { total?: number; basePath?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -149,7 +149,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
           next.set(key, value)
         }
       }
-      const nextUrl = `/search?${next.toString()}`
+      const nextUrl = `${basePath}?${next.toString()}`
       if (options?.replace) {
         router.replace(nextUrl)
         return
@@ -157,7 +157,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
 
       router.push(nextUrl)
     },
-    [router, searchParams]
+    [basePath, router, searchParams]
   )
 
   const clearAll = () => {
@@ -167,7 +167,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
     next.delete('visit_type')
     next.delete('max_fee')
     next.delete('specialty')
-    router.push(`/search?${next.toString()}`)
+    router.push(`${basePath}?${next.toString()}`)
     setDrawerOpen(false)
   }
 
@@ -275,6 +275,7 @@ export default function SearchFilters({ total = 0 }: { total?: number }) {
               </div>
               <button 
                 onClick={() => setDrawerOpen(false)} 
+                aria-label="Close filters"
                 className="w-12 h-12 bg-bp-surface flex items-center justify-center rounded-2xl text-bp-body/40 active:scale-90 transition-transform"
               >
                 <X size={24} strokeWidth={3} />

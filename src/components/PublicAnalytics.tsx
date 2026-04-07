@@ -12,6 +12,7 @@ const PUBLIC_ANALYTICS_PATHS = new Set([
   '/privacy',
   '/terms',
   '/search',
+  '/hi/search',
   '/hi/about',
   '/hi/faq',
   '/hi/how-it-works',
@@ -20,6 +21,7 @@ const PUBLIC_ANALYTICS_PATHS = new Set([
 ])
 
 const PUBLIC_ANALYTICS_PREFIXES = ['/city/', '/specialty/']
+const PUBLIC_ANALYTICS_EXTRA_PREFIXES = ['/specialties/']
 const COOKIE_CONSENT_KEY = 'cookie-consent'
 const COOKIE_CONSENT_EVENT = 'cookie-consent-changed'
 
@@ -30,6 +32,7 @@ export function shouldTrackPublicPath(pathname: string | null): boolean {
 
   return PUBLIC_ANALYTICS_PATHS.has(pathname)
     || PUBLIC_ANALYTICS_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+    || PUBLIC_ANALYTICS_EXTRA_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 }
 
 function hasAcceptedAnalyticsConsent(): boolean {

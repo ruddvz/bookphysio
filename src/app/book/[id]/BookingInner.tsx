@@ -87,7 +87,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
   if (!doctor) {
     return (
       <div className="min-h-screen bg-[#FBFCFD] flex flex-col">
-        <Navbar />
+        <Navbar locale={locale} />
         <main className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
            <div className="relative">
               <div className="w-16 h-16 rounded-full border-4 border-bp-border border-t-bp-accent animate-spin" />
@@ -98,7 +98,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
               <p className="text-[14px] font-bold text-bp-body/40 mt-1">{t.loadingSubtitle}</p>
            </div>
         </main>
-        <Footer />
+        <Footer locale={locale} />
       </div>
     )
   }
@@ -114,7 +114,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
 
   return (
     <div className="min-h-screen bg-[#FBFCFD] flex flex-col selection:bg-bp-accent/10 selection:text-bp-accent">
-      <Navbar />
+      <Navbar locale={locale} />
       
       {/* ── Progress Interface ── */}
       <div className="bg-white border-b border-bp-border sticky top-[72px] z-40 hidden md:block">
@@ -124,7 +124,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                   <div key={s.n} className="flex items-center">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-[18px] text-[15px] font-bold transition-all duration-700 border-2",
+                        "flex h-10 w-10 items-center justify-center rounded-xl text-[15px] font-bold transition-all duration-700 border-2",
                         step === s.n ? "bg-bp-accent text-white border-bp-accent shadow-[0_12px_24px_-8px_rgba(0,118,108,0.4)] scale-110" :
                         step > s.n ? "bg-bp-accent text-white border-bp-accent" :
                         "bg-white text-gray-200 border-bp-border"
@@ -220,7 +220,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
             {/* RIGHT COLUMN: Booking Summary (Ultra Premium) */}
             {step < 3 && (
               <aside className="sticky top-[160px] animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
-                <div className="bg-white rounded-[48px] border border-bp-border shadow-[0_48px_80px_-32px_rgba(0,0,0,0.1)] overflow-hidden relative group/sidebar">
+                <div className="bg-white rounded-2xl border border-bp-border shadow-[0_1px_3px_rgba(15,23,42,0.04)] overflow-hidden relative group/sidebar">
                   
                   {/* Backdrop Glow */}
                   <div className="absolute -top-32 -right-32 w-64 h-64 bg-bp-accent/10 rounded-full blur-[100px] -z-0 group-hover:scale-110 transition-transform duration-1000"></div>
@@ -235,12 +235,12 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                   
                   <div className="p-8 space-y-10 relative z-10">
                     {/* Doctor Info (High Fidelity) */}
-                    <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-[32px] border border-bp-border">
+                    <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-2xl border border-bp-border">
                        <div className="relative">
                          {doctor.avatar_url ? (
-                           <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-[28px] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
+                           <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
-                           <div className="w-20 h-20 rounded-[28px] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-bold text-2xl border-4 border-white shadow-xl">
+                           <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-bold text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}
                            </div>
                          )}
@@ -335,7 +335,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                           <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">Platform Fee</span>
                           <span className="text-[13px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
                        </div>
-                       <div className="flex justify-between items-center py-6 px-8 bg-bp-primary rounded-[28px] shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
+                       <div className="flex justify-between items-center py-6 px-8 bg-bp-primary rounded-xl shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
                           <span className="text-[14px] font-bold text-white/40 uppercase tracking-widest">{amountLabel}</span>
                           <span className="text-[26px] font-bold text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
                        </div>
@@ -353,7 +353,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
         </div>
       </main>
 
-      <Footer />
+      <Footer locale={locale} />
     </div>
   )
 }

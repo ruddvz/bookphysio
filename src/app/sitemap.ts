@@ -17,6 +17,7 @@ const staticRoutes: Array<{ path: string; lastModified: string; priority: number
   { path: '/hi/privacy',     lastModified: '2026-04-03', priority: 0.3 },
   { path: '/hi/terms',       lastModified: '2026-04-03', priority: 0.3 },
   { path: '/search',      lastModified: '2026-03-15', priority: 0.9 },
+  { path: '/hi/search',   lastModified: '2026-04-07', priority: 0.7 },
 ]
 
 // Cities from CITY_MAP in src/app/city/[slug]/page.tsx
@@ -67,5 +68,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
-  return [...staticMaps, ...cityMaps, ...specialtyMaps]
+  const specialtyArticleMaps = specialties.slice(0, 6).map((specialty) => ({
+    url: `${BASE_URL}/specialties/${specialty}`,
+    lastModified: new Date('2026-04-07'),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  return [...staticMaps, ...cityMaps, ...specialtyMaps, ...specialtyArticleMaps]
 }

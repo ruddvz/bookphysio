@@ -4,32 +4,41 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { Search, UserCheck, CalendarDays, Building2, CalendarRange, WalletCards, ArrowRight, Activity } from 'lucide-react'
+import {
+  Search,
+  UserCheck,
+  CalendarDays,
+  Building2,
+  CalendarRange,
+  WalletCards,
+  ArrowRight,
+  Activity,
+} from 'lucide-react'
 
 const PATIENT_STEPS = [
   {
     icon: Search,
     title: 'Search',
     text: 'Enter your condition or a physiotherapist name and select your location.',
-    color: 'bg-[#EEF0FD] text-[#6B7BF5]',
+    tint: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
     icon: UserCheck,
     title: 'Choose Provider',
     text: 'Compare expert physiotherapists by specialty, rating, fees, and distance.',
-    color: 'bg-violet-50 text-violet-600',
+    tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
   {
     icon: CalendarDays,
     title: 'Pick a Slot',
     text: 'Select your preferred date and time from the live availability of the provider.',
-    color: 'bg-[#E4F9F6] text-[#39D0B8]',
+    tint: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
     icon: Activity,
     title: 'Book Instantly',
     text: 'Confirm your booking with a quick session request and get expert care.',
-    color: 'bg-rose-50 text-rose-600',
+    tint: 'bg-[#FFE4EC] text-[#B53A63]',
   },
 ]
 
@@ -38,25 +47,25 @@ const PROVIDER_STEPS = [
     icon: Building2,
     title: 'Register Practice',
     text: 'Create your professional profile with your credentials and clinic details.',
-    color: 'bg-[#EEF0FD] text-[#6B7BF5]',
+    tint: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
     icon: CalendarRange,
     title: 'Set Availability',
     text: 'Configure your working hours, slot duration, and visit types.',
-    color: 'bg-violet-50 text-violet-600',
+    tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
   {
     icon: CalendarDays,
     title: 'Accept Bookings',
     text: 'Manage all your incoming appointments from a single dashboard.',
-    color: 'bg-[#E4F9F6] text-[#39D0B8]',
+    tint: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
     icon: WalletCards,
     title: 'Track Earnings',
     text: 'Monitor your weekly and monthly revenue automatically.',
-    color: 'bg-rose-50 text-rose-600',
+    tint: 'bg-[#FFE4EC] text-[#B53A63]',
   },
 ]
 
@@ -70,37 +79,41 @@ export default function HowItWorksPage() {
     <>
       <Navbar locale="en" localeSwitchPath="/how-it-works" />
 
-      <main className="min-h-screen bg-[#FAF9F6]">
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 relative overflow-hidden bg-white rounded-b-[3rem] shadow-[0_4px_24px_rgba(45,43,85,0.02)]">
-          <div className="absolute inset-x-0 -top-40 h-[600px] w-full bg-[radial-gradient(ellipse_at_top,#EEF0FD_0%,transparent_70%)] opacity-60"></div>
-          
-          <div className="mx-auto max-w-5xl px-6 text-center relative z-10">
-            <div className="bp-kicker mx-auto mb-6">How it works</div>
-            <h1 className="mt-4 text-[42px] font-bold tracking-tight text-[#1A1C29] md:text-[56px] leading-[1.1]">
-              How to Book a Physiotherapist<br /><span className="text-[#6B7BF5]">Online in India</span>
+      <main className="bg-[#FAFAFA] min-h-screen">
+        {/* Hero */}
+        <section className="bg-white border-b border-slate-200/70">
+          <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+              How it works
+            </div>
+            <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
+              Book a physiotherapist <br className="hidden sm:inline" />
+              <span className="text-[#00766C]">online in India</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-[18px] leading-relaxed text-[#55586B]">
-              Book a physio session in 4 clear steps - no calls, no waiting, and no guesswork about who to trust. It&apos;s fast, frictionless, and secure.
+            <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[680px] mx-auto text-slate-600">
+              Four clear steps — no calls, no waiting, and no guesswork about who to trust.
             </p>
 
-            <div className="mt-12 mx-auto inline-flex items-center gap-1.5 rounded-full bg-[#F4F2FA] p-1.5 shadow-sm border border-[#E2E4EB]">
+            {/* Tabs */}
+            <div className="mt-8 inline-flex items-center gap-1 rounded-full bg-slate-100 p-1 border border-slate-200">
               <button
+                type="button"
                 onClick={() => setActiveTab('patient')}
-                className={`py-3 px-8 rounded-full font-bold text-[15px] transition-all duration-300 ${
+                className={`py-2 px-5 rounded-full text-[13px] font-semibold transition-colors ${
                   activeTab === 'patient'
-                    ? 'bg-white text-[#6B7BF5] shadow-sm ring-1 ring-black/5'
-                    : 'text-[#8F93A3] hover:text-[#1A1C29]'
+                    ? 'bg-white text-[#00766C] shadow-sm'
+                    : 'text-slate-500 hover:text-[#1A1C29]'
                 }`}
               >
                 For Patients
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('provider')}
-                className={`py-3 px-8 rounded-full font-bold text-[15px] transition-all duration-300 ${
+                className={`py-2 px-5 rounded-full text-[13px] font-semibold transition-colors ${
                   activeTab === 'provider'
-                    ? 'bg-white text-[#6B7BF5] shadow-sm ring-1 ring-black/5'
-                    : 'text-[#8F93A3] hover:text-[#1A1C29]'
+                    ? 'bg-white text-[#00766C] shadow-sm'
+                    : 'text-slate-500 hover:text-[#1A1C29]'
                 }`}
               >
                 For Providers
@@ -109,70 +122,57 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* 4 Steps Section */}
-        <section className="py-24 md:py-32 overflow-hidden relative">
-          <div className="bp-container relative z-10">
-            {/* Horizontal Line Connector (Desktop) */}
-            <div className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-[2px] bg-[#E2E4EB] -z-10" />
-
-            <div className="grid gap-12 lg:gap-6 lg:grid-cols-4">
+        {/* Steps */}
+        <section className="py-12 lg:py-16">
+          <div className="max-w-[1142px] mx-auto px-6">
+            <div className="grid gap-4 lg:gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {activeSteps.map((step, idx) => (
-                <div key={idx} className="relative group flex flex-col items-center text-center px-2">
-                  
-                  {/* Arrow overlay on line */}
-                  {idx < 3 && (
-                    <div className="hidden lg:block absolute top-[35px] -right-[12px] z-0 text-[#C8CDFE]">
-                      <ArrowRight size={22} />
+                <div
+                  key={step.title}
+                  className="relative rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
+                >
+                  <div className="flex items-start justify-between">
+                    <div
+                      className={`w-11 h-11 rounded-full flex items-center justify-center ${step.tint}`}
+                    >
+                      <step.icon className="w-5 h-5" strokeWidth={2.2} />
                     </div>
-                  )}
-
-                  {/* Step Pill */}
-                  <div className="bg-[#FAF9F6] border-2 border-white text-[#6B7BF5] font-black text-[12px] uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm relative z-10">
-                    Step 0{idx + 1}
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                      Step 0{idx + 1}
+                    </span>
                   </div>
-
-                  {/* Icon Circle */}
-                  <div className="w-[88px] h-[88px] rounded-full flex items-center justify-center mb-6 shadow-sm border-4 border-white relative z-10 bg-white group-hover:-translate-y-1 transition-transform">
-                    <div className={`w-[60px] h-[60px] rounded-full flex items-center justify-center ${step.color}`}>
-                      <step.icon size={26} strokeWidth={2.5} />
-                    </div>
-                  </div>
-
-                  {/* Text content */}
-                  <h3 className="text-[#1A1C29] text-[20px] font-bold mb-3">{step.title}</h3>
-                  <p className="text-[#55586B] text-[15px] leading-relaxed max-w-[240px]">{step.text}</p>
+                  <h3 className="mt-4 text-[16px] font-semibold text-[#1A1C29]">{step.title}</h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{step.text}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Action Banner */}
-        <section className="pb-24">
-          <div className="mx-auto max-w-5xl px-6">
-             <div className="bp-card overflow-hidden p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 bg-white border border-[#E2E4EB] rounded-[2.5rem] relative">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle_at_top_right,#EEF0FD_0%,transparent_70%)] opacity-80" />
-                
-                <div className="relative z-10 max-w-xl text-center md:text-left">
-                   <h2 className="text-[32px] md:text-[38px] font-bold text-[#1A1C29] mb-4 leading-tight">
-                     {activeTab === 'patient' 
-                        ? 'Get back to feeling your best.' 
-                        : 'Grow your practice with India\'s best physio network.'}
-                   </h2>
-                   <p className="text-[17px] text-[#55586B] mb-8">
-                     {activeTab === 'patient' 
-                        ? 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.' 
-                        : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
-                   </p>
-                   <Link
-                     href={primaryCtaHref}
-                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6B7BF5] px-8 py-4 text-[16px] font-bold text-white transition-all hover:bg-[#5363D7] hover:-translate-y-0.5 shadow-[0_8px_20px_rgba(107,123,245,0.3)] w-full md:w-auto"
-                   >
-                      {primaryCtaLabel}
-                      <ArrowRight className="h-5 w-5" />
-                   </Link>
-                </div>
-             </div>
+        {/* CTA */}
+        <section className="pb-12 lg:pb-16">
+          <div className="max-w-[1142px] mx-auto px-6">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)] flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="max-w-xl text-center md:text-left">
+                <h2 className="text-[22px] lg:text-[26px] font-bold text-[#1A1C29] tracking-tight leading-tight">
+                  {activeTab === 'patient'
+                    ? 'Get back to feeling your best.'
+                    : "Grow your practice with India's best physio network."}
+                </h2>
+                <p className="mt-2 text-[14px] text-slate-600 leading-relaxed">
+                  {activeTab === 'patient'
+                    ? 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.'
+                    : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
+                </p>
+              </div>
+              <Link
+                href={primaryCtaHref}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#00766C] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_12px_rgba(0,118,108,0.18)] w-full md:w-auto"
+              >
+                {primaryCtaLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </section>
       </main>
