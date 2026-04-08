@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
 import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
@@ -23,6 +23,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [verified, setVerified] = useState(false)
 
   useEffect(() => {
     setPendingOtp(readPendingOtp())
@@ -140,8 +141,13 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         return
       }
       clearPendingOtp()
+
       const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role ?? data.user?.user_metadata?.role
-      router.push(resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo))
+      const redirectTo = resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
+
+      // Brief success flash before redirect
+      setVerified(true)
+      setTimeout(() => router.push(redirectTo), 800)
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -177,6 +183,18 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
     } catch {
       setError('Unable to resend OTP right now. Please check your connection and retry.')
     }
+  }
+
+  if (verified) {
+    return (
+      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in zoom-in-95 fade-in duration-500 flex flex-col items-center justify-center py-16">
+        <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-6 animate-in zoom-in-50 duration-300">
+          <CheckCircle2 className="w-10 h-10 text-emerald-500" strokeWidth={2.5} />
+        </div>
+        <h2 className="text-[24px] font-bold text-bp-primary tracking-tight">Verified!</h2>
+        <p className="mt-2 text-[14px] font-bold text-bp-body/40">Redirecting to your dashboard...</p>
+      </div>
+    )
   }
 
   return (

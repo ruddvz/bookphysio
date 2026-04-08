@@ -17,7 +17,7 @@ describe('StepConfirm', () => {
     fireEvent.change(screen.getByPlaceholderText(/enter patient's full name/i), {
       target: { value: 'Aarav Kapoor' },
     })
-    fireEvent.change(screen.getByPlaceholderText(/9876543210/i), {
+    fireEvent.change(screen.getByPlaceholderText(/98765 43210/i), {
       target: { value: '9876543210' },
     })
 

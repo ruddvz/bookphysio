@@ -1,12 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requireProviderAccess } from '@/app/api/provider/_lib/access'
+import { updateDemoProviderProfile } from '@/lib/demo/provider-clinical'
 import { updateProfileSchema } from '@/lib/clinical/types'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const access = await requireProviderAccess(req)
+
+  if (access instanceof NextResponse) {
+    return access
+  }
 
   const body = await req.json().catch(() => null)
   const parsed = updateProfileSchema.safeParse(body)
@@ -14,11 +17,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 })
   }
 
+  if (access.isDemo) {
+    const profile = updateDemoProviderProfile(access.demoSessionId ?? '', id, parsed.data)
+
+    if (!profile) {
+      return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
+    }
+
+    return NextResponse.json(profile)
+  }
+
+  const { supabase, providerId } = access
+
   const { data, error } = await supabase
     .from('patient_clinical_profiles')
     .update(parsed.data)
     .eq('id', id)
-    .eq('provider_id', user.id)
+    .eq('provider_id', providerId)
     .select('*')
     .single()
 

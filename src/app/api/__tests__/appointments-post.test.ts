@@ -60,6 +60,16 @@ function createRoleChain(role: 'patient' | 'provider' | 'admin') {
   return chain
 }
 
+function createRoleErrorChain(message: string) {
+  const chain = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    single: vi.fn().mockResolvedValue({ data: null, error: { message } }),
+  }
+
+  return chain
+}
+
 function createSlotChain() {
   const startsAt = new Date(Date.now() + (24 * 60 * 60 * 1000)).toISOString()
 
@@ -256,6 +266,43 @@ describe('POST /api/appointments', () => {
     expect(adminFromMock).not.toHaveBeenCalled()
   })
 
+  it('returns 500 when booking role verification fails', async () => {
+    createClientMock.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: '00000000-0000-4000-8000-000000000010',
+            },
+          },
+        }),
+      },
+      from: (table: string) => {
+        if (table === 'users') {
+          return createRoleErrorChain('users offline')
+        }
+
+        throw new Error(`Unhandled table: ${table}`)
+      },
+    })
+
+    const { POST } = await import('../appointments/route')
+    const response = await POST(new NextRequest('http://localhost/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider_id: '11111111-1111-4111-8111-111111111111',
+        availability_id: '33333333-3333-4333-8333-333333333333',
+        location_id: '22222222-2222-4222-8222-222222222222',
+        visit_type: 'in_clinic',
+      }),
+    }))
+
+    expect(response.status).toBe(500)
+    await expect(response.json()).resolves.toEqual({ error: 'Failed to verify booking access' })
+    expect(adminFromMock).not.toHaveBeenCalled()
+  })
+
   it('rejects deprecated insurance fields in the booking payload', async () => {
     createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
 
@@ -340,6 +387,48 @@ describe('POST /api/appointments', () => {
 
     expect(response.status).toBe(409)
   expect(adminFromMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('releases the provisional network hold when post-insert hold persistence fails', async () => {
+    vi.stubEnv('VERCEL', '1')
+    let redisSetCalls = 0
+
+    redisSetMock.mockImplementation(async (key: string, value: string, options?: { nx?: boolean }) => {
+      redisSetCalls += 1
+      const normalizedKey = String(key)
+
+      if (redisSetCalls === 2) {
+        throw new Error('redis unavailable')
+      }
+
+      if (options?.nx && redisState.has(normalizedKey)) {
+        return null
+      }
+
+      redisState.set(normalizedKey, String(value))
+      return 'OK'
+    })
+
+    createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
+
+    const { POST } = await import('../appointments/route')
+    const response = await POST(new NextRequest('http://localhost/api/appointments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-real-ip': '203.0.113.10',
+      },
+      body: JSON.stringify({
+        provider_id: '11111111-1111-4111-8111-111111111111',
+        availability_id: '33333333-3333-4333-8333-333333333333',
+        location_id: '22222222-2222-4222-8222-222222222222',
+        visit_type: 'in_clinic',
+      }),
+    }))
+
+    expect(response.status).toBe(503)
+    expect(redisState.get('bp:booking:active-ip:203.0.113.10')).toBeUndefined()
+    expect(redisState.get('bp:booking:active-appointment:appt-123456')).toBeUndefined()
   })
 
   it('rejects bookings while the provider availability rewrite lock is active', async () => {

@@ -22,7 +22,6 @@ test('homepage: GET / returns 200 and shows BookPhysio branding', async ({ page 
   const title = await page.title()
   expect(title.length).toBeGreaterThan(0)
 
-  await page.screenshot({ path: 'playwright-report/homepage.png' })
 })
 
 // ---------------------------------------------------------------------------
@@ -43,7 +42,6 @@ test('search: GET /search loads without JS errors', async ({ page }) => {
   // No fatal JS errors
   expect(jsErrors.filter((e) => !e.includes('ResizeObserver'))).toHaveLength(0)
 
-  await page.screenshot({ path: 'playwright-report/search.png' })
 })
 
 // ---------------------------------------------------------------------------
@@ -63,13 +61,12 @@ test('login: GET /login shows phone OTP login form', async ({ page }) => {
   // +91 prefix
   await expect(page.getByText('+91').first()).toBeVisible()
 
-  // Send OTP button
-  await expect(page.getByRole('button', { name: /send otp/i })).toBeVisible()
+  // Submit button
+  await expect(page.getByRole('button', { name: /secure login/i })).toBeVisible()
 
   // Link to signup
   await expect(page.getByRole('link', { name: /create an account/i })).toBeVisible()
 
-  await page.screenshot({ path: 'playwright-report/login.png' })
 })
 
 // ---------------------------------------------------------------------------
@@ -81,7 +78,7 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   expect(response?.status()).toBe(200)
 
   // Heading
-  await expect(page.getByRole('heading', { name: /create your account/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /start your recovery/i })).toBeVisible()
 
   // Full Name input
   await expect(page.getByLabel('Full Name')).toBeVisible()
@@ -89,13 +86,12 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   // Mobile Number input
   await expect(page.getByLabel('Mobile Number')).toBeVisible()
 
-  // Send OTP button
-  await expect(page.getByRole('button', { name: /send otp/i })).toBeVisible()
+  // Submit button
+  await expect(page.getByRole('button', { name: /create account/i })).toBeVisible()
 
   // Link back to login
   await expect(page.getByRole('link', { name: /log in/i })).toBeVisible()
 
-  await page.screenshot({ path: 'playwright-report/signup.png' })
 })
 
 // ---------------------------------------------------------------------------
@@ -138,7 +134,6 @@ test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /lo
   // This will catch a real regression if a redirect IS set up and then breaks.
   expect(typeof redirectedOrShowsLogin).toBe('boolean') // always passes — result logged above
 
-  await page.screenshot({ path: 'playwright-report/patient-dashboard-redirect.png' })
 })
 
 // ---------------------------------------------------------------------------

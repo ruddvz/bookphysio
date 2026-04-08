@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { User, Mail, FileText, ChevronRight, ShieldCheck, Sparkles, Activity, CheckCircle2, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 
 interface PatientDetails {
   fullName: string
@@ -125,10 +126,10 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                </div>
                <input
                  type="tel"
-                 value={phone}
-                 maxLength={10}
-                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                 placeholder="9876543210"
+                 value={formatIndianPhone(phone)}
+                 maxLength={11}
+                 onChange={(e) => setPhone(stripPhoneFormat(e.target.value))}
+                 placeholder="98765 43210"
                  className={cn(
                    "w-full bg-white rounded-[24px] border-2 pl-20 pr-6 py-6 text-[20px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200 tracking-wider",
                    errors.phone 

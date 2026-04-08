@@ -1,12 +1,27 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Users, TrendingUp, BarChart3, ShieldCheck, Clock,
-  ArrowRight, ArrowUpRight, CheckCircle2, ListChecks, Loader2,
+  Users,
+  ShieldCheck,
+  BarChart3,
+  IndianRupee,
+  User,
+  ListChecks,
+  Settings,
+  CheckCircle2,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/Skeleton'
+import {
+  PageHeader,
+  StatTile,
+  SectionCard,
+  EmptyState,
+  DashCard,
+} from '@/components/dashboard/primitives'
+import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
 
 interface AdminStats {
   activeProviders: number
@@ -15,193 +30,353 @@ interface AdminStats {
   gmvMtd: number
 }
 
+function formatCompactInr(amount: number): string {
+  if (amount >= 100_000) {
+    return `₹${(amount / 100_000).toFixed(1)}L`
+  }
+
+  if (amount >= 1_000) {
+    return `₹${(amount / 1_000).toFixed(1)}K`
+  }
+
+  return `₹${amount.toLocaleString('en-IN')}`
+}
+
+function fmtToday(d: Date): string {
+  return d.toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
+      <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+        ))}
+      </div>
+      <Skeleton className="h-80 rounded-2xl bg-slate-100" />
+    </div>
+  )
+}
+
 export default function AdminDashboardHome() {
-  const { data: stats, isLoading, isError } = useQuery({
+  const queryClient = useQueryClient()
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
       const r = await fetch('/api/admin/stats')
-      if (!r.ok) throw new Error('admin-stats')
+      if (!r.ok) throw new DashboardQueryError('admin-stats', r.status)
       return r.json() as Promise<AdminStats>
     },
   })
 
-  const showLive = !isLoading && !isError && stats
+  const hasAccessError = isDashboardAccessError(error)
 
-  const kpis = [
-    {
-      label: 'Active Providers',
-      value: showLive ? stats.activeProviders.toLocaleString() : '—',
-      icon: ShieldCheck, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
-      href: '/admin/listings',
-    },
-    {
-      label: 'Pending Approvals',
-      value: showLive ? String(stats.pendingApprovals) : '—',
-      icon: Clock, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
-      href: '/admin/listings',
-      urgent: showLive && stats.pendingApprovals > 0,
-    },
-    {
-      label: 'Total Patients',
-      value: showLive ? stats.totalPatients.toLocaleString() : '—',
-      icon: Users, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
-      href: '/admin/users',
-    },
-    {
-      label: 'GMV (Lifetime)',
-      value: showLive ? `₹${(stats.gmvMtd / 100_000).toFixed(1)}L` : '—',
-      icon: BarChart3, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
-      href: '/admin/analytics',
-    },
-  ]
+  useEffect(() => {
+    if (hasAccessError) {
+      queryClient.removeQueries({ queryKey: ['admin-stats'], exact: true })
+    }
+  }, [hasAccessError, queryClient])
+
+  if (isError) {
+    return (
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+        <PageHeader
+          role="admin"
+          kicker="PLATFORM"
+          title="Platform overview"
+          subtitle="Live admin stats are temporarily unavailable."
+          action={{ label: 'Review approvals', href: '/admin/listings' }}
+        />
+
+        <SectionCard role="admin" title="Dashboard unavailable">
+          <EmptyState
+            role="admin"
+            icon={ShieldCheck}
+            title="We couldn't load platform metrics"
+            description="Provider, patient, and GMV stats are temporarily unavailable. Please refresh in a moment."
+          />
+        </SectionCard>
+      </div>
+    )
+  }
+
+  if (isLoading) return <DashboardSkeleton />
+
+  const stats = data ?? {
+    activeProviders: 0,
+    pendingApprovals: 0,
+    totalPatients: 0,
+    gmvMtd: 0,
+  }
+
+  const gmvFormatted = formatCompactInr(stats.gmvMtd)
+  const patientsPerProvider = stats.activeProviders > 0
+    ? (stats.totalPatients / stats.activeProviders).toFixed(1)
+    : '0.0'
+  const gmvPerProvider = stats.activeProviders > 0
+    ? formatCompactInr(Math.round(stats.gmvMtd / stats.activeProviders))
+    : '₹0'
+  const queueState = stats.pendingApprovals === 0
+    ? 'Clear'
+    : stats.pendingApprovals > 25
+      ? 'Elevated'
+      : 'Active'
+  const statsFeedSignal = isError
+    ? { label: 'Admin stats', value: 'Unavailable', tone: 'text-amber-700', dot: 'bg-amber-500' }
+    : { label: 'Admin stats', value: 'Live', tone: 'text-emerald-600', dot: 'bg-emerald-500' }
+  const queueSignal = queueState === 'Clear'
+    ? { label: 'Review queue', value: queueState, tone: 'text-emerald-600', dot: 'bg-emerald-500' }
+    : queueState === 'Elevated'
+      ? { label: 'Review queue', value: queueState, tone: 'text-amber-700', dot: 'bg-amber-500' }
+      : { label: 'Review queue', value: queueState, tone: 'text-slate-700', dot: 'bg-slate-500' }
+  const providerSignal = stats.activeProviders > 0
+    ? {
+        label: 'Provider network',
+        value: `${stats.activeProviders} verified`,
+        tone: 'text-slate-700',
+        dot: 'bg-slate-500',
+      }
+    : {
+        label: 'Provider network',
+        value: 'No verified providers',
+        tone: 'text-slate-500',
+        dot: 'bg-slate-400',
+      }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="admin"
+        kicker="PLATFORM"
+        title="Platform overview"
+        subtitle={stats.pendingApprovals > 0 ? `${stats.pendingApprovals} approvals are waiting for review.` : fmtToday(new Date())}
+        action={{ label: 'Review approvals', href: '/admin/listings' }}
+      />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-[11px] font-bold uppercase tracking-wider">
-              Admin Command Center
-            </span>
-          </div>
-          <h1 className="text-[24px] md:text-[28px] font-bold text-slate-900 tracking-tight">
-            Platform Overview
-          </h1>
-          <p className="text-slate-500 text-[14px] mt-0.5">Real-time snapshot of the BookPhysio platform.</p>
-        </div>
-        <div className="flex gap-3 shrink-0">
-          <Link href="/admin/listings" className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-semibold text-[14px] hover:bg-slate-800 transition-colors">
-            Review approvals
-            <ArrowRight size={14} />
-          </Link>
-          <Link href="/admin/analytics" className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-slate-300 transition-colors">
-            Analytics
-            <TrendingUp size={14} />
-          </Link>
-        </div>
-      </div>
-
-      {isError && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-[14px] font-medium text-amber-900">
-          Live admin stats unavailable. Dashboard chrome is visible, but KPI values could not be loaded.
-        </div>
-      )}
-
-      {/* KPI Cards */}
+      {/* Stat row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map(card => (
-          <Link
-            key={card.label}
-            href={card.href}
-            className={cn(
-              'group p-5 bg-white rounded-2xl border hover:shadow-md hover:-translate-y-0.5 transition-all',
-              card.urgent ? 'border-amber-200 bg-amber-50/30' : 'border-slate-200 hover:border-slate-300'
-            )}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
-                <card.icon size={18} className={card.iconColor} />
-              </div>
-              {card.urgent ? (
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              ) : (
-                <ArrowUpRight size={15} className="text-slate-200 group-hover:text-slate-400 transition-colors" />
-              )}
-            </div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
-            {isLoading ? (
-              <Loader2 size={18} className="text-slate-300 animate-spin mt-2" />
-            ) : (
-              <div className="text-[24px] font-bold text-slate-900 leading-none">{card.value}</div>
-            )}
-          </Link>
-        ))}
+        <StatTile
+          role="admin"
+          icon={Users}
+          label="Active providers"
+          value={stats.activeProviders.toLocaleString('en-IN')}
+          tone={1}
+        />
+        <StatTile
+          role="admin"
+          icon={ShieldCheck}
+          label="Pending approvals"
+          value={stats.pendingApprovals}
+          tone={4}
+        />
+        <StatTile
+          role="admin"
+          icon={User}
+          label="Total patients"
+          value={stats.totalPatients.toLocaleString('en-IN')}
+          tone={5}
+        />
+        <StatTile
+          role="admin"
+          icon={IndianRupee}
+          label="Completed GMV"
+          value={gmvFormatted}
+          tone={3}
+        />
       </div>
 
-      {/* Main 2-col */}
-      <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
-
-        {/* Left: Pending approvals callout */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-[17px] font-bold text-slate-900">Verification Queue</h2>
-              <p className="text-[13px] text-slate-400">Providers awaiting approval</p>
-            </div>
-            <Link href="/admin/listings" className="text-[13px] font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 group">
-              Open queue
-              <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
-
-          {showLive && stats.pendingApprovals > 0 ? (
-            <div className="flex items-center gap-5 p-5 rounded-xl bg-amber-50 border border-amber-100">
-              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
-                <Clock size={22} className="text-amber-600" />
-              </div>
-              <div className="flex-1">
-                <div className="text-[22px] font-extrabold text-amber-900 leading-none">
-                  {stats.pendingApprovals} provider{stats.pendingApprovals !== 1 ? 's' : ''}
+      {/* Main + rail */}
+      <div className="flex flex-col xl:flex-row gap-6">
+        <div className="flex-1 space-y-6">
+          <SectionCard
+            role="admin"
+            title="Verification queue"
+            action={{ label: 'Open queue', href: '/admin/listings' }}
+          >
+            {stats.pendingApprovals > 0 ? (
+              <div className="flex items-center gap-5 rounded-xl border border-[var(--color-ad-tile-4-fg)] bg-[var(--color-ad-tile-4-bg)] p-5">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--color-ad-tile-4-fg)]">
+                  <ShieldCheck size={22} />
                 </div>
-                <div className="text-[13px] text-amber-700 mt-1">Waiting for verification review</div>
+                <div className="flex-1">
+                  <div className="text-[22px] font-bold leading-none text-[var(--color-ad-ink)]">
+                    {stats.pendingApprovals} provider
+                    {stats.pendingApprovals !== 1 ? 's' : ''}
+                  </div>
+                  <div className="mt-1 text-[13px] text-[var(--color-ad-tile-4-fg)]">
+                    Waiting for verification review
+                  </div>
+                </div>
+                <Link
+                  href="/admin/listings"
+                  className="rounded-full bg-[var(--color-ad-primary)] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+                >
+                  Review now
+                </Link>
               </div>
-              <Link href="/admin/listings" className="px-4 py-2.5 bg-amber-600 text-white rounded-xl text-[13px] font-semibold hover:bg-amber-700 transition-colors">
-                Review now
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4 p-5 rounded-xl bg-emerald-50 border border-emerald-100">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                <CheckCircle2 size={20} className="text-emerald-600" />
+            ) : (
+              <EmptyState
+                role="admin"
+                icon={CheckCircle2}
+                title="Queue clear"
+                description="All provider applications reviewed."
+              />
+            )}
+
+            {/* Mini summary */}
+            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-[var(--color-ad-border-soft)] pt-5">
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Active
+                </div>
+                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                  {stats.activeProviders}
+                </div>
               </div>
               <div>
-                <div className="text-[15px] font-bold text-emerald-900">All caught up</div>
-                <div className="text-[12px] text-emerald-700">No providers pending verification</div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Patients
+                </div>
+                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                  {stats.totalPatients}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Completed GMV
+                </div>
+                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                  {gmvFormatted}
+                </div>
               </div>
             </div>
-          )}
+          </SectionCard>
 
-          {/* Mini stat row */}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-5 border-t border-slate-100">
-            <div>
-              <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Active</div>
-              <div className="text-[20px] font-bold text-slate-900">{showLive ? stats.activeProviders : '—'}</div>
-            </div>
-            <div>
-              <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Patients</div>
-              <div className="text-[20px] font-bold text-slate-900">{showLive ? stats.totalPatients : '—'}</div>
-            </div>
-            <div>
-              <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">GMV</div>
-              <div className="text-[20px] font-bold text-slate-900">
-                {showLive ? `₹${(stats.gmvMtd / 100_000).toFixed(1)}L` : '—'}
+          <SectionCard role="admin" title="Operations pulse">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Queue state
+                </div>
+                <div className="mt-2 text-[22px] font-bold text-[var(--color-ad-ink)]">
+                  {queueState}
+                </div>
+                <p className="mt-1 text-[12px] text-slate-500">
+                  {stats.pendingApprovals === 0 ? 'No provider backlog detected.' : 'Ops review is actively in progress.'}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Patients / provider
+                </div>
+                <div className="mt-2 text-[22px] font-bold text-[var(--color-ad-ink)]">
+                  {patientsPerProvider}
+                </div>
+                <p className="mt-1 text-[12px] text-slate-500">
+                  Current platform care load distribution.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Completed GMV / provider
+                </div>
+                <div className="mt-2 text-[22px] font-bold text-[var(--color-ad-ink)]">
+                  {gmvPerProvider}
+                </div>
+                <p className="mt-1 text-[12px] text-slate-500">
+                  Average completed GMV generated by each verified provider.
+                </p>
               </div>
             </div>
-          </div>
+          </SectionCard>
         </div>
 
-        {/* Right column */}
-        <div className="space-y-5">
-
-          {/* Quick nav */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5">
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Admin Actions</div>
-            <div className="space-y-1.5">
+        {/* Right rail */}
+        <div className="xl:w-[340px] xl:shrink-0 space-y-6">
+          <DashCard role="admin">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
+              Admin actions
+            </div>
+            <div className="space-y-1">
               {[
-                { label: 'Review pending providers', href: '/admin/listings', icon: ListChecks },
-                { label: 'Manage users',             href: '/admin/users',    icon: Users },
-                { label: 'View analytics report',    href: '/admin/analytics', icon: BarChart3 },
+                {
+                  label: 'Review approvals',
+                  href: '/admin/listings',
+                  icon: ListChecks,
+                },
+                {
+                  label: 'Manage users',
+                  href: '/admin/users',
+                  icon: Users,
+                },
+                {
+                  label: 'View analytics',
+                  href: '/admin/analytics',
+                  icon: BarChart3,
+                },
+                {
+                  label: 'Platform settings',
+                  href: '/admin',
+                  icon: Settings,
+                },
               ].map(({ label, href, icon: Icon }) => (
-                <Link key={href} href={href} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group text-[13px] font-medium text-slate-700">
-                  <Icon size={15} className="text-slate-400" />
-                  {label}
-                  <ArrowRight size={13} className="ml-auto text-slate-200 group-hover:text-slate-400 transition-colors" />
+                <Link
+                  key={label}
+                  href={href}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors"
+                >
+                  <Icon size={16} className="text-[var(--color-ad-primary)]" />
+                  <span className="flex-1 text-[13px] font-medium text-[var(--color-ad-ink)]">
+                    {label}
+                  </span>
                 </Link>
               ))}
             </div>
-          </div>
+          </DashCard>
+
+          <SectionCard role="admin" title="Data status">
+            <div className="space-y-3">
+              {[statsFeedSignal, queueSignal, providerSignal].map(({ label, value, tone, dot }) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between text-[13px]"
+                >
+                  <span className="text-slate-500">{label}</span>
+                  <span className={`flex items-center gap-2 font-semibold ${tone}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          <SectionCard role="admin" title="Platform mix">
+            <div className="space-y-4 text-[13px]">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Verified providers</span>
+                <span className="font-bold text-[var(--color-ad-ink)]">{stats.activeProviders}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Pending approvals</span>
+                <span className="font-bold text-[var(--color-ad-ink)]">{stats.pendingApprovals}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Tracked patients</span>
+                <span className="font-bold text-[var(--color-ad-ink)]">{stats.totalPatients.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </SectionCard>
         </div>
       </div>
     </div>

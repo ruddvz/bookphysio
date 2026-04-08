@@ -25,6 +25,14 @@ type PaymentRecord = {
   created_at?: string
 }
 
+function firstValue<T>(value: T | T[] | null | undefined): T | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null
+  }
+
+  return value ?? null
+}
+
 function jsonNoStore(body: unknown, init?: ResponseInit) {
   const response = NextResponse.json(body, init)
   response.headers.set('Cache-Control', 'no-store')
@@ -94,7 +102,12 @@ export async function POST(request: NextRequest) {
     .eq('id', user.id)
     .single()
 
-  if (profileError || profile?.role !== 'patient') {
+  if (profileError) {
+    console.error('[api/appointments] Failed to verify booking role:', profileError)
+    return jsonNoStore({ error: 'Failed to verify booking access' }, { status: 500 })
+  }
+
+  if (profile?.role !== 'patient') {
     return jsonNoStore({ error: 'Only patient accounts can create bookings.' }, { status: 403 })
   }
 
@@ -297,7 +310,9 @@ export async function POST(request: NextRequest) {
         .from('availabilities')
         .update({ is_booked: false })
         .eq('id', availability_id)
+      await redis.del(appointmentHoldKey)
       await releaseBookingHoldIfOwned(activeIpHoldKey, appointment.id as string)
+      await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
 
       console.error('[api/appointments] Failed to persist active booking hold:', error)
       return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
@@ -311,36 +326,104 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
+  const dashboardView = request.nextUrl.searchParams.get('view') === 'dashboard'
 
   if (!user && demoSession) {
+    if (dashboardView && demoSession.role === 'patient') {
+      const demoAppointments = getDemoAppointments('patient')
+
+      return jsonNoStore({
+        appointments: demoAppointments.map((appointment) => ({
+          id: appointment.id,
+          status: appointment.status,
+          visit_type: appointment.visit_type,
+          fee_inr: appointment.fee_inr,
+          availabilities: appointment.availabilities
+            ? { starts_at: appointment.availabilities.starts_at }
+            : null,
+          providers: 'providers' in appointment ? appointment.providers : null,
+          locations: appointment.locations
+            ? { city: appointment.locations.city }
+            : null,
+        })),
+      })
+    }
+
     return jsonNoStore({ appointments: getDemoAppointments(demoSession.role) })
   }
 
   if (!user) return jsonNoStore({ error: 'Unauthorized' }, { status: 401 })
 
   // Check user role (patient or provider)
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('role')
     .eq('id', user.id)
     .single()
 
-  const role = profile?.role ?? 'patient'
+  if (profileError) {
+    console.error('[api/appointments] Failed to verify user role:', profileError)
+    return jsonNoStore({ error: 'Failed to verify appointments access' }, { status: 500 })
+  }
+
+  if (profile?.role !== 'patient' && profile?.role !== 'provider') {
+    return jsonNoStore({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const role = profile.role
 
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
-  const appointmentQuery = supabaseAdmin
+  const appointmentSummaryClient = supabaseAdmin as unknown as SummaryLookupClient
+
+  if (role === 'patient' && dashboardView) {
+    const { data: dashboardAppointments, error } = await supabaseAdmin
+      .from('appointments')
+      .select('id, status, visit_type, fee_inr, provider_id, availabilities (starts_at), locations (city)')
+      .eq('patient_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('[api/appointments] Fetch error:', error)
+      return jsonNoStore({ error: 'Failed to fetch appointments' }, { status: 500 })
+    }
+
+    const providerSummaryById = await fetchProviderSummaryMap(
+      appointmentSummaryClient,
+      (dashboardAppointments ?? []).map((appointment) => appointment.provider_id as string),
+    )
+
+    return jsonNoStore({
+      appointments: (dashboardAppointments ?? []).map((appointment) => {
+        const availability = firstValue(appointment.availabilities)
+        const location = firstValue(appointment.locations)
+
+        return {
+          id: appointment.id,
+          status: appointment.status,
+          visit_type: appointment.visit_type,
+          fee_inr: appointment.fee_inr,
+          availabilities: availability
+            ? { starts_at: availability.starts_at }
+            : null,
+          providers: providerSummaryById.get(appointment.provider_id as string) ?? null,
+          locations: location
+            ? { city: location.city }
+            : null,
+        }
+      }),
+    })
+  }
+
+  const { data, error } = await supabaseAdmin
     .from('appointments')
     .select('*, availabilities (*), locations (*), payments (status, amount_inr, gst_amount_inr, created_at)')
     .eq(role === 'provider' ? 'provider_id' : 'patient_id', user.id)
-
-  const { data, error } = await appointmentQuery.order('created_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('[api/appointments] Fetch error:', error)
     return jsonNoStore({ error: 'Failed to fetch appointments' }, { status: 500 })
   }
-
-  const appointmentSummaryClient = supabaseAdmin as unknown as SummaryLookupClient
 
   if (role === 'provider') {
     const patientSummaryById = await fetchPatientSummaryMap(

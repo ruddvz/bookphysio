@@ -8,8 +8,8 @@
 
 ## 📊 Live Status (updated automatically every change)
 
-**Last updated:** 2026-04-07 — ✅ Phase A · ✅ Phase B · ✅ Phase C · ✅ Phase D · ✅ Phase E complete (build green)
-**Current task:** Phase E public pages sweep complete — ready for scoped commit
+**Last updated:** 2026-04-07 — ✅ Phase A · ✅ Phase B · ✅ Phase C · ✅ Phase D · ✅ Phase E committed (build green)
+**Current task:** Post-Phase-E hardening complete in repo — apply migration `032_patient_records_privacy_boundary.sql` before release
 
 ### Phase A — Foundation ✅
 - [x] Role palette tokens in `globals.css`
@@ -637,8 +637,8 @@ Public pages are role-agnostic. Use a neutral **"Public Bloom"** theme built fro
 - [ ] Audit each public page — screenshot before/after at 375/768/1280
 - [ ] Verify nav untouched (diff the nav component file — should be unchanged)
 - [ ] Apply card/typography/button sweep
-- [ ] Build check
-- [ ] Commit: `feat: dashboard redesign phase E — public pages polish`
+- [x] Build check
+- [x] Commit: `feat: phase E public pages polish`
 
 ---
 

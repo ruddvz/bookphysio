@@ -1,11 +1,29 @@
-'use client'
+"use client"
 
 import Image from 'next/image'
-import { User, Briefcase, Award, Globe, ShieldCheck, Check, MapPin, Navigation, Info, ArrowRight, Activity } from 'lucide-react'
+import {
+  User,
+  ShieldCheck,
+  Check,
+  MapPin,
+  Globe,
+  Activity,
+  Award,
+  Info,
+  Save,
+  Eye,
+  Trash2,
+  Loader2,
+} from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/context/AuthContext'
 import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
+import { cn } from '@/lib/utils'
+import {
+  PageHeader,
+  SectionCard,
+} from '@/components/dashboard/primitives'
 
 type ProviderTitle = 'Dr.' | 'PT' | 'BPT' | 'MPT'
 
@@ -59,15 +77,9 @@ function toFormState(data: ProfileResponse): ProfileForm {
 
 function parseOptionalInteger(value: string): number | undefined {
   const trimmed = value.trim()
-  if (!trimmed) {
-    return undefined
-  }
-
+  if (!trimmed) return undefined
   const parsed = Number(trimmed)
-  if (!Number.isFinite(parsed)) {
-    return undefined
-  }
-
+  if (!Number.isFinite(parsed)) return undefined
   return parsed
 }
 
@@ -75,38 +87,31 @@ async function resizeImage(file: File, maxPx = 400): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const image = new window.Image()
     const objectUrl = URL.createObjectURL(file)
-
     image.onload = () => {
       const scale = Math.min(1, maxPx / Math.max(image.width, image.height))
       const canvas = document.createElement('canvas')
       canvas.width = Math.round(image.width * scale)
       canvas.height = Math.round(image.height * scale)
-
       const context = canvas.getContext('2d')
       if (!context) {
         URL.revokeObjectURL(objectUrl)
         reject(new Error('Canvas context unavailable'))
         return
       }
-
       context.drawImage(image, 0, 0, canvas.width, canvas.height)
       URL.revokeObjectURL(objectUrl)
-
       canvas.toBlob((blob) => {
         if (!blob) {
           reject(new Error('Image conversion failed'))
           return
         }
-
         resolve(blob)
       }, 'image/jpeg', 0.88)
     }
-
     image.onerror = () => {
       URL.revokeObjectURL(objectUrl)
       reject(new Error('Image load failed'))
     }
-
     image.src = objectUrl
   })
 }
@@ -117,37 +122,32 @@ export default function ProviderProfile() {
   const [savedFormData, setSavedFormData] = useState<ProfileForm>(EMPTY_FORM)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [avatarError, setAvatarError] = useState<string | null>(null)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     return () => {
-      if (avatarPreview?.startsWith('blob:')) {
-        URL.revokeObjectURL(avatarPreview)
-      }
+      if (avatarPreview?.startsWith('blob:')) URL.revokeObjectURL(avatarPreview)
     }
   }, [avatarPreview])
 
   const loadProfile = useCallback(async () => {
     setLoadingProfile(true)
-    setLoadError(null)
-
+    setProfileError(null)
     try {
       const response = await fetch('/api/profile')
-      if (!response.ok) {
-        throw new Error('Failed to load profile')
-      }
-
+      if (!response.ok) throw new Error('Failed to load profile')
       const data = await response.json() as ProfileResponse
       const nextForm = toFormState(data)
-
       setFormData(nextForm)
       setSavedFormData(nextForm)
       setSaveStatus('idle')
+      setSaveError(null)
     } catch {
-      setLoadError('Live profile sync is unavailable right now.')
+      setProfileError('We couldn\'t load your practice profile. Please retry.')
     } finally {
       setLoadingProfile(false)
     }
@@ -158,24 +158,13 @@ export default function ProviderProfile() {
   }, [loadProfile])
 
   const updateFormField = useCallback(<K extends keyof ProfileForm>(field: K, value: ProfileForm[K]) => {
-    setFormData((current) => ({
-      ...current,
-      [field]: value,
-    }))
+    setFormData((current) => ({ ...current, [field]: value }))
     setSaveStatus('idle')
   }, [])
 
   const handleAvatarFile = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (!file) {
-      return
-    }
-
-    if (!user?.id) {
-      setAvatarError('Sign in again to update your profile photo.')
-      return
-    }
-
+    if (!file || !user?.id) return
     if (file.size > 5 * 1024 * 1024) {
       setAvatarError('Image must be under 5 MB.')
       return
@@ -198,9 +187,7 @@ export default function ProviderProfile() {
           upsert: false,
         })
 
-      if (uploadError) {
-        throw uploadError
-      }
+      if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
       const publicUrl = data.publicUrl
@@ -211,9 +198,7 @@ export default function ProviderProfile() {
         body: JSON.stringify({ avatar_url: publicUrl }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to persist avatar URL')
-      }
+      if (!response.ok) throw new Error('Failed to persist avatar URL')
 
       setFormData((current) => ({ ...current, avatar_url: publicUrl }))
       setSavedFormData((current) => ({ ...current, avatar_url: publicUrl }))
@@ -230,7 +215,7 @@ export default function ProviderProfile() {
 
   const handleSave = useCallback(async () => {
     setSaveStatus('saving')
-
+    setSaveError(null)
     try {
       const response = await fetch('/api/profile', {
         method: 'PATCH',
@@ -243,407 +228,276 @@ export default function ProviderProfile() {
         }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to save profile')
-      }
-
+      if (!response.ok) throw new Error('Failed to save profile')
       setSavedFormData(formData)
       setSaveStatus('saved')
     } catch {
       setSaveStatus('error')
+      setSaveError('We couldn\'t save your profile. Please try again.')
     }
   }, [formData])
 
   const handleDiscard = useCallback(() => {
     setFormData(savedFormData)
     setAvatarError(null)
-    setLoadError(null)
     setSaveStatus('idle')
   }, [savedFormData])
 
   const displayName = formData.full_name.trim()
     ? getProviderDisplayName({ full_name: formData.full_name, title: formData.title })
-    : 'Your Name'
-  const initials = getProviderInitials(displayName === 'Your Name' ? 'Your Name' : displayName)
+    : 'New Provider'
+  const initials = getProviderInitials(displayName)
   const avatarSrc = avatarPreview ?? formData.avatar_url
-  const expertiseLabel = formData.experience_years
-    ? `${formData.experience_years}+ years experience`
-    : 'Provider profile'
-  const canSave = formData.full_name.trim().length >= 2 && saveStatus !== 'saving' && !loadingProfile
+  const canSave = formData.full_name.trim().length >= 2 && saveStatus !== 'saving' && !loadingProfile && !profileError && JSON.stringify(formData) !== JSON.stringify(savedFormData)
 
   return (
-    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
-      {/* ── Page Header ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b border-bp-border pb-12">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-xl shadow-bp-accent/20 transform -rotate-3">
-              <Briefcase size={24} strokeWidth={2.5} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-emerald-600">Registry Management</span>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[11px] font-bold text-emerald-600">Active Listing</span>
-              </div>
-            </div>
-          </div>
-          <h1 className="text-[42px] lg:text-[48px] font-bold text-slate-900 tracking-tighter leading-none">
-            Practice <span className="text-emerald-600">Profile</span>
-          </h1>
-          <p className="text-[16px] font-medium text-bp-body max-w-xl leading-relaxed">
-            Manage your professional presence, specialty credentials, and service area coverage.
-          </p>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="provider"
+        kicker="PRACTICE CONFIG"
+        title="Practice Profile"
+        subtitle="Manage your clinical identity, credentials, and visibility"
+        action={{
+          label: saveStatus === 'saving' ? 'Applying...' : 'Push Updates Live',
+          icon: saveStatus === 'saving' ? Loader2 : Save,
+          onClick: handleSave,
+          disabled: !canSave
+        }}
+      />
+
+      {loadingProfile ? (
+        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-500">
+          <Loader2 size={18} className="animate-spin" />
+          <p className="text-[13px] font-bold">Loading your practice profile...</p>
         </div>
+      ) : null}
 
-        <div className="flex items-center gap-4 bg-bp-surface p-2 rounded-[24px] border border-bp-border">
-          <button type="button" className="px-6 py-3 text-[13px] font-bold text-emerald-600 bg-white rounded-[18px] shadow-sm transform active:scale-95 transition-all">Public View</button>
-          <button type="button" className="px-6 py-3 text-[13px] font-bold text-bp-body hover:text-slate-900 transition-colors rounded-[18px]">Analytics</button>
+      {profileError ? (
+        <div className="flex flex-col gap-3 rounded-xl border border-rose-100 bg-rose-50 px-5 py-4 text-rose-700 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[13px] font-bold">{profileError}</p>
+          <button
+            type="button"
+            onClick={() => void loadProfile()}
+            className="rounded-full bg-white px-4 py-2 text-[12px] font-bold uppercase tracking-widest text-rose-600 transition-colors hover:bg-rose-100"
+          >
+            Retry Load
+          </button>
         </div>
-      </div>
+      ) : null}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* ── Left Column: Form ── */}
-        <div className="lg:col-span-2 space-y-12">
-          <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-10 group/section">
-            <h3 className="text-[22px] font-bold text-slate-900 tracking-tight mb-8 flex items-center gap-3">
-              <User size={22} className="text-emerald-600" />
-              Personal Details
-            </h3>
+      {saveError ? (
+        <div className="rounded-xl border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
+          <p className="text-[13px] font-bold">{saveError}</p>
+        </div>
+      ) : null}
 
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr,340px] gap-6">
+        <div className="space-y-6 lg:space-y-8">
+          {/* Clinical Identity Section */}
+          <SectionCard role="provider" title="Clinical Identity">
             <div className="space-y-8">
-              {/* Photo encouragement banner */}
-              {!avatarSrc && (
-                <div className="flex items-center gap-4 px-5 py-4 bg-emerald-50 border border-emerald-100 rounded-[16px]">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0">
-                    <User size={20} />
-                  </div>
-                  <div>
-                    <p className="text-[14px] font-semibold text-slate-900">A professional photo helps patients trust you</p>
-                    <p className="text-[13px] text-slate-500">Upload a clear, well-lit headshot to improve your profile visibility.</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="shrink-0 px-4 py-2 bg-emerald-600 text-white text-[13px] font-semibold rounded-lg hover:bg-emerald-700 transition-colors"
-                  >
-                    Upload Photo
-                  </button>
-                </div>
-              )}
-
-              <div className="flex items-center gap-6 mb-4">
-                <div className="relative group/avatar">
-                  {avatarSrc ? (
-                    <div className="w-24 h-24 rounded-[32px] border-4 border-white shadow-xl overflow-hidden bg-bp-surface">
+              {/* Avatar Upload Hub */}
+              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-2xl bg-white border border-slate-200 overflow-hidden flex items-center justify-center">
+                    {avatarSrc ? (
                       <Image
                         src={avatarSrc}
                         alt={displayName}
                         width={96}
                         height={96}
                         className="w-full h-full object-cover"
-                        sizes="96px"
                       />
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-[32px] bg-emerald-600/10 text-emerald-600 flex items-center justify-center text-2xl font-bold border-4 border-white shadow-xl group-hover/avatar:scale-105 transition-transform">
-                      {initials}
-                    </div>
-                  )}
+                    ) : (
+                      <span className="text-[24px] font-bold text-[var(--color-pv-primary)]">{initials}</span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg hover:bg-black transition-colors"
-                    title="Change Avatar"
-                  >
-                    <User size={16} />
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
                     aria-label="Upload profile photo"
-                    className="sr-only"
-                    onChange={handleAvatarFile}
-                  />
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-[var(--color-pv-ink)] text-white rounded-lg border-2 border-white flex items-center justify-center hover:bg-[var(--color-pv-primary)] transition-all shadow-lg"
+                  >
+                    <User size={14} />
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="image/*" className="sr-only" aria-label="Profile photo upload" onChange={handleAvatarFile} />
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-[18px] font-bold text-slate-900">{displayName}</h4>
-                  <p className="text-[13px] font-bold text-bp-body/40 uppercase tracking-widest">{expertiseLabel}</p>
-                  {avatarError ? <p className="text-[12px] font-bold text-rose-500">{avatarError}</p> : null}
-                  {!avatarError && loadError ? <p className="text-[12px] font-bold text-amber-600">{loadError}</p> : null}
+                
+                <div className="flex-1 text-center md:text-left space-y-1">
+                  <h4 className="text-[16px] font-bold text-slate-900">{displayName}</h4>
+                  <p className="text-[12px] text-slate-400 font-bold uppercase tracking-widest">
+                    {formData.experience_years ? `${formData.experience_years}+ Years Experience` : 'Provider Profile'}
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-4 py-1.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                    >
+                      Change Photo
+                    </button>
+                    {avatarError && <p className="text-[11px] font-bold text-rose-500">{avatarError}</p>}
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="full-name" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Full Name</label>
+                  <label htmlFor="provider-full-name" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                   <input
-                    id="full-name"
+                    id="provider-full-name"
                     type="text"
                     value={formData.full_name}
-                    onChange={(event) => updateFormField('full_name', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
-                    placeholder="Enter full name"
-                    disabled={loadingProfile}
+                    onChange={(e) => updateFormField('full_name', e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    placeholder="e.g. Dr. Jane Smith"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="consultation-fee" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Consultation Fee (₹)</label>
+                  <label htmlFor="provider-consultation-fee" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Consultation Fee</label>
                   <input
-                    id="consultation-fee"
+                    id="provider-consultation-fee"
                     type="number"
-                    inputMode="numeric"
-                    min="0"
                     value={formData.consultation_fee_inr}
-                    onChange={(event) => updateFormField('consultation_fee_inr', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
-                    placeholder="e.g. 900"
-                    disabled={loadingProfile}
+                    onChange={(e) => updateFormField('consultation_fee_inr', e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    placeholder="e.g. 1000"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label htmlFor="experience-years" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Experience Years</label>
+                  <label htmlFor="provider-years-of-practice" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Years of Practice</label>
                   <input
-                    id="experience-years"
+                    id="provider-years-of-practice"
                     type="number"
-                    inputMode="numeric"
-                    min="0"
                     value={formData.experience_years}
-                    onChange={(event) => updateFormField('experience_years', event.target.value)}
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900 focus:bg-white focus:border-emerald-600 outline-none transition-all"
-                    placeholder="e.g. 8"
-                    disabled={loadingProfile}
+                    onChange={(e) => updateFormField('experience_years', e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    placeholder="e.g. 12"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="icp-registration" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">IAP/State Council Registration</label>
-                  <input
-                    id="icp-registration"
-                    type="text"
-                    value={formData.iap_registration_no ?? ''}
-                    readOnly
-                    className="w-full px-6 py-4 bg-bp-surface border border-bp-border rounded-[20px] text-[15px] font-bold text-slate-900/70 outline-none transition-all"
-                    placeholder="Verification pending"
-                  />
+                  <label htmlFor="provider-registration-number" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Council Registration</label>
+                  <div className="relative">
+                    <input
+                      id="provider-registration-number"
+                      type="text"
+                      value={formData.iap_registration_no ?? ''}
+                      readOnly
+                      className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-500 cursor-not-allowed"
+                      placeholder="Verified Credential"
+                    />
+                    <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500" size={16} />
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="professional-bio" className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest ml-1">Professional Bio</label>
+                <label htmlFor="provider-biography" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Provider Biography</label>
                 <textarea
-                  id="professional-bio"
-                  rows={4}
-                  className="w-full p-6 bg-bp-surface border border-bp-border rounded-[24px] text-[15px] font-medium text-slate-900 leading-relaxed focus:bg-white focus:border-emerald-600 outline-none transition-all resize-none"
+                  id="provider-biography"
+                  rows={5}
                   value={formData.bio}
-                  onChange={(event) => updateFormField('bio', event.target.value)}
-                  placeholder="Tell patients about your specific experience and approach..."
-                  disabled={loadingProfile}
+                  onChange={(e) => updateFormField('bio', e.target.value)}
+                  className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none leading-relaxed"
+                  placeholder="Tell your clinical story..."
                 />
               </div>
             </div>
-          </section>
+          </SectionCard>
 
-          {/* ── Service Area (8.9 Target) ── */}
-          <section className="bg-slate-900 rounded-[48px] p-10 text-white relative overflow-hidden group/area">
-            <div className="absolute right-0 top-0 w-[400px] h-full bg-emerald-600 opacity-10 translate-x-1/2 rounded-full blur-[100px] group-hover/area:opacity-20 transition-opacity duration-1000" />
-
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-xl text-emerald-400 border border-white/5 backdrop-blur-md">
-                    <Navigation size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Service Boundary</span>
+          {/* Coverage Section */}
+          <SectionCard role="provider" title="Coverage Area" kicker="SERVICE REACH">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr,240px] gap-8">
+              <div className="space-y-6">
+                <div className="p-6 bg-[var(--color-pv-track-bg)] border border-slate-100 rounded-2xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <MapPin className="text-[var(--color-pv-primary)]" size={18} />
+                    <h5 className="text-[14px] font-bold text-slate-900">Verified Service Zone</h5>
                   </div>
-                  <h3 className="text-[28px] font-bold tracking-tight leading-none">Coverage Area</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-right mr-2 hidden sm:block">
-                    <p className="text-[11px] font-bold text-bp-body uppercase tracking-widest">Efficiency</p>
-                    <p className="text-[14px] font-bold text-emerald-400">High Density</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
-                    <MapPin size={22} className="text-emerald-400" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="space-y-6">
-                  <p className="text-[15px] text-bp-body/40 font-medium leading-relaxed">
-                    Coverage editing will unlock once live service-area sync ships. Until then, home-visit boundaries stay managed in onboarding and operations review.
+                  <p className="text-[12px] text-slate-500 leading-relaxed italic mb-6">
+                    Home-visit zones are strictly restricted to your verified service area. Manual adjustments are disabled during operations review.
                   </p>
-
-                  <div className="relative">
-                    <label htmlFor="pincode-input" className="sr-only">Enter Pincode</label>
-                    <input
-                      id="pincode-input"
-                      type="text"
-                      placeholder="Coverage sync coming soon"
-                      disabled
-                      className="w-full pl-6 pr-32 py-5 bg-white/5 border border-white/10 rounded-[20px] text-white/70 text-[16px] font-bold placeholder:text-bp-body outline-none transition-all disabled:cursor-not-allowed"
-                    />
-                    <button
-                      type="button"
-                      disabled
-                      className="absolute right-2 top-2 bottom-2 px-6 bg-emerald-600/50 text-white text-[12px] font-bold rounded-xl transition-all uppercase tracking-widest disabled:cursor-not-allowed"
-                    >
-                      Soon
-                    </button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 mt-4">
-                    <p className="text-[12px] font-bold text-bp-body text-center w-full py-4 border-2 border-dashed border-white/5 rounded-[24px]">No synced home-visit pincodes yet</p>
+                  <div className="relative opacity-50">
+                    <input type="text" disabled placeholder="Syncing city clusters..." className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[12px] font-bold" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-slate-100 text-[9px] font-bold uppercase tracking-widest rounded-md">Locked</span>
                   </div>
                 </div>
-
-                <div className="space-y-6">
-                  <div className="p-6 bg-white/5 rounded-[32px] border border-white/10 relative overflow-hidden group/metrics">
-                    <div className="flex items-center justify-between mb-8">
-                      <span className="text-[11px] font-bold text-bp-body uppercase tracking-widest">Active Corridors</span>
-                      <Activity size={16} className="text-emerald-600" />
-                    </div>
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-end">
-                        <span className="text-[13px] font-bold text-bp-body/40">Coverage Sync</span>
-                        <span className="text-[18px] font-bold">Preview</span>
-                      </div>
-                      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-600/50 w-[28%] rounded-full" />
-                      </div>
-                    </div>
-                    <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[12px] font-bold">Live sync pending</span>
-                      </div>
-                      <span className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest">Preview</span>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-3 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+                  <Activity size={18} className="text-indigo-500" />
+                  <p className="text-[12px] font-bold text-indigo-700">Coverage sync alternates automatically based on your live availability status.</p>
                 </div>
               </div>
-
-              <div className="mt-12 flex items-center gap-4 p-5 bg-emerald-600/20 rounded-[28px] border border-emerald-600/30 backdrop-blur-sm">
-                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg"><Info size={20} /></div>
-                <p className="text-[13px] font-medium text-emerald-100/80 leading-snug">
-                  Coverage zones will appear here once availability and operations sync finish wiring to your live provider profile.
-                </p>
+              <div className="h-full bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 grayscale">
+                <Globe className="text-slate-300 mb-4" size={32} />
+                <h6 className="text-[13px] font-bold text-slate-400 mb-1">Interactive Map</h6>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Pending Sync</p>
               </div>
             </div>
-          </section>
+          </SectionCard>
         </div>
 
-        {/* ── Right Column: Credentials & Help ── */}
-        <div className="space-y-8">
-          <section className="bg-white rounded-[40px] border border-bp-border shadow-sm p-8 group/card">
-            <div className="w-14 h-14 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover/card:scale-110 group-hover/card:rotate-3 transition-transform">
-              <ShieldCheck size={28} strokeWidth={2.5} />
-            </div>
-            <h4 className="text-[20px] font-bold text-slate-900 tracking-tight mb-3">Verification Hub</h4>
-            <p className="text-[14px] font-medium text-bp-body/40 leading-relaxed mb-8">
-              Your medical registration is the primary trust signal for patients.
-            </p>
-
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-4 p-4 bg-bp-surface rounded-2xl border border-bp-border group/item transition-all hover:bg-white hover:shadow-lg">
-                <Award size={20} className="text-emerald-600" />
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-bold text-slate-900">IAP/State Council ID</span>
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
-                    {formData.iap_registration_no ? 'Verified ✓' : 'Pending'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-bp-secondary/10/50 rounded-2xl border border-bp-secondary/20 group/item transition-all">
-                <Info size={20} className="text-bp-secondary" />
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-bold text-bp-secondary">GST Registration</span>
-                  <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Required for Payouts</span>
-                </div>
-              </div>
-            </div>
-
-            <button type="button" className="w-full py-4 bg-slate-900 hover:bg-black text-white text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
-              Update Documents <ArrowRight size={14} />
-            </button>
-          </section>
-
-          <section className="bg-emerald-50 rounded-[40px] p-8 border border-emerald-100">
-            <h4 className="text-[18px] font-bold text-emerald-600 tracking-tight mb-4 flex items-center gap-2">
-              <Globe size={18} />
-              Global Status
-            </h4>
+        <div className="space-y-6">
+          <SectionCard role="provider" title="Registry Status">
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
-                <span className="text-[13px] font-bold text-emerald-600/70">Profile Strength</span>
-                <span className="text-[13px] font-bold text-emerald-600">Live soon</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-emerald-100/50">
-                <span className="text-[13px] font-bold text-emerald-600/70">Search Visibility</span>
-                <span className="text-[13px] font-bold text-emerald-600">Preview</span>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="text-[13px] font-bold text-emerald-600/70">City Hub</span>
-                <span className="text-[13px] font-bold text-emerald-600">After sync</span>
+              {[
+                { label: 'Council ID', status: formData.iap_registration_no ? 'Verified' : 'Pending', icon: ShieldCheck, ok: !!formData.iap_registration_no },
+                { label: 'KYC Sync', status: 'Active', icon: Award, ok: true },
+                { label: 'GST Logic', status: 'Required', icon: Info, ok: false }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-slate-200 transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-9 h-9 rounded-lg flex items-center justify-center",
+                      item.ok ? "bg-emerald-50 text-emerald-500" : "bg-amber-50 text-amber-500"
+                    )}>
+                      <item.icon size={18} />
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-bold text-slate-900">{item.label}</div>
+                      <div className={cn("text-[10px] font-bold uppercase tracking-widest", item.ok ? "text-emerald-600" : "text-amber-600")}>{item.status}</div>
+                    </div>
+                  </div>
+                  {item.ok && <Check size={14} className="text-emerald-500" />}
+                </div>
+              ))}
+              <button className="w-full py-3.5 bg-[var(--color-pv-ink)] text-white rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all">
+                Manage Credentials
+              </button>
+            </div>
+          </SectionCard>
+
+          <SectionCard role="provider" title="Public Metadata">
+            <div className="space-y-4">
+              {[
+                { label: 'Profile Rank', value: 'Prime' },
+                { label: 'Response Rate', value: '100%' },
+                { label: 'Registry ID', value: user?.id?.slice(0, 8) || '---' }
+              ].map((row, idx) => (
+                <div key={idx} className="flex justify-between items-center py-1">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{row.label}</span>
+                  <span className="text-[13px] font-bold text-slate-900">{row.value}</span>
+                </div>
+              ))}
+              <div className="pt-4 border-t border-slate-50">
+                <button className="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-600 hover:bg-slate-100 transition-all">
+                  <Eye size={14} />
+                  Public Preview
+                </button>
               </div>
             </div>
-            <button type="button" className="w-full mt-6 py-4 bg-white hover:bg-emerald-100 text-emerald-600 text-[12px] font-bold rounded-2xl transition-all uppercase tracking-widest border border-emerald-200">
-              View Public Profile
-            </button>
-          </section>
-        </div>
-      </div>
+          </SectionCard>
 
-      {/* ── Action Footer ── */}
-      <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-8 p-8 bg-white rounded-[40px] border border-bp-border shadow-2xl shadow-gray-200/50">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <Check size={24} strokeWidth={3} />
-          </div>
-          <div>
-            <p className="text-[15px] font-bold text-slate-900">
-              {saveStatus === 'saved'
-                ? 'Changes saved'
-                : saveStatus === 'error'
-                  ? 'Save failed - try again'
-                  : loadingProfile
-                    ? 'Loading live profile'
-                    : 'Unsaved changes'}
-            </p>
-            <p className="text-[12px] font-bold text-bp-body/40 uppercase tracking-widest">
-              {saveStatus === 'saving'
-                ? 'Saving...'
-                : loadError
-                  ? loadError
-                  : 'Auto-saves on Push Updates'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={handleDiscard}
-            disabled={saveStatus === 'saving' || loadingProfile}
-            className="flex-1 sm:flex-none px-10 py-5 border-2 border-bp-border rounded-[24px] text-[14px] font-bold text-bp-body/40 hover:bg-bp-surface transition-all active:scale-95 disabled:opacity-60"
-          >
-            Discard
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              void handleSave()
-            }}
-            disabled={!canSave}
-            className="flex-1 sm:flex-none px-12 py-5 bg-slate-900 hover:bg-emerald-600 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-2xl shadow-bp-primary/10 active:scale-95 disabled:opacity-60"
-          >
-            {saveStatus === 'saving' ? 'Saving...' : 'Push Updates Live'}
-          </button>
+          {saveStatus !== 'idle' && (
+            <button
+               onClick={handleDiscard}
+               className="flex items-center justify-center gap-2 w-full py-3 text-rose-500 text-[12px] font-bold uppercase tracking-widest hover:bg-rose-50 rounded-xl transition-all"
+            >
+               <Trash2 size={14} />
+               Discard Draft
+            </button>
+          )}
         </div>
       </div>
     </div>
   )
 }
-

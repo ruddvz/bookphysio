@@ -65,11 +65,21 @@ export default async function middleware(request: NextRequest) {
   }
 
   if (user && (isProviderRoute || isPatientRoute || isAdmin)) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('users')
       .select('role')
       .eq('id', user.id)
       .single()
+
+    if (profileError) {
+      console.error('[middleware] Failed to verify user role:', profileError)
+      return new NextResponse('Internal Server Error', {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      })
+    }
 
     const roleHomeUrl = new URL(resolvePostAuthRedirect(profile?.role, null), request.url)
 

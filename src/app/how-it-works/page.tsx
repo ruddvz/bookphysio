@@ -87,11 +87,11 @@ export default function HowItWorksPage() {
               How it works
             </div>
             <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
-              Book a physiotherapist <br className="hidden sm:inline" />
+              How to book a physiotherapist <br className="hidden sm:inline" />
               <span className="text-[#00766C]">online in India</span>
             </h1>
             <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[680px] mx-auto text-slate-600">
-              Four clear steps — no calls, no waiting, and no guesswork about who to trust.
+              Book a physio session in 4 clear steps with no calls, no waiting, and no guesswork about who to trust.
             </p>
 
             {/* Tabs */}

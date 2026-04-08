@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
+import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -367,9 +368,9 @@ function Step1({ data, onChange, onNext }: Step1Props) {
           </div>
           <input
             type="tel"
-            value={data.phone}
-            maxLength={10}
-            onChange={(e) => onChange({ ...data, phone: e.target.value.replace(/\D/g, '') })}
+            value={formatIndianPhone(data.phone)}
+            maxLength={11}
+            onChange={(e) => onChange({ ...data, phone: stripPhoneFormat(e.target.value) })}
             placeholder="98765 43210"
             onFocus={() => setPhoneFocused(true)}
             onBlur={() => setPhoneFocused(false)}

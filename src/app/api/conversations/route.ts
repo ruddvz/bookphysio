@@ -8,6 +8,7 @@ import type { UserProfile } from '@/app/api/contracts/user'
 import type { Message } from '@/app/api/contracts/message'
 
 type MessagingRole = 'patient' | 'provider'
+const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
 
 type ConversationRow = {
   id: string
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
         conversations: conversations.slice(offset, offset + limit),
         total: conversations.length,
       },
-      { status: 200 }
+      { status: 200, headers: NO_STORE_HEADERS }
     )
   }
 
@@ -120,7 +121,7 @@ export async function GET(request: NextRequest) {
   const allConversations = (conversations ?? []) as ConversationRow[]
 
   if (allConversations.length === 0) {
-    return NextResponse.json({ conversations: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ conversations: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   const relationshipLookupField = currentRole === 'patient' ? 'provider_id' : 'patient_id'
@@ -142,7 +143,7 @@ export async function GET(request: NextRequest) {
   )
 
   if (allowedParticipantIds.size === 0) {
-    return NextResponse.json({ conversations: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ conversations: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   const allowedConversations = allConversations.filter((conversation) => (
@@ -150,7 +151,7 @@ export async function GET(request: NextRequest) {
   ))
 
   if (allowedConversations.length === 0) {
-    return NextResponse.json({ conversations: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ conversations: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   const otherParticipantIds = uniqueValues(
@@ -180,7 +181,7 @@ export async function GET(request: NextRequest) {
   const pagedConversations = visibleConversations.slice(offset, offset + limit)
 
   if (pagedConversations.length === 0) {
-    return NextResponse.json({ conversations: [], total }, { status: 200 })
+    return NextResponse.json({ conversations: [], total }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   const conversationIds = pagedConversations.map((conversation) => conversation.id)
@@ -248,6 +249,6 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     { conversations: enrichedConversations, total },
-    { status: 200 }
+    { status: 200, headers: NO_STORE_HEADERS }
   )
 }

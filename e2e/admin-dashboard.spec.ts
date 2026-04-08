@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
+import { loginAsDemoRole } from './helpers/demo-session'
 
 test.describe('Admin Dashboard Flow', () => {
-  test('admin can view platform overview metrics', async ({ page }) => {
+  test('admin can view platform overview metrics', async ({ page }, testInfo) => {
     // Mock the stats API so the test is independent of real data
-    await page.route('/api/admin/stats', async route => {
+    await page.route('**/api/admin/stats**', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -16,6 +17,7 @@ test.describe('Admin Dashboard Flow', () => {
       })
     })
 
+    await loginAsDemoRole(page, testInfo, 'admin', '/admin')
     await page.goto('/admin')
 
     // Check header
@@ -25,20 +27,16 @@ test.describe('Admin Dashboard Flow', () => {
     await expect(page.locator('text=Active Providers')).toBeVisible()
     await expect(page.locator('text=Pending Approvals')).toBeVisible()
     await expect(page.locator('text=Total Patients')).toBeVisible()
-    await expect(page.locator('text=GMV (MTD)')).toBeVisible()
+    await expect(page.locator('text=GMV (Lifetime)')).toBeVisible()
 
     // Check mocked values render correctly
-    await expect(page.locator('text=1,204')).toBeVisible()
-    await expect(page.locator('text=342')).toBeVisible()
-    await expect(page.locator('text=8,921')).toBeVisible()
-    await expect(page.locator('text=₹12.4L')).toBeVisible()
+    await expect(page.getByText('1204', { exact: true })).toBeVisible()
+    await expect(page.getByText(/342 providers/i)).toBeVisible()
+    await expect(page.locator('a[href="/admin/users"] div').filter({ hasText: '8,921' }).first()).toBeVisible()
+    await expect(page.locator('a[href="/admin/analytics"] div').filter({ hasText: '₹12.4L' }).first()).toBeVisible()
 
-    // Check chart placeholders
-    await expect(page.locator('text=Bookings Growth')).toBeVisible()
-    await expect(page.locator('text=Top Specialties')).toBeVisible()
-
-    // Check View Report button exists
-    const viewReportBtn = page.getByRole('button', { name: /View Report/i })
-    await expect(viewReportBtn).toBeVisible()
+    await expect(page.locator('text=Verification Queue')).toBeVisible()
+    await expect(page.locator('text=Admin Actions')).toBeVisible()
+    await expect(page.getByRole('link', { name: /Review approvals/i })).toBeVisible()
   })
 })

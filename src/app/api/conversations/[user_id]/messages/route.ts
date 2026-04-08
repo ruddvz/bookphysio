@@ -5,6 +5,8 @@ import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import { hasMessagingCareRelationship, type SupabaseAdminLike } from '@/lib/messaging/access'
 import { getMessagesSchema } from '@/lib/validations/message'
 
+const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ user_id: string }> }
@@ -30,7 +32,7 @@ export async function GET(
     }
 
     markDemoConversationRead(demoSession.sessionId, demoSession.userId, user_id)
-    return NextResponse.json(getDemoMessages(demoSession.sessionId, demoSession.userId, user_id, limit, offset), { status: 200 })
+    return NextResponse.json(getDemoMessages(demoSession.sessionId, demoSession.userId, user_id, limit, offset), { status: 200, headers: NO_STORE_HEADERS })
   }
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -62,7 +64,7 @@ export async function GET(
     .single()
 
   if (!targetUser || targetUser.role === 'admin' || targetUser.role === profile?.role) {
-    return NextResponse.json({ messages: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ messages: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   let hasCareRelationship = false
@@ -94,7 +96,7 @@ export async function GET(
 
   // If no conversation exists, return empty array (don't create yet)
   if (convError && convError.code === 'PGRST116') {
-    return NextResponse.json({ messages: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ messages: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
   if (convError) {
     console.error('[api/conversations/messages] Conversation fetch error:', convError)
@@ -102,7 +104,7 @@ export async function GET(
   }
 
   if (!conversation) {
-    return NextResponse.json({ messages: [], total: 0 }, { status: 200 })
+    return NextResponse.json({ messages: [], total: 0 }, { status: 200, headers: NO_STORE_HEADERS })
   }
 
   // Fetch messages in conversation
@@ -133,5 +135,5 @@ export async function GET(
     // Don't fail the request if marking as read fails
   }
 
-  return NextResponse.json({ messages, total: count || 0 }, { status: 200 })
+  return NextResponse.json({ messages, total: count || 0 }, { status: 200, headers: NO_STORE_HEADERS })
 }

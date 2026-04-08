@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ProviderEarnings from './page'
@@ -89,14 +89,6 @@ function renderWithQueryClient() {
   )
 }
 
-function getBillPreview() {
-  const previewRoot = screen.getByText(/Dr Priya Iyer/i).closest('.print-bill')
-
-  expect(previewRoot).not.toBeNull()
-
-  return within(previewRoot as HTMLElement)
-}
-
 describe('ProviderEarnings', () => {
   beforeEach(() => {
     vi.spyOn(window, 'print').mockImplementation(() => {})
@@ -168,12 +160,12 @@ describe('ProviderEarnings', () => {
     renderWithQueryClient()
 
     expect(await screen.findByText(/Revenue Growth/i)).toBeInTheDocument()
-    expect(screen.getByText(/Interactive charts coming soon/i)).toBeInTheDocument()
+    expect(screen.getByText(/Interactive charts will be activated after 10 confirmed sessions/i)).toBeInTheDocument()
   })
 
   it('links to the bill generator page', async () => {
     renderWithQueryClient()
-    const link = await screen.findByRole('link', { name: /generate bill/i })
+    const link = await screen.findByRole('link', { name: /issue invoice/i })
     expect(link).toHaveAttribute('href', '/provider/bills/new')
   })
 })

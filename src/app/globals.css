@@ -77,6 +77,93 @@
   --color-bp-accent:        #39D0B8;
   --color-bp-secondary:     #FF9A9A;
   --color-bp-accent-rgb:    57 208 184;
+
+  /* ────────────────────────────────────────────────────────── */
+  /*  ROLE PALETTES — distinct themes per dashboard             */
+  /* ────────────────────────────────────────────────────────── */
+
+  /* Patient — "Mint Breeze" (calm wellness pastel)            */
+  --color-pt-primary:       #2BA78D;  /* Deeper mint for contrast */
+  --color-pt-primary-hover: #248F78;
+  --color-pt-ink:           #1F2A37;  /* Softer than pure black */
+  --color-pt-body:          #54616C;
+  --color-pt-muted:         #8E9AA4;
+  --color-pt-surface:       #F4FBF8;  /* Minty cream bg */
+  --color-pt-card:          #FFFFFF;
+  --color-pt-border:        #E0EFE8;
+  --color-pt-border-soft:   #EEF6F2;
+  --color-pt-active-bg:     #1F2A37;  /* Dark pill for active nav */
+  --color-pt-active-fg:     #FFFFFF;
+  --color-pt-track-bg:      #F4FBF8;
+  --color-pt-nav-bg:        #FFFFFF;
+  /* Stat tile pastels (bg / fg) */
+  --color-pt-tile-1-bg:     #DCF5EA;  /* mint  */
+  --color-pt-tile-1-fg:     #1F8E6F;
+  --color-pt-tile-2-bg:     #DFEEFB;  /* sky   */
+  --color-pt-tile-2-fg:     #2D6CB0;
+  --color-pt-tile-3-bg:     #FFE8D1;  /* peach */
+  --color-pt-tile-3-fg:     #B5621E;
+  --color-pt-tile-4-bg:     #FDE4F0;  /* pink  */
+  --color-pt-tile-4-fg:     #AD3D75;
+  --color-pt-tile-5-bg:     #EEE5FD;  /* lavender */
+  --color-pt-tile-5-fg:     #6241B3;
+  --color-pt-tile-6-bg:     #FFF4D1;  /* butter */
+  --color-pt-tile-6-fg:     #8B6A1A;
+
+  /* Provider — "Periwinkle Bloom" (professional pastel)       */
+  --color-pv-primary:       #6B7BF5;
+  --color-pv-primary-hover: #5363D7;
+  --color-pv-ink:           #1A1C29;
+  --color-pv-body:          #55586B;
+  --color-pv-muted:         #8F93A3;
+  --color-pv-surface:       #F7F8FC;
+  --color-pv-card:          #FFFFFF;
+  --color-pv-border:        #EEF0F5;
+  --color-pv-border-soft:   #F4F5FA;
+  --color-pv-active-bg:     #1A1C29;
+  --color-pv-active-fg:     #FFFFFF;
+  --color-pv-track-bg:      #F8F9FC;
+  --color-pv-nav-bg:        #FFFFFF;
+  --color-pv-tile-1-bg:     #E7EAFE;  /* periwinkle */
+  --color-pv-tile-1-fg:     #4654C7;
+  --color-pv-tile-2-bg:     #FFE3E9;  /* rose      */
+  --color-pv-tile-2-fg:     #B53A58;
+  --color-pv-tile-3-bg:     #FFEAD6;  /* peach     */
+  --color-pv-tile-3-fg:     #B5621E;
+  --color-pv-tile-4-bg:     #DDF3E4;  /* sage      */
+  --color-pv-tile-4-fg:     #2F7A4A;
+  --color-pv-tile-5-bg:     #F0E3FD;  /* lavender  */
+  --color-pv-tile-5-fg:     #6A3DAE;
+  --color-pv-tile-6-bg:     #DDF3F0;  /* teal      */
+  --color-pv-tile-6-fg:     #237267;
+
+  /* Admin — "Monochrome Noir" (sophisticated editorial)       */
+  --color-ad-primary:       #0A0A0A;  /* Near-black */
+  --color-ad-primary-hover: #27272A;
+  --color-ad-ink:           #0A0A0A;
+  --color-ad-body:          #52525B;
+  --color-ad-muted:         #A1A1AA;
+  --color-ad-surface:       #F6F6F7;  /* Warm white */
+  --color-ad-card:          #FFFFFF;
+  --color-ad-border:        #E5E5E7;
+  --color-ad-border-soft:   #F0F0F2;
+  --color-ad-active-bg:     #0A0A0A;
+  --color-ad-active-fg:     #FFFFFF;
+  --color-ad-track-bg:      #F1F1F2;
+  --color-ad-nav-bg:        #FFFFFF;
+  /* Grayscale stat tiles with one warm accent for warnings    */
+  --color-ad-tile-1-bg:     #F4F4F5;
+  --color-ad-tile-1-fg:     #18181B;
+  --color-ad-tile-2-bg:     #E8E8EB;
+  --color-ad-tile-2-fg:     #27272A;
+  --color-ad-tile-3-bg:     #FAFAFA;
+  --color-ad-tile-3-fg:     #3F3F46;
+  --color-ad-tile-4-bg:     #FAF5E9;  /* warm sand for warnings */
+  --color-ad-tile-4-fg:     #8B6A1A;
+  --color-ad-tile-5-bg:     #EEEEF0;
+  --color-ad-tile-5-fg:     #1F1F23;
+  --color-ad-tile-6-bg:     #F6F6F7;
+  --color-ad-tile-6-fg:     #2B2B30;
 }
 
 :root {

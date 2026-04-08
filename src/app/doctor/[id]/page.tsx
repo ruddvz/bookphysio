@@ -4,10 +4,11 @@ import BookingCard from './BookingCard'
 import ClinicGallery from './ClinicGallery'
 import RecoveryBundles from './RecoveryBundles'
 import MobileBookingBar from './MobileBookingBar'
-import { GraduationCap, Star, ChevronRight, Award, CheckCircle2, Clock, Sparkles, Building2, UserCheck, Activity, Mail } from 'lucide-react'
+import { GraduationCap, Star, ChevronRight, Award, CheckCircle2, Clock, Sparkles, Building2, Activity, Mail } from 'lucide-react'
 import type { ProviderProfile, ProviderReview } from '@/app/api/contracts/provider'
 import Link from 'next/link'
 import Image from 'next/image'
+import { notFound } from 'next/navigation'
 import { formatIndiaDate } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import { getVisitTypeConsultationFee, isVisitType, type VisitType } from '@/lib/booking/policy'
@@ -20,16 +21,35 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
 // Data fetching
 // ---------------------------------------------------------------------------
 
-async function fetchProvider(id: string): Promise<ProviderProfile | null> {
+type FetchProviderResult =
+  | { status: 'missing' }
+  | { status: 'unavailable' }
+  | { status: 'found'; provider: ProviderProfile }
+
+async function fetchProvider(id: string): Promise<FetchProviderResult> {
+  if (id === 'placeholder') {
+    return { status: 'missing' }
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   try {
-    const res = await fetch(`${baseUrl}/api/providers/${id}`, { 
-      next: { revalidate: 3600 } // Cache for 1 hour to keep medical profiles fast
+    const res = await fetch(`${baseUrl}/api/providers/${id}`, {
+      cache: 'no-store',
     })
-    if (!res.ok) return null
-    return await res.json() as ProviderProfile
+    if (res.status === 404) {
+      return { status: 'missing' }
+    }
+
+    if (!res.ok) {
+      return { status: 'unavailable' }
+    }
+
+    return {
+      status: 'found',
+      provider: await res.json() as ProviderProfile,
+    }
   } catch {
-    return null
+    return { status: 'unavailable' }
   }
 }
 
@@ -67,18 +87,18 @@ interface DoctorPageProps { params: Promise<{ id: string }> }
 
 export default async function DoctorPage({ params }: DoctorPageProps) {
   const { id } = await params
-  const provider = await fetchProvider(id)
+  const providerResult = await fetchProvider(id)
 
-  if (!provider) {
+  if (providerResult.status === 'unavailable') {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center gap-5 px-6">
-        <div className="w-14 h-14 bg-[#E6F4F3] rounded-full flex items-center justify-center text-[#00766C]">
-          <UserCheck size={28} />
+        <div className="w-14 h-14 bg-[#FFF4E8] rounded-full flex items-center justify-center text-[#FF6B35]">
+          <Activity size={28} />
         </div>
         <div className="text-center">
-          <h1 className="text-[22px] font-bold text-[#1A1C29] mb-1.5">Expert not found</h1>
+          <h1 className="text-[22px] font-bold text-[#1A1C29] mb-1.5">Expert profile unavailable</h1>
           <p className="text-[14px] text-slate-600 max-w-sm leading-relaxed">
-            We couldn&apos;t find the specialist you&apos;re looking for. Please try searching for another expert.
+            We couldn&apos;t load this expert right now. Please try again shortly or return to search.
           </p>
         </div>
         <Link
@@ -90,6 +110,12 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
       </div>
     )
   }
+
+  if (providerResult.status === 'missing') {
+    notFound()
+  }
+
+  const provider = providerResult.provider
 
   const nameWithTitle = provider.full_name.startsWith('Dr.')
     ? provider.full_name

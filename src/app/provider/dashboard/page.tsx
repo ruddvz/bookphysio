@@ -1,18 +1,45 @@
-'use client'
+"use client"
 
+import { useEffect } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Calendar, Clock, ArrowRight, ArrowUpRight, BarChart3, Users,
-  MessageSquare, CalendarPlus, FileText, UserPlus, IndianRupee,
+  Calendar,
+  Users,
+  TrendingUp,
+  CalendarPlus,
+  UserPlus,
+  Receipt,
+  Clock,
+  ArrowRight,
+  Zap,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { dateKey } from '@/app/provider/calendar/calendar-utils'
+import { formatIndiaDate, formatIndiaDateInput, parseIndiaDate } from '@/lib/india-date'
+import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
 import type { ScheduleEntry } from '@/lib/clinical/types'
+import {
+  PageHeader,
+  StatTile,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
+import {
+  countRemainingVisitsToday,
+  filterScheduleEntriesThisWeek,
+  getNextScheduledVisit,
+  sumScheduledFees,
+} from './provider-dashboard-utils'
 
 interface PatientRosterResponse {
-  patients: Array<{ profile_id: string; patient_name: string; visit_count: number; last_visit_date: string | null }>
+  patients: Array<{
+    profile_id: string
+    patient_name: string
+    visit_count: number
+    last_visit_date: string | null
+  }>
 }
 
 function fmtTime(t: string): string {
@@ -23,12 +50,43 @@ function fmtTime(t: string): string {
   return `${h12}:${mm} ${ampm}`
 }
 
+function fmtToday(d: Date): string {
+  return d.toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000
+const SCHEDULE_LOOKAHEAD_DAYS = 30
+
+function formatVisitDay(visitDate: string): string {
+  return formatIndiaDate(visitDate, { day: 'numeric', month: 'short' })
+}
+
+function formatNextVisitLabel(entry: ScheduleEntry, todayKey: string): string {
+  return entry.visit_date === todayKey
+    ? `Today at ${fmtTime(entry.visit_time)}`
+    : `${formatVisitDay(entry.visit_date)} at ${fmtTime(entry.visit_time)}`
+}
+
+function formatNextSlotValue(entry: ScheduleEntry, todayKey: string): string {
+  return entry.visit_date === todayKey
+    ? fmtTime(entry.visit_time)
+    : `${formatVisitDay(entry.visit_date)} ${fmtTime(entry.visit_time)}`
+}
+
 function DashboardSkeleton() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
       <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
-      <div className="grid grid-cols-3 gap-4">
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />)}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+        ))}
       </div>
       <Skeleton className="h-80 rounded-2xl bg-slate-100" />
     </div>
@@ -37,244 +95,332 @@ function DashboardSkeleton() {
 
 export default function ProviderDashboardHome() {
   const { user } = useAuth()
-  const first = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Doctor'
+  const queryClient = useQueryClient()
+  const fullName = (user?.user_metadata?.full_name as string | undefined) ?? 'Practitioner'
+  const last = fullName.split(' ').slice(-1)[0] ?? fullName
+
+  const today = new Date()
+  const todayKey = formatIndiaDateInput(today)
+  const scheduleEnd = new Date(parseIndiaDate(todayKey).getTime() + (SCHEDULE_LOOKAHEAD_DAYS - 1) * DAY_IN_MS)
+  const scheduleEndKey = formatIndiaDateInput(scheduleEnd)
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  // Compute current week (Mon-Sun)
-  const today = new Date()
-  const todayKey = dateKey(today)
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
-  monday.setHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setDate(monday.getDate() + 6)
-  const startStr = dateKey(monday)
-  const endStr = dateKey(sunday)
-
-  const { data: scheduleData, isLoading: loadingSchedule } = useQuery({
-    queryKey: ['provider-schedule', startStr, endStr],
+  const {
+    data: scheduleData,
+    isLoading: loadingSchedule,
+    isError: hasScheduleError,
+    error: scheduleError,
+  } = useQuery({
+    queryKey: ['provider-schedule', todayKey, scheduleEndKey],
     queryFn: async () => {
-      const r = await fetch(`/api/provider/schedule?start=${startStr}&end=${endStr}`)
-      if (!r.ok) throw new Error('schedule')
+      const r = await fetch(`/api/provider/schedule?start=${todayKey}&end=${scheduleEndKey}`)
+      if (!r.ok) throw new DashboardQueryError('provider-schedule', r.status)
       return r.json() as Promise<{ entries: ScheduleEntry[] }>
     },
   })
 
-  const { data: rosterData, isLoading: loadingRoster } = useQuery({
+  const {
+    data: rosterData,
+    isLoading: loadingRoster,
+    isError: hasRosterError,
+    error: rosterError,
+  } = useQuery({
     queryKey: ['provider-roster-summary'],
     queryFn: async () => {
-      const r = await fetch('/api/provider/patients')
-      if (!r.ok) throw new Error('roster')
+      const r = await fetch('/api/provider/patients?view=dashboard')
+      if (!r.ok) throw new DashboardQueryError('provider-roster-summary', r.status)
       return r.json() as Promise<PatientRosterResponse>
     },
   })
+
+  const hasScheduleAccessError = isDashboardAccessError(scheduleError)
+  const hasRosterAccessError = isDashboardAccessError(rosterError)
+
+  useEffect(() => {
+    if (hasScheduleAccessError) {
+      queryClient.removeQueries({ queryKey: ['provider-schedule'] })
+    }
+
+    if (hasRosterAccessError) {
+      queryClient.removeQueries({ queryKey: ['provider-roster-summary'], exact: true })
+    }
+  }, [hasRosterAccessError, hasScheduleAccessError, queryClient])
+
+  if (hasScheduleError || hasRosterError) {
+    return (
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+        <PageHeader
+          role="provider"
+          kicker="VIRTUAL CLINIC"
+          title={`${greeting}, Dr. ${last}`}
+          subtitle="Your clinic dashboard is temporarily unavailable."
+          action={{ label: 'Generate invoice', href: '/provider/bills/new', icon: Receipt }}
+        />
+
+        <SectionCard role="provider" title="Dashboard unavailable">
+          <EmptyState
+            role="provider"
+            icon={CalendarPlus}
+            title="We couldn't load your latest schedule"
+            description="Schedule or roster data is temporarily unavailable. Please refresh in a moment."
+          />
+        </SectionCard>
+      </div>
+    )
+  }
 
   if (loadingSchedule || loadingRoster) return <DashboardSkeleton />
 
   const entries = scheduleData?.entries ?? []
   const patients = rosterData?.patients ?? []
+  const thisWeekEntries = filterScheduleEntriesThisWeek(entries, today)
+  const todaysEntries = entries.filter((e) => e.visit_date === todayKey).sort((a, b) => a.visit_time.localeCompare(b.visit_time))
+  const nextVisit = getNextScheduledVisit(entries, today)
+  const remainingToday = countRemainingVisitsToday(entries, today)
+  const firstVisitPatients = patients.filter((patient) => patient.visit_count === 1).length
+  const scheduledFeesThisWeek = sumScheduledFees(thisWeekEntries)
+  const weekSessions = thisWeekEntries.length
+  const recentPatients = [...patients]
+    .sort((left, right) => {
+      if (!left.last_visit_date && !right.last_visit_date) {
+        return 0
+      }
 
-  const todaysEntries = entries
-    .filter((e) => e.visit_date === todayKey)
-    .sort((a, b) => a.visit_time.localeCompare(b.visit_time))
+      if (!left.last_visit_date) {
+        return 1
+      }
 
-  const todayEarnings = todaysEntries.reduce((s, e) => s + (e.fee_inr ?? 0), 0)
-  const weekEarnings = entries.reduce((s, e) => s + (e.fee_inr ?? 0), 0)
-  const recentPatients = patients.slice(0, 5)
+      if (!right.last_visit_date) {
+        return -1
+      }
 
-  const stats = [
-    {
-      label: "Today's visits",
-      value: String(todaysEntries.length),
-      sub: `₹${todayEarnings.toLocaleString('en-IN')} expected`,
-      icon: Calendar, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
-      href: '/provider/calendar',
-    },
-    {
-      label: 'This week',
-      value: String(entries.length),
-      sub: `₹${weekEarnings.toLocaleString('en-IN')} scheduled`,
-      icon: IndianRupee, iconBg: 'bg-amber-50', iconColor: 'text-amber-600',
-      href: '/provider/calendar',
-    },
-    {
-      label: 'Total patients',
-      value: String(patients.length),
-      sub: 'In your roster',
-      icon: Users, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
-      href: '/provider/patients',
-    },
-    {
-      label: 'Earnings',
-      value: 'View',
-      sub: 'Reports & bills',
-      icon: BarChart3, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
-      href: '/provider/earnings',
-    },
-  ]
+      return right.last_visit_date.localeCompare(left.last_visit_date)
+    })
+    .slice(0, 5)
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="provider"
+        kicker="VIRTUAL CLINIC"
+        title={`${greeting}, Dr. ${last}`}
+        subtitle={fmtToday(today)}
+        action={{ label: 'Generate invoice', href: '/provider/bills/new', icon: Receipt }}
+      />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
-            {greeting}, Dr. <span className="text-emerald-600">{first}</span>
-          </h1>
-          <p className="text-slate-500 text-[15px] mt-1">
-            {todaysEntries.length > 0
-              ? `You have ${todaysEntries.length} session${todaysEntries.length > 1 ? 's' : ''} scheduled today.`
-              : 'No sessions scheduled today.'}
-          </p>
-        </div>
-        <Link
-          href="/provider/calendar"
-          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold text-[14px] hover:bg-emerald-700 transition-colors shrink-0"
-        >
-          <CalendarPlus size={15} />
-          Open Schedule
-        </Link>
-      </div>
-
-      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(card => (
-          <Link
-            key={card.label}
-            href={card.href}
-            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-emerald-200 hover:shadow-md hover:-translate-y-0.5 transition-all"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
-                <card.icon size={18} className={card.iconColor} />
-              </div>
-              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-emerald-500 transition-colors" />
-            </div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
-            <div className="text-[24px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
-            <div className="text-[12px] text-slate-400">{card.sub}</div>
-          </Link>
-        ))}
+        <StatTile
+          role="provider"
+          icon={Calendar}
+          label="Today's visits"
+          value={todaysEntries.length}
+          tone={1}
+        />
+        <StatTile
+          role="provider"
+          icon={Clock}
+          label="Next slot"
+          value={nextVisit ? formatNextSlotValue(nextVisit, todayKey) : '—'}
+          tone={2}
+        />
+        <StatTile
+          role="provider"
+          icon={TrendingUp}
+          label="Scheduled fees"
+          value={`₹${scheduledFeesThisWeek.toLocaleString('en-IN')}`}
+          tone={3}
+        />
+        <StatTile
+          role="provider"
+          icon={UserPlus}
+          label="First visits"
+          value={firstVisitPatients}
+          tone={4}
+        />
       </div>
 
-      {/* Main 2-col */}
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr,340px] gap-6">
+        <div className="space-y-6">
+           <SectionCard role="provider" title="Next consult">
+             {nextVisit ? (
+               <div className="rounded-2xl border border-[var(--color-pv-border-soft)] bg-[var(--color-pv-track-bg)]/70 p-5 sm:p-6">
+                 <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                   <div className="space-y-4">
+                     <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pv-primary)] shadow-sm">
+                       Up next
+                     </div>
 
-        {/* Today's schedule */}
-        <div className="bg-white rounded-2xl border border-slate-200">
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-[17px] font-bold text-slate-900">Today&apos;s Schedule</h2>
-              <p className="text-[12px] text-slate-400">{today.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            </div>
-            <Link href="/provider/calendar" className="text-[13px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 group">
-              Full week
-              <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
+                     <div>
+                       <h3 className="text-[24px] font-black tracking-tight text-[var(--color-pv-ink)]">
+                         {nextVisit.patient_name}
+                       </h3>
+                       <p className="mt-2 text-[14px] font-medium text-slate-500">
+                         {formatNextVisitLabel(nextVisit, todayKey)}
+                       </p>
+                     </div>
 
-          <div className="divide-y divide-slate-50">
-            {todaysEntries.length === 0 ? (
-              <div className="py-12 text-center">
-                <Calendar size={28} className="text-slate-200 mx-auto mb-3" />
-                <p className="text-slate-400 text-[14px]">No sessions today.</p>
-                <Link href="/provider/calendar" className="text-emerald-600 text-[13px] font-semibold hover:underline mt-1 inline-block">
-                  Schedule a visit →
-                </Link>
-              </div>
-            ) : (
-              todaysEntries.map((e) => (
-                <div key={e.visit_id} className="flex items-center gap-5 px-6 py-4">
-                  <div className="shrink-0 text-center w-16">
-                    <div className="text-[15px] font-bold text-slate-900">{fmtTime(e.visit_time)}</div>
-                  </div>
-                  <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-[13px] shrink-0">
-                    {e.patient_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-900 text-[14px] truncate">{e.patient_name}</div>
-                    <div className="text-[12px] text-slate-400">Visit #{e.visit_number}</div>
-                  </div>
-                  {e.fee_inr != null && (
-                    <div className="text-[13px] font-bold text-slate-700 shrink-0">₹{e.fee_inr.toLocaleString('en-IN')}</div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
+                     <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium text-slate-500">
+                       <span className="rounded-full bg-white px-3 py-1 shadow-sm">
+                         Visit #{nextVisit.visit_number}
+                       </span>
+                       <span className="rounded-full bg-white px-3 py-1 shadow-sm">
+                         ₹{(nextVisit.fee_inr ?? 0).toLocaleString('en-IN')}
+                       </span>
+                       <span className="rounded-full bg-[var(--color-pv-border-soft)] px-3 py-1 font-semibold text-[var(--color-pv-primary)]">
+                         {nextVisit.visit_date === todayKey ? `${remainingToday} remaining today` : `${weekSessions} scheduled this week`}
+                       </span>
+                     </div>
+                   </div>
+
+                   <div className="flex flex-col gap-3 sm:min-w-[220px]">
+                     <Link
+                       href={`/provider/calendar?id=${nextVisit.visit_id}`}
+                       className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-pv-primary)] px-5 py-3 text-[13px] font-bold text-white shadow-md transition-opacity hover:opacity-90"
+                     >
+                       Open schedule
+                       <ArrowRight size={14} />
+                     </Link>
+                     <Link
+                       href="/provider/patients"
+                       className="inline-flex items-center justify-center rounded-full border border-[var(--color-pv-border)] bg-white px-5 py-3 text-[13px] font-bold text-[var(--color-pv-ink)] transition-colors hover:bg-[var(--color-pv-track-bg)]"
+                     >
+                       Open patient registry
+                     </Link>
+                   </div>
+                 </div>
+               </div>
+             ) : (
+               <EmptyState
+                 role="provider"
+                 icon={CalendarPlus}
+                 title="Clear schedule"
+                 description={`No consultations booked in the next ${SCHEDULE_LOOKAHEAD_DAYS} days.`}
+                 cta={{ label: 'Manage Availability', href: '/provider/availability' }}
+               />
+             )}
+           </SectionCard>
+
+           <SectionCard
+             role="provider"
+             title="Today's schedule"
+             action={{ label: 'Full schedule', href: '/provider/calendar' }}
+           >
+             {todaysEntries.length === 0 ? (
+               <EmptyState
+                 role="provider"
+                 icon={CalendarPlus}
+                 title="Nothing on the board"
+                 description="No consultations booked for today."
+                 cta={{ label: 'Manage Availability', href: '/provider/availability' }}
+               />
+             ) : (
+               <div>
+                 {todaysEntries.map((e) => (
+                   <ListRow
+                     key={e.visit_id}
+                     role="provider"
+                     icon={Clock}
+                     tone={1}
+                     primary={e.patient_name}
+                     secondary={`Visit #${e.visit_number} • ₹${(e.fee_inr ?? 0).toLocaleString('en-IN')}`}
+                     right={
+                        <div className="flex items-center gap-3">
+                           <span className="text-[13px] font-bold text-slate-900">{fmtTime(e.visit_time)}</span>
+                           {nextVisit?.visit_id === e.visit_id ? (
+                             <span className="rounded-full bg-[var(--color-pv-border-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--color-pv-primary)]">
+                               Next
+                             </span>
+                           ) : null}
+                           <ArrowRight size={14} className="text-slate-300" />
+                        </div>
+                     }
+                     href={`/provider/calendar?id=${e.visit_id}`}
+                   />
+                 ))}
+               </div>
+             )}
+           </SectionCard>
+
+           <SectionCard
+             role="provider"
+             title="Recent patients"
+             action={{ label: 'Registry roster', href: '/provider/patients' }}
+           >
+             {recentPatients.length === 0 ? (
+               <EmptyState
+                 role="provider"
+                 icon={Users}
+                 title="Vacant registry"
+                 description="Your patient list will grow as consultations are logged."
+               />
+             ) : (
+               <div>
+                 {recentPatients.map((p) => (
+                   <ListRow
+                     key={p.profile_id}
+                     role="provider"
+                     icon={Users}
+                     tone={4}
+                     primary={p.patient_name}
+                     secondary={`${p.visit_count} visit${p.visit_count === 1 ? '' : 's'} recorded`}
+                     right={
+                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                         {p.last_visit_date ? formatIndiaDate(p.last_visit_date, { day: 'numeric', month: 'short' }) : '—'}
+                       </span>
+                     }
+                     href={`/provider/patients/${p.profile_id}`}
+                   />
+                 ))}
+               </div>
+             )}
+           </SectionCard>
         </div>
 
-        {/* Right rail */}
-        <div className="space-y-5">
-
-          {/* Recent patients */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-slate-900 text-[15px]">Recent Patients</h3>
-              <Link href="/provider/patients" className="text-[12px] text-emerald-600 font-semibold hover:underline">View all</Link>
-            </div>
-            {recentPatients.length === 0 ? (
-              <div className="py-6 text-center border border-dashed border-slate-200 rounded-xl">
-                <UserPlus size={20} className="text-slate-200 mx-auto mb-2" />
-                <p className="text-[12px] text-slate-400">No patients yet</p>
-                <Link href="/provider/patients" className="text-emerald-600 text-[12px] font-semibold hover:underline mt-1 inline-block">Add a patient →</Link>
-              </div>
-            ) : (
+        <aside className="space-y-6">
+           <SectionCard role="provider" title="Quick Actions">
               <div className="space-y-2">
-                {recentPatients.map((p) => (
-                  <Link
-                    key={p.profile_id}
-                    href={`/provider/patients/${p.profile_id}`}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-[12px] shrink-0">
-                      {p.patient_name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-semibold text-slate-900 truncate">{p.patient_name}</div>
-                      <div className="text-[11px] text-slate-400">{p.visit_count} visit{p.visit_count !== 1 ? 's' : ''}</div>
-                    </div>
-                    <ArrowRight size={13} className="text-slate-200 group-hover:text-emerald-500 transition-colors shrink-0" />
-                  </Link>
-                ))}
+                 {[
+                   { label: 'New invoice', href: '/provider/bills/new', icon: Receipt },
+                   { label: 'Block time', href: '/provider/availability', icon: Clock },
+                   { label: 'Open roster', href: '/provider/patients', icon: UserPlus },
+                   { label: 'AI Assistant', href: '/provider/ai-assistant', icon: Zap },
+                 ].map(({ label, href, icon: Icon }) => (
+                   <Link
+                     key={href}
+                     href={href}
+                     className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition-all group"
+                   >
+                     <Icon size={16} className="text-[var(--color-pv-primary)] group-hover:scale-110 transition-transform" />
+                     <span className="text-[13px] font-bold text-slate-600 group-hover:text-[var(--color-pv-ink)]">{label}</span>
+                   </Link>
+                 ))}
               </div>
-            )}
-          </div>
+           </SectionCard>
 
-          {/* Quick actions */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5">
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-4">Quick Actions</div>
-            <div className="space-y-2">
-              {[
-                { label: 'New visit',         href: '/provider/visits/new',  icon: FileText,      color: 'text-emerald-600' },
-                { label: 'Generate bill',     href: '/provider/bills/new',   icon: IndianRupee,   color: 'text-amber-600' },
-                { label: 'Patients',          href: '/provider/patients',    icon: Users,         color: 'text-violet-600' },
-                { label: 'Messages',          href: '/provider/messages',    icon: MessageSquare, color: 'text-blue-600' },
-              ].map(({ label, href, icon: Icon, color }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
-                >
-                  <Icon size={16} className={color} />
-                  <span className="text-[13px] font-medium text-slate-700 flex-1">{label}</span>
-                  <ArrowRight size={13} className="text-slate-200 group-hover:text-slate-400 transition-colors" />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Mini earnings */}
-          <Link href="/provider/earnings" className="block p-5 rounded-2xl bg-emerald-600 text-white relative overflow-hidden hover:bg-emerald-700 transition-colors">
-            <div className="text-[11px] font-bold uppercase tracking-widest text-emerald-100 mb-2">This Week</div>
-            <div className="text-[28px] font-extrabold leading-none mb-1">₹{weekEarnings.toLocaleString('en-IN')}</div>
-            <div className="text-[12px] text-emerald-100 flex items-center gap-1 mt-2">
-              <Clock size={12} /> {entries.length} visit{entries.length !== 1 ? 's' : ''} scheduled
-            </div>
-          </Link>
-        </div>
+              <SectionCard role="provider" title="Operational pulse">
+              <div className="space-y-4">
+                  <div className="flex items-center justify-between text-[13px]">
+                    <span className="text-slate-500">Patients tracked</span>
+                    <span className="font-bold text-[var(--color-pv-ink)]">{patients.length}</span>
+                 </div>
+                  <div className="flex items-center justify-between text-[13px]">
+                    <span className="text-slate-500">Week sessions</span>
+                    <span className="font-bold text-[var(--color-pv-ink)]">{weekSessions}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[13px]">
+                    <span className="text-slate-500">Remaining today</span>
+                    <span className="font-bold text-[var(--color-pv-ink)]">{remainingToday}</span>
+                  </div>
+                  <div className="rounded-2xl bg-[var(--color-pv-track-bg)] p-4 text-[12px] font-bold text-slate-600">
+                    Scheduled this week: ₹{scheduledFeesThisWeek.toLocaleString('en-IN')}
+                 </div>
+                 <Link href="/provider/earnings" className="w-full py-3.5 bg-[var(--color-pv-ink)] text-white text-[12px] font-black uppercase tracking-widest rounded-xl hover:bg-[var(--color-pv-primary)] transition-all flex items-center justify-center gap-2">
+                    Open Hub <ArrowRight size={14} />
+                 </Link>
+              </div>
+           </SectionCard>
+        </aside>
       </div>
     </div>
   )

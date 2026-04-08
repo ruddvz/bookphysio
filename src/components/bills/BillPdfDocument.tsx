@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import type { GenerateBillInput } from '@/lib/clinical/types'
 
 const TEAL = '#00766C'
@@ -22,6 +22,14 @@ const styles = StyleSheet.create({
     borderBottomColor: TEAL,
     paddingBottom: 10,
     marginBottom: 20,
+  },
+  brandBlock: {
+    justifyContent: 'flex-end',
+  },
+  brandLogo: {
+    width: 180,
+    height: 34,
+    marginBottom: 4,
   },
   brand: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: TEAL },
   brandSub: { fontSize: 9, color: MUTED, marginTop: 2 },
@@ -154,17 +162,21 @@ function formatDateLong(iso: string): string {
 
 interface BillPdfDocumentProps {
   bill: GenerateBillInput
+  logoSrc?: string | null
 }
 
-export function BillPdfDocument({ bill }: BillPdfDocumentProps) {
+export function BillPdfDocument({ bill, logoSrc = null }: BillPdfDocumentProps) {
   const totals = computeTotals(bill)
 
   return (
     <Document title={`BookPhysio Invoice ${bill.invoice_number}`} author="BookPhysio.in">
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <View>
-            <Text style={styles.brand}>BookPhysio</Text>
+          <View style={styles.brandBlock}>
+            {logoSrc ? (
+              /* eslint-disable-next-line jsx-a11y/alt-text */
+              <Image src={logoSrc} style={styles.brandLogo} />
+            ) : <Text style={styles.brand}>BookPhysio.in</Text>}
             <Text style={styles.brandSub}>Physiotherapy invoice</Text>
           </View>
           <Text style={styles.invoiceLabel}>INVOICE</Text>

@@ -51,10 +51,10 @@ export default function AdminAnalytics() {
 
   const kpis = data
     ? [
-        { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+12.5%' },
-        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-blue-600',    bg: 'bg-blue-50',    trend: '+8.2%'  },
-        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-blue-600',    bg: 'bg-blue-50',    trend: '+2.4%'  },
-        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-amber-600',   bg: 'bg-amber-50',   trend: '+5.1%'  },
+        { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-1-bg)]', trend: '+12.5%' },
+        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-2-bg)]', trend: '+8.2%'  },
+        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-5-bg)]', trend: '+2.4%'  },
+        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-[var(--color-ad-tile-4-fg)]',     bg: 'bg-[var(--color-ad-tile-4-bg)]', trend: '+5.1%'  },
       ]
     : []
 
@@ -73,7 +73,7 @@ export default function AdminAnalytics() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-ad-border)] bg-[var(--color-ad-tile-1-bg)] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[var(--color-ad-ink)]">
               <BarChart3 size={12} />
               Analytics
             </span>
@@ -92,7 +92,7 @@ export default function AdminAnalytics() {
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
-            <button type="button" className="px-4 py-2 text-[13px] font-semibold text-blue-600 bg-white rounded-lg shadow-sm">Real-time</button>
+            <button type="button" className="px-4 py-2 text-[13px] font-semibold text-[var(--color-ad-primary)] bg-white rounded-lg shadow-sm">Real-time</button>
             <button type="button" className="px-4 py-2 text-[13px] font-medium text-slate-500 hover:text-slate-700 transition-colors rounded-lg">Historical</button>
           </div>
           <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function AdminAnalytics() {
             <button type="button" title="Download" aria-label="Download" className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:shadow-md transition-all">
               <Download size={16} />
             </button>
-            <button type="button" title="Share" aria-label="Share" className="p-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all">
+            <button type="button" title="Share" aria-label="Share" className="p-2.5 rounded-xl bg-[var(--color-ad-primary)] text-white hover:bg-[var(--color-ad-primary-hover)] transition-all">
               <Share2 size={16} />
             </button>
           </div>
@@ -152,7 +152,7 @@ export default function AdminAnalytics() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-ad-primary)]" />
                   <span className="text-[11px] font-medium text-slate-400">Actual</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -176,8 +176,8 @@ export default function AdminAnalytics() {
             <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 350" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#2563eb" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#0A0A0A" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#0A0A0A" stopOpacity="0" />
                 </linearGradient>
                 <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
@@ -203,7 +203,7 @@ export default function AdminAnalytics() {
                 <path
                   d={chartLine}
                   fill="none"
-                  stroke="#2563eb"
+                  stroke="#0A0A0A"
                   strokeWidth="6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -215,8 +215,8 @@ export default function AdminAnalytics() {
               {/* Dots */}
               {chartDots.map((dot, i) => (
                 <g key={i} className="group/dot cursor-pointer">
-                  <circle cx={dot.x} cy={dot.y} r="5" fill="white" stroke="#2563eb" strokeWidth="2.5" />
-                  <circle cx={dot.x} cy={dot.y} r="12" fill="#2563eb" fillOpacity="0" className="group-hover/dot:fill-opacity-10 transition-all duration-300" />
+                  <circle cx={dot.x} cy={dot.y} r="5" fill="white" stroke="#0A0A0A" strokeWidth="2.5" />
+                  <circle cx={dot.x} cy={dot.y} r="12" fill="#0A0A0A" fillOpacity="0" className="group-hover/dot:fill-opacity-10 transition-all duration-300" />
                 </g>
               ))}
             </svg>
@@ -233,10 +233,10 @@ export default function AdminAnalytics() {
           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight mb-6">Acquisition</h2>
           <div className="flex-1 space-y-6">
             {[
-              { name: 'Organic Search', value: 65, color: 'bg-blue-600', change: '+12%' },
-              { name: 'Direct Traffic', value: 42, color: 'bg-emerald-500', change: '+5%' },
-              { name: 'Social Media', value: 28, color: 'bg-amber-500', change: '-2%' },
-              { name: 'Partner Refs', value: 15, color: 'bg-blue-400', change: '+24%' },
+              { name: 'Organic Search', value: 65, color: 'bg-[var(--color-ad-primary)]',                change: '+12%' },
+              { name: 'Direct Traffic', value: 42, color: 'bg-[var(--color-ad-tile-2-fg)]',              change: '+5%'  },
+              { name: 'Social Media',   value: 28, color: 'bg-[var(--color-ad-tile-4-fg)]',              change: '-2%'  },
+              { name: 'Partner Refs',   value: 15, color: 'bg-[var(--color-ad-tile-3-fg)]',              change: '+24%' },
             ].map(channel => (
               <div key={channel.name} className="space-y-2.5">
                 <div className="flex justify-between items-end">
@@ -257,7 +257,7 @@ export default function AdminAnalytics() {
               </div>
             ))}
           </div>
-          <button type="button" className="w-full py-3 mt-8 bg-slate-900 hover:bg-slate-800 text-white text-[13px] font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+          <button type="button" className="w-full py-3 mt-8 bg-[var(--color-ad-primary)] hover:bg-[var(--color-ad-primary-hover)] text-white text-[13px] font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
             Explore Growth Channels <ArrowUpRight size={14} />
           </button>
         </div>

@@ -1,15 +1,24 @@
 import { test, expect } from '@playwright/test'
+import { loginAsDemoRole } from './helpers/demo-session'
 
 test.describe('8.17 Empty States and Skeletons', () => {
   test('Search page shows empty state when no results match', async ({ page }) => {
+    await page.route('**/api/providers**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ providers: [], total: 0, page: 1, limit: 40 }),
+      })
+    })
+
     // Navigate to search with a query that should yield zero results
-    await page.goto('/search?specialty=UnicornPhysio')
+    await page.goto('/search?city=Mumbai&specialty=UnicornPhysio')
     
     // Check for EmptyState components
-    const emptyState = page.locator('h3:has-text("No exact matches found")')
+    const emptyState = page.getByText('No exact matches found')
     await expect(emptyState).toBeVisible()
 
-    const description = page.getByText(/We couldn't locate any verified physios matching your criteria/i)
+    const description = page.getByText(/matching your criteria in Mumbai/i)
     await expect(description).toBeVisible()
 
     const clearButton = page.getByRole('button', { name: /clear all filters/i })
@@ -30,7 +39,7 @@ test.describe('8.17 Empty States and Skeletons', () => {
     expect(isOnLogin || hasDashboardContent).toBe(true)
   })
 
-  test('Appointments page shows tab-specific empty state', async ({ page }) => {
+  test('Appointments page shows tab-specific empty state', async ({ page }, testInfo) => {
     await page.route('/api/appointments', async route => {
       await route.fulfill({
         status: 200,
@@ -39,10 +48,11 @@ test.describe('8.17 Empty States and Skeletons', () => {
       })
     })
 
+    await loginAsDemoRole(page, testInfo, 'patient', '/patient/appointments?tab=upcoming')
     await page.goto('/patient/appointments?tab=upcoming')
-    await expect(page.getByText(/No upcoming sessions found/i)).toBeVisible()
+    await expect(page.getByRole('heading', { name: /No upcoming appointments/i })).toBeVisible()
 
-    await page.click('button:has-text("past")')
-    await expect(page.getByText(/No past sessions found/i)).toBeVisible()
+    await page.getByRole('button', { name: /^past$/i }).click()
+    await expect(page.getByRole('heading', { name: /No past appointments/i })).toBeVisible()
   })
 })

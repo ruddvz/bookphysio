@@ -28,7 +28,7 @@ function setDemoSessionSuppressed(suppressed: boolean) {
     : `${DEMO_SESSION_SUPPRESSION_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax`
 }
 
-function persistDemoSession(session: Session) {
+export function persistDemoSession(session: Session) {
   setDemoSessionSuppressed(false)
 
   try {

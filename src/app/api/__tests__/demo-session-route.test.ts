@@ -19,9 +19,10 @@ describe('GET /api/auth/demo-session', () => {
     const { GET } = await import('../auth/demo-session/route')
     const cookiePayload = createDemoCookiePayload('patient')
     const demoCookie = await encodeDemoCookie(cookiePayload)
+    const previewToken = await createPreviewToken('preview-secret')
     const request = new NextRequest('http://localhost/api/auth/demo-session', {
       headers: {
-        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}`,
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}; preview_token=${previewToken}`,
       },
     })
 
@@ -32,6 +33,26 @@ describe('GET /api/auth/demo-session', () => {
     expect(response.headers.get('cache-control')).toBe('no-store')
     expect(body.session.expires_at).toBe(cookiePayload.expiresAt)
     expect(body.session.user.user_metadata.role).toBe('patient')
+  })
+
+  it('returns 204 in production when a signed demo cookie lacks preview authorization', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { GET } = await import('../auth/demo-session/route')
+    const cookiePayload = createDemoCookiePayload('patient')
+    const demoCookie = await encodeDemoCookie(cookiePayload)
+    const request = new NextRequest('http://localhost/api/auth/demo-session', {
+      headers: {
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}`,
+      },
+    })
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(204)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.text()).resolves.toBe('')
   })
 
   it('returns 204 when demo access has been explicitly suppressed', async () => {

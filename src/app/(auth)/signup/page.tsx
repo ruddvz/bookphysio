@@ -9,6 +9,7 @@ import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
+import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const signupSchema = z.object({
@@ -182,8 +183,8 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
                     ? "border-bp-accent bg-white shadow-2xl shadow-bp-primary/5 ring-4 ring-bp-accent/5" 
                     : "border-white/50 hover:border-white"
               )}
-              value={form.phone}
-              onChange={(e) => handleChange('phone', e.target.value.replace(/\D/g, ''))}
+              value={formatIndianPhone(form.phone)}
+              onChange={(e) => handleChange('phone', stripPhoneFormat(e.target.value))}
               onFocus={() => setPhoneFocused(true)}
               onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
             />

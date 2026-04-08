@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
@@ -10,6 +10,7 @@ import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
+import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 
@@ -33,9 +34,14 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   const [errors, setErrors] = useState<LoginErrors & { email?: string }>({})
   const [loading, setLoading] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
+  const phoneInputRef = useRef<HTMLInputElement>(null)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [signupHref, setSignupHref] = useState(localePath(locale ?? 'en', '/signup'))
   const [returnTo, setReturnTo] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (loginMode === 'phone') phoneInputRef.current?.focus()
+  }, [loginMode])
 
   useEffect(() => {
     const returnPath = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
@@ -46,7 +52,7 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   }, [locale])
 
   function handlePhoneChange(value: string) {
-    setPhone(value.replace(/\D/g, ''))
+    setPhone(stripPhoneFormat(value))
     if (errors.phone || errors.general) setErrors({})
   }
 
@@ -189,11 +195,12 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
                 +91
               </span>
               <input
+                ref={phoneInputRef}
                 id="phone"
                 type="tel"
                 placeholder="98765 43210"
-                maxLength={10}
-                value={phone}
+                maxLength={11}
+                value={formatIndianPhone(phone)}
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
@@ -246,8 +253,7 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
           )}
         </button>
       </form>
-      {/* Divider */}
-      <div className="mb-4">
+      <div className="mt-8 mb-4">
         <DemoAccessPanel />
       </div>
 

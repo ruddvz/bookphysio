@@ -1,26 +1,71 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Calendar, Users, Activity, MessageSquare, ArrowRight, ArrowUpRight,
-  CalendarPlus, Search, FileText, ShieldCheck, TrendingUp,
+  Calendar,
+  CalendarPlus,
+  Users,
+  Activity,
+  MessageSquare,
+  Search,
+  FileText,
+  User,
+  ArrowRight,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
+import {
+  PageHeader,
+  StatTile,
+  SectionCard,
+  ListRow,
+  EmptyState,
+  DashCard,
+} from '@/components/dashboard/primitives'
+import { formatIndiaDate } from '@/lib/india-date'
+import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
 import type { PatientFacingRecord } from '@/lib/clinical/types'
+import {
+  formatAppointmentDateTime,
+  getNextAppointment,
+  getPatientAppointmentProviderName,
+  getPatientAppointmentVisitLabel,
+} from './dashboard-utils'
+import type { AppointmentItem } from '../appointments/appointments-utils'
 
-function fmtDate(iso: string): string {
-  const d = new Date(iso)
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+function fmtShortDate(iso: string): string {
+  return formatIndiaDate(iso, { day: 'numeric', month: 'short' })
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours()
+  return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+}
+
+function isUpcomingAppointment(appointment: AppointmentItem): boolean {
+  const startsAt = appointment.availabilities?.starts_at
+
+  if (!startsAt) {
+    return false
+  }
+
+  if (appointment.status === 'cancelled' || appointment.status === 'completed' || appointment.status === 'no_show') {
+    return false
+  }
+
+  return Date.parse(startsAt) >= Date.now()
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
       <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
-      <div className="grid grid-cols-3 gap-4">
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />)}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+        ))}
       </div>
       <Skeleton className="h-80 rounded-2xl bg-slate-100" />
     </div>
@@ -29,220 +74,286 @@ function DashboardSkeleton() {
 
 export default function PatientDashboardHome() {
   const { user } = useAuth()
-  const first = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'there'
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const queryClient = useQueryClient()
+  const first =
+    (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ??
+    'there'
+  const greeting = getGreeting()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: hasRecordsError, error: recordsError } = useQuery({
     queryKey: ['patient-records'],
     queryFn: async () => {
-      const r = await fetch('/api/patient/records')
-      if (!r.ok) throw new Error('records')
+      const r = await fetch('/api/patient/records?view=dashboard')
+      if (!r.ok) throw new DashboardQueryError('patient-records', r.status)
       return r.json() as Promise<{ records: PatientFacingRecord[] }>
     },
   })
 
-  if (isLoading) return <DashboardSkeleton />
+  const {
+    data: appointmentData,
+    isLoading: areAppointmentsLoading,
+    isError: hasAppointmentsError,
+    error: appointmentsError,
+  } = useQuery({
+    queryKey: ['patient-appointments-dashboard'],
+    queryFn: async () => {
+      const response = await fetch('/api/appointments?view=dashboard')
+      if (!response.ok) throw new DashboardQueryError('patient-appointments-dashboard', response.status)
+      return response.json() as Promise<{ appointments: AppointmentItem[] }>
+    },
+  })
+
+  const hasRecordsAccessError = isDashboardAccessError(recordsError)
+  const hasAppointmentsAccessError = isDashboardAccessError(appointmentsError)
+
+  useEffect(() => {
+    if (hasRecordsAccessError) {
+      queryClient.removeQueries({ queryKey: ['patient-records'], exact: true })
+    }
+
+    if (hasAppointmentsAccessError) {
+      queryClient.removeQueries({ queryKey: ['patient-appointments-dashboard'], exact: true })
+    }
+  }, [hasAppointmentsAccessError, hasRecordsAccessError, queryClient])
+
+  if (hasRecordsError || hasAppointmentsError) {
+    return (
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+        <PageHeader
+          role="patient"
+          kicker="YOUR HEALTH"
+          title={`${greeting}, ${first}`}
+          subtitle="Your care dashboard is temporarily unavailable."
+          action={{ label: 'Find a physio', href: '/search' }}
+        />
+
+        <SectionCard role="patient" title="Dashboard unavailable">
+          <EmptyState
+            role="patient"
+            icon={Activity}
+            title="We couldn't load your latest care updates"
+            description="Appointments or visit summaries are temporarily unavailable. Please refresh in a moment."
+          />
+        </SectionCard>
+      </div>
+    )
+  }
+
+  if (isLoading || areAppointmentsLoading) return <DashboardSkeleton />
 
   const records = data?.records ?? []
+  const appointments = appointmentData?.appointments ?? []
   const recent = records.slice(0, 5)
   const uniqueProviders = new Set(records.map((r) => r.provider_name)).size
   const lastVisit = records[0] ?? null
-
-  const stats = [
-    {
-      label: 'Total visits',
-      value: String(records.length),
-      sub: 'Across all providers',
-      icon: TrendingUp, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
-      href: '/patient/records',
-    },
-    {
-      label: 'Care team',
-      value: String(uniqueProviders),
-      sub: uniqueProviders === 1 ? 'Provider' : 'Providers',
-      icon: Users, iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
-      href: '/patient/records',
-    },
-    {
-      label: 'Last visit',
-      value: lastVisit ? fmtDate(lastVisit.visit_date).split(',')[0] : '—',
-      sub: lastVisit?.provider_name ?? 'No visits yet',
-      icon: Calendar, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
-      href: '/patient/records',
-    },
-    {
-      label: 'Messages',
-      value: 'Chat',
-      sub: 'Talk to your care team',
-      icon: MessageSquare, iconBg: 'bg-blue-50', iconColor: 'text-blue-600',
-      href: '/patient/messages',
-    },
-  ]
+  const upcomingAppointments = appointments.filter(isUpcomingAppointment)
+  const upcomingCount = upcomingAppointments.length
+  const nextAppointment = getNextAppointment(appointments)
+  const latestSummaryCount = records.filter((record) => Boolean(record.patient_summary)).length
+  const latestSpecialty = nextAppointment?.providers?.specialties?.[0]?.name ?? null
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="patient"
+        kicker="YOUR HEALTH"
+        title={`${greeting}, ${first}`}
+        subtitle={nextAppointment ? 'Your next session is locked in and ready.' : "Here's your care at a glance"}
+        action={{ label: 'Find a physio', href: '/search' }}
+      />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-[11px] font-bold uppercase tracking-wider">
-              <ShieldCheck size={11} />
-              Patient
-            </span>
-          </div>
-          <h1 className="text-[28px] md:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
-            {greeting}, <span className="text-blue-600">{first}</span>
-          </h1>
-          <p className="text-slate-500 text-[15px] mt-1">
-            {records.length > 0
-              ? `You have ${records.length} visit${records.length > 1 ? 's' : ''} on record.`
-              : 'Welcome — book your first session to get started.'}
-          </p>
-        </div>
-        <div className="flex gap-3 shrink-0">
-          <Link
-            href="/search"
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-[14px] hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
-          >
-            <CalendarPlus size={15} />
-            Find a physio
-          </Link>
-          <Link
-            href="/patient/messages"
-            className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-blue-200 hover:text-blue-700 transition-colors"
-          >
-            <MessageSquare size={15} />
-            Messages
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
+      {/* Stat row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(card => (
-          <Link
-            key={card.label}
-            href={card.href}
-            className="group p-5 bg-white rounded-2xl border border-slate-200 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 transition-all"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-10 h-10 rounded-xl ${card.iconBg} flex items-center justify-center`}>
-                <card.icon size={18} className={card.iconColor} />
-              </div>
-              <ArrowUpRight size={15} className="text-slate-200 group-hover:text-blue-500 transition-colors" />
-            </div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">{card.label}</div>
-            <div className="text-[22px] font-bold text-slate-900 leading-none mb-1">{card.value}</div>
-            <div className="text-[12px] text-slate-400 truncate">{card.sub}</div>
-          </Link>
-        ))}
+        <StatTile
+          role="patient"
+          icon={CalendarPlus}
+          label="Upcoming visits"
+          value={upcomingCount}
+          tone={1}
+        />
+        <StatTile
+          role="patient"
+          icon={Users}
+          label="Care team"
+          value={uniqueProviders}
+          tone={2}
+        />
+        <StatTile
+          role="patient"
+          icon={FileText}
+          label="Visit summaries"
+          value={latestSummaryCount}
+          tone={3}
+        />
+        <StatTile
+          role="patient"
+          icon={Activity}
+          label="Last visit"
+          value={lastVisit ? fmtShortDate(lastVisit.visit_date) : '—'}
+          tone={4}
+        />
       </div>
 
-      {/* Main 2-col */}
-      <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+      {/* Main + rail */}
+      <div className="flex flex-col xl:flex-row gap-6">
+        <div className="flex-1 space-y-6">
+          <SectionCard role="patient" title="Upcoming appointment">
+            {nextAppointment ? (
+              <div className="rounded-2xl border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-5 sm:p-6">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pt-primary)] shadow-sm">
+                      {getPatientAppointmentVisitLabel(nextAppointment)}
+                    </div>
 
-        {/* Recent visits */}
-        <div className="bg-white rounded-2xl border border-slate-200">
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100">
-            <h2 className="text-[17px] font-bold text-slate-900">Recent Visits</h2>
-            <Link href="/patient/records" className="text-[13px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 group">
-              View all
-              <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
+                    <div>
+                      <h3 className="text-[24px] font-black tracking-tight text-[var(--color-pt-ink)]">
+                        {getPatientAppointmentProviderName(nextAppointment)}
+                      </h3>
+                      <p className="mt-2 text-[14px] font-medium text-slate-500">
+                        {formatAppointmentDateTime(nextAppointment.availabilities?.starts_at ?? '')}
+                      </p>
+                    </div>
 
-          {recent.length === 0 ? (
-            <div className="py-16 text-center">
-              <Calendar size={32} className="text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-400 text-[14px] font-medium mb-4">No visits yet</p>
-              <Link href="/search" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-[13px] hover:bg-blue-700 transition-colors">
-                Find a physio
-                <ArrowRight size={13} />
-              </Link>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-50">
-              {recent.map((r) => (
-                <div key={r.visit_id} className="flex items-center gap-5 px-6 py-4">
-                  <div className="shrink-0 text-center w-16">
-                    <div className="text-[15px] font-bold text-slate-900">{new Date(r.visit_date).toLocaleDateString('en-IN', { day: 'numeric' })}</div>
-                    <div className="text-[10px] text-slate-400 uppercase">{new Date(r.visit_date).toLocaleDateString('en-IN', { month: 'short' })}</div>
-                  </div>
-                  <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[13px] shrink-0">
-                    {r.provider_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-900 text-[14px] truncate">{r.provider_name}</div>
-                    <div className="text-[12px] text-slate-400 truncate">
-                      Visit #{r.visit_number}{r.patient_summary ? ` · ${r.patient_summary}` : ''}
+                    <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium text-slate-500">
+                      <span className="rounded-full bg-white px-3 py-1 shadow-sm">
+                        {nextAppointment.locations?.city ?? 'Location to be confirmed'}
+                      </span>
+                      {latestSpecialty ? (
+                        <span className="rounded-full bg-white px-3 py-1 shadow-sm">
+                          {latestSpecialty}
+                        </span>
+                      ) : null}
+                      <span className="rounded-full bg-[var(--color-pt-border-soft)] px-3 py-1 font-semibold capitalize text-[var(--color-pt-primary)]">
+                        {nextAppointment.status.replace('_', ' ')}
+                      </span>
                     </div>
                   </div>
+
+                  <div className="flex flex-col gap-3 sm:min-w-[220px]">
+                    <Link
+                      href={`/patient/appointments/${nextAppointment.id}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-pt-primary)] px-5 py-3 text-[13px] font-bold text-white shadow-md transition-opacity hover:opacity-90"
+                    >
+                      View details
+                      <ArrowRight size={14} />
+                    </Link>
+                    <Link
+                      href="/search"
+                      className="inline-flex items-center justify-center rounded-full border border-[var(--color-pt-border)] bg-white px-5 py-3 text-[13px] font-bold text-[var(--color-pt-ink)] transition-colors hover:bg-[var(--color-pt-border-soft)]"
+                    >
+                      Book follow-up
+                    </Link>
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ) : (
+              <EmptyState
+                role="patient"
+                icon={CalendarPlus}
+                title="Nothing scheduled"
+                description="Book your next session when you're ready."
+                cta={{ label: 'Book a visit', href: '/search' }}
+              />
+            )}
+          </SectionCard>
+
+          <SectionCard
+            role="patient"
+            title="Recent visits"
+            action={{ label: 'View all', href: '/patient/records' }}
+          >
+            {recent.length === 0 ? (
+              <EmptyState
+                role="patient"
+                icon={Calendar}
+                title="No visits yet"
+                description="Your past and upcoming appointments will appear here."
+                cta={{ label: 'Book a visit', href: '/search' }}
+              />
+            ) : (
+              <div>
+                {recent.map((r) => (
+                  <ListRow
+                    key={r.visit_id}
+                    role="patient"
+                    icon={FileText}
+                    tone={1}
+                    primary={r.provider_name}
+                    secondary={`Visit #${r.visit_number}${
+                      r.patient_summary ? ` · ${r.patient_summary}` : ''
+                    }`}
+                    right={fmtShortDate(r.visit_date)}
+                  />
+                ))}
+              </div>
+            )}
+          </SectionCard>
         </div>
 
         {/* Right rail */}
-        <div className="space-y-5">
-
-          {/* Health snapshot */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5">
-            <h3 className="font-bold text-slate-900 text-[15px] mb-4 flex items-center gap-2">
-              <Activity size={16} className="text-blue-500" />
-              Your progress
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-[12px] mb-2">
-                  <span className="text-slate-500 font-medium">Sessions completed</span>
-                  <span className="font-bold text-slate-900">{records.length}</span>
-                </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500 rounded-full transition-all duration-700"
-                    style={{ width: `${Math.min((records.length / 10) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-[12px] mb-2">
-                  <span className="text-slate-500 font-medium">Providers seen</span>
-                  <span className="font-bold text-slate-900">{uniqueProviders}</span>
-                </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-violet-400 rounded-full transition-all duration-700"
-                    style={{ width: `${Math.min((uniqueProviders / 5) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
+        <div className="xl:w-[340px] xl:shrink-0 space-y-6">
+          <DashCard role="patient">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
+              Quick actions
             </div>
-          </div>
-
-          {/* Quick actions */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5">
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-4">Quick Actions</div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {[
-                { label: 'Find a physio',    href: '/search',           icon: Search,        color: 'text-blue-600' },
-                { label: 'My records',       href: '/patient/records',  icon: FileText,      color: 'text-emerald-600' },
-                { label: 'Messages',         href: '/patient/messages', icon: MessageSquare, color: 'text-violet-600' },
-              ].map(({ label, href, icon: Icon, color }) => (
+                { label: 'Find a physio', href: '/search', icon: Search },
+                {
+                  label: 'My records',
+                  href: '/patient/records',
+                  icon: FileText,
+                },
+                {
+                  label: 'Messages',
+                  href: '/patient/messages',
+                  icon: MessageSquare,
+                },
+                {
+                  label: 'Update profile',
+                  href: '/patient/profile',
+                  icon: User,
+                },
+              ].map(({ label, href, icon: Icon }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-pt-border-soft)] transition-colors group"
                 >
-                  <Icon size={16} className={color} />
-                  <span className="text-[13px] font-medium text-slate-700 flex-1">{label}</span>
-                  <ArrowRight size={13} className="text-slate-200 group-hover:text-slate-400 transition-colors" />
+                  <Icon size={16} className="text-[var(--color-pt-primary)]" />
+                  <span className="flex-1 text-[13px] font-medium text-[var(--color-pt-ink)]">
+                    {label}
+                  </span>
+                  <ArrowRight
+                    size={13}
+                    className="text-slate-300 group-hover:text-slate-500 transition-colors"
+                  />
                 </Link>
               ))}
             </div>
-          </div>
+          </DashCard>
+
+          <SectionCard role="patient" title="Care snapshot">
+            <div className="space-y-4 text-[13px]">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Published summaries</span>
+                <span className="font-bold text-[var(--color-pt-ink)]">{latestSummaryCount}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Most recent provider</span>
+                <span className="font-bold text-[var(--color-pt-ink)]">
+                  {lastVisit?.provider_name ?? '—'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Next booked city</span>
+                <span className="font-bold text-[var(--color-pt-ink)]">
+                  {nextAppointment?.locations?.city ?? 'Not booked'}
+                </span>
+              </div>
+            </div>
+          </SectionCard>
         </div>
       </div>
     </div>

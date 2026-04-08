@@ -1,22 +1,24 @@
 'use client'
 
-import { CalendarDays, Search, Filter, Clock, MapPin, Activity, MoreHorizontal, ArrowUpRight, Loader2, type LucideIcon } from 'lucide-react'
+import { CalendarDays, Search, Clock, MapPin, Activity, ArrowUpRight, AlertCircle, Calendar } from 'lucide-react'
 import { useState, Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import {
+  PageHeader,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
+import Image from 'next/image'
 
-const STATUS_STYLES: Record<string, string> = {
-  confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  pending: 'bg-amber-50 text-amber-700 border-amber-100',
-  completed: 'bg-emerald-600/10 text-emerald-600 border-emerald-600/20',
-  cancelled: 'bg-bp-surface text-bp-body/40 border-bp-border',
-  no_show: 'bg-red-50 text-red-600 border-red-100',
-}
-
-const VISIT_TYPE_ICONS: Record<string, LucideIcon> = {
-  in_clinic: Activity,
-  home_visit: MapPin,
+const STATUS_STYLES: Record<string, { label: string; color: string }> = {
+  confirmed: { label: 'Confirmed', color: 'text-emerald-600 bg-emerald-50' },
+  pending: { label: 'Pending', color: 'text-amber-600 bg-amber-50' },
+  completed: { label: 'Completed', color: 'text-slate-500 bg-slate-50' },
+  cancelled: { label: 'Cancelled', color: 'text-rose-600 bg-rose-50' },
+  no_show: { label: 'No Show', color: 'text-rose-600 bg-rose-50' },
 }
 
 interface AppointmentRow {
@@ -59,7 +61,6 @@ type TabType = 'upcoming' | 'completed' | 'cancelled'
 function filterAppointments(appointments: AppointmentRow[], tab: TabType, search: string) {
   const now = new Date().toISOString()
   return appointments.filter((a) => {
-    // Search filter
     if (search) {
       const q = search.toLowerCase()
       const name = a.patient?.full_name?.toLowerCase() || ''
@@ -85,7 +86,7 @@ function ProviderAppointmentsContent() {
   const [activeTab, setActiveTab] = useState<TabType>('upcoming')
   const [search, setSearch] = useState('')
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['provider-appointments'],
     queryFn: fetchAppointments,
   })
@@ -94,169 +95,142 @@ function ProviderAppointmentsContent() {
   const filtered = filterAppointments(allAppointments, activeTab, search)
 
   return (
-    <div className="max-w-[1240px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-bp-border rounded-full text-[10px] font-bold uppercase text-emerald-600 tracking-widest shadow-sm">
-            <Activity size={12} strokeWidth={3} />
-            Session Management Hub
-          </div>
-          <h1 className="text-[36px] md:text-[42px] font-bold text-slate-900 leading-none tracking-tighter">
-            Patient <span className="text-emerald-600">Consultations</span>
-          </h1>
-          <p className="text-[15px] font-bold text-bp-body/40 max-w-[500px]">
-            View and manage your practice sessions and patient follow-ups.
-          </p>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="provider"
+        kicker="REGISTRY"
+        title="Clinical schedule"
+        subtitle="Manage patient sessions and upcoming treatments"
+      />
+
+      {/* Controls */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="p-1 px-[5px] bg-[#E2E8F0] rounded-[22px] flex items-center justify-between gap-1 border border-slate-200 shadow-sm w-fit">
+          {(['upcoming', 'completed', 'cancelled'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "px-8 py-2.5 rounded-[18px] text-[12px] font-black tracking-widest transition-all duration-300 uppercase",
+                activeTab === tab
+                  ? "bg-white text-[var(--color-pv-primary)] shadow-sm active:scale-95"
+                  : "text-slate-500 hover:text-slate-700"
+              )}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="relative group w-full sm:w-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-bp-body/40 group-focus-within:text-emerald-600 transition-colors">
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              placeholder="Search patients..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full sm:w-[280px] pl-12 pr-6 py-4 rounded-[22px] border border-bp-border bg-white font-bold text-[14px] text-slate-900 placeholder:text-bp-body/40 focus:border-emerald-600/20 focus:ring-4 focus:ring-bp-accent/5 outline-none transition-all shadow-sm"
-            />
-          </div>
-          <button className="h-[58px] px-8 bg-white border border-bp-border rounded-[22px] flex items-center gap-3 text-[14px] font-bold text-slate-900 hover:bg-bp-surface transition-all shadow-sm">
-            <Filter size={18} />
-            Insights
-          </button>
+
+        <div className="relative group w-full lg:max-w-sm">
+          <input
+            type="text"
+            placeholder="Search roster..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-2xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
       </div>
 
-      <div className="mb-10 p-1.5 bg-bp-surface rounded-[28px] inline-flex items-center gap-1 border border-bp-border shadow-sm">
-        {(['upcoming', 'completed', 'cancelled'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setActiveTab(t)}
-            className={cn(
-              "px-10 py-3.5 rounded-[24px] text-[14px] font-bold tracking-tight transition-all duration-300 capitalize",
-              activeTab === t
-                ? "bg-slate-900 text-white shadow-xl shadow-gray-900/10 ring-1 ring-black/5"
-                : "text-bp-body/40 hover:text-bp-body font-bold"
-            )}
-          >
-            {t} Flow
-          </button>
-        ))}
-      </div>
-
-      <div className="bg-white rounded-[44px] border border-bp-border overflow-hidden shadow-[0_32px_80px_-24px_rgba(0,0,0,0.06)] relative px-0 md:px-6 py-6 transition-all duration-500">
-        {isLoading && (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      <SectionCard role="provider" title={`${activeTab} Sessions`}>
+        {isLoading ? (
+          <div className="space-y-4 py-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-20 w-full animate-pulse bg-slate-50 rounded-2xl" />
+            ))}
           </div>
-        )}
+        ) : isError ? (
+          <EmptyState
+            role="provider"
+            icon={AlertCircle}
+            title="Registry sync failure"
+            description="We couldn't synchronize the clinical data."
+            cta={{ label: 'Retry', onClick: refetch }}
+          />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            role="provider"
+            icon={Calendar}
+            title={`No ${activeTab} sessions`}
+            description={search ? "No results match your search query." : `You have no ${activeTab} appointments in the registry.`}
+          />
+        ) : (
+          <div className="divide-y divide-slate-100/50">
+            {filtered.map((appt) => {
+              const patient = appt.patient
+              const startsAt = appt.availabilities?.starts_at
+              const statusStyle = STATUS_STYLES[appt.status] || STATUS_STYLES.pending
 
-        {isError && (
-          <div className="py-24 text-center">
-            <p className="text-[15px] font-bold text-red-500">Failed to load appointments. Please refresh.</p>
-          </div>
-        )}
-
-        {!isLoading && !isError && (
-          <div className="overflow-x-auto overflow-y-visible">
-            <table className="w-full text-left border-separate border-spacing-y-4">
-              <thead>
-                <tr className="text-bp-body/30 uppercase text-[10px] font-bold tracking-[0.2em]">
-                  <th className="px-6 pb-2">Patient Details</th>
-                  <th className="px-6 pb-2">Schedule</th>
-                  <th className="px-6 pb-2">Treatment Type</th>
-                  <th className="px-6 pb-2">Fee</th>
-                  <th className="px-6 pb-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-24 text-center">
-                      <div className="flex flex-col items-center gap-6 opacity-20">
-                        <Activity size={64} strokeWidth={1} />
-                        <p className="text-[20px] font-bold tracking-tight">No {activeTab} appointments</p>
+              return (
+                <ListRow
+                  key={appt.id}
+                  role="provider"
+                  icon={
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center text-[var(--color-pv-primary)] text-sm font-black border border-slate-200/50">
+                      {patient?.avatar_url ? (
+                        <Image src={patient.avatar_url} width={48} height={48} alt="" />
+                      ) : (
+                        patient?.full_name?.charAt(0) || '?'
+                      )}
+                    </div>
+                  }
+                  primary={patient?.full_name || 'Anonymous Patient'}
+                  secondary={
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <span className="flex items-center gap-1.5 capitalize">
+                        {appt.visit_type === 'home_visit' ? <MapPin size={12} /> : <Activity size={12} />}
+                        {appt.visit_type.replace('_', ' ')}
+                      </span>
+                      {startsAt && (
+                        <span className="flex items-center gap-1.5">
+                          <CalendarDays size={12} />
+                          {formatDate(startsAt)}
+                        </span>
+                      )}
+                    </div>
+                  }
+                  right={
+                    <div className="flex items-center gap-6">
+                      <div className="hidden md:flex flex-col items-end gap-1">
+                        <span className="text-[13px] font-black text-slate-900 tracking-tight">₹{appt.fee_inr}</span>
+                        {startsAt && (
+                          <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1 uppercase tracking-wider">
+                            <Clock size={10} />
+                            {formatTime(startsAt)}
+                          </span>
+                        )}
                       </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((appt) => {
-                    const patientName = appt.patient?.full_name || 'Unknown Patient'
-                    const initial = patientName.charAt(0)
-                    const startsAt = appt.availabilities?.starts_at
-                    return (
-                      <tr key={appt.id} className="group hover:scale-[1.005] transition-all duration-300">
-                        <td className="px-6 py-5 bg-[#FCFCFC] border-y border-l border-bp-border rounded-l-[32px]">
-                          <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-2xl bg-emerald-600/10 flex items-center justify-center text-emerald-600 text-[18px] font-bold shadow-sm group-hover:scale-105 transition-transform">
-                              {initial}
-                            </div>
-                            <div>
-                              <p className="text-[17px] font-bold text-slate-900 tracking-tight leading-none mb-1.5">{patientName}</p>
-                              <div className="flex items-center gap-2">
-                                <div className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-[0.1em] border shadow-sm", STATUS_STYLES[appt.status] || STATUS_STYLES.pending)}>
-                                  {appt.status}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 bg-[#FCFCFC] border-y border-bp-border">
-                          {startsAt ? (
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2 text-[15px] font-bold text-slate-900">
-                                <CalendarDays size={16} className="text-bp-body/30" />
-                                {formatDate(startsAt)}
-                              </div>
-                              <div className="flex items-center gap-2 text-[13px] font-bold text-bp-body/40">
-                                <Clock size={14} className="text-bp-body/30" />
-                                {formatTime(startsAt)}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-[13px] text-bp-body/40">No slot info</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-5 bg-[#FCFCFC] border-y border-bp-border">
-                          <div className="flex items-center gap-3 py-2 px-4 bg-white border border-bp-border rounded-2xl w-fit shadow-sm">
-                            {(() => {
-                              const Icon = VISIT_TYPE_ICONS[appt.visit_type] || Activity
-                              return <Icon size={16} className="text-bp-body/40" />
-                            })()}
-                            <span className="text-[12px] font-bold text-slate-900 uppercase tracking-widest">{appt.visit_type.replace('_', ' ')}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 bg-[#FCFCFC] border-y border-bp-border">
-                          <span className="text-[15px] font-bold text-slate-900">₹{appt.fee_inr}</span>
-                        </td>
-                        <td className="px-6 py-5 bg-[#FCFCFC] border-y border-r border-bp-border rounded-r-[32px] text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button className="w-12 h-12 bg-white border border-bp-border rounded-2xl flex items-center justify-center text-bp-body/40 hover:text-emerald-600 hover:border-emerald-600/20 transition-all shadow-sm">
-                              <MoreHorizontal size={20} />
-                            </button>
-                            <Link href={`/provider/appointments/${appt.id}`} className="h-12 px-6 bg-slate-900 text-white rounded-2xl text-[13px] font-bold flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-lg active:scale-95 group/view">
-                              View
-                              <ArrowUpRight size={18} strokeWidth={3} className="text-emerald-600/70 group-hover/view:rotate-12 transition-transform" />
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
+                      <div className={cn("px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border", statusStyle.color)}>
+                        {statusStyle.label}
+                      </div>
+                      <Link
+                        href={`/provider/appointments/${appt.id}`}
+                        className="p-2.5 bg-slate-100 text-slate-400 hover:bg-[var(--color-pv-ink)] hover:text-white rounded-xl transition-all"
+                      >
+                        <ArrowUpRight size={18} strokeWidth={3} />
+                      </Link>
+                    </div>
+                  }
+                />
+              )
+            })}
           </div>
         )}
-      </div>
+      </SectionCard>
     </div>
   )
 }
 
 export default function ProviderAppointments() {
   return (
-    <Suspense fallback={<div className="p-20 text-center text-bp-body/40">Loading appointments...</div>}>
+    <Suspense fallback={
+       <div className="flex flex-col items-center justify-center py-60">
+          <div className="w-16 h-16 rounded-full border-4 border-[var(--color-pv-surface)] border-t-[var(--color-pv-primary)] animate-spin" />
+          <p className="mt-8 text-[14px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing deck telemetry...</p>
+       </div>
+    }>
       <ProviderAppointmentsContent />
     </Suspense>
   )

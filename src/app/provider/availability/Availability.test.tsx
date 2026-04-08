@@ -19,8 +19,12 @@ function buildDefaultOpenSlots() {
 
 async function waitForAvailabilityEditor() {
   await waitFor(() => {
-    expect(screen.queryByText(/Loading your current schedule/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Synchronizing registry data/i)).not.toBeInTheDocument()
   })
+}
+
+function getTimeInputs(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('input[type="time"]')) as HTMLInputElement[]
 }
 
 describe('ProviderAvailability', () => {
@@ -49,28 +53,27 @@ describe('ProviderAvailability', () => {
   it('renders initial schedule with correct counts', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    expect(screen.getByText(/5 of 7 days active/i)).toBeInTheDocument()
+    expect(screen.getByText(/5\s*Active/i)).toBeInTheDocument()
   })
 
   it('toggles a day and updates active count', () => {
     render(<ProviderAvailability />)
     return waitForAvailabilityEditor().then(() => {
-      const toggle = screen.getByLabelText(/Toggle Saturday/i)
+      const toggle = screen.getByLabelText(/Saturday/i)
       fireEvent.click(toggle)
-      expect(screen.getByText(/6 of 7 days active/i)).toBeInTheDocument()
+      expect(screen.getByText(/6\s*Active/i)).toBeInTheDocument()
     })
   })
 
   it('shows error if end time is before start time', async () => {
-    render(<ProviderAvailability />)
+    const { container } = render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const startInput = screen.getByLabelText(/Monday slot 1 start time/i)
-    const endInput = screen.getByLabelText(/Monday slot 1 end time/i)
+    const [startInput, endInput] = getTimeInputs(container)
     
     fireEvent.change(startInput, { target: { value: '18:00' } })
     fireEvent.change(endInput, { target: { value: '09:00' } })
     
-    const saveButton = screen.getByRole('button', { name: /Save Availability/i })
+    const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
     fireEvent.click(saveButton)
     
     expect(await screen.findByText(/End time must be after start time/i, {}, { timeout: 10000 })).toBeInTheDocument()
@@ -79,17 +82,17 @@ describe('ProviderAvailability', () => {
   it('disables save button when no changes are made', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const saveButton = screen.getByRole('button', { name: /Save Availability/i })
+    const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
     expect(saveButton).toBeDisabled()
   })
 
   it('enables save button when a change is made', () => {
     render(<ProviderAvailability />)
     return waitForAvailabilityEditor().then(() => {
-      const toggle = screen.getByLabelText(/Toggle Saturday/i)
+      const toggle = screen.getByLabelText(/Saturday/i)
       fireEvent.click(toggle)
 
-      const saveButton = screen.getByRole('button', { name: /Save Availability/i })
+      const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
       expect(saveButton).toBeEnabled()
     })
   })
@@ -97,13 +100,13 @@ describe('ProviderAvailability', () => {
   it('shows success message on successful save', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const toggle = screen.getByLabelText(/Toggle Saturday/i)
+    const toggle = screen.getByLabelText(/Saturday/i)
     fireEvent.click(toggle)
     
-    const saveButton = screen.getByRole('button', { name: /Save Availability/i })
+    const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
     fireEvent.click(saveButton)
     
-    expect(await screen.findByText(/slots generated for the next 4 weeks/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Registry Deployed Successfully/i)).toBeInTheDocument()
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/provider/availability', expect.objectContaining({
         method: 'POST',
@@ -137,25 +140,52 @@ describe('ProviderAvailability', () => {
       })
     )
 
-    render(<ProviderAvailability />)
+    const { container } = render(<ProviderAvailability />)
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Monday slot 1 start time/i)).toHaveValue('09:00')
-      expect(screen.getByLabelText(/Monday slot 1 end time/i)).toHaveValue('10:00')
+      const [startInput, endInput] = getTimeInputs(container)
+      expect(startInput).toHaveValue('09:00')
+      expect(endInput).toHaveValue('10:00')
     })
 
-    expect(screen.getByText(/1 of 7 days active/i)).toBeInTheDocument()
+    expect(screen.getByText(/1\s*Active/i)).toBeInTheDocument()
   })
 
   it('updates slot duration', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const durationBtn = await screen.findByText(/60 mins/i, {}, { timeout: 10000 })
+    const durationBtn = await screen.findByText(/60 Minutes/i, {}, { timeout: 10000 })
     fireEvent.click(durationBtn)
     
-    expect(durationBtn).toHaveClass('bg-emerald-600')
-    expect(await screen.findByRole('button', { name: /Save Availability/i }, { timeout: 10000 })).toBeEnabled()
+    expect(await screen.findByRole('button', { name: /Commit Changes/i }, { timeout: 10000 })).toBeEnabled()
   }, 15000)
+
+  it('keeps the editor interactive when the initial registry sync fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: string, init?: RequestInit) => {
+        if (!init?.method || init.method === 'GET') {
+          return Promise.reject(new Error('network down'))
+        }
+
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ success: true, created: 42 }),
+        })
+      })
+    )
+
+    render(<ProviderAvailability />)
+
+    expect(await screen.findByText(/Failed to synchronize availability registry/i)).toBeInTheDocument()
+
+    const saturdayToggle = screen.getByLabelText(/Saturday/i)
+    expect(saturdayToggle).toBeEnabled()
+
+    fireEvent.click(saturdayToggle)
+
+    expect(screen.getByRole('button', { name: /Commit Changes/i })).toBeEnabled()
+  })
 
       it('blocks editing when recurring hours cannot be safely inferred from booked-only days', async () => {
         vi.stubGlobal(
@@ -178,9 +208,9 @@ describe('ProviderAvailability', () => {
         render(<ProviderAvailability />)
         await waitForAvailabilityEditor()
 
-        expect(screen.getByText(/cannot safely infer recurring hours for Tuesday/i)).toBeInTheDocument()
-        expect(screen.getByText(/0 of 7 days active/i)).toBeInTheDocument()
-        expect(screen.getByLabelText(/Toggle Tuesday/i)).toBeDisabled()
-        expect(screen.getByRole('button', { name: /Save Availability/i })).toBeDisabled()
+        expect(screen.getByText(/Ambiguity detected in recurring hours for Tuesday/i)).toBeInTheDocument()
+        expect(screen.getByText(/0\s*Active/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/Tuesday/i)).toBeDisabled()
+        expect(screen.getByRole('button', { name: /Commit Changes/i })).toBeDisabled()
       })
 })

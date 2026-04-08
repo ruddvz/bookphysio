@@ -3,11 +3,13 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import {
   buildAvailabilitySlotsInIndia,
+  DEFAULT_PROVIDER_SCHEDULE,
   getProviderAvailabilityWindow,
   type ProviderSchedule,
   validateProviderSchedule,
 } from '@/lib/provider-availability'
 import { parseIndiaDate } from '@/lib/india-date'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import {
   getProviderAvailabilityRewriteLockKey,
   redis,
@@ -44,6 +46,7 @@ const MAX_GENERATED_SLOTS = 2000
 const REWRITE_LOCK_TTL_SECONDS = 5 * 60
 const INSERT_BATCH_SIZE = 500
 const EXACT_DELETE_BATCH_SIZE = 25
+const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
 
 type AvailabilityMutationClient = Pick<Awaited<ReturnType<typeof createClient>>, 'from'>
 
@@ -173,20 +176,7 @@ async function deleteExactOpenSlots(
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'provider') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
+  const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
 
   const url = new URL(request.url)
   const startParam = url.searchParams.get('start')
@@ -209,25 +199,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid date range' }, { status: 400 })
   }
 
-  const { data: slots, error } = await supabase
-    .from('availabilities')
-    .select('starts_at, ends_at, is_booked, is_blocked')
-    .eq('provider_id', user.id)
-    .gte('starts_at', startDate.toISOString())
-    .lte('starts_at', endDate.toISOString())
-    .order('starts_at', { ascending: true })
+  if (!user && demoSession?.role === 'provider') {
+    const requestedDays = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime() + 1) / (24 * 60 * 60 * 1000)))
+    const generatedSlots = buildAvailabilitySlotsInIndia({
+      schedule: DEFAULT_PROVIDER_SCHEDULE,
+      durationMinutes: 30,
+      weeks: Math.ceil(requestedDays / 7),
+      providerId: demoSession.userId,
+      locationId: 'demo-location',
+      bufferMins: DEFAULT_BUFFER_MINS,
+      referenceDate: new Date(startDate.getTime() - 24 * 60 * 60 * 1000),
+    }).filter((slot) => slot.starts_at >= startDate.toISOString() && slot.starts_at <= endDate.toISOString())
 
-  if (error) {
-    return NextResponse.json({ error: 'Failed to fetch availability' }, { status: 500 })
+    return NextResponse.json({ slots: generatedSlots }, { headers: NO_STORE_HEADERS })
   }
-
-  return NextResponse.json({ slots: slots ?? [] })
-}
-
-export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { supabaseAdmin } = await import('@/lib/supabase/admin')
-  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -242,6 +227,27 @@ export async function POST(request: NextRequest) {
   if (profile?.role !== 'provider') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
+
+  const { data: slots, error } = await supabase
+    .from('availabilities')
+    .select('starts_at, ends_at, is_booked, is_blocked')
+    .eq('provider_id', user.id)
+    .gte('starts_at', startDate.toISOString())
+    .lte('starts_at', endDate.toISOString())
+    .order('starts_at', { ascending: true })
+
+  if (error) {
+    return NextResponse.json({ error: 'Failed to fetch availability' }, { status: 500 })
+  }
+
+  return NextResponse.json({ slots: slots ?? [] }, { headers: NO_STORE_HEADERS })
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient()
+  const { supabaseAdmin } = await import('@/lib/supabase/admin')
+  const { data: { user } } = await supabase.auth.getUser()
+  const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
 
   let body: unknown
   try {
@@ -268,6 +274,33 @@ export async function POST(request: NextRequest) {
         formErrors: [],
       },
     }, { status: 400 })
+  }
+
+  if (!user && demoSession?.role === 'provider') {
+    const generatedSlots = buildAvailabilitySlotsInIndia({
+      schedule,
+      durationMinutes: duration,
+      weeks,
+      providerId: demoSession.userId,
+      locationId: 'demo-location',
+      bufferMins: DEFAULT_BUFFER_MINS,
+    })
+
+    return NextResponse.json({ success: true, created: generatedSlots.length }, { status: 200, headers: NO_STORE_HEADERS })
+  }
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'provider') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const rewriteLockKey = getProviderAvailabilityRewriteLockKey(user.id)

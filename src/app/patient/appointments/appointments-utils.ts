@@ -3,6 +3,8 @@
  * Extracted so they can be unit-tested without mounting the full page.
  */
 
+import { formatIndiaDateTime } from '@/lib/india-date'
+
 export type AppointmentTab = 'upcoming' | 'past'
 export type VisitType = 'in_clinic' | 'home_visit'
 export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
@@ -25,7 +27,7 @@ export interface AppointmentItem {
  * Reuses the same format as the dashboard for consistency.
  */
 export function formatApptDate(iso: string): string {
-  return new Date(iso).toLocaleString('en-IN', {
+  return formatIndiaDateTime(iso, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

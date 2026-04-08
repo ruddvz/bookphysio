@@ -1,4 +1,5 @@
 import type { Session, User } from '@supabase/supabase-js'
+import { hasValidPreviewCookieValue } from '@/lib/preview/token'
 
 export type DemoRole = 'patient' | 'provider' | 'admin'
 
@@ -97,8 +98,7 @@ export function isDemoAccessEnabled(): boolean {
   return (
     process.env.NODE_ENV === 'development' || 
     process.env.NODE_ENV === 'test' ||
-    process.env.NEXT_PUBLIC_ENABLE_DEMO === 'true' ||
-    (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app'))
+    process.env.NEXT_PUBLIC_ENABLE_DEMO === 'true'
   )
 }
 
@@ -364,6 +364,10 @@ export function isDemoSessionSuppressed(value: string | null | undefined): boole
 }
 
 export async function getDemoSessionFromCookies(cookies: DemoCookieReader): Promise<DemoCookiePayload | null> {
+  if (!isDemoAccessEnabled() && !(await hasValidPreviewCookieValue(cookies))) {
+    return null
+  }
+
   if (isDemoSessionSuppressed(cookies.get(DEMO_SESSION_SUPPRESSION_COOKIE)?.value)) {
     return null
   }

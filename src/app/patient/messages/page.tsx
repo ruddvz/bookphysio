@@ -2,7 +2,19 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, MessageSquare, Send, Paperclip, MoreVertical, Phone, Video, CheckCheck, Clock, UserCircle, Loader2 } from 'lucide-react'
+import {
+  Search,
+  AlertCircle,
+  MessageSquare,
+  Send,
+  Paperclip,
+  Phone,
+  Video,
+  CheckCheck,
+  Clock,
+  Loader2,
+  ChevronLeft,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Conversation, Message } from '@/app/api/contracts/message'
 import {
@@ -10,6 +22,12 @@ import {
   formatConversationMessageTime,
   formatConversationTimestamp,
 } from '@/lib/messaging/time'
+import {
+  PageHeader,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
 
 const EMPTY_MESSAGES: Message[] = []
 
@@ -20,7 +38,12 @@ export default function PatientMessages() {
   const queryClient = useQueryClient()
 
   // Fetch conversations
-  const { data: conversationsData, isLoading: conversationsLoading } = useQuery({
+  const {
+    data: conversationsData,
+    isLoading: conversationsLoading,
+    isError: conversationsError,
+    refetch: refetchConversations,
+  } = useQuery({
     queryKey: ['conversations'],
     queryFn: async () => {
       const res = await fetch('/api/conversations?limit=50')
@@ -35,7 +58,12 @@ export default function PatientMessages() {
   const activeUserId = activeChat?.other_user?.id ?? null
 
   // Fetch messages for selected conversation
-  const { data: messagesData, isLoading: messagesLoading } = useQuery({
+  const {
+    data: messagesData,
+    isLoading: messagesLoading,
+    isError: messagesError,
+    refetch: refetchMessages,
+  } = useQuery({
     queryKey: ['messages', activeUserId],
     queryFn: async () => {
       if (!activeUserId) return { messages: [], total: 0 }
@@ -72,181 +100,183 @@ export default function PatientMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Mark as read when messages are loaded
   useEffect(() => {
-    if (!selectedConversationId || !messagesData) {
-      return
-    }
+    if (!selectedConversationId || !messagesData) return
 
     queryClient.setQueryData<{ conversations: Conversation[]; total: number }>(
       ['conversations'],
       (current) => {
-        if (!current) {
-          return current
-        }
-
+        if (!current) return current
         return {
           ...current,
-          conversations: current.conversations.map((conversation) => (
-            conversation.id === selectedConversationId
-              ? { ...conversation, unread_count: 0 }
-              : conversation
-          )),
+          conversations: current.conversations.map((c) =>
+            c.id === selectedConversationId ? { ...c, unread_count: 0 } : c
+          ),
         }
-      },
+      }
     )
   }, [messagesData, queryClient, selectedConversationId])
 
   return (
-    <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-6 h-[calc(100vh-56px)] flex flex-col animate-in fade-in duration-500">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8 h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <PageHeader
+        role="patient"
+        kicker="MESSAGES"
+        title="Your interactions"
+        subtitle="Communicate directly with your physiotherapy providers"
+      />
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-[28px] font-bold text-slate-900 tracking-tight leading-none mb-1">
-            Messages
-          </h1>
-          <p className="text-[14px] text-slate-500">Communicate with your physiotherapy providers.</p>
-        </div>
-      </div>
-
-      <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-lg flex overflow-hidden relative">
-        
-        {/* ── Left Pane: Conversations ── */}
+      <div className="flex-1 min-h-0 flex gap-6">
+        {/* Sidebar: Conversations */}
         <div className={cn(
-          "w-full md:w-[360px] border-r border-slate-200 flex flex-col bg-slate-50/50 shrink-0 transition-all",
-          selectedConversationId && "hidden md:flex"
+          "w-full xl:w-[360px] xl:shrink-0 flex flex-col min-h-0 space-y-4",
+          selectedConversationId && "hidden xl:flex"
         )}>
-          <div className="p-4 border-b border-slate-200 bg-white">
-            <div className="relative group">
-              <input
-                type="search"
-                placeholder="Search conversations..."
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500" />
-            </div>
+          <div className="relative group">
+            <input
+              type="search"
+              placeholder="Search conversations..."
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[14px] focus:ring-2 focus:ring-[var(--color-pt-primary)] transition-all outline-none"
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pt-primary)]" />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-1">
-            {conversationsLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-              </div>
-            ) : conversations.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-[14px] text-slate-400">No conversations yet</p>
-              </div>
-            ) : (
-              conversations.map((chat) => (
-                <button
-                  key={chat.id}
-                  onClick={() => setSelectedConversationId(chat.id)}
-                  className={cn(
-                    "w-full p-3 rounded-xl flex items-center gap-3 transition-all group",
-                    selectedConversationId === chat.id ? "bg-white shadow-sm border border-blue-100" : "hover:bg-white/80"
-                  )}
-                >
-                  <div className="relative shrink-0">
-                    <div className={cn(
-                      "w-11 h-11 rounded-xl flex items-center justify-center text-[15px] font-bold",
-                      selectedConversationId === chat.id ? "bg-blue-600 text-white" : "bg-white border border-slate-200 text-slate-400"
-                    )}>
-                      {(chat.other_user?.full_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <span className="text-[14px] font-semibold text-slate-900 truncate">{chat.other_user?.full_name || 'Unknown'}</span>
-                      <span className="text-[11px] text-slate-400 whitespace-nowrap ml-2">{formatConversationTimestamp(chat.last_message_at || chat.created_at)}</span>
-                    </div>
-                    <p className="text-[12px] text-slate-400 truncate leading-tight mb-0.5">{chat.other_user?.role === 'provider' ? 'Physiotherapist' : 'Patient'}</p>
-                    <p className={cn(
-                      "text-[13px] truncate",
-                      chat.unread_count > 0 ? "text-blue-600 font-semibold" : "text-slate-400"
-                    )}>
-                      {chat.last_message?.content || 'No messages yet'}
-                    </p>
-                  </div>
-                  {chat.unread_count > 0 && (
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
-                      {chat.unread_count}
-                    </div>
-                  )}
-                </button>
-              ))
-            )}
-          </div>
+          <SectionCard role="patient" title="Recent chats" className="flex-1 overflow-hidden flex flex-col p-0">
+            <div className="flex-1 overflow-y-auto px-2">
+              {conversationsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-5 h-5 animate-spin text-[var(--color-pt-primary)]" />
+                </div>
+              ) : conversationsError ? (
+                <EmptyState
+                  role="patient"
+                  icon={AlertCircle}
+                  title="Couldn&apos;t load conversations"
+                  description="There was an error fetching your message list."
+                  cta={{ label: 'Retry', onClick: () => void refetchConversations() }}
+                />
+              ) : conversations.length === 0 ? (
+                <EmptyState
+                  role="patient"
+                  icon={MessageSquare}
+                  title="Inbox is empty"
+                  description="Messages from your care team will appear here."
+                />
+              ) : (
+                <div className="divide-y divide-[var(--color-pt-border-soft)]">
+                  {conversations.map((chat) => (
+                    <ListRow
+                      key={chat.id}
+                      role="patient"
+                      icon={MessageSquare}
+                      tone={1}
+                      primary={chat.other_user?.full_name || 'Provider'}
+                      secondary={chat.last_message?.content || 'No messages yet'}
+                      right={
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                            {formatConversationTimestamp(chat.last_message_at || chat.created_at)}
+                          </span>
+                          {chat.unread_count > 0 && (
+                            <div className="w-4 h-4 rounded-full bg-[var(--color-pt-primary)] text-white text-[9px] font-bold flex items-center justify-center">
+                              {chat.unread_count}
+                            </div>
+                          )}
+                        </div>
+                      }
+                      onClick={() => setSelectedConversationId(chat.id)}
+                      className={cn(selectedConversationId === chat.id && 'bg-slate-50')}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </SectionCard>
         </div>
 
-        {/* ── Right Pane: Chat Area ── */}
+        {/* Main Content: Chat Thread */}
         <div className={cn(
-          "flex-1 flex flex-col bg-white transition-all",
-          !selectedConversationId && "hidden md:flex"
+          "flex-1 flex flex-col min-h-0 bg-white rounded-2xl border border-[var(--color-pt-border)] overflow-hidden",
+          !selectedConversationId && "hidden xl:flex opacity-60 pointer-events-none"
         )}>
           {activeChat ? (
             <>
-              {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white sticky top-0 z-10">
+              {/* Thread Header */}
+              <div className="px-6 py-4 border-b border-[var(--color-pt-border-soft)] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <button aria-label="Back to conversation list" title="Back to conversation list" onClick={() => setSelectedConversationId(null)} className="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-900">
-                     <UserCircle size={22} />
+                  <button
+                    onClick={() => setSelectedConversationId(null)}
+                    aria-label="Back to conversations"
+                    className="xl:hidden p-2 -ml-2 text-slate-400 hover:text-slate-600"
+                  >
+                    <ChevronLeft size={20} />
                   </button>
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[16px]">
-                    {(activeChat?.other_user?.full_name || 'U').charAt(0).toUpperCase()}
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-pt-tile-1-bg)] text-[var(--color-pt-primary)] flex items-center justify-center font-bold">
+                    {(activeChat.other_user?.full_name || 'P').charAt(0)}
                   </div>
                   <div>
-                    <h3 className="text-[15px] font-semibold text-slate-900 leading-none mb-1">{activeChat?.other_user?.full_name || 'Loading...'}</h3>
+                    <h3 className="text-[14px] font-semibold text-slate-900 leading-none mb-1">
+                      {activeChat.other_user?.full_name}
+                    </h3>
                     <div className="flex items-center gap-1.5">
-                       <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                       <span className="text-[11px] text-slate-400">Away</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-[11px] text-slate-400">Available</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button aria-label="Voice call unavailable" title="Voice call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><Phone size={18} /></button>
-                  <button aria-label="Video call unavailable" title="Video call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><Video size={18} /></button>
-                  <button aria-label="More actions unavailable" title="More actions unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 transition-colors" disabled><MoreVertical size={18} /></button>
+                  <button aria-label="Voice call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400" disabled><Phone size={18} /></button>
+                  <button aria-label="Video call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400" disabled><Video size={18} /></button>
                 </div>
               </div>
 
-              {/* Messages Grid */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
+              {/* Messages Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                    <Loader2 className="w-6 h-6 animate-spin text-[var(--color-pt-primary)]" />
                   </div>
+                ) : messagesError ? (
+                  <EmptyState
+                    role="patient"
+                    icon={AlertCircle}
+                    title="Couldn&apos;t load this conversation"
+                    description="There was an error fetching the thread history."
+                    cta={{ label: 'Retry', onClick: () => void refetchMessages() }}
+                  />
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-[14px] text-slate-400">No messages yet. Start the conversation!</p>
+                    <p className="text-[14px] text-slate-400">No messages yet.</p>
                   </div>
                 ) : (
                   <>
-                    <div className="text-center py-3">
-                      <span className="px-3 py-1 bg-slate-100 rounded-full text-[11px] text-slate-400 uppercase tracking-wider">
-                        {formatConversationDateDivider(messages[0]?.created_at || '')}
-                      </span>
+                    <div className="text-center py-2">
+                       <span className="px-2.5 py-1 bg-white border border-slate-100 rounded-full text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                         {formatConversationDateDivider(messages[0]?.created_at || '')}
+                       </span>
                     </div>
-
                     {messages.map((msg) => {
                       const isSent = msg.sender_id !== activeChat?.other_user?.id
                       return (
                         <div key={msg.id} className={cn(
-                          "flex flex-col max-w-[80%] md:max-w-[70%]",
-                          isSent ? "ml-auto items-end" : "mr-auto items-start"
+                          "flex flex-col max-w-[85%] sm:max-w-[70%]",
+                          isSent ? "ml-auto items-end" : "items-start"
                         )}>
                           <div className={cn(
-                            "px-5 py-3 rounded-2xl shadow-sm",
+                            "px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm",
                             isSent
-                              ? "bg-blue-600 text-white rounded-tr-sm"
-                              : "bg-white border border-slate-200 text-slate-900 rounded-tl-sm"
+                              ? "bg-[var(--color-pt-primary)] text-white rounded-tr-sm"
+                              : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm"
                           )}>
-                            <p className="text-[14px] leading-relaxed">{msg.content}</p>
+                            {msg.content}
                           </div>
-                          <div className="flex items-center gap-1.5 mt-1.5 px-1">
-                            <span className="text-[11px] text-slate-400">
+                          <div className="flex items-center gap-1.5 mt-1 px-1">
+                            <span className="text-[10px] text-slate-400">
                               {formatConversationMessageTime(msg.created_at)}
                             </span>
                             {isSent && (
-                              msg.read_at ? <CheckCheck size={13} className="text-blue-500" /> : <Clock size={13} className="text-slate-300" />
+                              msg.read_at ? <CheckCheck size={12} className="text-[var(--color-pt-primary)]" /> : <Clock size={12} className="text-slate-300" />
                             )}
                           </div>
                         </div>
@@ -258,54 +288,46 @@ export default function PatientMessages() {
               </div>
 
               {/* Input Area */}
-              <div className="p-4 md:p-6 bg-white border-t border-slate-200">
-                <div className="relative flex items-center gap-3 max-w-[900px] mx-auto">
-                   <button aria-label="Attachments unavailable" title="Attachments unavailable" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors shrink-0" disabled>
-                      <Paperclip size={18} />
-                   </button>
-                   <div className="flex-1 relative">
-                     <textarea
-                       rows={1}
-                       placeholder="Message your physio..."
-                       value={messageText}
-                       onChange={(e) => setMessageText(e.target.value)}
-                       onKeyDown={(e) => {
-                         if (e.key === 'Enter' && !e.shiftKey) {
-                           e.preventDefault()
-                           if (messageText.trim()) {
-                             sendMessageMutation.mutate(messageText.trim())
-                           }
-                         }
-                       }}
-                       disabled={sendMessageMutation.isPending}
-                       className="w-full pl-5 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none disabled:bg-slate-50 disabled:text-slate-400"
-                     />
-                     <button
-                       onClick={() => {
-                         if (messageText.trim()) {
-                           sendMessageMutation.mutate(messageText.trim())
-                         }
-                       }}
-                       disabled={sendMessageMutation.isPending || !messageText.trim()}
-                       className="absolute right-2 top-1.5 w-9 h-9 bg-blue-600 text-white rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                     >
-                        {sendMessageMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                     </button>
-                   </div>
+              <div className="p-4 border-t border-[var(--color-pt-border-soft)]">
+                <div className="flex items-center gap-3">
+                  <button aria-label="Attach file" className="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50" disabled>
+                    <Paperclip size={18} />
+                  </button>
+                  <div className="flex-1 relative">
+                    <textarea
+                      rows={1}
+                      placeholder="Type a message..."
+                      value={messageText}
+                      onChange={(e) => setMessageText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          if (messageText.trim()) sendMessageMutation.mutate(messageText.trim())
+                        }
+                      }}
+                      className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] outline-none transition-all resize-none"
+                    />
+                    <button
+                      onClick={() => messageText.trim() && sendMessageMutation.mutate(messageText.trim())}
+                      disabled={!messageText.trim() || sendMessageMutation.isPending}
+                      aria-label="Send message"
+                      className="absolute right-1.5 top-1.5 w-8 h-8 bg-[var(--color-pt-primary)] text-white rounded-lg flex items-center justify-center hover:opacity-90 disabled:opacity-50 transition-all"
+                    >
+                      {sendMessageMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-slate-50/30">
-              <div className="text-center px-10 max-w-sm">
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center mb-6">
-                  <MessageSquare size={28} className="text-blue-500" />
-                </div>
-                <h2 className="text-[20px] font-bold text-slate-900 tracking-tight mb-2">Select a conversation</h2>
-                <p className="text-[14px] text-slate-500 leading-relaxed">
-                  Choose a provider from your conversations to start messaging.
-                </p>
+            <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300 mb-4">
+                <MessageSquare size={32} />
               </div>
+              <h3 className="text-[18px] font-bold text-slate-900 mb-1">Select a conversation</h3>
+              <p className="text-[14px] text-slate-500 max-w-xs">
+                Choose a provider from the list to view your message history and start chatting.
+              </p>
             </div>
           )}
         </div>
@@ -313,3 +335,4 @@ export default function PatientMessages() {
     </div>
   )
 }
+

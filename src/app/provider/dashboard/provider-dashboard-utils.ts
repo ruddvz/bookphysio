@@ -3,6 +3,7 @@
  * Extracted so they can be unit-tested without mounting the full page.
  */
 
+import type { ScheduleEntry } from '@/lib/clinical/types'
 import { formatIndiaDateInput, formatIndiaTime, getIndiaWeekdayShort, parseIndiaDate } from '@/lib/india-date'
 
 export interface ProviderAppointment {
@@ -32,6 +33,23 @@ const INDIA_WEEKDAY_INDEX: Record<string, number> = {
 
 function toIndiaDay(value: Date | string): Date {
   return parseIndiaDate(formatIndiaDateInput(value))
+}
+
+function parseScheduleEntryStart(entry: ScheduleEntry): Date | null {
+  if (!entry.visit_date || !entry.visit_time) {
+    return null
+  }
+
+  const [hourText, minuteText] = entry.visit_time.split(':')
+  const hour = Number.parseInt(hourText ?? '', 10)
+  const minute = Number.parseInt(minuteText ?? '', 10)
+
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null
+  }
+
+  const dayStart = parseIndiaDate(entry.visit_date)
+  return new Date(dayStart.getTime() + ((hour * 60) + minute) * 60 * 1000)
 }
 
 /**
@@ -99,6 +117,65 @@ export function formatAppointmentCount(count: number): string {
  */
 export function formatSlotTime(iso: string): string {
   return formatIndiaTime(iso)
+}
+
+/**
+ * Returns schedule entries within the current India week (Mon-Sun).
+ */
+export function filterScheduleEntriesThisWeek(entries: ScheduleEntry[], reference = new Date()): ScheduleEntry[] {
+  const todayIndia = toIndiaDay(reference)
+  const weekday = getIndiaWeekdayShort(reference)
+  const diffToMon = INDIA_WEEKDAY_INDEX[weekday] ?? 0
+  const weekStart = new Date(todayIndia.getTime() - diffToMon * DAY_IN_MS)
+  const weekEnd = new Date(weekStart.getTime() + 7 * DAY_IN_MS)
+
+  return entries.filter((entry) => {
+    const day = parseIndiaDate(entry.visit_date)
+    return day >= weekStart && day < weekEnd
+  })
+}
+
+/**
+ * Returns the next scheduled visit from the provided entries.
+ */
+export function getNextScheduledVisit(entries: ScheduleEntry[], reference = new Date()): ScheduleEntry | null {
+  const futureEntries = entries.filter((entry) => {
+    const start = parseScheduleEntryStart(entry)
+    return start && start >= reference
+  })
+
+  if (futureEntries.length === 0) {
+    return null
+  }
+
+  return futureEntries.reduce((earliest, entry) => {
+    const earliestStart = parseScheduleEntryStart(earliest)?.getTime() ?? Number.POSITIVE_INFINITY
+    const entryStart = parseScheduleEntryStart(entry)?.getTime() ?? Number.POSITIVE_INFINITY
+    return entryStart < earliestStart ? entry : earliest
+  })
+}
+
+/**
+ * Counts the remaining visits scheduled for today in India time.
+ */
+export function countRemainingVisitsToday(entries: ScheduleEntry[], reference = new Date()): number {
+  const todayKey = formatIndiaDateInput(reference)
+
+  return entries.filter((entry) => {
+    if (entry.visit_date !== todayKey) {
+      return false
+    }
+
+    const start = parseScheduleEntryStart(entry)
+    return Boolean(start && start >= reference)
+  }).length
+}
+
+/**
+ * Sums scheduled fees, ignoring missing values.
+ */
+export function sumScheduledFees(entries: ScheduleEntry[]): number {
+  return entries.reduce((total, entry) => total + (entry.fee_inr ?? 0), 0)
 }
 
 /**

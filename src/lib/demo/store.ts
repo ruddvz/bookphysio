@@ -1,5 +1,6 @@
 import type { Conversation, Message } from '@/app/api/contracts/message'
 import type { UserProfile } from '@/app/api/contracts/user'
+import type { PatientFacingRecord } from '@/lib/clinical/types'
 import type { DemoRole } from '@/lib/demo/session'
 import { getDemoProfileById } from '@/lib/demo/session'
 
@@ -68,6 +69,25 @@ const INITIAL_MESSAGES: Message[] = [
     read_at: null,
     created_at: isoFromNow(-0.33),
     updated_at: isoFromNow(-0.33),
+  },
+]
+
+const DEMO_PATIENT_FACING_RECORDS: PatientFacingRecord[] = [
+  {
+    visit_id: 'demo-record-2',
+    visit_number: 2,
+    visit_date: '2026-04-06',
+    provider_name: 'Dr. Meera Iyer',
+    plan: 'Keep the ankle mobility routine going once daily and resume your light walks.',
+    patient_summary: 'Swelling has reduced and weight-bearing tolerance is improving.',
+  },
+  {
+    visit_id: 'demo-record-1',
+    visit_number: 1,
+    visit_date: '2026-04-03',
+    provider_name: 'Dr. Meera Iyer',
+    plan: 'Use compression after evening walks and keep doing the band exercise twice daily.',
+    patient_summary: 'You responded well to the first session and pain is trending down.',
   },
 ]
 
@@ -208,6 +228,10 @@ export function getDemoAppointments(role: DemoRole) {
   }
 
   return []
+}
+
+export function getDemoPatientFacingRecords(): PatientFacingRecord[] {
+  return DEMO_PATIENT_FACING_RECORDS.map((record) => ({ ...record }))
 }
 
 export function getDemoAppointmentDetail(role: DemoRole, appointmentId: string) {

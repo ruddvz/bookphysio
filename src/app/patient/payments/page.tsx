@@ -1,9 +1,16 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { CreditCard, Download, Loader2, AlertCircle, CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { CreditCard, Download, Activity, Wallet, Receipt, AlertCircle, CheckCircle2, XCircle, Clock, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import {
+  PageHeader,
+  StatTile,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
 
 interface Payment {
   id: string
@@ -19,14 +26,22 @@ interface Payment {
 }
 
 const STATUS_CONFIG = {
-  paid:      { label: 'Paid',      cls: 'bg-green-100 text-green-700',  icon: CheckCircle2 },
-  created:   { label: 'Pending',   cls: 'bg-yellow-100 text-yellow-700', icon: Clock       },
-  failed:    { label: 'Failed',    cls: 'bg-red-100 text-red-700',      icon: XCircle     },
-  refunded:  { label: 'Refunded', cls: 'bg-blue-600/10 text-blue-600',    icon: Download    },
+  paid:      { label: 'Paid',      color: 'text-emerald-600 bg-emerald-50 border-emerald-100', icon: CheckCircle2 },
+  created:   { label: 'Pending',   color: 'text-amber-600 bg-amber-50 border-amber-100',       icon: Clock        },
+  failed:    { label: 'Failed',    color: 'text-rose-600 bg-rose-50 border-rose-100',          icon: XCircle      },
+  refunded:  { label: 'Refunded', color: 'text-blue-600 bg-blue-50 border-blue-100',          icon: Download     },
 } as const
 
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 export default function PatientPayments() {
-  const { data, isLoading, isError } = useQuery<{ payments: Payment[] }>({
+  const { data, isLoading, isError, refetch } = useQuery<{ payments: Payment[] }>({
     queryKey: ['patient-payments'],
     queryFn: async () => {
       const res = await fetch('/api/payments')
@@ -36,97 +51,120 @@ export default function PatientPayments() {
   })
 
   const payments = data?.payments ?? []
+  
+  const totalPaid = payments
+    .filter(p => p.status === 'paid')
+    .reduce((sum, p) => sum + p.amount_inr, 0)
+    
+  const pendingAmount = payments
+    .filter(p => p.status === 'created')
+    .reduce((sum, p) => sum + p.amount_inr, 0)
+
+  const thisMonthPaid = payments
+    .filter(p => p.status === 'paid' && new Date(p.created_at).getMonth() === new Date().getMonth())
+    .reduce((sum, p) => sum + p.amount_inr, 0)
 
   return (
-    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">Payment History</h1>
-          <p className="text-[15px] text-bp-body">Track all your consultation payments and receipts.</p>
-        </div>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="patient"
+        kicker="FINANCE"
+        title="Payment history"
+        subtitle="Track all your consultation payments and receipts"
+      />
+
+      {/* Stat row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatTile
+          role="patient"
+          icon={Wallet}
+          label="Total Spent"
+          value={`₹${totalPaid.toLocaleString('en-IN')}`}
+          tone={1}
+        />
+        <StatTile
+          role="patient"
+          icon={Activity}
+          label="This Month"
+          value={`₹${thisMonthPaid.toLocaleString('en-IN')}`}
+          tone={2}
+        />
+        <StatTile
+          role="patient"
+          icon={Clock}
+          label="Pending"
+          value={`₹${pendingAmount.toLocaleString('en-IN')}`}
+          tone={3}
+        />
+        <StatTile
+          role="patient"
+          icon={Receipt}
+          label="Tax Paid"
+          value={`₹${payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.gst_amount_inr, 0).toLocaleString('en-IN')}`}
+          tone={5}
+        />
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-16 text-center">
-          <AlertCircle className="w-10 h-10 text-red-400" />
-          <p className="text-[15px] text-bp-body">Could not load payment history.</p>
-        </div>
-      ) : payments.length === 0 ? (
-        <div className="bg-white rounded-[12px] border border-bp-border overflow-hidden shadow-sm">
-          <div className="py-16 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
-                <CreditCard className="w-7 h-7 text-[#9CA3AF]" />
-              </div>
-              <p className="text-[15px] font-medium text-slate-900 mb-1">No payment history</p>
-              <p className="text-[13px] text-[#9CA3AF]">Your payment records will appear here after your first consultation.</p>
-            </div>
+      <SectionCard role="patient" title="Recent transactions">
+        {isLoading ? (
+          <div className="space-y-4 py-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-xl" />
+            ))}
           </div>
-        </div>
-      ) : (
-        <div className="bg-white rounded-[12px] border border-bp-border overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left whitespace-nowrap">
-              <thead className="bg-[#F9FAFB] border-b border-bp-border">
-                <tr>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Doctor</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Amount (₹)</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">GST (₹)</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#F3F4F6]">
-                {payments.map(p => {
-                  const cfg = STATUS_CONFIG[p.status] ?? STATUS_CONFIG.created
-                  const StatusIcon = cfg.icon
-                  const dateStr = p.starts_at
-                    ? new Date(p.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-                    : new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-                  const providerLabel = p.provider_name
-                    ? (p.provider_name.startsWith('Dr.') ? p.provider_name : `Dr. ${p.provider_name}`)
-                    : '—'
-                  const visitLabel = p.visit_type === 'in_clinic' ? 'In Clinic' : 'Home Visit'
-
-                  return (
-                    <tr key={p.id} className="hover:bg-[#FAFAFA] transition-colors">
-                      <td className="px-6 py-4 text-[14px] text-slate-900">{dateStr}</td>
-                      <td className="px-6 py-4 text-[14px] font-medium text-slate-900">{providerLabel}</td>
-                      <td className="px-6 py-4 text-[14px] text-bp-body">{visitLabel}</td>
-                      <td className="px-6 py-4 text-[14px] font-semibold text-slate-900">
-                        ₹{(p.amount_inr).toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-6 py-4 text-[14px] text-bp-body">
-                        ₹{(p.gst_amount_inr).toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={cn('inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-full', cfg.cls)}>
-                          <StatusIcon className="w-3.5 h-3.5" />
+        ) : isError ? (
+          <EmptyState
+            role="patient"
+            icon={AlertCircle}
+            title="Couldn't load payments"
+            description="There was an error fetching your transaction history."
+            cta={{ label: 'Retry', onClick: () => refetch() }}
+          />
+        ) : payments.length === 0 ? (
+          <EmptyState
+            role="patient"
+            icon={CreditCard}
+            title="No payments yet"
+            description="Your transaction records will appear here after your first consultation."
+            cta={{ label: 'Book a visit', href: '/search' }}
+          />
+        ) : (
+          <div className="divide-y divide-[var(--color-pt-border-soft)]">
+            {payments.map((p) => {
+              const cfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.created
+              return (
+                <ListRow
+                  key={p.id}
+                  role="patient"
+                  icon={Receipt}
+                  tone={p.status === 'paid' ? 1 : 1}
+                  primary={p.provider_name ? (p.provider_name.startsWith('Dr.') ? p.provider_name : `Dr. ${p.provider_name}`) : 'Provider'}
+                  secondary={`${formatDate(p.starts_at || p.created_at)} · ${p.visit_type === 'in_clinic' ? 'Clinic visit' : 'Home session'}`}
+                  right={
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <div className="text-[14px] font-bold text-slate-900">
+                          ₹{p.amount_inr.toLocaleString('en-IN')}
+                        </div>
+                        <div className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full border mt-1 inline-block", cfg.color)}>
                           {cfg.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/patient/appointments/${p.appointment_id}`}
-                          className="text-[13px] font-semibold text-blue-600 hover:underline"
-                        >
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+                        </div>
+                      </div>
+                      <Link
+                         href={`/patient/appointments/${p.appointment_id}`}
+                         className="p-2 text-slate-300 hover:text-[var(--color-pt-primary)] transition-colors"
+                      >
+                         <ArrowRight size={18} />
+                      </Link>
+                    </div>
+                  }
+                />
+              )
+            })}
           </div>
-        </div>
-      )}
+        )}
+      </SectionCard>
     </div>
   )
 }
+

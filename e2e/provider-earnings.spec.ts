@@ -103,8 +103,9 @@ test.describe('Provider Earnings Flow', () => {
 
     await page.goto('/provider/earnings')
 
-    await expect(page.locator('h1')).toContainText('Earnings & Payouts')
-    await expect(page.getByRole('button', { name: /generate bill/i })).toBeVisible()
+    await expect(page.locator('h1')).toContainText('Earnings')
+    const generateBillLink = page.getByRole('link', { name: /issue invoice/i })
+    await expect(generateBillLink).toBeVisible()
 
     await expect(page.locator('text=₹4,100').first()).toBeVisible()
     await expect(page.locator('text=₹738')).toBeVisible()
@@ -114,10 +115,11 @@ test.describe('Provider Earnings Flow', () => {
     await expect(page.locator('text=Paid').first()).toBeVisible()
 
     await expect(page.locator('text=Revenue Growth')).toBeVisible()
-    await expect(page.locator('text=Interactive charts coming soon')).toBeVisible()
+    await expect(page.locator('text=Interactive charts will be activated after 10 confirmed sessions')).toBeVisible()
 
-    await page.getByRole('button', { name: /generate bill/i }).click()
-    await expect(page.getByRole('heading', { name: /generate bill/i })).toBeVisible()
-    await expect(page.getByRole('checkbox', { name: /include gst/i })).toBeChecked()
+    await generateBillLink.click()
+    await expect(page).toHaveURL(/\/provider\/bills\/new/)
+    await expect(page.getByRole('heading', { name: /generate invoice/i })).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: /clinical gst calculation/i })).toBeChecked()
   })
 })

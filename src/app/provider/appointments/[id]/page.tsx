@@ -1,13 +1,32 @@
-'use client'
+"use client"
 
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Phone, MapPin, ClipboardList, CheckCircle2, ArrowLeft, MoreHorizontal, Zap, ShieldCheck, Calendar, Clock, ArrowUpRight, CircleAlert, Loader2 } from 'lucide-react'
+import {
+  Phone,
+  MapPin,
+  ClipboardList,
+  ArrowLeft,
+  ShieldCheck,
+  Calendar,
+  Clock,
+  ArrowUpRight,
+  CircleAlert,
+  Loader2,
+  Activity,
+  CreditCard,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { formatIndiaDate, formatIndiaTime } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
+import {
+  PageHeader,
+  SectionCard,
+  StatTile,
+  type TileTone,
+} from '@/components/dashboard/primitives'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -32,12 +51,12 @@ interface AppointmentDetail {
   patient_profile: { full_name: string; phone: string | null; avatar_url: string | null } | null
 }
 
-const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> = {
-  pending:   { label: 'Pending',   cls: 'bg-yellow-50 border-yellow-100 text-yellow-700' },
-  confirmed: { label: 'Confirmed', cls: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
-  cancelled: { label: 'Cancelled', cls: 'bg-red-50 border-red-100 text-red-700' },
-  completed: { label: 'Completed', cls: 'bg-bp-accent/10 border-bp-accent/20 text-bp-accent' },
-  no_show:   { label: 'No Show',   cls: 'bg-bp-surface border-bp-border text-bp-body' },
+const STATUS_CONFIG: Record<AppointmentStatus, { label: string; tone: TileTone }> = {
+  pending:   { label: 'Pending',   tone: 4 },
+  confirmed: { label: 'Confirmed', tone: 1 },
+  cancelled: { label: 'Cancelled', tone: 2 },
+  completed: { label: 'Completed', tone: 1 },
+  no_show:   { label: 'No Show',   tone: 2 },
 }
 
 export default function ProviderAppointmentDetail() {
@@ -75,290 +94,198 @@ export default function ProviderAppointmentDetail() {
 
   if (isLoading) {
     return (
-      <div className="max-w-[1000px] mx-auto px-6 py-16 flex items-center justify-center min-h-[300px]">
-        <Loader2 className="w-8 h-8 animate-spin text-bp-accent" />
+      <div className="flex flex-col items-center justify-center py-40">
+        <Loader2 className="w-12 h-12 text-[var(--color-pv-primary)] animate-spin" />
+        <p className="mt-4 text-[13px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Synchronizing Record...</p>
       </div>
     )
   }
 
   if (isError || !appt) {
     return (
-      <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10">
-        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-bp-body/40 hover:text-bp-accent font-bold text-[11px] uppercase tracking-[0.2em] transition-colors no-underline">
-          <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center">
-            <ArrowLeft size={14} strokeWidth={3} />
-          </div>
-          Back to Registry
-        </Link>
-        <p className="text-bp-body/40 mt-6">Appointment not found.</p>
+      <div className="max-w-[800px] mx-auto px-6 py-12">
+        <div className="bg-rose-50 border border-rose-100 rounded-[40px] p-12 text-center">
+           <CircleAlert className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+           <p className="text-[14px] font-bold text-rose-700">Appointment record not found in the clinical registry.</p>
+           <Link href="/provider/appointments" className="mt-6 inline-flex px-8 py-3 bg-[var(--color-pv-ink)] text-white rounded-full text-[13px] font-bold uppercase tracking-widest transition-all">Back to Registry</Link>
+        </div>
       </div>
     )
   }
 
   const patientName = appt.patient_profile?.full_name ?? 'Patient'
-  const patientInitials = patientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
   const formattedDate = formatIndiaDate(appt.availabilities.starts_at, {
     weekday: 'short', day: 'numeric', month: 'long', year: 'numeric',
   })
   const startTime = formatIndiaTime(appt.availabilities.starts_at, { hour: '2-digit', minute: '2-digit' })
-  const endTime = formatIndiaTime(appt.availabilities.ends_at, { hour: '2-digit', minute: '2-digit' })
   const refCode = `BP-RECA-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const statusCfg = STATUS_CONFIG[appt.status]
-  const locationLabel = appt.visit_type === 'home_visit'
-    ? appt.home_visit_address ?? 'Home Visit'
-    : appt.locations ? `${appt.locations.name}, ${appt.locations.city}` : 'Clinic'
-  const locationCaption = appt.visit_type === 'home_visit' ? 'Visit Address' : 'Facility Location'
-  const providerNotes = appt.provider_notes ?? appt.notes
-  const legacyNotes = appt.legacy_notes
-  const gstAmount = appt.payment_gst_amount_inr ?? Math.round(appt.fee_inr * 0.18)
-  const totalDue = appt.payment_amount_inr ?? (appt.fee_inr + gstAmount)
-  const paymentStatus = appt.payment_status
-  const paymentLabel = paymentStatus === 'paid'
-    ? 'Paid'
-    : paymentStatus === 'refunded'
-      ? 'Refunded'
-      : paymentStatus === 'failed'
-        ? 'Payment Failed'
-        : paymentStatus === 'created'
-          ? 'Payment Pending'
-          : 'Pay at Visit'
-  const paymentSummaryLabel = paymentStatus === 'paid'
-    ? 'Collected Online incl. GST'
-    : paymentStatus === 'refunded'
-      ? 'Refunded payment record'
-      : paymentStatus === 'failed'
-        ? 'Online payment failed'
-        : paymentStatus === 'created'
-          ? 'Online payment initiated'
-          : 'Amount Due at Visit incl. GST'
+  
+  const paymentLabel = appt.payment_status === 'paid' ? 'Paid' : 'Pay at Visit'
+  const totalDue = appt.payment_amount_inr ?? (appt.fee_inr + (appt.payment_gst_amount_inr ?? Math.round(appt.fee_inr * 0.18)))
 
   return (
-    <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-10 md:py-16 animate-in fade-in duration-700">
-      <div className="mb-10">
-        <Link href="/provider/appointments" className="inline-flex items-center gap-3 text-bp-body/40 hover:text-bp-accent font-bold text-[11px] uppercase tracking-[0.2em] transition-colors group no-underline">
-          <div className="w-8 h-8 rounded-full border border-bp-border flex items-center justify-center group-hover:border-bp-accent/20 group-hover:bg-bp-accent/10 transition-all">
-            <ArrowLeft size={14} strokeWidth={3} />
-          </div>
-          Back to Registry
-        </Link>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <Link
+        href="/provider/appointments"
+        className="inline-flex items-center gap-2 text-[12px] font-bold text-slate-400 uppercase tracking-widest hover:text-[var(--color-pv-primary)] transition-colors"
+      >
+        <ArrowLeft size={14} />
+        Back to Registry
+      </Link>
+
+      <PageHeader
+        role="provider"
+        kicker="VIRTUAL RECORD"
+        title="Session Analysis"
+        subtitle={`Reference ID: ${refCode}`}
+        action={{
+           label: statusCfg.label,
+            tone: statusCfg.tone,
+           disabled: true
+        }}
+      />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatTile
+           role="provider"
+           icon={Calendar}
+           label="Date"
+           value={formattedDate}
+           tone={1}
+        />
+        <StatTile
+           role="provider"
+           icon={Clock}
+           label="Time"
+           value={startTime}
+           tone={4}
+        />
+        <StatTile
+           role="provider"
+           icon={CreditCard}
+           label="Payment"
+           value={paymentLabel}
+           tone={3}
+        />
+        <StatTile
+           role="provider"
+           icon={Activity}
+           label="Fee"
+           value={`₹${totalDue.toLocaleString('en-IN')}`}
+           tone={2}
+        />
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-full text-[10px] font-bold uppercase text-bp-accent tracking-widest shadow-sm">
-            <ShieldCheck size={12} strokeWidth={3} />
-            Verified Clinical Record
-          </div>
-          <h1 className="text-[36px] md:text-[42px] font-bold text-bp-primary leading-none tracking-tighter">
-            Consultation <span className="text-bp-accent">Analysis</span>
-          </h1>
-          <p className="text-[15px] font-bold text-bp-body/40">{refCode}</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className={cn('px-6 py-3 border rounded-2xl text-[13px] font-bold uppercase tracking-widest flex items-center gap-3', statusCfg.cls)}>
-            <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
-            {statusCfg.label}
-          </div>
-          <button aria-label="Appointment actions" title="Appointment actions" className="w-12 h-12 rounded-2xl bg-white border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-primary transition-colors shadow-sm">
-            <MoreHorizontal size={20} />
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
-        <div className="space-y-8">
-          {/* Patient Card */}
-          <div className="bg-white rounded-[44px] border border-bp-border p-8 md:p-10 shadow-[0_32px_64px_-24px_rgba(0,0,0,0.06)] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-bp-accent/10/30 rounded-full blur-[80px] -mr-32 -mt-32" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-10 pb-10 border-b border-bp-border/50">
-                <div className="w-20 h-20 rounded-[32px] bg-bp-accent/10 flex items-center justify-center text-bp-accent text-[32px] font-bold shadow-inner">
-                  {appt.patient_profile?.avatar_url
-                    ? <Image src={appt.patient_profile.avatar_url} alt={patientName} width={80} height={80} className="w-full h-full rounded-[32px] object-cover" />
-                    : patientInitials
-                  }
-                </div>
-                <div className="flex-1">
-                  <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-[0.2em] mb-1">Patient Registry</p>
-                  <h2 className="text-[28px] font-bold text-bp-primary tracking-tighter leading-none mb-2">{patientName}</h2>
-                  <div className="flex items-center gap-4 text-[13px] font-bold text-bp-body/40">
-                    <span className="flex items-center gap-1.5">
-                      <ShieldCheck size={14} className="text-emerald-500" />
-                      Verified Patient
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-                {appt.patient_profile?.phone && (
-                  <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border group hover:bg-white hover:shadow-xl transition-all duration-300">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-bp-accent shadow-sm">
-                        <Phone size={18} />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-widest mb-0.5">Contact</p>
-                        <p className="text-[15px] font-bold text-bp-primary">{appt.patient_profile.phone}</p>
-                      </div>
-                    </div>
-                  </div>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr,360px] gap-6">
+        <div className="space-y-6 lg:space-y-10">
+          <SectionCard role="provider" title="Patient Context" kicker="REGISTRY PROFILE">
+            <div className="flex flex-col md:flex-row items-center gap-8 py-4">
+              <div className="w-24 h-24 rounded-[32px] bg-[var(--color-pv-tile-1-bg)] border-2 border-white shadow-xl flex items-center justify-center text-[32px] font-black text-[var(--color-pv-primary)] shrink-0 overflow-hidden">
+                {appt.patient_profile?.avatar_url ? (
+                  <Image src={appt.patient_profile.avatar_url} alt="" width={96} height={96} />
+                ) : (
+                  patientName.charAt(0).toUpperCase()
                 )}
-                <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border group hover:bg-white hover:shadow-xl transition-all duration-300">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-bp-secondary shadow-sm">
-                      <MapPin size={18} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-widest mb-0.5">Session Type</p>
-                      <p className="text-[15px] font-bold text-bp-primary capitalize">{appt.visit_type.replace('_', ' ')}</p>
-                    </div>
-                  </div>
+              </div>
+              <div className="flex-1 text-center md:text-left space-y-2">
+                <h2 className="text-[28px] font-black text-[var(--color-pv-ink)] tracking-tight leading-none">{patientName}</h2>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-[14px] font-bold text-slate-400">
+                   <div className="flex items-center gap-1.5"><Phone size={14} className="text-[var(--color-pv-primary)]" /> {appt.patient_profile?.phone || '—'}</div>
+                   <div className="flex items-center gap-1.5 capitalize"><Activity size={14} className="text-indigo-400" /> {appt.visit_type.replace('_', ' ')}</div>
                 </div>
               </div>
+              <button className="px-6 py-2 bg-[var(--color-pv-track-bg)] hover:bg-white border-2 border-transparent hover:border-slate-100 rounded-full text-[12px] font-bold text-slate-600 transition-all shadow-sm">
+                View History
+              </button>
+            </div>
+          </SectionCard>
 
-              {(appt.patient_reason || appt.home_visit_address || legacyNotes) && (
-                <div className="space-y-4 mb-12">
-                  <div className="flex items-center gap-3">
-                    <ClipboardList className="text-bp-accent" size={18} strokeWidth={3} />
-                    <h3 className="text-[18px] font-bold text-bp-primary tracking-tight">Patient Intake</h3>
-                  </div>
+          {(appt.patient_reason || appt.home_visit_address) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               {appt.home_visit_address && (
+                  <SectionCard role="provider" title="Service Location">
+                     <div className="flex items-start gap-3 p-2">
+                        <MapPin size={18} className="text-rose-400 shrink-0 mt-1" />
+                        <p className="text-[14px] font-bold text-slate-700 leading-relaxed">{appt.home_visit_address}</p>
+                     </div>
+                  </SectionCard>
+               )}
+               {appt.patient_reason && (
+                  <SectionCard role="provider" title="Intake Notes">
+                     <div className="flex items-start gap-3 p-2">
+                        <ClipboardList size={18} className="text-indigo-400 shrink-0 mt-1" />
+                        <p className="text-[14px] font-bold text-slate-700 leading-relaxed">{appt.patient_reason}</p>
+                     </div>
+                  </SectionCard>
+               )}
+            </div>
+          )}
 
-                  {appt.home_visit_address && (
-                    <div className="p-6 bg-bp-secondary/10/60 rounded-3xl border border-bp-secondary/20">
-                      <p className="text-[10px] font-bold text-bp-secondary uppercase tracking-widest mb-2">Home Visit Address</p>
-                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{appt.home_visit_address}</p>
-                    </div>
-                  )}
-
-                  {appt.patient_reason && (
-                    <div className="p-6 bg-bp-surface rounded-3xl border border-bp-border">
-                      <p className="text-[10px] font-bold text-bp-body/40 uppercase tracking-widest mb-2">Patient Notes</p>
-                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{appt.patient_reason}</p>
-                    </div>
-                  )}
-
-                  {legacyNotes && (
-                    <div className="p-6 bg-amber-50/80 rounded-3xl border border-amber-100">
-                      <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">Legacy Booking Notes</p>
-                      <p className="text-[15px] font-bold text-bp-primary leading-relaxed">{legacyNotes}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Clinical Notes */}
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-[18px] font-bold text-bp-primary flex items-center gap-3 tracking-tight">
-                    <ClipboardList className="text-bp-accent" size={20} strokeWidth={3} />
-                    Provider Notes
-                  </h3>
-                  <span className="text-[11px] font-bold text-bp-body/30 uppercase tracking-widest">
-                    {saved ? '✓ Saved' : 'Auto-Saving Enabled'}
-                  </span>
-                </div>
-                <div className="relative">
-                  <textarea
-                    rows={8}
-                    value={notesDraft ?? providerNotes ?? ''}
-                    onChange={e => setNotesDraft(e.target.value)}
-                    placeholder="Document clinical diagnosis, treatment provided, differential observations, and rehabilitation roadmap..."
-                    className="w-full p-8 bg-bp-surface/50 border border-bp-border rounded-[32px] text-[16px] font-bold text-bp-primary leading-relaxed placeholder:text-bp-body/30 focus:bg-white focus:ring-4 focus:ring-bp-accent/5 focus:border-bp-accent/20 outline-none transition-all resize-none shadow-inner"
-                  />
-                  <div className="absolute bottom-4 right-4">
-                    <button
-                      onClick={() => notesMut.mutate()}
-                      disabled={notesMut.isPending}
-                      className="flex items-center gap-3 px-8 py-4 bg-bp-primary text-white rounded-[20px] text-[14px] font-bold hover:bg-bp-accent transition-all shadow-xl active:scale-[0.97] disabled:opacity-70"
-                    >
-                      {notesMut.isPending ? 'Saving...' : 'Commit Record'}
-                      <CheckCircle2 size={18} strokeWidth={3} />
-                    </button>
-                  </div>
-                </div>
+          <SectionCard role="provider" title="Clinical Observations" kicker="PRACTITIONER NOTES">
+            <div className="space-y-6">
+              <textarea
+                rows={8}
+                value={notesDraft ?? appt.provider_notes ?? appt.notes ?? ''}
+                onChange={e => setNotesDraft(e.target.value)}
+                placeholder="Document clinical diagnosis and roadmap..."
+                className="w-full p-6 bg-slate-50 border border-slate-200 rounded-2xl text-[15px] font-bold text-slate-900 leading-relaxed focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none"
+              />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest italic">
+                   {saved ? '✓ Verified Persistence' : 'Clinical records auto-saved'}
+                </span>
+                <button
+                  onClick={() => notesMut.mutate()}
+                  disabled={notesMut.isPending}
+                  className="px-8 py-3 bg-[var(--color-pv-ink)] text-white rounded-xl text-[13px] font-black uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all flex items-center gap-2 group shadow-xl shadow-indigo-500/10 disabled:opacity-40"
+                >
+                  {notesMut.isPending ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} className="group-hover:scale-110 transition-transform" />}
+                  {notesMut.isPending ? 'Committing...' : 'Commit Record'}
+                </button>
               </div>
             </div>
-          </div>
+          </SectionCard>
         </div>
 
-        {/* Session Context Sidebar */}
-        <aside className="space-y-8">
-          <div className="bg-bp-primary rounded-[40px] p-8 md:p-10 shadow-2xl shadow-gray-900/10 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-[40px] -mr-16 -mt-16 transition-transform group-hover:scale-110" />
-            <div className="relative z-10 space-y-8">
-              <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em] leading-none">Session Context</p>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
-                    <Calendar size={22} strokeWidth={3} />
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-bold">{formattedDate}</p>
-                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Appointment Date</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
-                    <Clock size={22} strokeWidth={3} />
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-bold">{startTime} — {endTime}</p>
-                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">
-                      Duration: {appt.availabilities.slot_duration_mins}m
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-bp-accent/70 border border-white/5 shadow-sm">
-                    <MapPin size={22} strokeWidth={3} />
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-bold">{locationLabel}</p>
-                    <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">{locationCaption}</p>
-                  </div>
-                </div>
+        <aside className="space-y-6">
+           <SectionCard role="provider" title="Session Context">
+              <div className="space-y-5">
+                 {[
+                   { icon: Calendar, label: 'Date', value: formattedDate },
+                   { icon: Clock, label: 'Time', value: `${startTime}` },
+                   { icon: Activity, label: 'Visit', value: appt.visit_type.replace('_', ' ') },
+                   { icon: CreditCard, label: 'Status', value: paymentLabel, tone: appt.payment_status === 'paid' ? 'text-emerald-500' : 'text-amber-500' }
+                 ].map((item, idx) => (
+                   <div key={idx} className="flex justify-between items-center py-1">
+                      <div className="flex items-center gap-3">
+                         <item.icon size={16} className="text-slate-300" />
+                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</span>
+                      </div>
+                      <span className={cn("text-[13px] font-bold", item.tone || "text-slate-900")}>{item.value}</span>
+                   </div>
+                 ))}
+                 <div className="pt-4 mt-2 border-t border-slate-50">
+                    <button className="w-full py-3 bg-slate-50 text-[12px] font-bold text-slate-600 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                       Reschedule Session
+                       <ArrowUpRight size={14} />
+                    </button>
+                 </div>
               </div>
-              <div className="pt-6 border-t border-white/5">
-                <div className="flex items-center justify-between gap-4 mb-8">
-                  <div>
-                    <p className="text-[15px] font-bold">₹{totalDue.toLocaleString('en-IN')}</p>
-                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest">{paymentSummaryLabel}</p>
-                  </div>
-                  <div className={cn(
-                    'px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase shadow-lg',
-                    paymentStatus === 'paid'
-                      ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                      : paymentStatus === 'refunded'
-                        ? 'bg-bp-accent text-white shadow-bp-accent/20'
-                        : paymentStatus === 'failed'
-                          ? 'bg-red-500 text-white shadow-red-500/20'
-                          : paymentStatus === 'created'
-                            ? 'bg-yellow-300 text-bp-primary shadow-yellow-400/20'
-                            : 'bg-amber-400 text-bp-primary shadow-amber-500/20'
-                  )}>
-                    {paymentLabel}
-                  </div>
-                </div>
-                <Link href="/provider/earnings" className="flex items-center justify-between w-full p-5 bg-white/5 border border-white/5 rounded-3xl group/btn hover:bg-white/10 transition-all font-bold text-white/80 no-underline">
-                  <span className="text-[13px] font-bold uppercase tracking-widest leading-none">Open Earnings</span>
-                  <ArrowUpRight size={18} className="text-white/20 group-hover/btn:text-white group-hover/btn:rotate-12 transition-all" />
-                </Link>
-              </div>
-            </div>
-          </div>
+           </SectionCard>
 
-          <div className="bg-white rounded-[40px] p-8 border border-bp-border flex flex-col gap-4">
-            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-bp-body hover:bg-bp-surface hover:text-bp-primary transition-all border-none bg-transparent cursor-pointer">
-              <div className="w-10 h-10 rounded-xl border border-bp-border flex items-center justify-center bg-white"><Zap size={18} /></div>
-              Reschedule Session
-            </button>
-            <button className="flex items-center gap-4 px-6 py-4 rounded-2xl text-[14px] font-bold text-orange-400 hover:bg-bp-secondary/10 transition-all border-none bg-transparent cursor-pointer">
-              <div className="w-10 h-10 rounded-xl border border-bp-secondary/20 flex items-center justify-center bg-white"><CircleAlert size={18} /></div>
-              Flag Issue
-            </button>
-          </div>
+           <SectionCard role="provider" title="Registry Support">
+              <div className="space-y-4">
+                 <button className="w-full flex items-center gap-3 px-4 py-3 bg-rose-50/50 hover:bg-rose-50 text-rose-500 rounded-xl text-[12px] font-bold transition-all border border-rose-100/50 group">
+                    <CircleAlert size={16} className="group-hover:scale-110 transition-transform" />
+                    Flag Clinical Issue
+                 </button>
+                 <Link href="/provider/earnings" className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-[12px] font-bold transition-all border border-slate-100/50 group">
+                    <Activity size={16} className="group-hover:translate-x-1 transition-transform" />
+                    Open Earnings Hub
+                 </Link>
+              </div>
+           </SectionCard>
         </aside>
       </div>
     </div>

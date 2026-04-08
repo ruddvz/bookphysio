@@ -1,7 +1,13 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bell, CheckCheck, Clock, ShieldCheck, Calendar, CreditCard, MessageSquare, AlertCircle, Loader2 } from 'lucide-react'
+import { Bell, CheckCheck, Clock, ShieldCheck, Calendar, CreditCard, MessageSquare, AlertCircle, type LucideIcon } from 'lucide-react'
+import {
+  PageHeader,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
 
 interface Notification {
   id: string
@@ -12,28 +18,12 @@ interface Notification {
   created_at: string
 }
 
-const TYPE_ICON: Record<string, React.ReactNode> = {
-  appointment_confirmed: <Calendar className="w-5 h-5 text-blue-600" />,
-  appointment_cancelled: <AlertCircle className="w-5 h-5 text-[#EF4444]" />,
-  payment_success: <CreditCard className="w-5 h-5 text-[#2563EB]" />,
-  new_message: <MessageSquare className="w-5 h-5 text-[#7C3AED]" />,
-  account_verified: <ShieldCheck className="w-5 h-5 text-[#22C55E]" />,
-}
-
-const TYPE_BG: Record<string, string> = {
-  appointment_confirmed: 'bg-blue-600/10',
-  appointment_cancelled: 'bg-[#FEF2F2]',
-  payment_success: 'bg-[#EFF6FF]',
-  new_message: 'bg-[#F5F3FF]',
-  account_verified: 'bg-[#DCFCE7]',
-}
-
-function getIcon(type: string) {
-  return TYPE_ICON[type] ?? <Bell className="w-5 h-5 text-[#9CA3AF]" />
-}
-
-function getIconBg(type: string) {
-  return TYPE_BG[type] ?? 'bg-[#F3F4F6]'
+const TYPE_ICON: Record<string, LucideIcon> = {
+  appointment_confirmed: Calendar,
+  appointment_cancelled: AlertCircle,
+  payment_success: CreditCard,
+  new_message: MessageSquare,
+  account_verified: ShieldCheck,
 }
 
 const RELATIVE_TIME_FORMATTER = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
@@ -57,7 +47,6 @@ async function fetchNotifications(): Promise<{ notifications: Notification[] }> 
 }
 
 async function markAllRead() {
-  // Mark each unread notification as read via the bulk approach
   const res = await fetch('/api/notifications', { method: 'PATCH' })
   if (!res.ok) throw new Error('Failed to mark all as read')
   return res.json()
@@ -72,7 +61,7 @@ async function markOneRead(id: string) {
 export default function PatientNotifications() {
   const queryClient = useQueryClient()
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['notifications'],
     queryFn: fetchNotifications,
   })
@@ -91,86 +80,70 @@ export default function PatientNotifications() {
   const unreadCount = notifications.filter(n => !n.read).length
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight">Notifications</h1>
-          {unreadCount > 0 && (
-            <p className="text-[14px] text-bp-body mt-1">{unreadCount} unread</p>
-          )}
-        </div>
-        {unreadCount > 0 && (
-          <button
-            onClick={() => markAllMutation.mutate()}
-            disabled={markAllMutation.isPending}
-            className="flex items-center gap-2 text-[14px] font-semibold text-blue-600 hover:text-slate-900 cursor-pointer bg-transparent border-none outline-none transition-colors disabled:opacity-50"
-          >
-            <CheckCheck className="w-4 h-4" />
-            Mark all as read
-          </button>
-        )}
-      </div>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="patient"
+        kicker="UPDATES"
+        title="Notifications"
+        subtitle={unreadCount > 0 ? `You have ${unreadCount} unread updates` : "You're all caught up"}
+        action={unreadCount > 0 ? {
+          label: 'Mark all read',
+          onClick: () => markAllMutation.mutate(),
+          icon: CheckCheck
+        } : undefined}
+      />
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      )}
-
-      {isError && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center">
-          <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
-            <Bell className="w-7 h-7 text-slate-400" />
+      <SectionCard role="patient" title="Recent activity">
+        {isLoading ? (
+          <div className="space-y-4 py-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-xl" />
+            ))}
           </div>
-          <p className="text-[15px] font-medium text-slate-900 mb-1">No notifications yet</p>
-          <p className="text-[13px] text-slate-400">When you get notifications, they will appear here.</p>
-        </div>
-      )}
-
-      {!isLoading && !isError && (
-        <div className="flex flex-col gap-3">
-          {notifications.length === 0 ? (
-            <div className="bg-white rounded-[12px] border border-bp-border shadow-sm p-10 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
-                <Bell className="w-7 h-7 text-[#9CA3AF]" />
-              </div>
-              <p className="text-[15px] font-medium text-slate-900 mb-1">You&apos;re all caught up</p>
-              <p className="text-[13px] text-[#9CA3AF]">No notifications yet.</p>
-            </div>
-          ) : (
-            notifications.map((n) => (
-              <div
+        ) : isError ? (
+          <EmptyState
+            role="patient"
+            icon={AlertCircle}
+            title="Couldn't load updates"
+            description="There was an error fetching your notifications."
+            cta={{ label: 'Retry', onClick: refetch }}
+          />
+        ) : notifications.length === 0 ? (
+          <EmptyState
+            role="patient"
+            icon={Bell}
+            title="All caught up!"
+            description="Your notifications will appear here when there are updates to your care."
+          />
+        ) : (
+          <div className="divide-y divide-[var(--color-pt-border-soft)]">
+            {notifications.map((n) => (
+              <ListRow
                 key={n.id}
+                role="patient"
+                icon={TYPE_ICON[n.type] || Bell}
+                tone={n.read ? 1 : 1}
+                primary={n.title}
+                secondary={n.body}
+                className={!n.read ? "bg-[var(--color-pt-tile-1-bg)]/20 cursor-pointer" : ""}
+                right={
+                   <div className="flex flex-col items-end gap-2">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                        <Clock size={10} />
+                        {formatRelativeTime(n.created_at)}
+                      </span>
+                      {!n.read && (
+                         <div className="w-2 h-2 rounded-full bg-[var(--color-pt-primary)]" />
+                      )}
+                   </div>
+                }
                 onClick={() => !n.read && markOneMutation.mutate(n.id)}
-                className={`rounded-[12px] border shadow-sm p-5 flex gap-4 items-start transition-colors ${
-                  n.read
-                    ? 'bg-white border-bp-border'
-                    : 'bg-[#FAFFFE] border-[#B2DFDB] cursor-pointer hover:border-blue-600'
-                }`}
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${getIconBg(n.type)}`}>
-                  {getIcon(n.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className={`text-[15px] font-semibold ${n.read ? 'text-bp-body' : 'text-slate-900'}`}>
-                      {n.title}
-                    </h3>
-                    {!n.read && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0 mt-1.5" />
-                    )}
-                  </div>
-                  <p className="text-[13px] text-bp-body mt-0.5">{n.body}</p>
-                  <span className="flex items-center gap-1 text-[12px] text-[#9CA3AF] mt-2">
-                    <Clock className="w-3 h-3" />
-                    {formatRelativeTime(n.created_at)}
-                  </span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
     </div>
   )
 }
+

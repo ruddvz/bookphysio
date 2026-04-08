@@ -1,70 +1,74 @@
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { getDemoPatientFacingRecords } from '@/lib/demo/store'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import { createClient } from '@/lib/supabase/server'
 import type { PatientFacingRecord } from '@/lib/clinical/types'
 
-interface VisitJoinRow {
-  id: string
+interface PatientFacingRecordRow {
+  visit_id: string
   visit_number: number
   visit_date: string
-  profile_id: string
-  provider_id: string
+  provider_name: string | null
+  plan: string | null
+  patient_summary: string | null
 }
 
-export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store',
+}
 
-  // Profiles where this user is the linked patient
-  const { data: profiles } = await supabase
-    .from('patient_clinical_profiles')
-    .select('id, provider_id')
-    .eq('patient_user_id', user.id)
+function jsonNoStore(body: unknown, init?: ResponseInit) {
+  return NextResponse.json(body, {
+    ...init,
+    headers: {
+      ...NO_STORE_HEADERS,
+      ...(init?.headers ?? {}),
+    },
+  })
+}
 
-  const profileIds = (profiles ?? []).map((p) => p.id)
-  if (profileIds.length === 0) {
-    return NextResponse.json({ records: [] })
+export async function GET(request?: NextRequest) {
+  try {
+    const dashboardView = request?.nextUrl.searchParams.get('view') === 'dashboard'
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    const demoSession = !user && request ? await getDemoSessionFromCookies(request.cookies) : null
+
+    if (!user && demoSession?.role === 'patient') {
+      return jsonNoStore({
+        records: getDemoPatientFacingRecords().map((record) => ({
+          ...record,
+          plan: dashboardView ? null : record.plan,
+        })),
+      })
+    }
+
+    if (!user) {
+      return jsonNoStore({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { data, error } = await supabase.rpc('get_patient_facing_records')
+
+    if (error) {
+      throw error
+    }
+
+    const records: PatientFacingRecord[] = ((data as PatientFacingRecordRow[] | null) ?? []).map((record) => ({
+      visit_id: record.visit_id,
+      visit_number: record.visit_number,
+      visit_date: record.visit_date,
+      provider_name: record.provider_name ?? 'Provider',
+      plan: dashboardView ? null : record.plan ?? null,
+      patient_summary: record.patient_summary ?? null,
+    }))
+
+    return jsonNoStore({ records })
+  } catch (error) {
+    console.error('Failed to load patient records', error)
+    return jsonNoStore({ error: 'Failed to load records' }, { status: 500 })
   }
-
-  const { data: visits } = await supabase
-    .from('patient_visits')
-    .select('id, visit_number, visit_date, profile_id, provider_id')
-    .in('profile_id', profileIds)
-    .order('visit_date', { ascending: false })
-
-  const visitIds = (visits ?? []).map((v) => v.id)
-  if (visitIds.length === 0) {
-    return NextResponse.json({ records: [] })
-  }
-
-  // Server-side filter: only expose plan + patient_summary to patient
-  const { data: notes } = await supabase
-    .from('clinical_notes')
-    .select('visit_id, plan, patient_summary')
-    .in('visit_id', visitIds)
-
-  const noteByVisit = new Map<string, { plan: string | null; patient_summary: string | null }>()
-  for (const n of notes ?? []) {
-    noteByVisit.set(n.visit_id, { plan: n.plan, patient_summary: n.patient_summary })
-  }
-
-  const providerIds = Array.from(new Set((visits ?? []).map((v) => v.provider_id)))
-  const { data: providers } = await supabase
-    .from('users')
-    .select('id, full_name')
-    .in('id', providerIds)
-
-  const providerNameById = new Map<string, string>()
-  for (const p of providers ?? []) providerNameById.set(p.id, p.full_name)
-
-  const records: PatientFacingRecord[] = (visits as VisitJoinRow[] ?? []).map((v) => ({
-    visit_id: v.id,
-    visit_number: v.visit_number,
-    visit_date: v.visit_date,
-    provider_name: providerNameById.get(v.provider_id) ?? 'Provider',
-    plan: noteByVisit.get(v.id)?.plan ?? null,
-    patient_summary: noteByVisit.get(v.id)?.patient_summary ?? null,
-  }))
-
-  return NextResponse.json({ records })
 }

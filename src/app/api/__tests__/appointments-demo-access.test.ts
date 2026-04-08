@@ -26,6 +26,28 @@ describe('GET /api/appointments demo access', () => {
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
   })
 
+  it('returns patient demo dashboard appointments without a Supabase session', async () => {
+    const { GET } = await import('../appointments/route')
+    const demoCookie = await buildDemoCookie('patient')
+    const request = new NextRequest('http://localhost/api/appointments?view=dashboard', {
+      headers: {
+        cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}`,
+      },
+    })
+
+    const response = await GET(request)
+    const body = (await response.json()) as {
+      appointments?: Array<{
+        id: string
+        providers?: { users?: { full_name?: string } }
+      }>
+    }
+
+    expect(response.status).toBe(200)
+    expect(body.appointments?.[0]?.id).toBe('demo-patient-appt-1')
+    expect(body.appointments?.[0]?.providers?.users?.full_name).toBe('Dr. Meera Iyer')
+  })
+
   it('returns patient demo appointments without a Supabase session', async () => {
     const { GET } = await import('../appointments/route')
     const demoCookie = await buildDemoCookie('patient')

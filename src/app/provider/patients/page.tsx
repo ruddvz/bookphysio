@@ -2,10 +2,16 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Search, Users, Loader2, AlertCircle, Phone, UserPlus } from 'lucide-react'
+import { AlertCircle, ArrowRight, Phone, Search, UserPlus, Users, CalendarDays, ClipboardList } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AddPatientModal } from '@/components/clinical/AddPatientModal'
 import type { PatientRosterRow } from '@/lib/clinical/types'
+import {
+  PageHeader,
+  SectionCard,
+  ListRow,
+  EmptyState,
+} from '@/components/dashboard/primitives'
 
 async function fetchRoster(): Promise<{ patients: PatientRosterRow[] }> {
   const res = await fetch('/api/provider/patients')
@@ -39,14 +45,14 @@ export default function ProviderPatients() {
   const [showAdd, setShowAdd] = useState(false)
   const queryClient = useQueryClient()
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['provider-patient-roster'],
     queryFn: fetchRoster,
   })
 
-  const allPatients = data?.patients ?? []
+  const allPatients = useMemo(() => data?.patients ?? [], [data?.patients])
 
-  const patients = useMemo(() => {
+  const filteredPatients = useMemo(() => {
     if (!search.trim()) return allPatients
     const q = search.toLowerCase()
     return allPatients.filter(
@@ -55,130 +61,101 @@ export default function ProviderPatients() {
   }, [allPatients, search])
 
   return (
-    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-        <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">Patient Records</h1>
-          <p className="text-[15px] text-bp-body">
-            {isLoading
-              ? 'Loading…'
-              : `${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''} in your directory`}
-          </p>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="relative">
-            <input
-              type="search"
-              placeholder="Search by name or phone…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full md:w-[260px] pl-11 pr-4 py-2.5 rounded-full border border-bp-border bg-white text-[14px] text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-bp-accent outline-none transition-shadow"
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-full text-[14px] font-semibold hover:bg-emerald-700 transition-colors"
-          >
-            <UserPlus className="w-4 h-4" />
-            Add Patient
-          </button>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="provider"
+        kicker="DIRECTORY"
+        title="Patient registry"
+        subtitle={isLoading ? "Synchronizing clinical records..." : `Managing ${allPatients.length} active clinical profiles`}
+        action={{
+          label: 'Add patient',
+          icon: UserPlus,
+          onClick: () => setShowAdd(true)
+        }}
+      />
+
+      {/* Roster Controls */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="relative group w-full lg:max-w-md">
+           <input
+             type="text"
+             placeholder="Search name or phone..."
+             value={search}
+             onChange={(e) => setSearch(e.target.value)}
+             className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-2xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
+           />
+           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-        </div>
-      )}
-
-      {isError && (
-        <div className="bg-[#FEF2F2] rounded-[12px] border border-[#FECACA] p-6 text-center">
-          <AlertCircle className="w-8 h-8 text-[#EF4444] mx-auto mb-3" />
-          <p className="text-[15px] font-medium text-slate-900">Failed to load patient records</p>
-          <p className="text-[13px] text-[#6B7280] mt-1">Please try refreshing the page.</p>
-        </div>
-      )}
-
-      {!isLoading && !isError && (
-        <div className="bg-white rounded-[12px] border border-bp-border overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left whitespace-nowrap">
-              <thead className="bg-[#F9FAFB] border-b border-bp-border">
-                <tr>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Patient</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Phone</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Chief Complaint</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Last Visit</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Visits</th>
-                  <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E5E5E5]">
-                {patients.length > 0 ? (
-                  patients.map((p) => (
-                    <tr key={p.profile_id} className="hover:bg-[#F9FAFB] transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-emerald-600/10 text-emerald-600 flex items-center justify-center text-[14px] font-bold shrink-0">
-                            {p.patient_name.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="text-[14px] font-medium text-slate-900">{p.patient_name}</p>
-                            {p.patient_age && (
-                              <p className="text-[12px] text-slate-500">Age {p.patient_age}</p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-[14px] text-bp-body">
-                          {p.patient_phone && <Phone className="w-3.5 h-3.5 text-bp-body/40" />}
-                          {formatPhone(p.patient_phone)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-[14px] text-bp-body max-w-[240px] truncate">
-                        {p.chief_complaint ?? '—'}
-                      </td>
-                      <td className="px-6 py-4 text-[14px] text-bp-body">{formatDate(p.last_visit_date)}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-600/10 text-emerald-600">
-                          {p.visit_count} visit{p.visit_count !== 1 ? 's' : ''}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/provider/patients/${p.profile_id}`}
-                          className="text-[13px] font-semibold text-emerald-600 hover:text-slate-900 transition-colors"
-                        >
-                          Open chart →
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="py-16 text-center">
-                      <div className="flex flex-col items-center">
-                        <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
-                          <Users className="w-7 h-7 text-[#9CA3AF]" />
-                        </div>
-                        <p className="text-[15px] font-medium text-slate-900 mb-1">
-                          {search ? 'No patients match your search' : 'No patients yet'}
-                        </p>
-                        <p className="text-[13px] text-[#9CA3AF]">
-                          {search ? 'Try a different name or phone number.' : 'Add your first patient to get started.'}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      <SectionCard role="provider" title="Active roster">
+        {isLoading ? (
+          <div className="space-y-4 py-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-xl" />
+            ))}
           </div>
-        </div>
-      )}
+        ) : isError ? (
+          <EmptyState
+            role="provider"
+            icon={AlertCircle}
+            title="Handshake failure"
+            description="We encountered an error synchronizing the clinical roster."
+            cta={{ label: 'Retry sync', onClick: refetch }}
+          />
+        ) : filteredPatients.length === 0 ? (
+          <EmptyState
+            role="provider"
+            icon={Users}
+            title={search ? "No matches found" : "Registry is vacant"}
+            description={search ? `Your search for "${search}" returned no results.` : "This clinic has no registered patient profiles yet."}
+            cta={!search ? { label: 'Register patient', onClick: () => setShowAdd(true) } : undefined}
+          />
+        ) : (
+          <div className="divide-y divide-slate-100/50">
+            {filteredPatients.map((p) => (
+              <ListRow
+                key={p.profile_id}
+                role="provider"
+                icon={
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-pv-tile-1-bg)] text-[var(--color-pv-primary)] flex items-center justify-center text-sm font-black border border-[var(--color-pv-tile-1-bg)]/20">
+                    {p.patient_name.charAt(0).toUpperCase()}
+                  </div>
+                }
+                primary={p.patient_name}
+                secondary={
+                   <div className="flex items-center gap-4">
+                     <span className="flex items-center gap-1.5"><Phone size={12} /> {formatPhone(p.patient_phone)}</span>
+                     {p.chief_complaint && (
+                       <span className="flex items-center gap-1.5 text-slate-500 font-bold">
+                         <ClipboardList size={12} /> {p.chief_complaint}
+                       </span>
+                     )}
+                   </div>
+                }
+                right={
+                  <div className="flex items-center gap-8">
+                     <div className="hidden lg:flex flex-col items-end gap-1">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last Visit</span>
+                        <span className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
+                          <CalendarDays size={14} className="text-slate-300" />
+                          {formatDate(p.last_visit_date)}
+                        </span>
+                     </div>
+                     <Link
+                       href={`/provider/patients/${p.profile_id}`}
+                       className="flex items-center gap-2 px-5 py-2 bg-slate-100 text-slate-500 hover:bg-[var(--color-pv-ink)] hover:text-white rounded-full text-[12px] font-bold transition-all group/btn"
+                     >
+                       Chart
+                       <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" strokeWidth={3} />
+                     </Link>
+                  </div>
+                }
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
 
       {showAdd && (
         <AddPatientModal
@@ -193,3 +170,4 @@ export default function ProviderPatients() {
     </div>
   )
 }
+

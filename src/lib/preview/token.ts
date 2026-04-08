@@ -1,5 +1,9 @@
 import type { NextRequest } from 'next/server'
 
+interface PreviewCookieReader {
+  get: (name: string) => { value: string } | undefined
+}
+
 const PREVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
 const encoder = new TextEncoder()
 
@@ -69,5 +73,9 @@ export async function isValidPreviewToken(
 }
 
 export async function hasValidPreviewCookie(request: NextRequest): Promise<boolean> {
-  return isValidPreviewToken(request.cookies.get('preview_token')?.value, process.env.PREVIEW_PASSWORD)
+  return hasValidPreviewCookieValue(request.cookies)
+}
+
+export async function hasValidPreviewCookieValue(cookies: PreviewCookieReader): Promise<boolean> {
+  return isValidPreviewToken(cookies.get('preview_token')?.value, process.env.PREVIEW_PASSWORD)
 }

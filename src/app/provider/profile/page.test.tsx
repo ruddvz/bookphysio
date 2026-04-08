@@ -81,10 +81,10 @@ describe('ProviderProfile', () => {
     fireEvent.change(screen.getByLabelText(/consultation fee/i), {
       target: { value: '1200' },
     })
-    fireEvent.change(screen.getByLabelText(/experience years/i), {
+    fireEvent.change(screen.getByLabelText(/years of practice/i), {
       target: { value: '9' },
     })
-    fireEvent.change(screen.getByLabelText(/professional bio/i), {
+    fireEvent.change(screen.getByLabelText(/provider biography/i), {
       target: { value: 'Updated rehab specialist' },
     })
 

@@ -103,6 +103,28 @@ describe('Auth and admin hardening routes', () => {
     })
   })
 
+  it('does not bypass the normal OTP send flow for legacy demo phone numbers', async () => {
+    const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({
+      auth: {
+        signInWithOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/send/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919000000000', flow: 'login' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(200)
+    expect(signInWithOtp).toHaveBeenCalledWith({
+      phone: '+919000000000',
+      options: { shouldCreateUser: false },
+    })
+  })
+
   it('returns a uniform success response when a login OTP send targets a missing account', async () => {
     const signInWithOtp = vi.fn().mockResolvedValue({
       error: { message: 'Signups not allowed for otp' },
@@ -268,6 +290,35 @@ describe('Auth and admin hardening routes', () => {
 
     expect(response.status).toBe(200)
     await expect(response.json()).resolves.toMatchObject({ role: 'patient' })
+  })
+
+  it('rejects legacy demo OTP codes through the normal verification flow', async () => {
+    const verifyOtp = vi.fn().mockResolvedValue({
+      data: { user: null },
+      error: { message: 'Invalid OTP' },
+    })
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        verifyOtp,
+      },
+    })
+
+    const { POST } = await import('../auth/otp/verify/route')
+    const response = await POST(new Request('http://localhost/api/auth/otp/verify', {
+      method: 'POST',
+      body: JSON.stringify({ phone: '+919000000000', otp: '999999' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(verifyOtp).toHaveBeenCalledWith({
+      phone: '+919000000000',
+      token: '999999',
+      type: 'sms',
+    })
+    expect(response.status).toBe(400)
+    expect(response.headers.get('set-cookie')).toBeNull()
+    await expect(response.json()).resolves.toEqual({ error: 'Invalid OTP' })
   })
 
   it('keeps OTP verification successful when profile sync fails after auth succeeds', async () => {

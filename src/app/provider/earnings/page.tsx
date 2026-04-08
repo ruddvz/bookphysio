@@ -1,8 +1,21 @@
-'use client'
+"use client"
 
-import { IndianRupee, TrendingUp, Wallet, Receipt, Download, Calendar, Loader2, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
+import {
+  Download,
+  FileText,
+  IndianRupee,
+  Receipt,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react'
+import {
+  PageHeader,
+  StatTile,
+  SectionCard,
+  EmptyState,
+} from '@/components/dashboard/primitives'
 
 interface AppointmentRow {
   id: string
@@ -66,7 +79,7 @@ function buildTransactions(appointments: AppointmentRow[]): Transaction[] {
 }
 
 export default function ProviderEarnings() {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['provider-appointments-earnings'],
     queryFn: fetchAppointments,
   })
@@ -80,153 +93,172 @@ export default function ProviderEarnings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="animate-pulse space-y-8">
+          <div className="h-20 bg-slate-100 rounded-2xl w-1/3" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-slate-100 rounded-2xl" />)}
+          </div>
+          <div className="h-64 bg-slate-100 rounded-2xl" />
+        </div>
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="max-w-[1040px] mx-auto px-6 py-12">
-        <p className="text-center text-red-500 font-bold">Failed to load earnings data. Please refresh.</p>
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <EmptyState
+          role="provider"
+          icon={TrendingUp}
+          title="Ledger sync error"
+          description="We couldn't fetch your financial data at this time."
+          cta={{ label: 'Reload workspace', onClick: refetch }}
+        />
       </div>
     )
   }
 
   return (
-    <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-1">
-            Earnings & Payouts
-          </h1>
-          <p className="text-[15px] text-slate-500">Track your revenue and pending payouts.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/provider/bills/new"
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-[14px] font-semibold hover:bg-emerald-700 transition-colors cursor-pointer outline-none"
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <PageHeader
+        role="provider"
+        kicker="FINANCIALS"
+        title="Ledger & Earnings"
+        subtitle="Monitor clinical revenue, settlement logs, and taxation performance"
+        action={{
+          label: 'Export Statement',
+          icon: Download,
+          onClick: () => { /* export logic */ }
+        }}
+      />
+
+      {/* Financial KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+        <StatTile
+          role="provider"
+          tone={1}
+          icon={IndianRupee}
+          label="Total Revenue"
+          value={`₹${totalRevenue.toLocaleString('en-IN')}`}
+          delta={{ value: 'Gross cumulative', positive: true }}
+        />
+        <StatTile
+          role="provider"
+          tone={3}
+          icon={Receipt}
+          label="Tax Collected"
+          value={`₹${totalGst.toLocaleString('en-IN')}`}
+          delta={{ value: '18% GST', positive: true }}
+        />
+        <StatTile
+          role="provider"
+          tone={4}
+          icon={Wallet}
+          label="Net Payout"
+          value={`₹${paidOut.toLocaleString('en-IN')}`}
+          delta={{ value: 'Settled amount', positive: true }}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr,340px] gap-6">
+        <div className="space-y-6 lg:space-y-8">
+          {/* Revenue Chart Placeholder */}
+          <SectionCard
+             role="provider"
+             title="Revenue Growth"
+             action={{ label: 'Live Analytics', href: '#' }}
           >
-            <FileText className="w-4 h-4" />
-            Generate Bill
-          </Link>
-          <button type="button" className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 rounded-lg bg-white text-[14px] font-medium text-slate-900 hover:bg-[#F9FAFB] transition-colors cursor-pointer outline-none">
-            <Download className="w-4 h-4" />
-            Export CSV
-          </button>
-        </div>
-      </div>
+             <div className="h-[240px] border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center p-8">
+                <TrendingUp className="text-slate-200 mb-4" size={32} />
+               <p className="text-[14px] font-bold text-slate-400">Interactive charts will be activated after 10 confirmed sessions.</p>
+             </div>
+          </SectionCard>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-white rounded-[12px] border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
-              <IndianRupee className="w-5 h-5" />
-            </div>
-            <p className="text-[14px] font-medium text-slate-500">Total Revenue</p>
-          </div>
-          <p className="text-[32px] font-bold text-slate-900">{'\u20B9'}{totalRevenue.toLocaleString('en-IN')}</p>
-          <p className="text-[13px] text-slate-500/60 mt-2">{settledTransactions.length} settled sessions</p>
-        </div>
-
-        <div className="bg-white rounded-[12px] border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#FEF3C7] text-[#D97706]">
-              <Receipt className="w-5 h-5" />
-            </div>
-            <p className="text-[14px] font-medium text-slate-500">GST Collected</p>
-          </div>
-          <p className="text-[32px] font-bold text-slate-900">{'\u20B9'}{totalGst.toLocaleString('en-IN')}</p>
-          <p className="text-[13px] text-slate-500/60 mt-2">18% GST on all sessions</p>
-        </div>
-
-        <div className="bg-white rounded-[12px] border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#EFF6FF] text-[#2563EB]">
-              <Wallet className="w-5 h-5" />
-            </div>
-            <p className="text-[14px] font-medium text-slate-500">Net Earnings</p>
-          </div>
-          <p className="text-[32px] font-bold text-slate-900">{'\u20B9'}{paidOut.toLocaleString('en-IN')}</p>
-          <p className="text-[13px] text-slate-500/60 mt-2">After GST deduction</p>
-        </div>
-      </div>
-
-      {/* Revenue Chart Placeholder */}
-      <div className="bg-white rounded-[12px] border border-slate-200 p-8 mb-10 shadow-sm relative overflow-hidden group">
-        <h3 className="text-[18px] font-semibold text-slate-900 mb-6">Revenue Growth</h3>
-        <div className="h-[200px] w-full bg-[#F9FAFB] rounded-lg border border-dashed border-slate-200 flex flex-col items-center justify-center gap-3">
-          <TrendingUp className="w-10 h-10 text-[#CED4DA]" />
-          <div className="text-center">
-            <p className="text-[15px] font-medium text-slate-500">Detailed Analytics</p>
-            <p className="text-[13px] text-[#9CA3AF]">Interactive charts coming soon</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Transactions Table */}
-      <div className="bg-white rounded-[12px] border border-slate-200 overflow-hidden shadow-sm">
-        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-[18px] font-semibold text-slate-900">Recent Transactions</h3>
-          <div className="flex items-center gap-2 text-[14px] text-slate-500 font-medium border border-slate-200 px-3 py-1.5 rounded-lg bg-[#F9FAFB]">
-            <Calendar className="w-4 h-4 text-slate-500/60" />
-            {transactions.length} total
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left whitespace-nowrap">
-            <thead className="bg-[#F9FAFB] border-b border-slate-200">
-              <tr>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Patient</th>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Amount</th>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">GST (18%)</th>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider text-right">Net Earning</th>
-                <th className="px-6 py-4 text-[13px] font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E5E5E5]">
-              {transactions.length > 0 ? (
-                transactions.map((t) => (
-                  <tr key={t.id} className="hover:bg-[#F9FAFB] transition-colors">
-                    <td className="px-6 py-4 text-[14px] text-slate-900">{t.date}</td>
-                    <td className="px-6 py-4 font-medium text-[14px] text-slate-900">{t.patient}</td>
-                    <td className="px-6 py-4 text-[14px] text-slate-900 text-right">{'\u20B9'}{t.amount.toLocaleString('en-IN')}</td>
-                    <td className="px-6 py-4 text-[14px] text-slate-500 text-right">{'\u20B9'}{t.gst.toLocaleString('en-IN')}</td>
-                    <td className="px-6 py-4 text-[14px] font-bold text-emerald-600 text-right">{'\u20B9'}{t.net.toLocaleString('en-IN')}</td>
-                    <td className="px-6 py-4">
-                      {t.status === 'paid' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                          Paid
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FEF3C7] text-[#D97706] border border-[#D97706]/10">
-                          Pending
-                        </span>
-                      )}
-                    </td>
+          {/* Clinical Ledger Table */}
+          <SectionCard
+             role="provider"
+             title="Clinical Ledger"
+             className="overflow-hidden"
+          >
+            <div className="overflow-x-auto -mx-6">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[var(--color-pv-track-bg)] border-b border-slate-100">
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Revenue</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Settled</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center">
-                    <div className="flex flex-col items-center">
-                      <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
-                        <TrendingUp className="w-7 h-7 text-[#9CA3AF]" />
-                      </div>
-                      <p className="text-[15px] font-medium text-slate-900 mb-1">No transactions yet</p>
-                      <p className="text-[13px] text-[#9CA3AF]">Earnings will appear here after your first consultation.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {transactions.length > 0 ? (
+                    transactions.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-50 transition-colors group">
+                        <td className="px-6 py-4 text-[13px] font-bold text-slate-700">{t.date}</td>
+                        <td className="px-6 py-4 text-[13px] font-bold text-slate-900">{t.patient}</td>
+                        <td className="px-6 py-4 text-[13px] font-bold text-slate-700 text-right">₹{t.amount.toLocaleString('en-IN')}</td>
+                        <td className="px-6 py-4 text-[14px] font-bold text-[var(--color-pv-primary)] text-right">₹{t.net.toLocaleString('en-IN')}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                            t.status === 'paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${t.status === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                            {t.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-12 border-0">
+                        <EmptyState
+                          role="provider"
+                          icon={Wallet}
+                          title="No transactions yet"
+                          description="Perform sessions to see your earnings log here."
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </SectionCard>
+        </div>
+
+        <div className="space-y-6">
+          <SectionCard role="provider" title="Quick Actions">
+            <div className="space-y-3">
+              <Link
+                href="/provider/bills/new"
+                className="flex items-center gap-3 w-full p-4 rounded-xl border border-slate-100 hover:border-[var(--color-pv-primary)] hover:bg-slate-50 transition-all group"
+              >
+                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white transition-all">
+                  <FileText size={18} />
+                </div>
+                <div className="text-left">
+                  <div className="text-[14px] font-bold text-slate-900">Issue Invoice</div>
+                  <div className="text-[11px] text-slate-400 uppercase tracking-widest font-bold">New billing log</div>
+                </div>
+              </Link>
+            </div>
+          </SectionCard>
+
+          <SectionCard role="provider" title="Payout Details">
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-[var(--color-pv-track-bg)] border border-slate-100">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Last payout</div>
+                <div className="text-[18px] font-bold text-slate-900">₹0.00</div>
+              </div>
+              <p className="text-[12px] text-slate-500 leading-relaxed">
+                Settlements are processed every Thursday for the previous week&apos;s completed clinical sessions.
+              </p>
+            </div>
+          </SectionCard>
         </div>
       </div>
-
     </div>
   )
 }

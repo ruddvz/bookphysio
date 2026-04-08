@@ -1,17 +1,22 @@
 /**
  * 8.9 Provider Dashboard Polish — Vitest unit tests
- * Tests: filterToday, filterThisWeek, getNextAppointment, formatAppointmentCount
+ * Tests: provider appointment helpers and provider schedule helpers
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
+  countRemainingVisitsToday,
   filterToday,
+  filterScheduleEntriesThisWeek,
   filterThisWeek,
   getNextAppointment,
+  getNextScheduledVisit,
   formatAppointmentCount,
   formatSlotTime,
   patientDisplayName,
+  sumScheduledFees,
   type ProviderAppointment,
 } from './provider-dashboard-utils'
+import type { ScheduleEntry } from '@/lib/clinical/types'
 
 beforeEach(() => {
   vi.useFakeTimers()
@@ -36,6 +41,23 @@ function makeAppt(offsetHours: number, status = 'confirmed', id = 'appt-1'): Pro
     availabilities: { starts_at: d.toISOString() },
     patient: { full_name: 'Rahul Test' },
     locations: { city: 'Mumbai' },
+  }
+}
+
+function makeScheduleEntry(
+  visitDate: string,
+  visitTime: string,
+  visitId: string,
+  feeInr: number | null = 800,
+): ScheduleEntry {
+  return {
+    visit_id: visitId,
+    profile_id: 'profile-1',
+    patient_name: 'Rahul Test',
+    visit_date: visitDate,
+    visit_time: visitTime,
+    fee_inr: feeInr,
+    visit_number: 1,
   }
 }
 
@@ -120,7 +142,45 @@ describe('getNextAppointment', () => {
 })
 
 // ---------------------------------------------------------------------------
-// 4. formatAppointmentCount
+// 4. provider schedule helpers
+// ---------------------------------------------------------------------------
+describe('provider schedule helpers', () => {
+  it('returns the next scheduled visit even when it is tomorrow', () => {
+    const result = getNextScheduledVisit([
+      makeScheduleEntry('2026-04-15', '16:00', 'past-today'),
+      makeScheduleEntry('2026-04-16', '09:00', 'tomorrow'),
+    ])
+
+    expect(result?.visit_id).toBe('tomorrow')
+  })
+
+  it('counts only future visits remaining today', () => {
+    expect(countRemainingVisitsToday([
+      makeScheduleEntry('2026-04-15', '17:00', 'past-slot'),
+      makeScheduleEntry('2026-04-15', '18:00', 'next-slot'),
+      makeScheduleEntry('2026-04-15', '19:30', 'late-slot'),
+      makeScheduleEntry('2026-04-16', '09:00', 'tomorrow-slot'),
+    ])).toBe(2)
+  })
+
+  it('filters schedule entries to the current India week', () => {
+    expect(filterScheduleEntriesThisWeek([
+      makeScheduleEntry('2026-04-13', '09:00', 'monday'),
+      makeScheduleEntry('2026-04-19', '09:00', 'sunday'),
+      makeScheduleEntry('2026-04-20', '09:00', 'next-week'),
+    ]).map((entry) => entry.visit_id)).toEqual(['monday', 'sunday'])
+  })
+
+  it('sums scheduled fees while ignoring null values', () => {
+    expect(sumScheduledFees([
+      makeScheduleEntry('2026-04-15', '18:00', 'visit-1', 900),
+      makeScheduleEntry('2026-04-16', '11:00', 'visit-2', null),
+    ])).toBe(900)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 5. formatAppointmentCount
 // ---------------------------------------------------------------------------
 describe('formatAppointmentCount', () => {
   it('uses singular for 1', () => {
@@ -137,7 +197,7 @@ describe('formatAppointmentCount', () => {
 })
 
 // ---------------------------------------------------------------------------
-// 5. formatSlotTime
+// 6. formatSlotTime
 // ---------------------------------------------------------------------------
 describe('formatSlotTime', () => {
   it('returns a time string without date components', () => {
@@ -148,7 +208,7 @@ describe('formatSlotTime', () => {
 })
 
 // ---------------------------------------------------------------------------
-// 6. patientDisplayName
+// 7. patientDisplayName
 // ---------------------------------------------------------------------------
 describe('patientDisplayName', () => {
   it('returns patient full name when available', () => {

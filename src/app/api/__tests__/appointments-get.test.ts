@@ -47,6 +47,98 @@ describe('GET /api/appointments', () => {
     vi.clearAllMocks()
   })
 
+  it('returns a trimmed patient dashboard payload when dashboard view is requested', async () => {
+    const userChain = {
+      select: vi.fn(() => userChain),
+      eq: vi.fn(() => userChain),
+      single: vi.fn().mockResolvedValue({ data: { role: 'patient' }, error: null }),
+    }
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'patient-1' } } }),
+      },
+      from: (table: string) => {
+        if (table === 'users') {
+          return userChain
+        }
+
+        throw new Error(`Unhandled table: ${table}`)
+      },
+    })
+
+    mockAdminTableRows({
+      appointments: [{
+        id: 'appt-dashboard-1',
+        patient_id: 'patient-1',
+        provider_id: 'provider-1',
+        visit_type: 'home_visit',
+        status: 'confirmed',
+        fee_inr: 1560,
+        availabilities: [{ starts_at: '2026-04-05T10:00:00.000Z' }],
+        locations: [{ city: 'Bengaluru' }],
+      }],
+      providers: [{
+        id: 'provider-1',
+        specialty_ids: ['sp-1'],
+        gstin: 'should-not-leak',
+        users: { full_name: 'Dr. Priya Sharma', avatar_url: null },
+      }],
+      specialties: [{ id: 'sp-1', name: 'Sports Physio' }],
+    })
+
+    const { GET } = await import('../appointments/route')
+    const response = await GET(new NextRequest('http://localhost/api/appointments?view=dashboard'))
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.json()).resolves.toEqual({
+      appointments: [
+        {
+          id: 'appt-dashboard-1',
+          status: 'confirmed',
+          visit_type: 'home_visit',
+          fee_inr: 1560,
+          availabilities: { starts_at: '2026-04-05T10:00:00.000Z' },
+          providers: {
+            id: 'provider-1',
+            users: { full_name: 'Dr. Priya Sharma', avatar_url: null },
+            specialties: [{ name: 'Sports Physio' }],
+          },
+          locations: { city: 'Bengaluru' },
+        },
+      ],
+    })
+  })
+
+  it('returns 500 when role verification fails before loading appointments', async () => {
+    const userChain = {
+      select: vi.fn(() => userChain),
+      eq: vi.fn(() => userChain),
+      single: vi.fn().mockResolvedValue({ data: null, error: { message: 'users offline' } }),
+    }
+
+    createClientMock.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'patient-1' } } }),
+      },
+      from: (table: string) => {
+        if (table === 'users') {
+          return userChain
+        }
+
+        throw new Error(`Unhandled table: ${table}`)
+      },
+    })
+
+    const { GET } = await import('../appointments/route')
+    const response = await GET(new NextRequest('http://localhost/api/appointments?view=dashboard'))
+
+    expect(response.status).toBe(500)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.json()).resolves.toEqual({ error: 'Failed to verify appointments access' })
+  })
+
   it('sanitizes list responses so booking metadata is not returned in the notes field', async () => {
     const userChain = {
       select: vi.fn(() => userChain),

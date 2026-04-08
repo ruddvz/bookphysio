@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { phone, flow } = parsed.data
+
   const ip = getRequestIpAddress(request)
   if (ip) {
     const sourceLimit = await otpRatelimit.limit(`otp-send:ip:${ip}`)
