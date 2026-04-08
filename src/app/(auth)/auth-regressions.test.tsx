@@ -50,6 +50,7 @@ vi.mock('@/lib/supabase/client', () => ({
 afterEach(() => {
   push.mockReset()
   clearPendingOtp()
+  window.history.replaceState({}, '', '/verify-otp')
   vi.unstubAllGlobals()
 })
 
@@ -106,15 +107,17 @@ describe('Auth regressions', () => {
     fireEvent.click(screen.getByRole('button', { name: /send otp|secure login/i }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/verify-otp')
+      expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
     })
 
     expect(readPendingOtp()).toEqual({
-      phone: '919876543210',
       flow: 'login',
+      flowId: expect.any(String),
       fullName: undefined,
       returnTo: null,
     })
+
+    expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
   })
 
   it('stores signup OTP state in session storage and avoids leaking name in the URL', async () => {
@@ -138,15 +141,17 @@ describe('Auth regressions', () => {
     fireEvent.click(screen.getByRole('button', { name: /create account|start your recovery/i }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/verify-otp')
+      expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
     })
 
     expect(readPendingOtp()).toEqual({
-      phone: '919876543210',
       flow: 'signup',
+      flowId: expect.any(String),
       fullName: 'Rahul Sharma',
       returnTo: null,
     })
+
+    expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
   })
 
   it('uses masked success copy for magic-link login requests', async () => {
@@ -207,44 +212,64 @@ describe('Auth regressions', () => {
     fireEvent.click(screen.getByRole('button', { name: /reset password/i }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/verify-otp')
+      expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
     })
 
     expect(readPendingOtp()).toEqual({
-      phone: '919876543210',
       flow: 'login',
+      flowId: expect.any(String),
       fullName: undefined,
       returnTo: '/update-password',
     })
   })
 
-  it('shows recovery actions when the verify screen is opened without pending OTP state', () => {
+  it('shows a recovery state when verify-otp is opened without an active flow', async () => {
     render(<VerifyOtpPage />)
 
-    expect(screen.getByText(/otp session expired/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /back to login/i })).toHaveAttribute('href', '/login')
-    expect(screen.getByRole('link', { name: /recover access/i })).toHaveAttribute('href', '/forgot-password')
-    expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /session expired/i })).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: /complete otp/i })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /start again/i }))
+
+    expect(push).toHaveBeenCalledWith('/login')
+  })
+
+  it('uses the flow query param as a verify fallback when session metadata is missing', async () => {
+    window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
+
+    render(<VerifyOtpPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/we sent a 6-digit code to your mobile number/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
+    expect(screen.queryByText(/session expired/i)).not.toBeInTheDocument()
   })
 
   it('uses masked delivery copy on the verify screen for login OTP flows', async () => {
     savePendingOtp({
-      phone: '919876543210',
       flow: 'login',
+      flowId: 'flow-1',
       returnTo: null,
     })
 
     render(<VerifyOtpPage />)
 
     await waitFor(() => {
-      expect(screen.getByText(/if an account exists, a code was sent to/i)).toBeInTheDocument()
+      expect(screen.getByText(/if an account exists, a code was sent to your mobile number/i)).toBeInTheDocument()
     })
+
+    expect(screen.queryByText(/98765 43210/i)).not.toBeInTheDocument()
   })
 
   it('submits 264200 through the server flow instead of opening the local dev role picker', async () => {
     savePendingOtp({
-      phone: '919876543210',
       flow: 'login',
+      flowId: 'flow-1',
       returnTo: null,
     })
 

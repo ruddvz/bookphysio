@@ -15,11 +15,13 @@ describe('GET /api/auth/demo-session', () => {
   it('returns the demo session derived from the signed cookie in production', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'true')
+    vi.stubEnv('PREVIEW_TOKEN_SECRET', 'preview-token-secret')
 
     const { GET } = await import('../auth/demo-session/route')
     const cookiePayload = createDemoCookiePayload('patient')
     const demoCookie = await encodeDemoCookie(cookiePayload)
-    const previewToken = await createPreviewToken('preview-secret')
+    const previewToken = await createPreviewToken('preview-token-secret')
     const request = new NextRequest('http://localhost/api/auth/demo-session', {
       headers: {
         cookie: `${DEMO_SESSION_COOKIE}=${demoCookie}; preview_token=${previewToken}`,
@@ -102,9 +104,11 @@ describe('POST /api/auth/demo-session', () => {
   it('allows preview-authenticated production requests and sets a signed demo cookie', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'true')
+    vi.stubEnv('PREVIEW_TOKEN_SECRET', 'preview-token-secret')
 
     const { POST } = await import('../auth/demo-session/route')
-    const previewToken = await createPreviewToken('preview-secret')
+    const previewToken = await createPreviewToken('preview-token-secret')
     const request = new NextRequest('http://localhost/api/auth/demo-session', {
       method: 'POST',
       headers: {
@@ -133,6 +137,27 @@ describe('POST /api/auth/demo-session', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ role: 'patient' }),
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(404)
+    await expect(response.json()).resolves.toEqual({ error: 'Demo access is disabled.' })
+  })
+
+  it('rejects preview cookies in production when the public preview gate is disabled', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { POST } = await import('../auth/demo-session/route')
+    const previewToken = await createPreviewToken('preview-secret')
+    const request = new NextRequest('http://localhost/api/auth/demo-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: `preview_token=${previewToken}`,
       },
       body: JSON.stringify({ role: 'patient' }),
     })

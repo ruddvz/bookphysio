@@ -1,85 +1,101 @@
 # bookphysio.in — Manual Release Checklist
 
+Updated: 2026-04-08
+
 Only the tasks that require external dashboard access are listed here.
 
 If you want the shortest path, do only the `Required Now` section first.
 
 ---
 
+## Already Done
+
+- [x] Supabase migrations `025` → `029` applied on production
+- [x] Google Search Console property verified and sitemap submitted
+- [x] Bing Webmaster Tools site added and sitemap submitted
+
+---
+
 ## Required Now
 
-### 1. Apply Supabase migrations 025–029
+### 1. Deploy the latest verified repo state
 
-Reason: these include security fixes and the public availability privacy fix. The app code is already green locally, but production is not fully safe until these DB changes are applied.
+Reason: the local repo now contains the latest preview hardening, OTP phone-privacy changes, and the next deploy fix for the empty-state demo-session `204` response. Those are verified locally but are not live until the latest commit is pushed.
 
-Important:
-- The `supabase/migrations/` folder is the full history of the database, not a checklist of things to rerun on every deploy.
-- If you are creating a brand-new database, you apply all migrations from the beginning.
-- If you are updating the existing production database, you apply only the migrations that have not already been run there.
-- For this project, the production database is already in use, so the pending forward migrations are `025` through `029`, not `001` through `029` again.
+Before pushing, confirm these Vercel environment settings:
 
-Project:
-- Supabase project ref: `wcihggtkdflyjkbqajvg`
-- Dashboard URL pattern: `https://supabase.com/dashboard/project/wcihggtkdflyjkbqajvg`
+- `DEMO_COOKIE_SECRET` is set
+- `OTP_PENDING_COOKIE_SECRET` is set
+- `ENABLE_PUBLIC_PREVIEW_GATE` is left unset unless you intentionally want `/preview` reachable on production
+- `PREVIEW_TOKEN_SECRET` is only required if you intentionally enable public preview access
 
-Optional verification first:
-Run this in Supabase SQL Editor if you want to see which migrations are already recorded on production:
+Current local verification status:
 
-```sql
-select version, name
-from supabase_migrations.schema_migrations
-order by version;
-```
+- `rtk npm run type-check` ✅
+- `rtk npm run lint -- . --ext .ts,.tsx,.js,.jsx` ✅
+- Focused auth/privacy regressions ✅
+- `rtk npm run build` ✅
 
 How to do it:
-1. Open the Supabase dashboard for the production project.
-2. Go to `SQL Editor`.
-3. Click `New query`.
-4. In VS Code, open each file below, copy its full contents, paste into the SQL editor, and click `Run`.
-5. Wait for success before moving to the next file.
-6. Run them in this exact order:
+1. Review the current local changes.
+2. Commit them.
+3. Push the branch that should trigger production deploy.
+4. Watch the Vercel production deployment until it finishes successfully.
+5. Confirm the live apex site reflects the new auth/privacy behavior.
 
-Required migration files:
-- `supabase/migrations/025_fix_handle_new_user_role.sql`
-- `supabase/migrations/026_incremental_rating_trigger.sql`
-- `supabase/migrations/027_notifications_ttl.sql`
-- `supabase/migrations/028_payments_gateway_column.sql`
-- `supabase/migrations/029_restrict_public_availability_read.sql`
+If the deploy fails:
 
-What they do:
-- `025`: blocks admin-role escalation during signup.
-- `026`: switches provider ratings to an incremental update model.
-- `027`: adds notification expiry and cleanup support.
-- `028`: adds the `payments.gateway` column.
-- `029`: restricts public availability reads to unbooked slots for verified active providers.
-
-If any migration fails:
 - Stop.
-- Copy the exact SQL error.
+- Copy the exact Vercel error.
 - Bring it back here and I can help you fix it.
 
-### 2. Deploy the verified code
+### 2. Add real production provider data
 
-After the migrations succeed, deploy the repo state.
+Reason: the site is technically live, but it is not functionally useful if `/api/providers` still returns zero real providers.
 
-If you want to do it yourself:
-```bash
-git push
-```
+Do this only with reviewed real provider records.
 
-Vercel auto-deploys on push.
+Options:
 
-If you prefer, tell me once step 1 is done and I can handle the deploy-side work from here.
+- Supabase Dashboard → `Table Editor` → `providers`
+- A reviewed production-safe import process
+
+Minimum outcome needed before launch:
+
+- `/api/providers` returns real results
+- `/search` shows real providers
+- At least one provider profile and booking flow can be tested end-to-end
+
+Do not run the current `supabase/seed.sql` on production unless you explicitly want mock/demo-like records there.
+
+### 3. Run a production smoke pass
+
+Reason: after the deploy and provider data update, you need one short live validation pass on the apex domain.
+
+Check these exact flows:
+
+1. Homepage loads on `https://bookphysio.in`
+2. `/search` shows real providers
+3. One provider profile opens
+4. One booking flow completes to the success state
+5. OTP login or signup works on a real test number
+6. Patient dashboard loads after auth
+7. Provider dashboard loads for a real provider account
+8. `/preview` stays blocked unless you intentionally enabled it
+
+If any of those fail:
+
+- Stop at the first failing step.
+- Copy the exact error or URL.
+- Bring it back here and I can help you triage it.
 
 ---
 
 ## Optional But Recommended After Release
 
-### 3. Enable notification cleanup cron
+### 4. Enable notification cleanup cron
 
-Only after migration `027` is applied.
-
-In Supabase Dashboard → `SQL Editor`, run:
+Migration `027` is already applied, so this can be done any time after launch.
 
 ```sql
 SELECT cron.schedule('cleanup-notifications', '0 3 * * *', 'SELECT cleanup_expired_notifications()');
@@ -90,7 +106,7 @@ If `pg_cron` is not enabled yet:
 2. Enable `pg_cron`
 3. Re-run the SQL above
 
-### 4. Add a JWT role custom claim hook
+### 5. Add a JWT role custom claim hook
 
 Reason: removes one DB round-trip on authenticated requests.
 
@@ -105,7 +121,7 @@ This is a performance improvement, not a release blocker.
 
 ## External Follow-Up
 
-### 5. Add the `www` DNS record
+### 6. Add the `www` DNS record
 
 At your domain registrar, add:
 
@@ -115,36 +131,12 @@ A  www.bookphysio.in  -> 76.76.21.21
 
 Or move DNS fully to Vercel nameservers if you want Vercel to manage this.
 
-### 6. Submit the site to Google Search Console
-
-1. Go to `https://search.google.com/search-console`
-2. Add property: `bookphysio.in`
-3. Verify ownership
-4. Submit sitemap: `https://bookphysio.in/sitemap.xml`
-
-### 7. Submit the site to Bing Webmaster Tools
-
-1. Go to `https://www.bing.com/webmasters`
-2. Add site: `bookphysio.in`
-3. Submit sitemap: `https://bookphysio.in/sitemap.xml`
-
-### 8. Add real production provider data
-
-Production currently returns zero search results because there are no real providers in the live DB.
-
-Do this only when you have real provider records ready.
-
-Options:
-- Supabase Dashboard → `Table Editor` → `providers`
-- Apply a reviewed production-safe seed/import process
-
-Do not run the current `supabase/seed.sql` on production unless you explicitly want mock/demo-like records there.
-
 ---
 
 ## Fastest Real-World Order
 
-1. Apply migrations `025` → `029` in Supabase SQL Editor.
-2. Tell me they succeeded, or paste the first error if one fails.
-3. Then deploy the verified code.
-4. Do SEO/DNS/provider-data follow-up later.
+1. Confirm the required Vercel env vars for the new auth/privacy deploy.
+2. Deploy the latest verified repo state.
+3. Add real production provider data.
+4. Run the production smoke pass.
+5. Do notification cleanup cron, JWT role claims, and `www` DNS later.

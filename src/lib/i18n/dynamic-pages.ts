@@ -108,13 +108,16 @@ export const AUTH_COPY = {
     signupLoginLink: 'Log in',
     // OTP verify
     otpHeading: 'Enter your code',
-    otpSubheading: (phone: string) => `Code sent to ${phone}`,
-    otpLoginSubheading: (phone: string) => `If an account exists, a code was sent to ${phone}`,
+    otpSubheading: 'We sent a 6-digit code to your mobile number.',
+    otpLoginSubheading: 'If an account exists, a code was sent to your mobile number.',
     otpVerifyButton: 'Verify Code',
     otpVerifyingButton: 'Verifying...',
     otpResend: 'Resend code',
     otpResendIn: (time: string) => `Resend in ${time}`,
     otpBack: 'Back',
+    otpExpiredHeading: 'Session expired',
+    otpExpiredBody: 'Your verification session expired. Request a fresh OTP to continue.',
+    otpRestart: 'Start again',
     // General
     errorGeneral: 'Unable to continue right now.',
   },
@@ -148,13 +151,16 @@ export const AUTH_COPY = {
     signupLoginLink: 'लॉग इन करें',
     // OTP verify
     otpHeading: 'अपना कोड दर्ज करें',
-    otpSubheading: (phone: string) => `${phone} पर कोड भेजा गया`,
-    otpLoginSubheading: (phone: string) => `यदि खाता मौजूद है, तो ${phone} पर कोड भेजा गया`,
+    otpSubheading: 'हमने आपके मोबाइल नंबर पर 6 अंकों का कोड भेजा है।',
+    otpLoginSubheading: 'यदि खाता मौजूद है, तो आपके मोबाइल नंबर पर एक कोड भेजा गया है।',
     otpVerifyButton: 'कोड सत्यापित करें',
     otpVerifyingButton: 'सत्यापित हो रहा है...',
     otpResend: 'कोड पुनः भेजें',
     otpResendIn: (time: string) => `${time} में पुनः भेजें`,
     otpBack: 'वापस',
+    otpExpiredHeading: 'सेशन समाप्त हो गया',
+    otpExpiredBody: 'आपका सत्यापन सेशन समाप्त हो गया। जारी रखने के लिए नया OTP मांगें।',
+    otpRestart: 'फिर से शुरू करें',
     // General
     errorGeneral: 'अभी जारी रखना संभव नहीं है।',
   },
@@ -184,13 +190,16 @@ export const AUTH_COPY = {
   signupAlreadyAccount: string
   signupLoginLink: string
   otpHeading: string
-  otpSubheading: (phone: string) => string
-  otpLoginSubheading: (phone: string) => string
+  otpSubheading: string
+  otpLoginSubheading: string
   otpVerifyButton: string
   otpVerifyingButton: string
   otpResend: string
   otpResendIn: (time: string) => string
   otpBack: string
+  otpExpiredHeading: string
+  otpExpiredBody: string
+  otpRestart: string
   errorGeneral: string
 }>
 

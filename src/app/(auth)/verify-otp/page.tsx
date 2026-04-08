@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react'
@@ -9,7 +8,7 @@ import OtpInput from '@/components/OtpInput'
 import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
 import { resolvePostAuthRedirect } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
-import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
+import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
@@ -18,6 +17,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   const t = AUTH_COPY[locale ?? 'en']
   const router = useRouter()
   const [pendingOtp, setPendingOtp] = useState<ReturnType<typeof readPendingOtp>>(null)
+  const [queryFlowId, setQueryFlowId] = useState<string | null>(null)
   const [hasLoadedPendingOtp, setHasLoadedPendingOtp] = useState(false)
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''))
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
@@ -27,6 +27,9 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
   useEffect(() => {
     setPendingOtp(readPendingOtp())
+    if (typeof window !== 'undefined') {
+      setQueryFlowId(new URLSearchParams(window.location.search).get('flow'))
+    }
     setHasLoadedPendingOtp(true)
   }, [])
 
@@ -36,10 +39,13 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
     return () => clearTimeout(timer)
   }, [countdown])
 
-  const displayPhone = pendingOtp?.phone
-    ? `+${pendingOtp.phone.slice(0, 2)} ${pendingOtp.phone.slice(2, 7)} ${pendingOtp.phone.slice(7)}`
-    : ''
-  const deliveryLabel = pendingOtp?.flow === 'login' ? t.otpLoginSubheading(displayPhone) : t.otpSubheading(displayPhone)
+  const deliveryLabel = pendingOtp?.flow === 'login' ? t.otpLoginSubheading : t.otpSubheading
+  const flowId = pendingOtp?.flowId ?? queryFlowId
+  const restartHref = pendingOtp?.returnTo === '/update-password'
+    ? '/forgot-password'
+    : pendingOtp?.flow === 'signup'
+      ? '/signup'
+      : '/login'
 
   const allFilled = otp.every((digit) => digit !== '')
 
@@ -69,51 +75,16 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
     )
   }
 
-  if (!pendingOtp) {
-    return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <div className="flex justify-center">
-          <BpLogo href="/" size="auth" />
-        </div>
-
-        <h1 className="text-[32px] font-bold text-bp-primary mb-3 mt-10 tracking-tighter leading-none">
-          OTP session expired
-        </h1>
-        <p className="text-[15px] font-bold text-bp-body/40 mb-10 leading-relaxed">
-          Start over from login or password recovery to request a fresh verification code.
-        </p>
-
-        <div className="flex flex-col gap-4">
-          <Link
-            href={localePath(locale ?? 'en', '/login')}
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-bold text-white rounded-2xl transition-all active:scale-[0.98] bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10"
-          >
-            {t.loginBackToLogin}
-            <ArrowRight className="w-5 h-5 text-bp-accent" />
-          </Link>
-          <Link
-            href="/forgot-password"
-            className="w-full h-16 flex items-center justify-center gap-3 text-[16px] font-bold text-bp-accent rounded-2xl border-2 border-bp-border bg-white hover:bg-bp-surface transition-all active:scale-[0.98]"
-          >
-            Recover Access
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
   // Auto-submit logic is now inside OtpInput via onComplete
 
   async function handleVerify(codeOverride?: string) {
     const code = codeOverride || otp.join('')
-    const phone = pendingOtp?.phone ?? ''
 
     if (code.length < OTP_LENGTH) {
       setError('Please enter all 6 digits')
       return
     }
-
-    if (!phone) {
+    if (!flowId) {
       setError('Your verification session expired. Please request a fresh OTP.')
       return
     }
@@ -125,13 +96,13 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: '+' + phone,
+          flow_id: flowId,
           otp: code,
           ...(pendingOtp?.flow === 'signup' && pendingOtp.fullName ? { full_name: pendingOtp.fullName } : {}),
         }),
       })
       const data = await res.json() as {
-        user?: { id: string; user_metadata?: { role?: string } }
+        redirectTo?: string
         role?: string
         error?: string
       }
@@ -142,8 +113,8 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       }
       clearPendingOtp()
 
-      const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role ?? data.user?.user_metadata?.role
-      const redirectTo = resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
+      const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role
+      const redirectTo = data.redirectTo ?? resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
 
       // Brief success flash before redirect
       setVerified(true)
@@ -156,10 +127,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   }
 
   async function handleResend() {
-    const phone = pendingOtp?.phone ?? ''
-    const flow = pendingOtp?.flow ?? 'login'
-
-    if (!phone) {
+    if (!flowId) {
       setError('Your verification session expired. Please request a fresh OTP.')
       return
     }
@@ -168,7 +136,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: '+' + phone, flow }),
+        body: JSON.stringify({ flow_id: flowId }),
       })
 
       const data = await response.json().catch(() => ({})) as { error?: string }
@@ -193,6 +161,36 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         </div>
         <h2 className="text-[24px] font-bold text-bp-primary tracking-tight">Verified!</h2>
         <p className="mt-2 text-[14px] font-bold text-bp-body/40">Redirecting to your dashboard...</p>
+      </div>
+    )
+  }
+
+  if (!flowId) {
+    return (
+      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700 text-center">
+        <div className="flex justify-center">
+          <BpLogo href="/" size="auth" />
+        </div>
+
+        <div className="mx-auto mt-10 flex h-20 w-20 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+          <RefreshCw className="h-9 w-9" />
+        </div>
+
+        <h1 className="mt-8 text-[32px] font-bold text-bp-primary tracking-tighter leading-none">
+          {t.otpExpiredHeading}
+        </h1>
+        <p className="mt-3 text-[15px] font-bold text-bp-body/40 leading-relaxed">
+          {t.otpExpiredBody}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => router.push(restartHref)}
+          className="mt-10 inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-bp-accent px-6 text-[16px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
+        >
+          {t.otpRestart}
+          <ArrowRight className="h-5 w-5" />
+        </button>
       </div>
     )
   }

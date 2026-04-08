@@ -10,7 +10,7 @@ import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
-import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
+import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -38,14 +38,14 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
   const [loading, setLoading] = useState(false)
   const [nameFocused, setNameFocused] = useState(false)
   const [phoneFocused, setPhoneFocused] = useState(false)
-  const [loginHref, setLoginHref] = useState(localePath(locale ?? 'en', '/login'))
+  const [loginHref, setLoginHref] = useState('/login')
 
   useEffect(() => {
     const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
     if (returnTo) {
-      setLoginHref(`${localePath(locale ?? 'en', '/login')}?return=${encodeURIComponent(returnTo)}`)
+      setLoginHref(`/login?return=${encodeURIComponent(returnTo)}`)
     }
-  }, [locale])
+  }, [])
 
   function handleChange(field: keyof SignupFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -80,12 +80,19 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
     const rawPhone = form.phone.replace(/\D/g, '')
     const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
     const returnTo = sanitizeReturnPath(typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('return'))
+    const flowId = crypto.randomUUID()
 
     try {
       const res = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone, flow: 'signup' }),
+        body: JSON.stringify({
+          phone: cleanPhone,
+          flow: 'signup',
+          flow_id: flowId,
+          full_name: form.name,
+          return_to: returnTo,
+        }),
       })
 
       if (!res.ok) {
@@ -95,18 +102,17 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
       }
 
       const otpStateSaved = savePendingOtp({
-        phone: '91' + form.phone,
         flow: 'signup',
+        flowId,
         fullName: form.name,
         returnTo,
       })
 
       if (!otpStateSaved) {
-        setErrors({ general: 'Unable to continue. Please retry.' })
-        return
+        console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
       }
 
-      router.push(localePath(locale ?? 'en', '/verify-otp'))
+      router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
     } catch {
       setErrors({ general: 'Unable to reach the OTP service. Try again.' })
     } finally {

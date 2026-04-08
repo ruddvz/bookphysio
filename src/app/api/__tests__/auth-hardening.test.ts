@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPendingOtpCookieValue, OTP_PENDING_COOKIE_NAME } from '@/lib/auth/pending-otp-cookie'
+import { buildPhoneRateLimitKey } from '@/lib/auth/otp-rate-limit'
 
 const createClientMock = vi.fn()
 const adminFromMock = vi.fn()
@@ -78,6 +80,7 @@ describe('Auth and admin hardening routes', () => {
   it('continues through the normal OTP send flow even when DEV_ACCESS_CODE is present in production', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('DEV_ACCESS_CODE', '2642')
+    vi.stubEnv('OTP_PENDING_COOKIE_SECRET', 'otp-cookie-secret')
 
     const signInWithOtp = vi.fn().mockResolvedValue({ error: null })
     createClientMock.mockResolvedValue({
@@ -98,8 +101,9 @@ describe('Auth and admin hardening routes', () => {
       phone: '+919876543210',
       options: { shouldCreateUser: false },
     })
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       message: 'If an account exists, an OTP has been sent.',
+      flowId: expect.any(String),
     })
   })
 
@@ -143,8 +147,9 @@ describe('Auth and admin hardening routes', () => {
     }) as never)
 
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       message: 'If an account exists, an OTP has been sent.',
+      flowId: expect.any(String),
     })
   })
 
@@ -170,7 +175,7 @@ describe('Auth and admin hardening routes', () => {
 
     expect(response.status).toBe(200)
     expect(otpRateLimitMock).toHaveBeenNthCalledWith(1, 'otp-send:ip:203.0.113.7')
-    expect(otpRateLimitMock).toHaveBeenNthCalledWith(2, 'send:+919876543210')
+    expect(otpRateLimitMock).toHaveBeenNthCalledWith(2, await buildPhoneRateLimitKey('send', '+919876543210'))
   })
 
   it('uses Cloudflare client IP headers instead of client-controlled forwarded headers', async () => {
@@ -240,6 +245,25 @@ describe('Auth and admin hardening routes', () => {
       phone: '+919876543210',
       options: { shouldCreateUser: true },
     })
+    expect(response.headers.get('set-cookie')).toContain(`${OTP_PENDING_COOKIE_NAME}=`)
+    expect(response.headers.get('set-cookie')).not.toContain('9876543210')
+  })
+
+  it('returns 404 for the public preview API when the production preview gate is disabled', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { POST } = await import('../auth/preview/route')
+    const response = await POST(new Request('http://localhost/api/auth/preview', {
+      method: 'POST',
+      body: JSON.stringify({ password: 'preview-secret' }),
+      headers: { 'Content-Type': 'application/json' },
+    }) as never)
+
+    expect(response.status).toBe(404)
+    expect(previewRateLimitMock).not.toHaveBeenCalled()
+    expect(response.headers.get('set-cookie')).toBeNull()
+    await expect(response.json()).resolves.toEqual({ error: 'Not Found' })
   })
 
   it('rate limits preview password attempts by trusted IP address', async () => {
@@ -265,6 +289,11 @@ describe('Auth and admin hardening routes', () => {
   })
 
   it('falls back to the patient role when OTP verification cannot resolve a stored profile role', async () => {
+    const pendingOtpCookie = await createPendingOtpCookieValue({
+      phone: '+919876543210',
+      flow: 'login',
+    })
+
     createClientMock.mockResolvedValue({
       auth: {
         verifyOtp: vi.fn().mockResolvedValue({
@@ -284,8 +313,11 @@ describe('Auth and admin hardening routes', () => {
     const { POST } = await import('../auth/otp/verify/route')
     const response = await POST(new Request('http://localhost/api/auth/otp/verify', {
       method: 'POST',
-      body: JSON.stringify({ phone: '+919876543210', otp: '123456' }),
-      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ otp: '123456' }),
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: `${OTP_PENDING_COOKIE_NAME}=${pendingOtpCookie}`,
+      },
     }) as never)
 
     expect(response.status).toBe(200)
@@ -293,6 +325,11 @@ describe('Auth and admin hardening routes', () => {
   })
 
   it('rejects legacy demo OTP codes through the normal verification flow', async () => {
+    const pendingOtpCookie = await createPendingOtpCookieValue({
+      phone: '+919000000000',
+      flow: 'login',
+    })
+
     const verifyOtp = vi.fn().mockResolvedValue({
       data: { user: null },
       error: { message: 'Invalid OTP' },
@@ -307,8 +344,11 @@ describe('Auth and admin hardening routes', () => {
     const { POST } = await import('../auth/otp/verify/route')
     const response = await POST(new Request('http://localhost/api/auth/otp/verify', {
       method: 'POST',
-      body: JSON.stringify({ phone: '+919000000000', otp: '999999' }),
-      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ otp: '999999' }),
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: `${OTP_PENDING_COOKIE_NAME}=${pendingOtpCookie}`,
+      },
     }) as never)
 
     expect(verifyOtp).toHaveBeenCalledWith({
@@ -322,6 +362,11 @@ describe('Auth and admin hardening routes', () => {
   })
 
   it('keeps OTP verification successful when profile sync fails after auth succeeds', async () => {
+    const pendingOtpCookie = await createPendingOtpCookieValue({
+      phone: '+919876543210',
+      flow: 'signup',
+    })
+
     adminUpdateUserByIdMock.mockResolvedValue({
       error: { message: 'metadata unavailable' },
     })
@@ -345,8 +390,11 @@ describe('Auth and admin hardening routes', () => {
     const { POST } = await import('../auth/otp/verify/route')
     const response = await POST(new Request('http://localhost/api/auth/otp/verify', {
       method: 'POST',
-      body: JSON.stringify({ phone: '+919876543210', otp: '123456', full_name: 'Rahul Sharma' }),
-      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ otp: '123456', full_name: 'Rahul Sharma' }),
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: `${OTP_PENDING_COOKIE_NAME}=${pendingOtpCookie}`,
+      },
     }) as never)
 
     expect(response.status).toBe(200)

@@ -1,8 +1,8 @@
 export type PendingOtpFlow = 'login' | 'signup'
 
 export interface PendingOtpPayload {
-  phone: string
   flow: PendingOtpFlow
+  flowId?: string
   fullName?: string
   returnTo?: string | null
 }
@@ -36,16 +36,13 @@ export function readPendingOtp(): PendingOtpPayload | null {
 
     const parsed = JSON.parse(rawValue) as Partial<PendingOtpPayload>
 
-    if (
-      typeof parsed.phone !== 'string' ||
-      (parsed.flow !== 'login' && parsed.flow !== 'signup')
-    ) {
+    if (parsed.flow !== 'login' && parsed.flow !== 'signup') {
       return null
     }
 
     return {
-      phone: parsed.phone,
       flow: parsed.flow,
+      flowId: typeof parsed.flowId === 'string' ? parsed.flowId : undefined,
       fullName: typeof parsed.fullName === 'string' ? parsed.fullName : undefined,
       returnTo: typeof parsed.returnTo === 'string' ? parsed.returnTo : null,
     }

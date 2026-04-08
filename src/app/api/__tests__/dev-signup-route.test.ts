@@ -15,9 +15,11 @@ describe('GET /api/auth/dev-signup', () => {
   it('redirects preview-authenticated production requests into a demo session', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'true')
+    vi.stubEnv('PREVIEW_TOKEN_SECRET', 'preview-token-secret')
 
     const { GET } = await import('../auth/dev-signup/route')
-    const previewToken = await createPreviewToken('preview-secret')
+    const previewToken = await createPreviewToken('preview-token-secret')
     const request = new NextRequest('http://localhost/api/auth/dev-signup?role=provider', {
       headers: {
         cookie: `preview_token=${previewToken}`,
@@ -38,6 +40,24 @@ describe('GET /api/auth/dev-signup', () => {
 
     const { GET } = await import('../auth/dev-signup/route')
     const request = new NextRequest('http://localhost/api/auth/dev-signup?role=patient')
+    const response = await GET(request)
+
+    expect(response.status).toBe(404)
+    await expect(response.json()).resolves.toEqual({ error: 'Not found' })
+  })
+
+  it('rejects preview cookies in production when the public preview gate is disabled', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+
+    const { GET } = await import('../auth/dev-signup/route')
+    const previewToken = await createPreviewToken('preview-secret')
+    const request = new NextRequest('http://localhost/api/auth/dev-signup?role=provider', {
+      headers: {
+        cookie: `preview_token=${previewToken}`,
+      },
+    })
+
     const response = await GET(request)
 
     expect(response.status).toBe(404)

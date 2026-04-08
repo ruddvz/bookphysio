@@ -7,6 +7,24 @@ interface PreviewCookieReader {
 const PREVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
 const encoder = new TextEncoder()
 
+export function isPublicPreviewGateEnabled(): boolean {
+  return (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'test' ||
+    process.env.ENABLE_PUBLIC_PREVIEW_GATE === 'true'
+  )
+}
+
+export function getPreviewTokenSigningSecret(): string | null {
+  return (
+    process.env.PREVIEW_TOKEN_SECRET ??
+    process.env.DEMO_COOKIE_SECRET ??
+    (process.env.NODE_ENV === 'production'
+      ? null
+      : process.env.PREVIEW_PASSWORD ?? 'local-preview-token-secret')
+  )
+}
+
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
@@ -77,5 +95,9 @@ export async function hasValidPreviewCookie(request: NextRequest): Promise<boole
 }
 
 export async function hasValidPreviewCookieValue(cookies: PreviewCookieReader): Promise<boolean> {
-  return isValidPreviewToken(cookies.get('preview_token')?.value, process.env.PREVIEW_PASSWORD)
+  if (!isPublicPreviewGateEnabled()) {
+    return false
+  }
+
+  return isValidPreviewToken(cookies.get('preview_token')?.value, getPreviewTokenSigningSecret())
 }

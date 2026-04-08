@@ -10,29 +10,31 @@ describe('pending OTP storage', () => {
   it('round-trips pending OTP state through session storage', () => {
     expect(
       savePendingOtp({
-        phone: '919876543210',
         flow: 'signup',
+        flowId: 'flow-1',
         fullName: 'Rahul Sharma',
         returnTo: '/patient/dashboard',
       })
     ).toBe(true)
 
     expect(readPendingOtp()).toEqual({
-      phone: '919876543210',
       flow: 'signup',
+      flowId: 'flow-1',
       fullName: 'Rahul Sharma',
       returnTo: '/patient/dashboard',
     })
+
+    expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
   })
 
   it('returns null for malformed stored state', () => {
-    window.sessionStorage.setItem('bp-pending-otp', JSON.stringify({ flow: 'signup' }))
+    window.sessionStorage.setItem('bp-pending-otp', JSON.stringify({ flow: 'provider_signup' }))
 
     expect(readPendingOtp()).toBeNull()
   })
 
   it('clears pending OTP state', () => {
-    savePendingOtp({ phone: '919876543210', flow: 'login' })
+    savePendingOtp({ flow: 'login', flowId: 'flow-1' })
 
     clearPendingOtp()
 

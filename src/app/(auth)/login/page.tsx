@@ -11,7 +11,7 @@ import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
-import { AUTH_COPY, localePath, type StaticLocale } from '@/lib/i18n/dynamic-pages'
+import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 
 const loginSchema = z.object({
@@ -36,7 +36,7 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   const [inputFocused, setInputFocused] = useState(false)
   const phoneInputRef = useRef<HTMLInputElement>(null)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
-  const [signupHref, setSignupHref] = useState(localePath(locale ?? 'en', '/signup'))
+  const [signupHref, setSignupHref] = useState('/signup')
   const [returnTo, setReturnTo] = useState<string | null>(null)
 
   useEffect(() => {
@@ -46,10 +46,10 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   useEffect(() => {
     const returnPath = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
     if (returnPath) {
-      setSignupHref(`${localePath(locale ?? 'en', '/signup')}?return=${encodeURIComponent(returnPath)}`)
+      setSignupHref(`/signup?return=${encodeURIComponent(returnPath)}`)
       setReturnTo(returnPath)
     }
-  }, [locale])
+  }, [])
 
   function handlePhoneChange(value: string) {
     setPhone(stripPhoneFormat(value))
@@ -72,11 +72,12 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
         
         const rawPhone = phone.replace(/\D/g, '')
         const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+        const flowId = crypto.randomUUID()
         
         const res = await fetch('/api/auth/otp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone, flow: 'login' }),
+          body: JSON.stringify({ phone: cleanPhone, flow: 'login', flow_id: flowId, return_to: returnTo }),
         })
         
         if (!res.ok) {
@@ -85,16 +86,16 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
         }
 
         const otpStateSaved = savePendingOtp({
-          phone: '91' + phone,
           flow: 'login',
+          flowId,
           returnTo,
         })
 
         if (!otpStateSaved) {
-          throw new Error('Unable to continue. Please retry.')
+          console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
         }
 
-        router.push(localePath(locale ?? 'en', '/verify-otp'))
+        router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
       } else {
         // Magic Link Logic
         if (!email || !email.includes('@')) {

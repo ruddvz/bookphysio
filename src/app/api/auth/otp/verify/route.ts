@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
+import { clearPendingOtpCookie, getPendingOtpFromRequest } from '@/lib/auth/pending-otp-cookie'
+import { buildPhoneRateLimitKey } from '@/lib/auth/otp-rate-limit'
 import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
+import { resolvePostAuthRedirect } from '@/lib/demo/session'
 import { otpRatelimit } from '@/lib/upstash'
 
 async function resolveUserRole(
@@ -30,7 +33,19 @@ export async function POST(request: NextRequest) {
   const parsed = otpVerifySchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { phone, otp, full_name } = parsed.data
+  const { otp, full_name } = parsed.data
+  const pendingOtp = await getPendingOtpFromRequest(request)
+  const flowId = typeof body.flow_id === 'string' ? body.flow_id : null
+
+  if (!pendingOtp) {
+    return NextResponse.json({ error: 'Your verification session expired. Please request a fresh OTP.' }, { status: 400 })
+  }
+
+  if (flowId && pendingOtp.flowId && flowId !== pendingOtp.flowId) {
+    return NextResponse.json({ error: 'Your verification session expired. Please request a fresh OTP.' }, { status: 400 })
+  }
+
+  const { phone } = pendingOtp
 
   const ip = getRequestIpAddress(request)
   if (ip) {
@@ -40,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const rateLimitKey = `verify:${phone}`
+  const rateLimitKey = await buildPhoneRateLimitKey('verify', phone)
   const { success } = await otpRatelimit.limit(rateLimitKey)
   if (!success) {
     return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
@@ -56,10 +71,12 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 })
 
   // Update full name if provided (using admin to bypass RLS/protected field issues if any)
-  if (full_name && data.user) {
+  const resolvedFullName = full_name ?? pendingOtp.fullName
+
+  if (resolvedFullName && data.user) {
     const { supabaseAdmin } = await import('@/lib/supabase/admin')
     const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
-      user_metadata: { full_name }
+      user_metadata: { full_name: resolvedFullName }
     })
 
     if (authUpdateError) {
@@ -68,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     const { error: userProfileError } = await supabaseAdmin
       .from('users')
-      .update({ full_name })
+      .update({ full_name: resolvedFullName })
       .eq('id', data.user.id)
 
     if (userProfileError) {
@@ -77,6 +94,15 @@ export async function POST(request: NextRequest) {
   }
 
   const role = await resolveUserRole(supabase, data.user?.id)
+  const resolvedRole = pendingOtp.flow === 'signup' ? 'patient' : role
+  const response = NextResponse.json({
+    role: resolvedRole,
+    redirectTo: resolvePostAuthRedirect(resolvedRole, pendingOtp.returnTo),
+  })
 
-  return NextResponse.json({ user: data.user, role })
+  if (pendingOtp.flow !== 'provider_signup') {
+    clearPendingOtpCookie(response)
+  }
+
+  return response
 }

@@ -6,9 +6,9 @@
 
 ---
 
-## ✅ COMPLETION STATUS: Phase 14 complete, Phase 11.6 slice in progress ✓
+## ✅ COMPLETION STATUS: Phase 14 complete, Phase 15 in final launch window ✓
 
-**Last updated:** 2026-04-04
+**Last updated:** 2026-04-08
 
 ## Hosting
 - [x] Production hosting target is Vercel; GitHub Pages is legacy and should be retired after the cutover is verified.
@@ -20,12 +20,12 @@
 - [x] IndexNow key is live and deploy automation is wired best-effort in GitHub Actions
 - [x] `robots.txt` is now generated from `src/app/robots.ts` with private surfaces blocked
 - [x] Stale `NEXT_PUBLIC_MAPBOX_TOKEN` removed from Vercel environment variables
-- [~] Repo fix ready for next deploy: empty-state `GET /api/auth/demo-session` now returns `204` so public pages stop logging a 404 when no demo session exists
+- [~] Latest verified repo changes are ready for next deploy: empty-state `GET /api/auth/demo-session` now returns `204`, public preview is production-gated by default, and OTP flows keep raw phone numbers server-side
 - [~] Public providers search no longer 500s in production; a runtime fallback is deployed while the forward Supabase RPC migration still needs authenticated apply access
-- [~] Forward Supabase migration added to restrict public `availabilities` reads to unbooked slots for verified active providers; authenticated apply access is still required before calling production fully rolled out
+- [x] Forward migration `029_restrict_public_availability_read.sql` applied in production; public `availabilities` reads are restricted to unbooked slots for verified active providers
 - [~] Production smoke pass completed on apex domain; public pages, sitemap, robots, and providers API return `200`
-- [ ] External follow-up: Google Search Console verification + sitemap submission
-- [ ] External follow-up: Bing Webmaster Tools submission
+- [x] External follow-up: Google Search Console verification + sitemap submission
+- [x] External follow-up: Bing Webmaster Tools submission
 - [ ] External follow-up: `www.bookphysio.in` DNS still needs registrar-side configuration
 - [ ] External follow-up: production provider dataset is still empty (`/api/providers` returns zero results)
 
@@ -97,8 +97,9 @@ Latest Session Work (2026-04-01):
 
 ### High Priority (P1)
 - [ ] Final launch verification (English-first)
-- [ ] External follow-up: Google Search Console verification + sitemap submission
-- [ ] External follow-up: Bing Webmaster Tools submission
+- [ ] Deploy latest verified repo state
+- [ ] Add real production provider data
+- [ ] Run final production smoke pass
 
 ### Medium Priority (P2)
 - None at this time
@@ -124,11 +125,11 @@ Latest Session Work (2026-04-01):
 
 ---
 
-## Current Focus: Phase 11.6 — Multi-language static pages
-- [x] English/Hindi locale switcher added to public static pages
-- [x] Hindi routes added for About, FAQ, How It Works, Privacy, and Terms
-- [x] Hindi static routes added to sitemap and metadata alternates
-- [ ] Search, auth, booking, and dashboard flows remain English-only
+## Current Focus: Final launch readiness
+- [ ] Push the latest verified auth/privacy and preview hardening changes to production
+- [ ] Add real provider records so `/api/providers` and `/search` are useful on apex
+- [ ] Re-run a live smoke pass after deploy and provider-data update
+- [~] Hindi work is paused; treat non-How-It-Works flows as English-only unless explicitly revived
 
 ## Completed: Phase 9 — Real API Wiring
 - [x] **9.1** MSG91 Auth Wiring (Send/Verify)

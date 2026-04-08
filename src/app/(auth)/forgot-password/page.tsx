@@ -59,10 +59,11 @@ export default function ForgotPasswordPage() {
         // Phone users: bookphysio uses OTP login, but if they explicitly need a password reset, 
         // we'll treat it as a trigger for the OTP flow to verify identity.
         const cleanPhone = identifier.startsWith('+91') ? identifier : `+91${identifier.replace(/\s/g, '')}`
+        const flowId = crypto.randomUUID()
         const res = await fetch('/api/auth/otp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone, flow: 'login' }),
+          body: JSON.stringify({ phone: cleanPhone, flow: 'login', flow_id: flowId, return_to: '/update-password' }),
         })
         
         if (!res.ok) {
@@ -72,17 +73,16 @@ export default function ForgotPasswordPage() {
         }
 
         const otpStateSaved = savePendingOtp({
-          phone: cleanPhone.replace(/^\+/, ''),
           flow: 'login',
+          flowId,
           returnTo: '/update-password',
         })
 
         if (!otpStateSaved) {
-          setError('Unable to continue. Please retry.')
-          return
+          console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
         }
 
-        router.push('/verify-otp')
+        router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
         return
       }
       

@@ -730,9 +730,11 @@ interface Step4Props {
   onChange: (d: Step4Data) => void
   onNext: () => void
   onBack: () => void
+  otpError?: string
+  otpLoading?: boolean
 }
 
-function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
+function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoading }: Step4Props) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [focusedFee, setFocusedFee] = useState<string | null>(null)
   const [focusedTimes, setFocusedTimes] = useState<string | null>(null)
@@ -903,10 +905,15 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
         </div>
       </div>
 
-      <PrimaryButton onClick={handleNext}>
-        Next: Verify Phone
-        <ArrowRight className="w-4 h-4" />
+      <PrimaryButton onClick={handleNext} disabled={otpLoading}>
+        {otpLoading ? 'Sending code…' : (
+          <>
+            Next: Verify Phone
+            <ArrowRight className="w-4 h-4" />
+          </>
+        )}
       </PrimaryButton>
+      {otpError ? <FieldError msg={otpError} /> : null}
       <div className="flex justify-center">
         <BackLink onClick={onBack} />
       </div>
@@ -918,13 +925,14 @@ function Step4({ data, visitTypes, onChange, onNext, onBack }: Step4Props) {
 
 interface Step5Props {
   data: Step5Data
+  flowId: string | null
   phone: string
   onChange: (d: Step5Data) => void
   onSubmit: () => void
   onBack: () => void
 }
 
-function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
+function Step5({ data, flowId, phone, onChange, onSubmit, onBack }: Step5Props) {
   const [countdown, setCountdown] = useState(45)
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
@@ -939,20 +947,51 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     return () => clearTimeout(id)
   }, [countdown])
 
-  function handleResend() {
-    setCountdown(45)
-    setCanResend(false)
-    onChange({ otp: Array(OTP_LENGTH).fill('') })
-    fetch('/api/auth/otp/send', {
+  async function sendProviderSignupOtp() {
+    if (!flowId) {
+      return { ok: false, error: 'Your verification session expired. Please request a fresh code.' }
+    }
+
+    const rawPhone = phone.replace(/\D/g, '')
+    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+
+    const response = await fetch('/api/auth/otp/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: '+91' + phone, flow: 'provider_signup' }),
+      body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup', flow_id: flowId }),
     })
+
+    const payload = await response.json().catch(() => ({})) as { error?: string }
+    return { ok: response.ok, error: payload.error }
+  }
+
+  async function handleResend() {
+    setError('')
+    setCanResend(false)
+    setCountdown(45)
+    onChange({ otp: Array(OTP_LENGTH).fill('') })
+
+    try {
+      const result = await sendProviderSignupOtp()
+      if (!result.ok) {
+        setError(result.error ?? 'Unable to resend the verification code right now.')
+        setCanResend(true)
+        setCountdown(0)
+      }
+    } catch {
+      setError('Unable to resend the verification code right now.')
+      setCanResend(true)
+      setCountdown(0)
+    }
   }
 
   async function handleSubmitOtp() {
     if (data.otp.some((d) => !d)) {
       setError('Enter all 6 digits')
+      return
+    }
+    if (!flowId) {
+      setError('Your verification session expired. Please request a fresh code.')
       return
     }
     setError('')
@@ -961,10 +1000,7 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
       const res = await fetch('/api/auth/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          phone: '+91' + phone, 
-          otp: data.otp.join('') 
-        }),
+        body: JSON.stringify({ otp: data.otp.join(''), flow_id: flowId }),
       })
       if (!res.ok) {
         const d = await res.json()
@@ -979,16 +1015,12 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
     }
   }
 
-  const displayPhone = phone
-    ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`
-    : ''
-
   return (
     <div className="text-center">
       <h2 className="text-[22px] font-bold text-bp-primary mb-2">Almost there!</h2>
       <p className="text-[15px] text-bp-primary mb-1">Verify your mobile number</p>
       <p className="text-[14px] text-bp-body mb-7">
-        Code sent to <span className="font-semibold text-bp-primary">{displayPhone}</span>
+        We sent a 6-digit code to your mobile number.
       </p>
 
       <div className="mb-4">
@@ -1038,6 +1070,9 @@ function Step5({ data, phone, onChange, onSubmit, onBack }: Step5Props) {
 export default function DoctorSignupPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<StepNumber>(1)
+  const [providerOtpFlowId, setProviderOtpFlowId] = useState<string | null>(null)
+  const [otpRequestError, setOtpRequestError] = useState('')
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false)
 
   const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '' })
   const [step2, setStep2] = useState<Step2Data>({
@@ -1059,19 +1094,38 @@ export default function DoctorSignupPage() {
   })
   const [step5, setStep5] = useState<Step5Data>({ otp: Array(OTP_LENGTH).fill('') })
 
-  function goNext() {
+  async function goNext() {
     if (currentStep === 4) {
       // Robust phone formatting: strip all non-digits, then add +91
       const rawPhone = step1.phone.replace(/\D/g, '')
       const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
-      
-      // Send OTP when moving TO step 5
-      fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup' }),
-      })
+      const flowId = crypto.randomUUID()
+
+      setOtpRequestError('')
+      setOtpRequestLoading(true)
+
+      try {
+        const response = await fetch('/api/auth/otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup', flow_id: flowId }),
+        })
+
+        const payload = await response.json().catch(() => ({})) as { error?: string }
+        if (!response.ok) {
+          setOtpRequestError(payload.error ?? 'Unable to send the verification code right now.')
+          return
+        }
+
+        setProviderOtpFlowId(flowId)
+      } catch {
+        setOtpRequestError('Unable to send the verification code right now.')
+        return
+      } finally {
+        setOtpRequestLoading(false)
+      }
     }
+
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
   }
   function goBack() {
@@ -1127,11 +1181,14 @@ export default function DoctorSignupPage() {
           onChange={setStep4}
           onNext={goNext}
           onBack={goBack}
+          otpError={otpRequestError}
+          otpLoading={otpRequestLoading}
         />
       )}
       {currentStep === 5 && (
         <Step5
           data={step5}
+          flowId={providerOtpFlowId}
           phone={step1.phone}
           onChange={setStep5}
           onSubmit={handleSubmit}
