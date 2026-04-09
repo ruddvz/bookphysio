@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowRight, ShieldCheck, Smartphone } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import EmailSignInDialog from '@/components/auth/EmailSignInDialog'
 import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
@@ -110,57 +110,30 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   return (
     <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
       <div className="space-y-7">
-        <div className="space-y-5">
-          <span className="inline-flex items-center rounded-full bg-bp-primary-light px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-primary">
-            {t.loginEyebrow}
-          </span>
+        <div className="flex flex-col items-center text-center space-y-4">
           <BpLogo
             href="/"
             size="auth"
-            className="h-10 w-[190px] sm:h-12 sm:w-[220px]"
-            linkClassName="justify-start"
+            className="h-12 w-[220px]"
+            linkClassName="justify-center"
           />
-        </div>
-
-        <div className="space-y-3">
-          <h1 className="text-[36px] font-bold leading-none tracking-[-0.04em] text-bp-primary sm:text-[40px]">
+          <h1 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[36px]">
             {t.loginHeading}
           </h1>
-          <p className="max-w-[34ch] text-[15px] leading-7 text-bp-body/70 sm:text-[16px]">
+          <p className="max-w-[36ch] text-[15px] leading-6 text-bp-body/70">
             {t.loginSubheading}
           </p>
-          <div className="flex flex-wrap gap-2.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
-              <Smartphone className="h-3.5 w-3.5 text-bp-accent" />
-              {t.loginFastBadge}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
-              <ShieldCheck className="h-3.5 w-3.5 text-bp-accent" />
-              {t.loginPrivateBadge}
-            </span>
-          </div>
         </div>
 
-        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-bp-border/70 bg-white text-bp-accent shadow-sm shadow-bp-primary/5">
-              <Smartphone className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.loginPrimaryEyebrow}</p>
-              <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">{t.loginPhonePanelTitle}</h2>
-              <p className="max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.loginPhonePanelBody}</p>
-            </div>
-          </div>
-
+        <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
           {errors.general && (
-            <div role="alert" className="mt-5 flex items-center gap-3 rounded-3xl border border-red-100 bg-red-50/60 p-4 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95 backdrop-blur-md">
-              <div className="h-2.5 w-2.5 rounded-full bg-red-500 shadow-sm shadow-red-200" />
+            <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600">
+              <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
               {errors.general}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div className="space-y-3">
               <label htmlFor="phone" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.loginLabelPhone}</label>
               <div className={cn(
@@ -219,26 +192,19 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
           </form>
         </section>
 
-        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-bp-border/70 bg-white text-bp-accent shadow-sm shadow-bp-primary/5">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.loginSecondaryEyebrow}</p>
-              <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">{t.loginEmailPanelTitle}</h2>
-              <p className="max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.loginEmailPanelBody}</p>
-            </div>
-          </div>
+        <div className="relative flex items-center gap-4">
+          <div className="h-px flex-1 bg-bp-border/70" />
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/45">or</span>
+          <div className="h-px flex-1 bg-bp-border/70" />
+        </div>
 
-          <EmailSignInDialog
-            locale={locale}
-            open={emailDialogOpen}
-            onOpenChange={setEmailDialogOpen}
-            returnTo={returnTo}
-            triggerClassName="mt-5 w-full justify-center bg-white shadow-sm shadow-bp-primary/5"
-          />
-        </section>
+        <EmailSignInDialog
+          locale={locale}
+          open={emailDialogOpen}
+          onOpenChange={setEmailDialogOpen}
+          returnTo={returnTo}
+          triggerClassName="w-full justify-center bg-white border border-bp-border/70 shadow-sm shadow-bp-primary/5"
+        />
 
         <DemoAccessPanel variant="compact" />
 

@@ -9,6 +9,7 @@ import { buildPhoneRateLimitKey } from '@/lib/auth/otp-rate-limit'
 import { otpSendSchema } from '@/lib/validations/auth'
 import { otpRatelimit } from '@/lib/upstash'
 import { createClient } from '@/lib/supabase/server'
+import { getDevPhoneRole } from '@/lib/auth/dev-otp'
 
 const maskedLoginOtpResponse = { message: 'If an account exists, an OTP has been sent.' }
 
@@ -74,6 +75,13 @@ export async function POST(request: NextRequest) {
 
   const { success } = await otpRatelimit.limit(await buildPhoneRateLimitKey('send', phone))
   if (!success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
+
+  // Dev OTP bypass: known dev phones get a fixed OTP code (see docs/DEV-ACCESS.md)
+  if (getDevPhoneRole(phone)) {
+    const response = NextResponse.json({ message: 'OTP sent', flowId, dev: true })
+    setPendingOtpCookie(response, pendingOtpCookie)
+    return response
+  }
 
   // Initialize Supabase OTP session
   const supabase = await createClient()

@@ -39,7 +39,6 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
   const [nameFocused, setNameFocused] = useState(false)
   const [phoneFocused, setPhoneFocused] = useState(false)
   const [loginHref, setLoginHref] = useState('/login')
-  const emailLoginHref = loginHref.includes('?') ? `${loginHref}&mode=email` : `${loginHref}?mode=email`
   const nameErrorId = 'signup-name-error'
   const phoneHintId = 'signup-phone-hint'
   const phoneErrorId = 'signup-phone-error'
@@ -128,46 +127,20 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
   return (
     <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
       <div className="space-y-7">
-        <div className="space-y-5">
-          <span className="inline-flex items-center rounded-full bg-bp-primary-light px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-primary">
-            {t.signupEyebrow}
-          </span>
+        <div className="flex flex-col items-center text-center space-y-4">
           <BpLogo
             href="/"
             size="auth"
-            className="h-10 w-[190px] sm:h-12 sm:w-[220px]"
-            linkClassName="justify-start"
+            className="h-12 w-[220px]"
+            linkClassName="justify-center"
           />
-        </div>
-
-        <div className="space-y-3">
-          <h1 className="text-[36px] font-bold leading-none tracking-[-0.04em] text-bp-primary sm:text-[40px]">
+          <h1 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[36px]">
             {t.signupHeading}
           </h1>
-          <p className="max-w-[34ch] text-[15px] leading-7 text-bp-body/70 sm:text-[16px]">{t.signupSubheading}</p>
-          <div className="flex flex-wrap gap-2.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
-              <User className="h-3.5 w-3.5 text-bp-accent" />
-              {t.signupDetailsBadge}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
-              <Smartphone className="h-3.5 w-3.5 text-bp-accent" />
-              {t.signupVerifiedBadge}
-            </span>
-          </div>
+          <p className="max-w-[36ch] text-[15px] leading-6 text-bp-body/70">{t.signupSubheading}</p>
         </div>
 
-        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-bp-border/70 bg-white text-bp-accent shadow-sm shadow-bp-primary/5">
-              <User className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.signupPrimaryEyebrow}</p>
-              <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">{t.signupPrimaryTitle}</h2>
-              <p className="max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.signupPrimaryBody}</p>
-            </div>
-          </div>
+        <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
           {errors.general && (
             <div role="alert" className="mt-5 flex items-center gap-3 rounded-3xl border border-red-100 bg-red-50/50 p-4 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95 backdrop-blur-md">
               <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 shadow-sm shadow-red-200" />
@@ -272,27 +245,12 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
           </form>
         </section>
 
-        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.signupReturningEyebrow}</p>
-          <h2 className="mt-2 text-[20px] font-bold tracking-tight text-bp-primary">{t.signupAccessTitle}</h2>
-          <p className="mt-1 max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.signupAccessBody}</p>
-
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href={loginHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-bp-border/70 bg-white px-5 text-[14px] font-bold text-bp-primary transition-all hover:-translate-y-0.5 hover:border-bp-accent/30 hover:text-bp-accent"
-            >
-              {t.signupLoginOtpLink}
-            </Link>
-            <Link
-              href={emailLoginHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-bp-border/70 bg-white px-5 text-[14px] font-bold text-bp-primary transition-all hover:-translate-y-0.5 hover:border-bp-accent/30 hover:text-bp-accent"
-            >
-              {t.signupLoginEmailLink}
-            </Link>
-          </div>
-          <p className="mt-4 text-center text-[13px] font-semibold text-bp-body/50">{t.signupAlreadyAccount}</p>
-        </section>
+        <p className="text-center text-[14px] font-semibold tracking-tight text-bp-body/60">
+          {t.signupAlreadyAccount}{' '}
+          <Link href={loginHref} className="font-bold text-bp-accent no-underline transition-colors hover:text-bp-accent/80">
+            {t.signupLoginOtpLink}
+          </Link>
+        </p>
       </div>
     </div>
   )

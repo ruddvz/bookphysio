@@ -4,8 +4,15 @@ import { clearPendingOtpCookie, getPendingOtpFromRequest } from '@/lib/auth/pend
 import { buildPhoneRateLimitKey } from '@/lib/auth/otp-rate-limit'
 import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
-import { resolvePostAuthRedirect } from '@/lib/demo/session'
+import {
+  createDemoCookiePayload,
+  DEMO_SESSION_COOKIE,
+  DEMO_SESSION_SUPPRESSION_COOKIE,
+  encodeDemoCookie,
+  resolvePostAuthRedirect,
+} from '@/lib/demo/session'
 import { otpRatelimit } from '@/lib/upstash'
+import { getDevPhoneRole, isDevOtpCode } from '@/lib/auth/dev-otp'
 
 async function resolveUserRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -59,6 +66,31 @@ export async function POST(request: NextRequest) {
   const { success } = await otpRatelimit.limit(rateLimitKey)
   if (!success) {
     return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
+  }
+
+  // Dev OTP bypass: known dev phones + fixed code → issue a demo session cookie.
+  const devRole = getDevPhoneRole(phone)
+  if (devRole && isDevOtpCode(otp)) {
+    const cookiePayload = createDemoCookiePayload(devRole)
+    const response = NextResponse.json({
+      role: devRole,
+      redirectTo: resolvePostAuthRedirect(devRole, pendingOtp.returnTo),
+    })
+    response.cookies.set(DEMO_SESSION_COOKIE, await encodeDemoCookie(cookiePayload), {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      expires: new Date(cookiePayload.expiresAt * 1000),
+    })
+    response.cookies.set(DEMO_SESSION_SUPPRESSION_COOKIE, '', {
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      expires: new Date(0),
+    })
+    clearPendingOtpCookie(response)
+    return response
   }
 
   const supabase = await createClient()
