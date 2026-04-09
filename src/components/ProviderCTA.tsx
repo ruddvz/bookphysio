@@ -42,9 +42,9 @@ export default function ProviderCTA() {
                   {/* Stat cards */}
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { val: '12', label: 'Today' },
-                      { val: '4.9★', label: 'Rating' },
-                      { val: '₹2.4L', label: 'Month' },
+                      { val: '—', label: 'Today' },
+                      { val: '—', label: 'Rating' },
+                      { val: '—', label: 'Month' },
                     ].map(({ val, label }) => (
                       <div key={label} className="bg-white/5 rounded-xl p-4 border border-white/5">
                         <div className="text-white font-bold text-[18px] leading-none">{val}</div>
@@ -75,7 +75,7 @@ export default function ProviderCTA() {
                       <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
                       <span className="text-indigo-400 text-[12px] font-bold">Patient growth this month</span>
                     </div>
-                    <span className="text-white font-bold text-[18px]">+142%</span>
+                    <span className="text-white font-bold text-[18px]">Growing</span>
                   </div>
                 </div>
               </div>

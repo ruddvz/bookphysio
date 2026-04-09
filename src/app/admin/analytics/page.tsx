@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, ArrowUpRight, DollarSign, Activity, Download, Loader2, Filter, Share2 } from 'lucide-react'
+import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, DollarSign, Activity, Download, Loader2, Filter, Share2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AnalyticsData {
@@ -51,10 +51,10 @@ export default function AdminAnalytics() {
 
   const kpis = data
     ? [
-        { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-1-bg)]', trend: '+12.5%' },
-        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-2-bg)]', trend: '+8.2%'  },
-        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-5-bg)]', trend: '+2.4%'  },
-        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-[var(--color-ad-tile-4-fg)]',     bg: 'bg-[var(--color-ad-tile-4-bg)]', trend: '+5.1%'  },
+        { label: 'Total Volume',    value: data.kpis.totalGmvFormatted,                             icon: DollarSign, color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-1-bg)]' },
+        { label: 'Active Patients', value: data.kpis.activePatients.toLocaleString('en-IN'),         icon: Users,      color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-2-bg)]' },
+        { label: 'Completion Rate', value: `${data.kpis.completionRate}%`,                           icon: Activity,   color: 'text-[var(--color-ad-ink)]',           bg: 'bg-[var(--color-ad-tile-5-bg)]' },
+        { label: 'Total Providers', value: data.kpis.totalProviders.toLocaleString('en-IN'),         icon: TrendingUp, color: 'text-[var(--color-ad-tile-4-fg)]',     bg: 'bg-[var(--color-ad-tile-4-bg)]' },
       ]
     : []
 
@@ -124,10 +124,6 @@ export default function AdminAnalytics() {
                 <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', stat.bg, stat.color)}>
                   <stat.icon size={20} />
                 </div>
-                <div className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                  <ArrowUpRight size={12} />
-                  {stat.trend}
-                </div>
               </div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
               <p className="text-[28px] font-bold text-slate-900 tracking-tight leading-none">{stat.value}</p>
@@ -145,7 +141,6 @@ export default function AdminAnalytics() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">Revenue Pulse</h2>
-                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase rounded-md tracking-wider">+18% MoM</span>
               </div>
               <p className="text-[12px] font-medium text-slate-400 uppercase tracking-wider">Monthly Revenue in INR</p>
             </div>
@@ -231,35 +226,12 @@ export default function AdminAnalytics() {
         {/* Acquisition Mix */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col">
           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight mb-6">Acquisition</h2>
-          <div className="flex-1 space-y-6">
-            {[
-              { name: 'Organic Search', value: 65, color: 'bg-[var(--color-ad-primary)]',                change: '+12%' },
-              { name: 'Direct Traffic', value: 42, color: 'bg-[var(--color-ad-tile-2-fg)]',              change: '+5%'  },
-              { name: 'Social Media',   value: 28, color: 'bg-[var(--color-ad-tile-4-fg)]',              change: '-2%'  },
-              { name: 'Partner Refs',   value: 15, color: 'bg-[var(--color-ad-tile-3-fg)]',              change: '+24%' },
-            ].map(channel => (
-              <div key={channel.name} className="space-y-2.5">
-                <div className="flex justify-between items-end">
-                  <div>
-                    <span className="text-[13px] font-semibold text-slate-900">{channel.name}</span>
-                    <span className={cn("text-[11px] font-semibold ml-2", channel.change.startsWith('+') ? "text-emerald-500" : "text-rose-500")}>
-                      {channel.change}
-                    </span>
-                  </div>
-                  <span className="text-[16px] font-bold text-slate-900">{channel.value}%</span>
-                </div>
-                <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className={cn('h-full rounded-full transition-all duration-1000', channel.color)}
-                    style={{ width: `${channel.value}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center py-8">
+              <BarChart3 size={32} className="mx-auto text-slate-300 mb-3" />
+              <p className="text-[14px] text-slate-500">Acquisition data will appear as traffic grows.</p>
+            </div>
           </div>
-          <button type="button" className="w-full py-3 mt-8 bg-[var(--color-ad-primary)] hover:bg-[var(--color-ad-primary-hover)] text-white text-[13px] font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-            Explore Growth Channels <ArrowUpRight size={14} />
-          </button>
         </div>
       </div>
 
@@ -277,19 +249,9 @@ export default function AdminAnalytics() {
             <p className="text-[15px] text-slate-400 leading-relaxed mb-8 max-w-lg">
               Platform load distribution across India&apos;s urban corridors. Home-visit demand surging in Tier-1 cities.
             </p>
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <div className="border-l-2 border-blue-500 pl-4">
-                <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Top Hub</span>
-                <p className="text-[18px] font-bold mt-0.5">New Delhi</p>
-              </div>
-              <div className="border-l-2 border-emerald-500 pl-4">
-                <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Max Growth</span>
-                <p className="text-[18px] font-bold mt-0.5">+42% Pune</p>
-              </div>
-            </div>
-            <button type="button" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-semibold rounded-xl transition-all flex items-center gap-2">
-              Launch Map View <MapPin size={16} />
-            </button>
+            <p className="text-[14px] text-slate-400">
+              Geographic insights will populate as providers join across cities.
+            </p>
           </div>
 
           <div className="hidden lg:flex justify-center relative">

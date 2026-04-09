@@ -88,15 +88,15 @@ export default function OGImage() {
             marginBottom: 48,
           }}
         >
-          IAP-verified providers · Home visits · Same-day slots · 18 cities
+          IAP-verified providers · Home visits · Same-day slots · Pan-India
         </div>
 
         {/* Stats row */}
         <div style={{ display: 'flex', gap: 48 }}>
           {[
-            { value: '5,000+', label: 'Verified Providers' },
-            { value: '18',     label: 'Cities Covered'    },
-            { value: '4.9/5',  label: 'Average Rating'    },
+            { value: 'IAP',       label: 'Verified Providers' },
+            { value: 'Pan-India', label: 'Coverage'           },
+            { value: 'Free',      label: 'To List'            },
           ].map((stat) => (
             <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <span style={{ color: '#12B3A0', fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em' }}>

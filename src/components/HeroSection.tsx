@@ -27,10 +27,10 @@ const CITIES = [
 ]
 
 const TRUST_STATS = [
-  { value: '5,000+', label: 'Verified providers' },
-  { value: '18',     label: 'Cities covered'     },
-  { value: '4.9/5',  label: 'Average rating'     },
-  { value: '60s',    label: 'To book a session'   },
+  { value: 'IAP',     label: 'Verified providers'  },
+  { value: '10+',     label: 'Cities supported'    },
+  { value: 'Free',    label: 'To list your practice'},
+  { value: '60s',     label: 'To book a session'   },
 ]
 
 function SearchField({

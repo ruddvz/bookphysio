@@ -9,7 +9,7 @@ import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { EmptyState } from '@/components/ui/EmptyState'
 import SearchFilters from './SearchFilters'
-import { Search as SearchIcon, MapPin, ChevronRight, Activity, ArrowRight, Sparkles, Calendar } from 'lucide-react'
+import { Search as SearchIcon, ChevronRight } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
@@ -21,51 +21,11 @@ const VISIT_TYPE_LABELS: Record<string, string> = {
   home_visit: 'Home Visit',
 }
 
-export const DEMO_RESULTS = [
-  {
-    title: 'Sports Rehab Starter',
-    specialty: 'ACL and runner return-to-play',
-    city: 'Bangalore',
-    fee: '₹800',
-    nextSlot: 'Today · 6:30 PM',
-    icon: Activity,
-    href: '/search?city=Bangalore&specialty=Sports%20Physio',
-    coverage: 'Koramangala, Indiranagar',
-    verified: true
-  },
-  {
-    title: 'Back Pain Fast Track',
-    specialty: 'Spine and posture support',
-    city: 'Delhi',
-    fee: '₹900',
-    nextSlot: 'Tomorrow · 10:30 AM',
-    icon: MapPin,
-    href: '/search?city=Delhi&specialty=Pain%20Management',
-    coverage: 'South Delhi, Saket',
-    verified: true
-  },
-  {
-    title: 'Home Visit Preview',
-    specialty: 'Mobility support at home',
-    city: 'Mumbai',
-    fee: '₹1,200',
-    nextSlot: 'Today · Evening',
-    icon: Activity,
-    href: '/search?visit_type=home_visit',
-    coverage: 'Bandra, Juhu, Andheri',
-    verified: true
-  },
-  {
-    title: 'Post-op Recovery',
-    specialty: 'Shoulder and knee follow-up',
-    city: 'Pune',
-    fee: '₹1,000',
-    nextSlot: 'Soon',
-    icon: Sparkles,
-    href: '/search?specialty=Post-Surgery%20Rehab',
-    coverage: 'Kothrud, Baner',
-    verified: true
-  },
+const SUGGESTED_SEARCHES = [
+  { label: 'Sports Physio', href: '/search?specialty=Sports%20Physio' },
+  { label: 'Back Pain', href: '/search?specialty=Pain%20Management' },
+  { label: 'Home Visits', href: '/search?visit_type=home_visit' },
+  { label: 'Post-Surgery Rehab', href: '/search?specialty=Post-Surgery%20Rehab' },
 ]
 
 async function fetchSearchResults(url: string): Promise<SearchResponse> {
@@ -277,63 +237,20 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-bp-body/40">
-                      <span className="inline-flex items-center gap-2 rounded-full border border-bp-accent/20 bg-bp-accent/5 px-3 py-1 text-bp-accent">
-                        <Sparkles size={12} />
-                        {t.demoPreview}
-                      </span>
-                      <span>{t.demoPreviewNote}</span>
-                    </div>
+                    <p className="text-[14px] text-slate-600 leading-relaxed max-w-md mx-auto">
+                      We&apos;re onboarding verified physiotherapists in your area. Try a different search or browse by category:
+                    </p>
 
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {DEMO_RESULTS.map((result) => {
-                        const ResultIcon = result.icon
-                        const resultHref = locale === 'hi'
-                          ? result.href.replace('/search', '/hi/search')
-                          : result.href
-
-                        return (
-                          <Link
-                            key={result.title}
-                            href={resultHref}
-                            className="group rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 text-left shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
-                          >
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="min-w-0 flex-1">
-                                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#FEE9DD] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#C4532A]">
-                                  <Sparkles size={10} />
-                                  Preview
-                                </div>
-                                <h3 className="mt-3 text-[16px] font-semibold leading-tight text-[#1A1C29]">{result.title}</h3>
-                                <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{result.specialty}</p>
-                              </div>
-                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C]">
-                                <ResultIcon size={20} strokeWidth={2.2} />
-                              </div>
-                            </div>
-
-                            <div className="mt-4 space-y-2">
-                              <div className="flex items-center gap-2 text-[13px] text-slate-600">
-                                <MapPin size={14} className="text-slate-400" />
-                                <span className="truncate">{result.coverage}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-[13px] text-slate-600">
-                                <Calendar size={14} className="text-slate-400" />
-                                <span>
-                                  Next: <span className="text-[#00766C] font-semibold">{result.nextSlot}</span>
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                              <span className="text-[15px] font-semibold text-[#1A1C29] tabular-nums">{result.fee}</span>
-                              <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#00766C] group-hover:gap-2 transition-all">
-                                View <ArrowRight size={14} />
-                              </span>
-                            </div>
-                          </Link>
-                        )
-                      })}
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {SUGGESTED_SEARCHES.map((s) => (
+                        <Link
+                          key={s.label}
+                          href={locale === 'hi' ? s.href.replace('/search', '/hi/search') : s.href}
+                          className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-[13px] font-semibold text-[#00766C] hover:border-[#00766C]/30 hover:shadow-sm transition-all"
+                        >
+                          {s.label}
+                        </Link>
+                      ))}
                     </div>
 
                     <div className="flex justify-center">

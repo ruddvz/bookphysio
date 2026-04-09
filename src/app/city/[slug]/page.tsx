@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { House, IndianRupee, MapPin, Search, ShieldCheck } from 'lucide-react'
 
 export async function generateStaticParams() {
@@ -34,13 +33,6 @@ const CITY_MAP: Record<string, { label: string; description: string }> = {
   surat: { label: 'Surat', description: 'Quality physiotherapy treatments in Surat. Trusted specialists for in-clinic and home recovery care.' },
 }
 
-const MOCK_DOCTORS: Doctor[] = [
-  { id: '1', profileHref: '/search?city=Mumbai&specialty=Sports%20Physio', primaryActionLabel: 'Browse live providers', secondaryActionLabel: 'See matching providers', name: 'Dr. Priya Sharma', credentials: 'BPT, MPT (Sports)', specialty: 'Sports Physiotherapist', rating: 4.9, reviewCount: 187, location: 'Andheri West, Mumbai', distance: '1.2 km', nextSlot: 'Today at 2:30 PM', visitTypes: ['In-clinic', 'Home Visit'], fee: 700, icpVerified: true },
-  { id: '2', profileHref: '/search?city=Mumbai&specialty=Ortho%20Physio', primaryActionLabel: 'Browse live providers', secondaryActionLabel: 'See matching providers', name: 'Dr. Rohit Mehta', credentials: 'BPT, MPT (Ortho)', specialty: 'Orthopedic Physiotherapist', rating: 4.7, reviewCount: 132, location: 'Bandra, Mumbai', distance: '3.4 km', nextSlot: 'Today at 4:00 PM', visitTypes: ['In-clinic'], fee: 800, icpVerified: true },
-  { id: '3', profileHref: '/search?city=Bangalore&specialty=Neuro%20Physio', primaryActionLabel: 'Browse live providers', secondaryActionLabel: 'See matching providers', name: 'Dr. Ananya Krishnan', credentials: 'BPT, MPT (Neuro)', specialty: 'Neurological Physiotherapist', rating: 4.8, reviewCount: 94, location: 'Koramangala, Bangalore', distance: '2.1 km', nextSlot: 'Tomorrow at 10:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 900, icpVerified: true },
-  { id: '4', profileHref: '/search?city=Delhi&specialty=Sports%20Physio', primaryActionLabel: 'Browse live providers', secondaryActionLabel: 'See matching providers', name: 'Dr. Vikram Singh', credentials: 'BPT', specialty: 'Sports Physiotherapist', rating: 4.6, reviewCount: 68, location: 'Lajpat Nagar, Delhi', distance: '4.2 km', nextSlot: 'Today at 5:30 PM', visitTypes: ['In-clinic'], fee: 600, icpVerified: false },
-  { id: '5', profileHref: '/search?city=Mumbai&specialty=Paediatric%20Physio', primaryActionLabel: 'Browse live providers', secondaryActionLabel: 'See matching providers', name: 'Dr. Sneha Patel', credentials: 'BPT, MPT (Paeds)', specialty: 'Paediatric Physiotherapist', rating: 4.9, reviewCount: 211, location: 'Powai, Mumbai', distance: '5.1 km', nextSlot: 'Today at 11:00 AM', visitTypes: ['In-clinic', 'Home Visit'], fee: 1000, icpVerified: true },
-]
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -63,30 +55,25 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   const city = CITY_MAP[slug]
   if (!city) notFound()
 
-  const filteredDoctors = MOCK_DOCTORS.filter((doc) => doc.location.toLowerCase().includes(city.label.toLowerCase()))
-  const verifiedCount = filteredDoctors.filter((doctor) => doctor.icpVerified).length
-  const homeVisitCount = filteredDoctors.filter((doctor) => doctor.visitTypes.includes('Home Visit')).length
-  const startingFee = filteredDoctors.length > 0 ? Math.min(...filteredDoctors.map((doctor) => doctor.fee)) : null
-
   const citySignals = [
     {
-      label: 'Verified clinicians',
-      value: filteredDoctors.length > 0 ? `${verifiedCount}` : '0',
-      helper: 'Credential-checked profiles you can compare quickly.',
+      label: 'All providers',
+      value: 'IAP Verified',
+      helper: 'Every provider is credential-checked before going live.',
       icon: ShieldCheck,
       tint: 'bg-[#E6F4F3] text-[#00766C]',
     },
     {
-      label: 'Home visit options',
-      value: filteredDoctors.length > 0 ? `${homeVisitCount}` : '0',
-      helper: 'Providers offering recovery support at home.',
+      label: 'Visit formats',
+      value: 'Clinic + Home',
+      helper: 'Choose in-clinic sessions or home visit recovery.',
       icon: House,
       tint: 'bg-[#E7EEFB] text-[#2F5EC4]',
     },
     {
-      label: 'Starting fee',
-      value: startingFee ? `₹${startingFee}` : 'Soon',
-      helper: 'Transparent pricing before you commit to a session.',
+      label: 'Pricing',
+      value: 'Transparent',
+      helper: 'Fees shown upfront before you book. No surprises.',
       icon: IndianRupee,
       tint: 'bg-[#FEE9DD] text-[#C4532A]',
     },
@@ -134,52 +121,25 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         {/* Listing */}
         <section className="py-12 lg:py-16">
           <div className="max-w-[1142px] mx-auto px-6 lg:px-10">
-            <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 lg:p-7 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
-                    Local availability
-                  </p>
-                  <h2 className="mt-2 text-[22px] lg:text-[24px] font-bold tracking-tight text-[#1A1C29]">
-                    {filteredDoctors.length} {filteredDoctors.length === 1 ? 'physiotherapist' : 'physiotherapists'} currently listed in {city.label}
-                  </h2>
-                  <p className="mt-2 text-[14px] leading-relaxed text-slate-600 max-w-[680px]">
-                    Compare verified profiles, visit formats, and pricing before you book a clinic session or home visit.
-                  </p>
-                </div>
-                <div className="text-[13px] text-slate-500">
-                  Verified by <span className="font-semibold text-[#00766C]">BookPhysio</span>
-                </div>
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_1px_3px_rgba(15,23,42,0.04)] p-12 lg:p-16 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#E6F4F3] flex items-center justify-center mx-auto mb-4">
+                <Search className="w-6 h-6 text-[#00766C]" />
+              </div>
+              <h3 className="text-[18px] font-semibold text-[#1A1C29] mb-2">
+                Find physiotherapists in {city.label}
+              </h3>
+              <p className="text-[15px] text-slate-600 max-w-md mx-auto leading-relaxed">
+                Search for verified physiotherapists in {city.label}. Compare profiles, visit formats, and pricing before you book.
+              </p>
+              <div className="mt-6">
+                <Link
+                  href={`/search?location=${encodeURIComponent(city.label)}`}
+                  className="inline-flex px-6 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white text-[14px] font-semibold rounded-full transition-colors"
+                >
+                  Search in {city.label}
+                </Link>
               </div>
             </div>
-
-            {filteredDoctors.length > 0 ? (
-              <div className="flex flex-col gap-5">
-                {filteredDoctors.map((doctor) => (
-                  <DoctorCard key={doctor.id} doctor={doctor} />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_1px_3px_rgba(15,23,42,0.04)] p-12 lg:p-16 text-center">
-                <div className="w-14 h-14 rounded-full bg-[#E6F4F3] flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-6 h-6 text-[#00766C]" />
-                </div>
-                <h3 className="text-[18px] font-semibold text-[#1A1C29] mb-2">
-                  No providers currently in {city.label}
-                </h3>
-                <p className="text-[15px] text-slate-600 max-w-md mx-auto leading-relaxed">
-                  We&apos;re currently onboarding specialists in {city.label}. Please try a nearby city or browse our other physiotherapy specialists.
-                </p>
-                <div className="mt-6">
-                  <Link
-                    href="/search"
-                    className="inline-flex px-6 py-2.5 bg-[#00766C] hover:bg-[#005A52] text-white text-[14px] font-semibold rounded-full transition-colors"
-                  >
-                    Explore other cities
-                  </Link>
-                </div>
-              </div>
-            )}
           </div>
         </section>
       </main>

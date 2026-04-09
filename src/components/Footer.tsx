@@ -62,7 +62,7 @@ export default function Footer({
               <BpLogo invert priority={false} size="footer" />
             </Link>
             <p className="text-slate-400 text-[14px] leading-7 max-w-xs">
-              India&apos;s first physio-only booking platform. Connect with IAP-verified physiotherapists for home visits and in-clinic care across 18 cities.
+              India&apos;s first physio-only booking platform. Connect with IAP-verified physiotherapists for home visits and in-clinic care across India.
             </p>
 
             {/* Trust badges */}

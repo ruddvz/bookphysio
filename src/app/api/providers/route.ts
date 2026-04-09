@@ -6,7 +6,6 @@ import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
-import { DEMO_RESULTS } from '@/app/search/SearchContent'
 
 const SEARCH_CACHE_TTL_SECONDS = 60
 
@@ -472,37 +471,6 @@ export async function GET(request: NextRequest) {
     total: Number(total),
     page,
     limit,
-  }
-
-  // Fallback to demo results if no providers found and we're in preview/demo mode
-  if (response.total === 0 || (process.env.NODE_ENV !== 'production' && response.providers.length === 0)) {
-    const demoProviders: ProviderCard[] = DEMO_RESULTS.map((d, index) => ({
-      id: `demo-${index}`,
-      slug: `demo-physio-${index}`,
-      full_name: d.title,
-      title: 'Dr.',
-      avatar_url: null,
-      verified: true,
-      specialties: [{ id: d.specialty, name: d.specialty, slug: d.specialty.toLowerCase().replace(/\s+/g, '-'), icon_url: null }],
-      rating_avg: 4.8,
-      rating_count: 12,
-      experience_years: 12,
-      consultation_fee_inr: parseInt(d.fee.replace('₹', '').replace(',', '')),
-      next_available_slot: new Date(Date.now() + 3600000).toISOString(),
-      visit_types: ['home_visit', 'in_clinic'],
-      city: d.city,
-      lat: 12.9716,
-      lng: 77.5946,
-      distance: '0.8 km'
-    }))
-
-    return NextResponse.json({
-      providers: demoProviders,
-      total: demoProviders.length,
-      page: 1,
-      limit: 10,
-      source: 'demo-fallback'
-    })
   }
 
   // Cache: write result for 60s

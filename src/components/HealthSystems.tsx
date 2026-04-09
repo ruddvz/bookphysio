@@ -100,7 +100,7 @@ export default function HealthSystems() {
                 </div>
                 <div>
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Coverage</div>
-                  <div className="text-[15px] font-semibold text-slate-900">18 Indian cities & growing</div>
+                  <div className="text-[15px] font-semibold text-slate-900">Growing across India</div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">

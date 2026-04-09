@@ -4,9 +4,9 @@ import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 const providers = [
-  { initials: 'PS', name: 'Dr. Priya Sharma',  specialty: 'Sports Physio',   city: 'Mumbai',    fee: 900,  slot: 'Today · 6:30 PM',  rating: 4.9 },
-  { initials: 'RV', name: 'Dr. Rahul Verma',   specialty: 'Ortho Rehab',     city: 'Delhi',     fee: 800,  slot: 'Tomorrow · 9:00 AM', rating: 4.8 },
-  { initials: 'AK', name: 'Dr. Ayesha Khan',   specialty: 'Neuro Physio',    city: 'Bengaluru', fee: 1100, slot: 'Today · 8:15 PM',  rating: 5.0 },
+  { initials: 'SP', name: 'Sports Physio',      specialty: 'ACL · Runner rehab',   city: 'Mumbai',    fee: 800,  slot: 'Same-day slots',     rating: 4.9 },
+  { initials: 'OR', name: 'Ortho Rehab',        specialty: 'Joint · Back pain',    city: 'Delhi',     fee: 700,  slot: 'Next-day available', rating: 4.8 },
+  { initials: 'NP', name: 'Neuro Physio',       specialty: 'Stroke · Parkinson\'s', city: 'Bengaluru', fee: 900,  slot: 'Home visits',       rating: 5.0 },
 ]
 
 const features = [
@@ -54,7 +54,7 @@ export default function ProofSection() {
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[13px] font-semibold text-slate-500">
-                  5,240 providers live right now
+                  Example provider categories
                 </span>
               </div>
               <Link

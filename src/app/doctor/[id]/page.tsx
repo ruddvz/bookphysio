@@ -2,7 +2,6 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
 import ClinicGallery from './ClinicGallery'
-import RecoveryBundles from './RecoveryBundles'
 import MobileBookingBar from './MobileBookingBar'
 import { GraduationCap, Star, ChevronRight, Award, CheckCircle2, Clock, Sparkles, Building2, Activity, Mail } from 'lucide-react'
 import type { ProviderProfile, ProviderReview } from '@/app/api/contracts/provider'
@@ -299,8 +298,6 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               {/* 2.5 Clinic Gallery */}
               <ClinicGallery images={provider.gallery_images ?? []} />
 
-              {/* 2.6 Recovery Bundles */}
-              <RecoveryBundles />
 
               {/* 3. Specializations & Clinical Focus */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
