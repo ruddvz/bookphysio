@@ -4,8 +4,8 @@
 > `[ ]` = pending, `[x]` = done, `[~]` = built but needs polish/wiring
 >
 > **STATUS AS OF 2026-04-08: Phase 14 COMPLETE ✅ · Phase 15 rollout in final launch window · Phase 11.6 PAUSED**
-> Production hosting target is Vercel. Apex is live, analytics/robots/IndexNow are wired, Search Console and Bing sitemap submission are complete, and Supabase migrations `025` → `029` are applied in production.
-> Remaining rollout work is operational: deploy the latest verified repo state, add real production provider data, and run a live smoke pass on apex. `www` DNS, notification cleanup cron, and the JWT role custom claim hook are follow-up items rather than launch blockers.
+> Production hosting target is Vercel. Apex is live, analytics/robots/IndexNow are wired, Search Console and Bing sitemap submission are complete, Supabase migrations `025` → `029` are applied in production, and the latest auth/privacy polish release is now deployed on apex.
+> Remaining rollout work is operational: add real production provider data and run a wider live smoke pass on apex. `www` DNS, notification cleanup cron, and the JWT role custom claim hook are follow-up items rather than launch blockers.
 
 ---
 
@@ -237,6 +237,7 @@
   - `www.bookphysio.in` still needs registrar-side DNS (`A www.bookphysio.in 76.76.21.21`) or Vercel nameservers
 - [~] **15.7** End-to-end smoke test in production after domain cutover
   - Apex smoke checks passed for `/`, `/search`, `/sitemap.xml`, `/robots.txt`, and the IndexNow key file
+  - Auth smoke checks now pass for `/login`, `/signup`, and the English-only `/hi/login` redirect
   - Public providers API no longer returns `500`; runtime fallback deployed while `search_providers_v2` DB migration awaits authenticated apply access
   - Repo fix ready for next deploy: public pages no longer treat the missing demo-session state as a 404 error during auth hydration
   - Production dataset currently returns zero public providers, so results rendering remains data-limited rather than route-broken

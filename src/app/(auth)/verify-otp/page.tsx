@@ -39,8 +39,8 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
     return () => clearTimeout(timer)
   }, [countdown])
 
-  const deliveryLabel = pendingOtp?.flow === 'login' ? t.otpLoginSubheading : t.otpSubheading
-  const flowId = pendingOtp?.flowId ?? queryFlowId
+  const deliveryLabel = pendingOtp?.flow === 'signup' ? t.otpSubheading : t.otpLoginSubheading
+  const flowId = queryFlowId ?? pendingOtp?.flowId
   const restartHref = pendingOtp?.returnTo === '/update-password'
     ? '/forgot-password'
     : pendingOtp?.flow === 'signup'
@@ -98,7 +98,6 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         body: JSON.stringify({
           flow_id: flowId,
           otp: code,
-          ...(pendingOtp?.flow === 'signup' && pendingOtp.fullName ? { full_name: pendingOtp.fullName } : {}),
         }),
       })
       const data = await res.json() as {

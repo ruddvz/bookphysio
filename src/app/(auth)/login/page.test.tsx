@@ -36,13 +36,13 @@ describe('LoginPage', () => {
     expect(screen.queryByText(/264200/i)).not.toBeInTheDocument()
   })
 
-  it('renders the centered auth wordmark linked to home', () => {
+  it('renders the auth wordmark linked to home', () => {
     render(<LoginPage />)
 
     const link = screen.getByRole('link', { name: /bookphysio home/i })
 
     expect(link).toHaveAttribute('href', '/')
-    expect(link.className).toContain('mx-auto')
+    expect(link.className).toContain('justify-start')
     expect(screen.getByRole('img', { name: 'BookPhysio.in' })).toHaveAttribute('src', '/logo.png')
   })
 })

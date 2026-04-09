@@ -74,6 +74,8 @@ describe('Auth regressions', () => {
 
     expect(screen.getByRole('link', { name: /bookphysio logo/i })).toHaveAttribute('href', '/')
     expect(screen.getByText(/demo access panel/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /continue with email instead/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/mobile number/i)).toBeInTheDocument()
     expect(screen.queryByText(/demo accounts/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/90000 00000/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/99999 99999/i)).not.toBeInTheDocument()
@@ -87,6 +89,14 @@ describe('Auth regressions', () => {
     expect(doctorLink).not.toHaveTextContent('→')
     expect(doctorLink.querySelector('svg')).toBeInTheDocument()
     expect(container.firstChild).toHaveClass('pb-10')
+  })
+
+  it('keeps the polished login chrome locale-aware when a locale override is provided', () => {
+    render(<LoginPage locale="hi" />)
+
+    expect(screen.getByText(/सुरक्षित रोगी साइन-इन/i)).toBeInTheDocument()
+    expect(screen.getByText(/डिफ़ॉल्ट रूप से निजी/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Primary sign-in/i)).not.toBeInTheDocument()
   })
 
   it('stores login OTP state in session storage and navigates with a clean verify URL', async () => {
@@ -104,7 +114,7 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /send otp|secure login/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
@@ -113,11 +123,34 @@ describe('Auth regressions', () => {
     expect(readPendingOtp()).toEqual({
       flow: 'login',
       flowId: expect.any(String),
-      fullName: undefined,
       returnTo: null,
     })
 
     expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
+  })
+
+  it('masks login OTP failures behind generic UI copy', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: vi.fn().mockResolvedValue({ error: 'Provider-only failure detail' }),
+      })
+    )
+
+    render(<LoginPage />)
+
+    fireEvent.change(screen.getByLabelText(/mobile number/i), {
+      target: { value: '9876543210' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/unable to send a login code right now/i)).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText(/provider-only failure detail/i)).not.toBeInTheDocument()
   })
 
   it('stores signup OTP state in session storage and avoids leaking name in the URL', async () => {
@@ -138,7 +171,7 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /create account|start your recovery/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|create account|start your recovery/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
@@ -147,14 +180,40 @@ describe('Auth regressions', () => {
     expect(readPendingOtp()).toEqual({
       flow: 'signup',
       flowId: expect.any(String),
-      fullName: 'Rahul Sharma',
       returnTo: null,
     })
 
     expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
   })
 
-  it('uses masked success copy for magic-link login requests', async () => {
+  it('masks signup OTP failures behind generic UI copy', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: vi.fn().mockResolvedValue({ error: 'User already exists in shard 2' }),
+      })
+    )
+
+    render(<SignupPage />)
+
+    fireEvent.change(screen.getByLabelText(/full name/i), {
+      target: { value: 'Rahul Sharma' },
+    })
+    fireEvent.change(screen.getByLabelText(/mobile number/i), {
+      target: { value: '9876543210' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|create account|start your recovery/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/unable to start account verification right now/i)).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText(/user already exists in shard 2/i)).not.toBeInTheDocument()
+  })
+
+  it('uses generic success copy for magic-link login requests without echoing the email address', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -167,8 +226,13 @@ describe('Auth regressions', () => {
 
     render(<LoginPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /magic link/i }))
-    fireEvent.change(screen.getByLabelText(/email address/i), {
+    fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /sign in with email/i })).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByRole('textbox', { name: /email address/i }), {
       target: { value: 'person@example.com' },
     })
 
@@ -177,6 +241,77 @@ describe('Auth regressions', () => {
     await waitFor(() => {
       expect(screen.getByText(/if an account exists for/i)).toBeInTheDocument()
     })
+
+    expect(screen.queryByText(/person@example.com/i)).not.toBeInTheDocument()
+  })
+
+  it('keeps the email dialog error state accessible and generic on validation and request failures', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: vi.fn().mockResolvedValue({ error: 'Unknown email address' }),
+      })
+    )
+
+    render(<LoginPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /sign in with email/i })).toBeInTheDocument()
+    })
+
+    const emailInput = screen.getByRole('textbox', { name: /email address/i })
+
+    fireEvent.change(emailInput, {
+      target: { value: 'not-an-email' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /email address/i })).toHaveAttribute('aria-invalid', 'true')
+    })
+
+    expect(screen.getByRole('textbox', { name: /email address/i }).getAttribute('aria-describedby')).toMatch(/-email-error$/)
+    expect(screen.getByRole('alert')).toHaveTextContent(/please enter a valid email address/i)
+
+    fireEvent.change(emailInput, {
+      target: { value: 'person@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/unable to send a magic link right now/i)
+    })
+
+    expect(screen.queryByText(/unknown email address/i)).not.toBeInTheDocument()
+  })
+
+  it('marks the login phone field invalid with accessible error wiring when validation fails', async () => {
+    render(<LoginPage />)
+
+    const phoneInput = screen.getByLabelText(/mobile number/i)
+
+    fireEvent.change(phoneInput, {
+      target: { value: '12345' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
+
+    await waitFor(() => {
+      expect(phoneInput).toHaveAttribute('aria-invalid', 'true')
+    })
+
+    expect(phoneInput).toHaveAttribute('aria-describedby', expect.stringContaining('login-phone-hint'))
+    expect(screen.getByText(/enter a valid 10-digit indian mobile number/i)).toHaveAttribute('id', 'login-phone-error')
+  })
+
+  it('offers both mobile otp and email magic-link login paths from signup', () => {
+    render(<SignupPage />)
+
+    expect(screen.getByRole('link', { name: /sign in with mobile otp/i })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: /sign in with email/i })).toHaveAttribute('href', '/login?mode=email')
   })
 
   it('exports route-specific metadata for login and doctor signup', () => {
@@ -218,7 +353,6 @@ describe('Auth regressions', () => {
     expect(readPendingOtp()).toEqual({
       flow: 'login',
       flowId: expect.any(String),
-      fullName: undefined,
       returnTo: '/update-password',
     })
   })
@@ -243,11 +377,41 @@ describe('Auth regressions', () => {
     render(<VerifyOtpPage />)
 
     await waitFor(() => {
-      expect(screen.getByText(/we sent a 6-digit code to your mobile number/i)).toBeInTheDocument()
+      expect(screen.getByText(/if an account exists, a code was sent to your mobile number/i)).toBeInTheDocument()
     })
 
     expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
     expect(screen.queryByText(/session expired/i)).not.toBeInTheDocument()
+  })
+
+  it('prefers the query flow id over stale stored OTP metadata', async () => {
+    savePendingOtp({
+      flow: 'login',
+      flowId: 'stale-flow',
+      returnTo: null,
+    })
+    window.history.replaceState({}, '', '/verify-otp?flow=fresh-flow')
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ role: 'patient', user: { id: 'user-1' } }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<VerifyOtpPage />)
+
+    fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/auth/otp/verify',
+        expect.objectContaining({
+          body: expect.stringContaining('fresh-flow'),
+        })
+      )
+    })
+
+    expect((fetchMock.mock.calls[0]?.[1] as { body?: string } | undefined)?.body).not.toContain('stale-flow')
   })
 
   it('uses masked delivery copy on the verify screen for login OTP flows', async () => {

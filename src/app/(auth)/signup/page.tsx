@@ -13,7 +13,7 @@ import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters'),
   phone: z
     .string()
     .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
@@ -39,6 +39,10 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
   const [nameFocused, setNameFocused] = useState(false)
   const [phoneFocused, setPhoneFocused] = useState(false)
   const [loginHref, setLoginHref] = useState('/login')
+  const emailLoginHref = loginHref.includes('?') ? `${loginHref}&mode=email` : `${loginHref}?mode=email`
+  const nameErrorId = 'signup-name-error'
+  const phoneHintId = 'signup-phone-hint'
+  const phoneErrorId = 'signup-phone-error'
 
   useEffect(() => {
     const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
@@ -49,9 +53,11 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
 
   function handleChange(field: keyof SignupFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
-    if (errors[field as keyof SignupErrors]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }))
-    }
+    setErrors((prev) => ({
+      ...prev,
+      [field]: undefined,
+      general: undefined,
+    }))
   }
 
   function handleBlur(field: keyof SignupFormState) {
@@ -77,6 +83,7 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
       return
     }
     setLoading(true)
+    const normalizedName = result.data.name
     const rawPhone = form.phone.replace(/\D/g, '')
     const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
     const returnTo = sanitizeReturnPath(typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('return'))
@@ -90,21 +97,19 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
           phone: cleanPhone,
           flow: 'signup',
           flow_id: flowId,
-          full_name: form.name,
+          full_name: normalizedName,
           return_to: returnTo,
         }),
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({})) as { error?: string }
-        setErrors({ general: data.error ?? 'Failed to send OTP. Try again.' })
+        setErrors({ general: t.signupRequestError })
         return
       }
 
       const otpStateSaved = savePendingOtp({
         flow: 'signup',
         flowId,
-        fullName: form.name,
         returnTo,
       })
 
@@ -114,123 +119,180 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
 
       router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
     } catch {
-      setErrors({ general: 'Unable to reach the OTP service. Try again.' })
+      setErrors({ general: t.signupRequestError })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="bg-white/70 backdrop-blur-3xl rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] ring-1 ring-bp-primary/5 border border-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="flex justify-center">
-        <BpLogo href="/" size="auth" linkClassName="mx-auto" />
-      </div>
-
-      <h1 className="text-[32px] font-bold text-bp-primary mb-2 mt-10 tracking-tighter leading-none">
-        {t.signupHeading}
-      </h1>
-      <p className="text-[16px] font-bold text-bp-body/40 mb-10">{t.signupSubheading}</p>
-
-      {errors.general && (
-        <div className="mb-6 rounded-full bg-red-50/50 border border-red-100 p-4 text-[13px] font-bold text-red-600 animate-in fade-in zoom-in-95 backdrop-blur-md flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-sm shadow-red-200 shrink-0" />
-          {errors.general}
+    <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
+      <div className="space-y-7">
+        <div className="space-y-5">
+          <span className="inline-flex items-center rounded-full bg-bp-primary-light px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-primary">
+            {t.signupEyebrow}
+          </span>
+          <BpLogo
+            href="/"
+            size="auth"
+            className="h-10 w-[190px] sm:h-12 sm:w-[220px]"
+            linkClassName="justify-start"
+          />
         </div>
-      )}
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-6">
-        {/* Full Name */}
-        <div>
-          <label htmlFor="name" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
-            {t.signupLabelName}
-          </label>
-          <div className="relative group">
-            <input
-              id="name"
-              type="text"
-              placeholder="e.g. Rahul Sharma"
-              className={cn(
-                "w-full pl-14 pr-6 py-5 text-[17px] font-bold text-bp-primary bg-white/40 rounded-full outline-none border-2 transition-all duration-500",
-                errors.name 
-                  ? "border-red-100 bg-red-50/20" 
-                  : nameFocused 
-                    ? "border-bp-accent bg-white shadow-2xl shadow-bp-primary/5 ring-4 ring-bp-accent/5" 
-                    : "border-white/50 hover:border-white"
-              )}
-              value={form.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              onFocus={() => setNameFocused(true)}
-              onBlur={() => { setNameFocused(false); handleBlur('name') }}
-            />
-            <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-500", nameFocused ? "text-bp-accent" : "text-bp-primary/30")} />
+        <div className="space-y-3">
+          <h1 className="text-[36px] font-bold leading-none tracking-[-0.04em] text-bp-primary sm:text-[40px]">
+            {t.signupHeading}
+          </h1>
+          <p className="max-w-[34ch] text-[15px] leading-7 text-bp-body/70 sm:text-[16px]">{t.signupSubheading}</p>
+          <div className="flex flex-wrap gap-2.5">
+            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
+              <User className="h-3.5 w-3.5 text-bp-accent" />
+              {t.signupDetailsBadge}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-bp-border/70 bg-[#fbfaf7] px-3 py-1.5 text-[11px] font-semibold text-bp-primary">
+              <Smartphone className="h-3.5 w-3.5 text-bp-accent" />
+              {t.signupVerifiedBadge}
+            </span>
           </div>
-          {errors.name && <p className="text-[12px] font-bold text-red-500 mt-3 ml-4 animate-in slide-in-from-top-2">{errors.name}</p>}
         </div>
 
-        {/* Mobile Number */}
-        <div>
-          <label htmlFor="phone" className="block text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40 mb-3 ml-2">
-            {t.signupLabelPhone}
-          </label>
-          <div className="relative group">
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
-              <Smartphone className={cn("w-5 h-5 transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-primary/30")} />
-              <span className={cn("text-[17px] font-bold transition-colors duration-500", phoneFocused ? "text-bp-accent" : "text-bp-primary/40")}>+91</span>
+        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-bp-border/70 bg-white text-bp-accent shadow-sm shadow-bp-primary/5">
+              <User className="h-5 w-5" />
             </div>
-            <input
-              id="phone"
-              type="tel"
-              placeholder="98765 43210"
-              className={cn(
-                "w-full pl-28 pr-6 py-5 text-[18px] font-bold text-bp-primary bg-white/40 rounded-full outline-none border-2 transition-all duration-500",
-                errors.phone 
-                  ? "border-red-100 bg-red-50/20" 
-                  : phoneFocused 
-                    ? "border-bp-accent bg-white shadow-2xl shadow-bp-primary/5 ring-4 ring-bp-accent/5" 
-                    : "border-white/50 hover:border-white"
-              )}
-              value={formatIndianPhone(form.phone)}
-              onChange={(e) => handleChange('phone', stripPhoneFormat(e.target.value))}
-              onFocus={() => setPhoneFocused(true)}
-              onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
-            />
+            <div className="min-w-0 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.signupPrimaryEyebrow}</p>
+              <h2 className="text-[20px] font-bold tracking-tight text-bp-primary">{t.signupPrimaryTitle}</h2>
+              <p className="max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.signupPrimaryBody}</p>
+            </div>
           </div>
-          {errors.phone && <p className="text-[12px] font-bold text-red-500 mt-3 ml-4 animate-in slide-in-from-top-2">{errors.phone}</p>}
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={cn(
-            "w-full flex items-center justify-center gap-3 py-6 text-[16px] font-bold text-white rounded-full transition-all active:scale-[0.98] relative overflow-hidden group shadow-xl mt-4",
-            loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
-          )}
-        >
-          {loading ? (
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>{t.signupButtonLoading}</span>
+          {errors.general && (
+            <div role="alert" className="mt-5 flex items-center gap-3 rounded-3xl border border-red-100 bg-red-50/50 p-4 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95 backdrop-blur-md">
+              <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 shadow-sm shadow-red-200" />
+              {errors.general}
             </div>
-          ) : (
-            <>
-              <span className="relative z-10">{t.signupButtonSubmit}</span>
-              <ArrowRight size={18} strokeWidth={4} className="text-bp-accent/70 group-hover:translate-x-1 transition-transform relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </>
           )}
-        </button>
-      </form>
 
-      <div className="mt-10 text-center border-t border-white/50 pt-8">
-        <p className="text-[14px] font-bold text-bp-body/40">
-          {t.signupAlreadyAccount}{' '}
-          <Link
-            href={loginHref}
-            className="text-bp-accent hover:text-bp-primary transition-colors ml-1"
-          >
-            {t.signupLoginLink}
-          </Link>
-        </p>
+          <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-6">
+            <div className="space-y-3">
+              <label htmlFor="name" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                {t.signupLabelName}
+              </label>
+              <div className="relative group">
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="e.g. Rahul Sharma"
+                  {...(errors.name
+                    ? {
+                        'aria-invalid': 'true',
+                        'aria-describedby': nameErrorId,
+                      }
+                    : {})}
+                  className={cn(
+                    'w-full rounded-[30px] border-2 bg-white py-5 pl-14 pr-6 text-[17px] font-semibold text-bp-primary outline-none shadow-sm shadow-bp-primary/5 transition-all duration-500',
+                    errors.name
+                      ? 'border-red-100 bg-red-50/30'
+                      : nameFocused
+                        ? 'border-bp-accent shadow-xl shadow-bp-primary/10 ring-4 ring-bp-accent/5'
+                        : 'border-bp-border/70 hover:border-bp-border'
+                  )}
+                  value={form.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  onFocus={() => setNameFocused(true)}
+                  onBlur={() => { setNameFocused(false); handleBlur('name') }}
+                />
+                <User className={cn('absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-500', nameFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
+              </div>
+              {errors.name && <p id={nameErrorId} className="ml-2 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.name}</p>}
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="phone" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                {t.signupLabelPhone}
+              </label>
+              <div className="relative group">
+                <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2">
+                  <Smartphone className={cn('h-5 w-5 transition-colors duration-500', phoneFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
+                  <span className={cn('text-[17px] font-bold transition-colors duration-500', phoneFocused ? 'text-bp-accent' : 'text-bp-primary/40')}>+91</span>
+                </div>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="98765 43210"
+                  {...(errors.phone
+                    ? {
+                        'aria-invalid': 'true',
+                        'aria-describedby': `${phoneHintId} ${phoneErrorId}`,
+                      }
+                    : {
+                        'aria-describedby': phoneHintId,
+                      })}
+                  className={cn(
+                    'w-full rounded-[30px] border-2 bg-white py-5 pl-28 pr-6 text-[18px] font-semibold text-bp-primary outline-none shadow-sm shadow-bp-primary/5 transition-all duration-500',
+                    errors.phone
+                      ? 'border-red-100 bg-red-50/30'
+                      : phoneFocused
+                        ? 'border-bp-accent shadow-xl shadow-bp-primary/10 ring-4 ring-bp-accent/5'
+                        : 'border-bp-border/70 hover:border-bp-border'
+                  )}
+                  value={formatIndianPhone(form.phone)}
+                  onChange={(e) => handleChange('phone', stripPhoneFormat(e.target.value))}
+                  onFocus={() => setPhoneFocused(true)}
+                  onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
+                />
+              </div>
+              <p id={phoneHintId} className="ml-2 text-[12px] leading-5 text-bp-body/55">{t.signupPhoneHelper}</p>
+              {errors.phone && <p id={phoneErrorId} className="ml-2 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.phone}</p>}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={cn(
+                'relative mt-2 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[30px] py-6 text-[16px] font-bold text-white transition-all active:scale-[0.98] group shadow-xl',
+                loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
+              )}
+            >
+              {loading ? (
+                <div className="flex items-center gap-3">
+                  <div className="h-5 w-5 rounded-full border-3 border-white/30 border-t-white animate-spin" />
+                  <span>{t.signupButtonLoading}</span>
+                </div>
+              ) : (
+                <>
+                  <span className="relative z-10">{t.signupButtonSubmit}</span>
+                  <ArrowRight size={18} strokeWidth={4} className="relative z-10 text-bp-accent/70 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                </>
+              )}
+            </button>
+          </form>
+        </section>
+
+        <section className="rounded-[32px] border border-bp-border/70 bg-[#fbfaf7] p-5 shadow-sm shadow-bp-primary/5 sm:p-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.signupReturningEyebrow}</p>
+          <h2 className="mt-2 text-[20px] font-bold tracking-tight text-bp-primary">{t.signupAccessTitle}</h2>
+          <p className="mt-1 max-w-[34ch] text-[14px] leading-6 text-bp-body/65">{t.signupAccessBody}</p>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={loginHref}
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-bp-border/70 bg-white px-5 text-[14px] font-bold text-bp-primary transition-all hover:-translate-y-0.5 hover:border-bp-accent/30 hover:text-bp-accent"
+            >
+              {t.signupLoginOtpLink}
+            </Link>
+            <Link
+              href={emailLoginHref}
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-bp-border/70 bg-white px-5 text-[14px] font-bold text-bp-primary transition-all hover:-translate-y-0.5 hover:border-bp-accent/30 hover:text-bp-accent"
+            >
+              {t.signupLoginEmailLink}
+            </Link>
+          </div>
+          <p className="mt-4 text-center text-[13px] font-semibold text-bp-body/50">{t.signupAlreadyAccount}</p>
+        </section>
       </div>
     </div>
   )

@@ -12,7 +12,6 @@ describe('pending OTP storage', () => {
       savePendingOtp({
         flow: 'signup',
         flowId: 'flow-1',
-        fullName: 'Rahul Sharma',
         returnTo: '/patient/dashboard',
       })
     ).toBe(true)
@@ -20,7 +19,6 @@ describe('pending OTP storage', () => {
     expect(readPendingOtp()).toEqual({
       flow: 'signup',
       flowId: 'flow-1',
-      fullName: 'Rahul Sharma',
       returnTo: '/patient/dashboard',
     })
 

@@ -81,31 +81,61 @@ export const AUTH_COPY = {
   en: {
     // Login
     loginHeading: 'Welcome back',
-    loginSubheading: 'Access your recovery dashboard',
+    loginSubheading: 'Use mobile OTP for the fastest sign-in. Email magic link stays available when you need a desktop-friendly alternative.',
+    loginEyebrow: 'Secure patient sign in',
     loginTabPhone: 'Mobile OTP',
     loginTabEmail: 'Magic Link',
     loginLabelPhone: 'Mobile Number',
     loginLabelEmail: 'Email Address',
-    loginButtonPhone: 'Secure Login',
+    loginButtonPhone: 'Continue with secure OTP',
     loginButtonEmail: 'Send Magic Link',
     loginButtonLoading: 'Authenticating...',
     loginInboxTitle: 'Check your inbox',
-    loginInboxBody: (email: string) =>
-      `If an account exists for ${email}, a magic login link is on its way.`,
+    loginInboxBody: (_email: string) => 'If an account exists for this email, a magic login link is on its way.',
     loginBackToLogin: 'Back to login',
     loginNewUser: 'New to BookPhysio?',
     loginCreateAccount: 'Create an account',
     loginIsDoctor: 'Are you a doctor?',
     loginJoinDoctor: 'Join as a doctor',
+    loginEmailTrigger: 'Continue with email instead',
+    loginEmailEyebrow: 'Secure email sign-in',
+    loginEmailDialogTitle: 'Sign in with email',
+    loginEmailDialogBody: 'Enter the email linked to your BookPhysio account and we will send a secure magic link.',
+    loginEmailDialogHint: 'Phone OTP stays available on the main screen if you want the quicker mobile path.',
+    loginEmailValidationError: 'Please enter a valid email address.',
+    loginOtpRequestError: 'Unable to send a login code right now. Please try again.',
+    signupRequestError: 'Unable to start account verification right now. Please try again.',
+    emailRequestError: 'Unable to send a magic link right now. Please try again.',
+    loginFastBadge: 'Fast mobile OTP',
+    loginPrivateBadge: 'Private by default',
+    loginPrimaryEyebrow: 'Primary sign-in',
+    loginPhonePanelTitle: 'Continue with mobile OTP',
+    loginPhonePanelBody: 'Enter your Indian mobile number and we will send a one-time code.',
+    loginPhoneHelper: 'We will send a one-time code to this number.',
+    loginSecondaryEyebrow: 'Secondary access',
+    loginEmailPanelTitle: 'Prefer email on desktop?',
+    loginEmailPanelBody: 'Use a secure magic link without leaving the main sign-in flow.',
     // Signup
-    signupHeading: 'Start your recovery',
-    signupSubheading: 'Join thousands recovering smarter',
+    signupHeading: 'Create your account',
+    signupSubheading: 'Start with your name and mobile number. We verify the number before your BookPhysio account is created.',
+    signupEyebrow: 'New patient account',
     signupLabelName: 'Full Name',
     signupLabelPhone: 'Mobile Number',
-    signupButtonSubmit: 'Create Account',
+    signupButtonSubmit: 'Continue with secure OTP',
     signupButtonLoading: 'Creating account...',
-    signupAlreadyAccount: 'Already have an account?',
+    signupAlreadyAccount: 'Already have a BookPhysio account?',
     signupLoginLink: 'Log in',
+    signupLoginOtpLink: 'Sign in with mobile OTP',
+    signupLoginEmailLink: 'Sign in with email',
+    signupDetailsBadge: 'Name + mobile only',
+    signupVerifiedBadge: 'OTP verified access',
+    signupPrimaryEyebrow: 'Primary setup',
+    signupPrimaryTitle: 'Start with your details',
+    signupPrimaryBody: 'We only need your name and Indian mobile number to begin the secure OTP flow.',
+    signupPhoneHelper: 'We will verify this number with a one-time code before you continue.',
+    signupReturningEyebrow: 'Returning patient',
+    signupAccessTitle: 'Use the sign-in method you prefer',
+    signupAccessBody: 'Choose the same path you normally use so your account opens without friction.',
     // OTP verify
     otpHeading: 'Enter your code',
     otpSubheading: 'We sent a 6-digit code to your mobile number.',
@@ -124,31 +154,61 @@ export const AUTH_COPY = {
   hi: {
     // Login
     loginHeading: 'वापस स्वागत है',
-    loginSubheading: 'अपने रिकवरी डैशबोर्ड तक पहुंचें',
+    loginSubheading: 'सबसे तेज़ साइन-इन के लिए मोबाइल OTP चुनें। डेस्कटॉप पर ज़रूरत होने पर सुरक्षित ईमेल मैजिक लिंक भी उपलब्ध है।',
+    loginEyebrow: 'सुरक्षित रोगी साइन-इन',
     loginTabPhone: 'मोबाइल OTP',
     loginTabEmail: 'मैजिक लिंक',
     loginLabelPhone: 'मोबाइल नंबर',
     loginLabelEmail: 'ईमेल पता',
-    loginButtonPhone: 'सुरक्षित लॉगिन',
+    loginButtonPhone: 'सुरक्षित OTP के साथ जारी रखें',
     loginButtonEmail: 'मैजिक लिंक भेजें',
     loginButtonLoading: 'प्रमाणित हो रहा है...',
     loginInboxTitle: 'अपना इनबॉक्स देखें',
-    loginInboxBody: (email: string) =>
-      `यदि ${email} के लिए कोई खाता है, तो मैजिक लॉगिन लिंक भेज दिया गया है।`,
+    loginInboxBody: (_email: string) => 'यदि इस ईमेल के लिए कोई खाता है, तो मैजिक लॉगिन लिंक भेज दिया गया है।',
     loginBackToLogin: 'लॉगिन पर वापस जाएं',
     loginNewUser: 'BookPhysio में नए हैं?',
     loginCreateAccount: 'खाता बनाएं',
     loginIsDoctor: 'क्या आप डॉक्टर हैं?',
     loginJoinDoctor: 'डॉक्टर के रूप में जुड़ें',
+    loginEmailTrigger: 'इसके बजाय ईमेल से जारी रखें',
+    loginEmailEyebrow: 'सुरक्षित ईमेल साइन-इन',
+    loginEmailDialogTitle: 'ईमेल से साइन इन करें',
+    loginEmailDialogBody: 'अपने BookPhysio खाते से जुड़ा ईमेल दर्ज करें और हम आपको सुरक्षित मैजिक लिंक भेजेंगे।',
+    loginEmailDialogHint: 'अगर आप तेज़ मोबाइल साइन-इन चाहते हैं तो मुख्य स्क्रीन पर फोन OTP उपलब्ध है।',
+    loginEmailValidationError: 'कृपया एक मान्य ईमेल पता दर्ज करें।',
+    loginOtpRequestError: 'अभी लॉगिन कोड भेजना संभव नहीं है। कृपया फिर से कोशिश करें।',
+    signupRequestError: 'अभी खाता सत्यापन शुरू करना संभव नहीं है। कृपया फिर से कोशिश करें।',
+    emailRequestError: 'अभी मैजिक लिंक भेजना संभव नहीं है। कृपया फिर से कोशिश करें।',
+    loginFastBadge: 'तेज़ मोबाइल OTP',
+    loginPrivateBadge: 'डिफ़ॉल्ट रूप से निजी',
+    loginPrimaryEyebrow: 'मुख्य साइन-इन',
+    loginPhonePanelTitle: 'मोबाइल OTP से जारी रखें',
+    loginPhonePanelBody: 'अपना भारतीय मोबाइल नंबर दर्ज करें और हम एक वन-टाइम कोड भेजेंगे।',
+    loginPhoneHelper: 'हम इस नंबर पर एक वन-टाइम कोड भेजेंगे।',
+    loginSecondaryEyebrow: 'वैकल्पिक एक्सेस',
+    loginEmailPanelTitle: 'डेस्कटॉप पर ईमेल पसंद है?',
+    loginEmailPanelBody: 'मुख्य साइन-इन फ्लो छोड़े बिना सुरक्षित मैजिक लिंक का उपयोग करें।',
     // Signup
-    signupHeading: 'रिकवरी शुरू करें',
-    signupSubheading: 'हजारों लोगों के साथ स्मार्ट तरीके से ठीक हों',
+    signupHeading: 'अपना खाता बनाएं',
+    signupSubheading: 'अपने नाम और मोबाइल नंबर से शुरू करें। BookPhysio खाता बनने से पहले हम नंबर सत्यापित करेंगे।',
+    signupEyebrow: 'नया रोगी खाता',
     signupLabelName: 'पूरा नाम',
     signupLabelPhone: 'मोबाइल नंबर',
-    signupButtonSubmit: 'खाता बनाएं',
+    signupButtonSubmit: 'सुरक्षित OTP के साथ जारी रखें',
     signupButtonLoading: 'खाता बन रहा है...',
-    signupAlreadyAccount: 'पहले से खाता है?',
+    signupAlreadyAccount: 'क्या आपके पास पहले से BookPhysio खाता है?',
     signupLoginLink: 'लॉग इन करें',
+    signupLoginOtpLink: 'मोबाइल OTP से साइन इन करें',
+    signupLoginEmailLink: 'ईमेल से साइन इन करें',
+    signupDetailsBadge: 'सिर्फ नाम + मोबाइल',
+    signupVerifiedBadge: 'OTP सत्यापित एक्सेस',
+    signupPrimaryEyebrow: 'मुख्य सेटअप',
+    signupPrimaryTitle: 'अपनी जानकारी से शुरू करें',
+    signupPrimaryBody: 'सुरक्षित OTP फ्लो शुरू करने के लिए हमें सिर्फ आपका नाम और भारतीय मोबाइल नंबर चाहिए।',
+    signupPhoneHelper: 'आगे बढ़ने से पहले हम इस नंबर को वन-टाइम कोड से सत्यापित करेंगे।',
+    signupReturningEyebrow: 'वापस आने वाला मरीज',
+    signupAccessTitle: 'अपनी पसंद का साइन-इन तरीका चुनें',
+    signupAccessBody: 'जिस तरीके से आप सामान्यतः BookPhysio खोलते हैं वही चुनें, ताकि साइन-इन सहज रहे।',
     // OTP verify
     otpHeading: 'अपना कोड दर्ज करें',
     otpSubheading: 'हमने आपके मोबाइल नंबर पर 6 अंकों का कोड भेजा है।',
@@ -167,6 +227,7 @@ export const AUTH_COPY = {
 } as const satisfies Record<StaticLocale, {
   loginHeading: string
   loginSubheading: string
+  loginEyebrow: string
   loginTabPhone: string
   loginTabEmail: string
   loginLabelPhone: string
@@ -181,14 +242,44 @@ export const AUTH_COPY = {
   loginCreateAccount: string
   loginIsDoctor: string
   loginJoinDoctor: string
+  loginEmailTrigger: string
+  loginEmailEyebrow: string
+  loginEmailDialogTitle: string
+  loginEmailDialogBody: string
+  loginEmailDialogHint: string
+  loginEmailValidationError: string
+  loginOtpRequestError: string
+  signupRequestError: string
+  emailRequestError: string
+  loginFastBadge: string
+  loginPrivateBadge: string
+  loginPrimaryEyebrow: string
+  loginPhonePanelTitle: string
+  loginPhonePanelBody: string
+  loginPhoneHelper: string
+  loginSecondaryEyebrow: string
+  loginEmailPanelTitle: string
+  loginEmailPanelBody: string
   signupHeading: string
   signupSubheading: string
+  signupEyebrow: string
   signupLabelName: string
   signupLabelPhone: string
   signupButtonSubmit: string
   signupButtonLoading: string
   signupAlreadyAccount: string
   signupLoginLink: string
+  signupLoginOtpLink: string
+  signupLoginEmailLink: string
+  signupDetailsBadge: string
+  signupVerifiedBadge: string
+  signupPrimaryEyebrow: string
+  signupPrimaryTitle: string
+  signupPrimaryBody: string
+  signupPhoneHelper: string
+  signupReturningEyebrow: string
+  signupAccessTitle: string
+  signupAccessBody: string
   otpHeading: string
   otpSubheading: string
   otpLoginSubheading: string

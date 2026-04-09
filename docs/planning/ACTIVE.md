@@ -20,7 +20,7 @@
 - [x] IndexNow key is live and deploy automation is wired best-effort in GitHub Actions
 - [x] `robots.txt` is now generated from `src/app/robots.ts` with private surfaces blocked
 - [x] Stale `NEXT_PUBLIC_MAPBOX_TOKEN` removed from Vercel environment variables
-- [~] Latest verified repo changes are ready for next deploy: empty-state `GET /api/auth/demo-session` now returns `204`, public preview is production-gated by default, and OTP flows keep raw phone numbers server-side
+- [x] Latest verified repo changes are live in production: empty-state `GET /api/auth/demo-session` returns `204`, public preview is production-gated by default, OTP flows keep raw phone numbers server-side, and the auth polish/privacy pass is deployed on apex
 - [~] Public providers search no longer 500s in production; a runtime fallback is deployed while the forward Supabase RPC migration still needs authenticated apply access
 - [x] Forward migration `029_restrict_public_availability_read.sql` applied in production; public `availabilities` reads are restricted to unbooked slots for verified active providers
 - [~] Production smoke pass completed on apex domain; public pages, sitemap, robots, and providers API return `200`
@@ -126,7 +126,7 @@ Latest Session Work (2026-04-01):
 ---
 
 ## Current Focus: Final launch readiness
-- [ ] Push the latest verified auth/privacy and preview hardening changes to production
+- [x] Push the latest verified auth/privacy and preview hardening changes to production
 - [ ] Add real provider records so `/api/providers` and `/search` are useful on apex
 - [ ] Re-run a live smoke pass after deploy and provider-data update
 - [~] Hindi work is paused; treat non-How-It-Works flows as English-only unless explicitly revived

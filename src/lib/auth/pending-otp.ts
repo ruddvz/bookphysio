@@ -3,7 +3,6 @@ export type PendingOtpFlow = 'login' | 'signup'
 export interface PendingOtpPayload {
   flow: PendingOtpFlow
   flowId?: string
-  fullName?: string
   returnTo?: string | null
 }
 
@@ -43,7 +42,6 @@ export function readPendingOtp(): PendingOtpPayload | null {
     return {
       flow: parsed.flow,
       flowId: typeof parsed.flowId === 'string' ? parsed.flowId : undefined,
-      fullName: typeof parsed.fullName === 'string' ? parsed.fullName : undefined,
       returnTo: typeof parsed.returnTo === 'string' ? parsed.returnTo : null,
     }
   } catch {

@@ -33,7 +33,7 @@ const demoOptions: Array<{
   },
 ]
 
-export function DemoAccessPanel() {
+export function DemoAccessPanel({ variant = 'default' }: { variant?: 'default' | 'compact' }) {
   const demoAccessEnabled = isDemoAccessEnabled()
   const router = useRouter()
   const [loadingRole, setLoadingRole] = useState<DemoRole | null>(null)
@@ -42,6 +42,8 @@ export function DemoAccessPanel() {
   if (!demoAccessEnabled) {
     return null
   }
+
+  const isCompact = variant === 'compact'
 
   async function handleDemoAccess(role: DemoRole) {
     setLoadingRole(role)
@@ -60,21 +62,29 @@ export function DemoAccessPanel() {
   }
 
   return (
-    <section className="rounded-3xl border border-bp-border bg-bp-surface/50 p-6 shadow-sm">
-      <div className="flex items-start gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bp-accent/10 text-bp-accent shadow-inner">
-          <MonitorSmartphone size={28} strokeWidth={2.5} />
+    <section className={cn(
+      'backdrop-blur-sm',
+      isCompact
+        ? 'rounded-[24px] border border-bp-border/70 bg-white/75 p-4 shadow-sm shadow-bp-primary/5'
+        : 'rounded-[28px] border border-dashed border-bp-border bg-white/75 p-4 shadow-sm shadow-bp-primary/5 sm:p-5'
+    )}>
+      <div className="flex items-start gap-3">
+        <div className={cn(
+          'flex items-center justify-center text-bp-accent ring-1 ring-bp-border/80',
+          isCompact ? 'h-9 w-9 rounded-xl bg-white shadow-sm' : 'h-11 w-11 rounded-2xl bg-bp-surface shadow-inner'
+        )}>
+          <MonitorSmartphone size={isCompact ? 18 : 22} strokeWidth={2.3} />
         </div>
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-bp-accent/60">System Entry</p>
-          <h2 className="mt-1 text-[20px] font-bold tracking-tight text-bp-primary">Preview the Experience</h2>
-          <p className="mt-1 text-[13px] font-bold leading-relaxed text-bp-body/60">
-            Jump straight into the patient, provider, or admin flows with a single click.
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/45">Internal review only</p>
+          <h2 className={cn('mt-1 font-bold tracking-tight text-bp-primary', isCompact ? 'text-[14px]' : 'text-[16px]')}>Quick demo access</h2>
+          <p className={cn('mt-1 font-bold leading-relaxed text-bp-body/50', isCompact ? 'text-[11px]' : 'text-[12px]')}>
+            Open patient, provider, or admin flows without using the public sign-in paths.
           </p>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4">
+      <div className={cn('grid gap-2.5', isCompact ? 'mt-3' : 'mt-4')}>
         {demoOptions.map((option) => {
           const OptionIcon = option.icon
           const isLoading = loadingRole === option.role
@@ -86,26 +96,30 @@ export function DemoAccessPanel() {
               onClick={() => handleDemoAccess(option.role)}
               disabled={!!loadingRole}
               className={cn(
-                'group flex items-center gap-5 rounded-2xl border border-bp-border px-5 py-5 text-left transition-all',
-                'bg-white shadow-sm hover:-translate-y-1 hover:border-bp-accent/20 hover:shadow-2xl hover:shadow-bp-primary/5',
-                'disabled:cursor-not-allowed disabled:opacity-70'
+                'group flex items-center gap-4 border border-bp-border/90 text-left transition-all',
+                'bg-bp-surface/70 shadow-sm hover:border-bp-accent/25 hover:bg-white hover:shadow-lg hover:shadow-bp-primary/5',
+                'disabled:cursor-not-allowed disabled:opacity-70',
+                isCompact ? 'rounded-xl px-3.5 py-3' : 'rounded-2xl px-4 py-3.5'
               )}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-bp-surface text-bp-primary group-hover:bg-bp-accent group-hover:text-white transition-all">
-                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <OptionIcon size={22} strokeWidth={2.5} />}
+              <div className={cn(
+                'flex items-center justify-center bg-white text-bp-primary ring-1 ring-bp-border/70 transition-all group-hover:bg-bp-accent group-hover:text-white',
+                isCompact ? 'h-9 w-9 rounded-lg' : 'h-10 w-10 rounded-xl'
+              )}>
+                {isLoading ? <Loader2 size={isCompact ? 16 : 18} className="animate-spin" /> : <OptionIcon size={isCompact ? 18 : 22} strokeWidth={2.5} />}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-bold text-bp-primary group-hover:text-bp-accent transition-colors">{option.title}</p>
-                <p className="mt-1 text-[12px] font-bold leading-relaxed text-bp-body/40">{option.description}</p>
+                <p className={cn('font-bold text-bp-primary group-hover:text-bp-accent transition-colors', isCompact ? 'text-[13px]' : 'text-[14px]')}>{option.title}</p>
+                <p className={cn('mt-1 font-bold leading-relaxed text-bp-body/45', isCompact ? 'text-[10px]' : 'text-[11px]')}>{option.description}</p>
               </div>
-              <ChevronRight size={18} className="text-bp-body/10 group-hover:text-bp-accent group-hover:translate-x-1 transition-all" />
+              <ChevronRight size={isCompact ? 14 : 16} className="text-bp-body/15 group-hover:text-bp-accent group-hover:translate-x-1 transition-all" />
             </button>
           )
         })}
       </div>
 
       {error && (
-        <p className="mt-4 text-[12px] font-bold text-red-600">{error}</p>
+        <p className={cn('font-bold text-red-600', isCompact ? 'mt-3 text-[11px]' : 'mt-4 text-[12px]')}>{error}</p>
       )}
     </section>
   )
