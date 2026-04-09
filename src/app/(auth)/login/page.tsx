@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Mail, Smartphone } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import EmailSignInDialog from '@/components/auth/EmailSignInDialog'
 import { DemoAccessPanel } from '@/components/auth/DemoAccessPanel'
@@ -26,6 +26,8 @@ interface LoginErrors {
   general?: string
 }
 
+type AuthTab = 'otp' | 'email'
+
 export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   const t = AUTH_COPY[locale ?? 'en']
   const router = useRouter()
@@ -34,15 +36,19 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   const [loading, setLoading] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
   const phoneInputRef = useRef<HTMLInputElement>(null)
+  const [activeTab, setActiveTab] = useState<AuthTab>('otp')
   const [emailDialogOpen, setEmailDialogOpen] = useState(false)
   const [signupHref, setSignupHref] = useState('/signup')
   const [returnTo, setReturnTo] = useState<string | null>(null)
-  const phoneHintId = 'login-phone-hint'
-  const phoneErrorId = 'login-phone-error'
+  const id = useId()
+  const phoneHintId = `${id}-phone-hint`
+  const phoneErrorId = `${id}-phone-error`
 
   useEffect(() => {
-    phoneInputRef.current?.focus()
-  }, [])
+    if (activeTab === 'otp') {
+      phoneInputRef.current?.focus()
+    }
+  }, [activeTab])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -51,9 +57,8 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
       setSignupHref(`/signup?return=${encodeURIComponent(returnPath)}`)
       setReturnTo(returnPath)
     }
-
     if (params.get('mode') === 'email') {
-      setEmailDialogOpen(true)
+      setActiveTab('email')
     }
   }, [])
 
@@ -89,14 +94,9 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
         throw new Error(t.loginOtpRequestError)
       }
 
-      const otpStateSaved = savePendingOtp({
-        flow: 'login',
-        flowId,
-        returnTo,
-      })
-
+      const otpStateSaved = savePendingOtp({ flow: 'login', flowId, returnTo })
       if (!otpStateSaved) {
-        console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
+        console.warn('Pending OTP metadata could not be persisted in sessionStorage.')
       }
 
       router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
@@ -110,6 +110,8 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
   return (
     <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
       <div className="space-y-7">
+
+        {/* Logo — centered */}
         <div className="flex flex-col items-center text-center space-y-4">
           <BpLogo
             href="/"
@@ -117,94 +119,126 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
             className="h-12 w-[220px]"
             linkClassName="justify-center"
           />
-          <h1 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[36px]">
+          <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[34px]">
             {t.loginHeading}
           </h1>
-          <p className="max-w-[36ch] text-[15px] leading-6 text-bp-body/70">
-            {t.loginSubheading}
-          </p>
         </div>
 
-        <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
-          {errors.general && (
-            <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600">
-              <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
-              {errors.general}
-            </div>
-          )}
+        {/* Tab toggle */}
+        <div className="flex rounded-2xl border border-bp-border/70 bg-bp-surface p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab('otp')}
+            className={cn(
+              'flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-bold transition-all duration-200',
+              activeTab === 'otp'
+                ? 'bg-white text-bp-primary shadow-sm shadow-bp-primary/8'
+                : 'text-bp-body/50 hover:text-bp-primary'
+            )}
+          >
+            <Smartphone className="h-4 w-4" />
+            Mobile OTP
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('email')}
+            className={cn(
+              'flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-bold transition-all duration-200',
+              activeTab === 'email'
+                ? 'bg-white text-bp-primary shadow-sm shadow-bp-primary/8'
+                : 'text-bp-body/50 hover:text-bp-primary'
+            )}
+          >
+            <Mail className="h-4 w-4" />
+            Email magic link
+          </button>
+        </div>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
-            <div className="space-y-3">
-              <label htmlFor="phone" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">{t.loginLabelPhone}</label>
-              <div className={cn(
-                'flex overflow-hidden rounded-[30px] border-2 bg-white transition-all duration-500 group shadow-sm shadow-bp-primary/5',
-                errors.phone ? 'border-red-100 bg-red-50/40' : inputFocused ? 'border-bp-accent shadow-xl shadow-bp-primary/10 ring-4 ring-bp-accent/5' : 'border-bp-border/70 hover:border-bp-border'
-              )}>
-                <span className="flex items-center gap-2 border-r border-bp-border/70 bg-[#fffdfa] px-6 py-5 text-[16px] font-bold text-bp-primary transition-colors group-focus-within:text-bp-accent">
-                  +91
-                </span>
-                <input
-                  ref={phoneInputRef}
-                  id="phone"
-                  type="tel"
-                  placeholder="98765 43210"
-                  maxLength={12}
-                  {...(errors.phone
-                    ? {
-                        'aria-invalid': 'true',
-                        'aria-describedby': `${phoneHintId} ${phoneErrorId}`,
-                      }
-                    : {
-                        'aria-describedby': phoneHintId,
-                      })}
-                  value={formatIndianPhone(phone)}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  onFocus={() => setInputFocused(true)}
-                  onBlur={() => setInputFocused(false)}
-                  className="flex-1 border-none bg-transparent px-6 py-5 text-[18px] font-semibold tracking-tight text-bp-primary outline-none placeholder:text-bp-primary/25"
-                />
+        {/* OTP form */}
+        {activeTab === 'otp' && (
+          <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
+            {errors.general && (
+              <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95">
+                <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                {errors.general}
               </div>
-              <p id={phoneHintId} className="ml-2 text-[12px] leading-5 text-bp-body/55">{t.loginPhoneHelper}</p>
-              {errors.phone && <p id={phoneErrorId} className="ml-2 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.phone}</p>}
-            </div>
+            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className={cn(
-                'relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-[30px] py-5 text-[16px] font-bold text-white shadow-xl transition-all active:scale-[0.98] group',
-                loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
-              )}
-            >
-              {loading ? (
-                <div className="flex items-center gap-3">
-                  <div className="h-5 w-5 rounded-full border-3 border-white/30 border-t-white animate-spin" />
-                  <span>{t.loginButtonLoading}</span>
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              <div className="space-y-3">
+                <label htmlFor="phone" className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                  {t.loginLabelPhone}
+                </label>
+                <div className={cn(
+                  'flex overflow-hidden rounded-[24px] border-2 bg-white transition-all duration-300 shadow-sm',
+                  errors.phone
+                    ? 'border-red-200 bg-red-50/40'
+                    : inputFocused
+                      ? 'border-bp-accent shadow-lg shadow-bp-primary/8 ring-4 ring-bp-accent/5'
+                      : 'border-bp-border/70 hover:border-bp-border'
+                )}>
+                  <span className="flex shrink-0 items-center border-r border-bp-border/70 bg-bp-surface/60 px-5 py-4 text-[15px] font-bold text-bp-primary">
+                    +91
+                  </span>
+                  <input
+                    ref={phoneInputRef}
+                    id="phone"
+                    type="tel"
+                    placeholder="98765 43210"
+                    maxLength={12}
+                    {...(errors.phone
+                      ? { 'aria-invalid': 'true', 'aria-describedby': `${phoneHintId} ${phoneErrorId}` }
+                      : { 'aria-describedby': phoneHintId })}
+                    value={formatIndianPhone(phone)}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
+                    className="flex-1 border-none bg-transparent px-5 py-4 text-[17px] font-semibold tracking-tight text-bp-primary outline-none placeholder:text-bp-primary/25"
+                  />
                 </div>
-              ) : (
-                <>
-                  <span className="relative z-10">{t.loginButtonPhone}</span>
-                  <ArrowRight size={18} strokeWidth={3} className="relative z-10 text-bp-accent/70 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </>
-              )}
-            </button>
-          </form>
-        </section>
+                <p id={phoneHintId} className="ml-1 text-[12px] leading-5 text-bp-body/50">{t.loginPhoneHelper}</p>
+                {errors.phone && (
+                  <p id={phoneErrorId} className="ml-1 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.phone}</p>
+                )}
+              </div>
 
-        <div className="relative flex items-center gap-4">
-          <div className="h-px flex-1 bg-bp-border/70" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/45">or</span>
-          <div className="h-px flex-1 bg-bp-border/70" />
-        </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className={cn(
+                  'relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-[24px] py-4 text-[15px] font-bold text-white shadow-lg transition-all active:scale-[0.98] group',
+                  loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
+                )}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-4.5 w-4.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    <span>{t.loginButtonLoading}</span>
+                  </div>
+                ) : (
+                  <>
+                    <span className="relative z-10">{t.loginButtonPhone}</span>
+                    <ArrowRight size={17} strokeWidth={3} className="relative z-10 transition-transform group-hover:translate-x-1" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  </>
+                )}
+              </button>
+            </form>
+          </section>
+        )}
 
-        <EmailSignInDialog
-          locale={locale}
-          open={emailDialogOpen}
-          onOpenChange={setEmailDialogOpen}
-          returnTo={returnTo}
-          triggerClassName="w-full justify-center bg-white border border-bp-border/70 shadow-sm shadow-bp-primary/5"
-        />
+        {/* Email magic link */}
+        {activeTab === 'email' && (
+          <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
+            <EmailSignInDialog
+              locale={locale}
+              open={emailDialogOpen}
+              onOpenChange={setEmailDialogOpen}
+              returnTo={returnTo}
+              triggerClassName="w-full justify-center"
+            />
+          </section>
+        )}
 
         <DemoAccessPanel variant="compact" />
 

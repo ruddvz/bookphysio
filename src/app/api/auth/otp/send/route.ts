@@ -62,25 +62,29 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Dev OTP bypass — must run before cookie creation and rate limiting (see docs/DEV-ACCESS.md)
+  if (getDevPhoneRole(phone)) {
+    const pendingOtpCookieDev = await createPendingOtpCookieValue({ phone, flow, flowId, fullName, returnTo })
+    const response = NextResponse.json({ message: 'OTP sent', flowId })
+    if (pendingOtpCookieDev) setPendingOtpCookie(response, pendingOtpCookieDev)
+    return response
+  }
+
   const pendingOtpCookie = await createPendingOtpCookieValue({ phone, flow, flowId, fullName, returnTo })
   if (!pendingOtpCookie) {
     return NextResponse.json({ error: 'OTP configuration is unavailable. Please try again later.' }, { status: 503 })
   }
 
   const ip = getRequestIpAddress(request)
-  if (ip) {
-    const sourceLimit = await otpRatelimit.limit(`otp-send:ip:${ip}`)
-    if (!sourceLimit.success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
-  }
-
-  const { success } = await otpRatelimit.limit(await buildPhoneRateLimitKey('send', phone))
-  if (!success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
-
-  // Dev OTP bypass: known dev phones get a fixed OTP code (see docs/DEV-ACCESS.md)
-  if (getDevPhoneRole(phone)) {
-    const response = NextResponse.json({ message: 'OTP sent', flowId, dev: true })
-    setPendingOtpCookie(response, pendingOtpCookie)
-    return response
+  try {
+    if (ip) {
+      const sourceLimit = await otpRatelimit.limit(`otp-send:ip:${ip}`)
+      if (!sourceLimit.success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
+    }
+    const { success } = await otpRatelimit.limit(await buildPhoneRateLimitKey('send', phone))
+    if (!success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
+  } catch {
+    // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
   }
 
   // Initialize Supabase OTP session

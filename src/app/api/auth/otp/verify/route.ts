@@ -54,21 +54,7 @@ export async function POST(request: NextRequest) {
 
   const { phone } = pendingOtp
 
-  const ip = getRequestIpAddress(request)
-  if (ip) {
-    const sourceLimit = await otpRatelimit.limit(`otp-verify:ip:${ip}`)
-    if (!sourceLimit.success) {
-      return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
-    }
-  }
-
-  const rateLimitKey = await buildPhoneRateLimitKey('verify', phone)
-  const { success } = await otpRatelimit.limit(rateLimitKey)
-  if (!success) {
-    return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
-  }
-
-  // Dev OTP bypass: known dev phones + fixed code → issue a demo session cookie.
+  // Dev OTP bypass — check before rate limiting (see docs/DEV-ACCESS.md)
   const devRole = getDevPhoneRole(phone)
   if (devRole && isDevOtpCode(otp)) {
     const cookiePayload = createDemoCookiePayload(devRole)
@@ -91,6 +77,23 @@ export async function POST(request: NextRequest) {
     })
     clearPendingOtpCookie(response)
     return response
+  }
+
+  const ip = getRequestIpAddress(request)
+  try {
+    if (ip) {
+      const sourceLimit = await otpRatelimit.limit(`otp-verify:ip:${ip}`)
+      if (!sourceLimit.success) {
+        return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
+      }
+    }
+    const rateLimitKey = await buildPhoneRateLimitKey('verify', phone)
+    const { success } = await otpRatelimit.limit(rateLimitKey)
+    if (!success) {
+      return NextResponse.json({ error: 'Too many OTP attempts. Please wait and try again.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
   }
 
   const supabase = await createClient()
