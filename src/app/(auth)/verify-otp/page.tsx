@@ -112,24 +112,6 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       }
       clearPendingOtp()
 
-      // Upload pending avatar if one was selected during signup
-      try {
-        const raw = sessionStorage.getItem('bp-pending-avatar')
-        if (raw) {
-          const { dataUrl, mimeType, fileName } = JSON.parse(raw) as { dataUrl: string; mimeType: string; fileName: string }
-          const byteString = atob(dataUrl.split(',')[1])
-          const bytes = new Uint8Array(byteString.length)
-          for (let i = 0; i < byteString.length; i++) bytes[i] = byteString.charCodeAt(i)
-          const avatarFile = new File([bytes], fileName, { type: mimeType })
-          const fd = new FormData()
-          fd.append('file', avatarFile)
-          await fetch('/api/auth/avatar', { method: 'POST', body: fd })
-          sessionStorage.removeItem('bp-pending-avatar')
-        }
-      } catch {
-        // Avatar upload is best-effort — don't block auth redirect
-      }
-
       const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role
       const redirectTo = data.redirectTo ?? resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
 

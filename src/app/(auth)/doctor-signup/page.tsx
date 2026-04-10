@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Check } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import OtpInput from '@/components/OtpInput'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
@@ -306,11 +307,22 @@ interface Step1Props {
   data: Step1Data
   onChange: (d: Step1Data) => void
   onNext: () => void
+  avatarPreview: string | null
+  onAvatarChange: (dataUrl: string, mimeType: string, fileName: string) => void
 }
 
-function Step1({ data, onChange, onNext }: Step1Props) {
+function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1Props) {
   const [errors, setErrors] = useState<Partial<Record<keyof Step1Data, string>>>({})
   const [phoneFocused, setPhoneFocused] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+
+  function handleAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => onAvatarChange(reader.result as string, file.type, file.name)
+    reader.readAsDataURL(file)
+  }
 
   function handleNext() {
     const result = step1Schema.safeParse(data)
@@ -335,6 +347,51 @@ function Step1({ data, onChange, onNext }: Step1Props) {
       <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
         Let&apos;s start with your basic information
       </p>
+
+      {/* Professional photo */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+        <button
+          type="button"
+          onClick={() => avatarInputRef.current?.click()}
+          style={{
+            position: 'relative',
+            width: '88px',
+            height: '88px',
+            borderRadius: '50%',
+            border: '2px dashed var(--color-bp-border)',
+            background: 'var(--color-bp-surface)',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            padding: 0,
+            flexShrink: 0,
+          }}
+          aria-label="Upload professional photo"
+        >
+          {avatarPreview ? (
+            <Image src={avatarPreview} alt="Profile preview" fill style={{ objectFit: 'cover' }} />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '4px' }}>
+              <Camera style={{ width: '24px', height: '24px', color: 'var(--color-bp-accent)' }} />
+            </div>
+          )}
+        </button>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '2px' }}>
+            {avatarPreview ? 'Change photo' : 'Add professional photo'}
+          </p>
+          <p style={{ fontSize: '11px', color: 'var(--color-bp-body)', opacity: 0.6 }}>
+            Use a clear headshot in professional attire
+          </p>
+        </div>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }}
+          onChange={handleAvatarFile}
+          aria-hidden="true"
+        />
+      </div>
 
       <div style={{ marginBottom: '16px' }}>
         <Label>Full Name</Label>
@@ -1073,6 +1130,13 @@ export default function DoctorSignupPage() {
   const [providerOtpFlowId, setProviderOtpFlowId] = useState<string | null>(null)
   const [otpRequestError, setOtpRequestError] = useState('')
   const [otpRequestLoading, setOtpRequestLoading] = useState(false)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const pendingAvatarRef = useRef<{ dataUrl: string; mimeType: string; fileName: string } | null>(null)
+
+  function handleAvatarChange(dataUrl: string, mimeType: string, fileName: string) {
+    setAvatarPreview(dataUrl)
+    pendingAvatarRef.current = { dataUrl, mimeType, fileName }
+  }
 
   const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '' })
   const [step2, setStep2] = useState<Step2Data>({
@@ -1149,6 +1213,21 @@ export default function DoctorSignupPage() {
         })
       })
       if (res.ok) {
+        // Upload professional photo if one was selected (best-effort)
+        if (pendingAvatarRef.current) {
+          try {
+            const { dataUrl, mimeType, fileName } = pendingAvatarRef.current
+            const byteString = atob(dataUrl.split(',')[1])
+            const bytes = new Uint8Array(byteString.length)
+            for (let i = 0; i < byteString.length; i++) bytes[i] = byteString.charCodeAt(i)
+            const avatarFile = new File([bytes], fileName, { type: mimeType })
+            const fd = new FormData()
+            fd.append('file', avatarFile)
+            await fetch('/api/auth/avatar', { method: 'POST', body: fd })
+          } catch {
+            // Non-fatal — provider can update photo from their profile later
+          }
+        }
         router.push('/provider/dashboard')
       } else {
         alert('Onboarding failed. Please contact support.')
@@ -1166,7 +1245,7 @@ export default function DoctorSignupPage() {
       <ProgressIndicator current={currentStep} />
 
       {currentStep === 1 && (
-        <Step1 data={step1} onChange={setStep1} onNext={goNext} />
+        <Step1 data={step1} onChange={setStep1} onNext={goNext} avatarPreview={avatarPreview} onAvatarChange={handleAvatarChange} />
       )}
       {currentStep === 2 && (
         <Step2 data={step2} onChange={setStep2} onNext={goNext} onBack={goBack} />
