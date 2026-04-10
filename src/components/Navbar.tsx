@@ -36,7 +36,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 
 const navLinks = [
   { label: 'How it works', href: '/how-it-works' },
-  { label: 'For providers', href: '/doctor-signup' },
+  { label: 'For doctors', href: '/doctor-signup' },
 ]
 
 export default function Navbar({
@@ -48,6 +48,7 @@ export default function Navbar({
 } = {}) {
   const [browseOpen, setBrowseOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileSpecialtiesOpen, setMobileSpecialtiesOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const effectiveLocale = locale ?? 'en'
@@ -198,16 +199,16 @@ export default function Navbar({
                 <LocaleSwitcher locale={locale} path={localeSwitchPath} />
               ) : null}
               <Link
-                href={loginHref}
+                href="/doctor-signup"
                 className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-indigo-700 transition-colors"
               >
-                Log in
+                For doctors
               </Link>
               <Link
-                href={searchHref}
+                href={loginHref}
                 className="bp-btn bp-btn-primary bp-btn-sm"
               >
-                Find care
+                Sign in
                 <ArrowRight size={14} />
               </Link>
             </div>
@@ -236,8 +237,7 @@ export default function Navbar({
           />
           {/* Drawer */}
           <div className="lg:hidden fixed inset-y-0 right-0 z-[99] w-[300px] bg-white shadow-2xl animate-slide-down flex flex-col">
-            <div className="flex items-center justify-between px-6 h-[68px] border-b border-slate-100">
-              <span className="text-[15px] font-bold text-slate-900">Menu</span>
+            <div className="flex items-center justify-end px-6 h-[68px] border-b border-slate-100">
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -248,31 +248,42 @@ export default function Navbar({
             </div>
 
             <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 px-2 mb-3">
-                Specialties
-              </p>
-              {SPECIALTIES.map((s) => {
-                const Icon = ICON_MAP[s.icon] ?? Stethoscope
-                return (
-                  <Link
-                    key={s.slug}
-                    href={`/specialties/${s.slug}`}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition-colors"
-                  >
-                    <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', s.tint.bg, s.tint.text)}>
-                      <Icon size={16} />
-                    </div>
-                    {s.label}
-                  </Link>
-                )
-              })}
+              {/* Browse specialties — collapsible */}
+              <button
+                type="button"
+                onClick={() => setMobileSpecialtiesOpen(o => !o)}
+                className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <span>Browse specialties</span>
+                <ChevronDown
+                  size={15}
+                  className={cn('text-slate-400 transition-transform duration-200', mobileSpecialtiesOpen && 'rotate-180')}
+                />
+              </button>
 
-              <div className="h-px bg-slate-100 my-4" />
+              {mobileSpecialtiesOpen && (
+                <div className="space-y-0.5 pl-1">
+                  {SPECIALTIES.map((s) => {
+                    const Icon = ICON_MAP[s.icon] ?? Stethoscope
+                    return (
+                      <Link
+                        key={s.slug}
+                        href={`/specialties/${s.slug}`}
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition-colors"
+                      >
+                        <div className={cn('flex h-7 w-7 items-center justify-center rounded-lg shrink-0', s.tint.bg, s.tint.text)}>
+                          <Icon size={14} />
+                        </div>
+                        {s.label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
 
-              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 px-2 mb-3">
-                Platform
-              </p>
+              <div className="h-px bg-slate-100 my-2" />
+
               <Link
                 href={howItWorksHref}
                 onClick={() => setMobileOpen(false)}
@@ -286,25 +297,18 @@ export default function Navbar({
                 className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               >
                 <Stethoscope size={16} className="text-indigo-400" />
-                For providers
+                For doctors
               </Link>
             </nav>
 
-            <div className="px-4 pb-8 space-y-3 border-t border-slate-100 pt-4">
+            <div className="px-4 pb-8 border-t border-slate-100 pt-4">
               <Link
                 href={loginHref}
-                onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href={searchHref}
                 onClick={() => setMobileOpen(false)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white text-[14px] font-semibold transition-colors"
                 style={{ background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)' }}
               >
-                Find care
+                Sign in
                 <ArrowRight size={14} />
               </Link>
             </div>

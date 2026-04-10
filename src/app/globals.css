@@ -543,6 +543,8 @@
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:#C7CEEF; border-radius:999px; }
 ::-webkit-scrollbar-thumb:hover { background:#9290B0; }
+.scrollbar-none { scrollbar-width:none; }
+.scrollbar-none::-webkit-scrollbar { display:none; }
 
 /* ── Responsive ── */
 @media (min-width:1024px) { .bp-container,.bp-shell { padding-left:48px; padding-right:48px; } }
