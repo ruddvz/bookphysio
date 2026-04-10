@@ -1,69 +1,70 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowRight, Smartphone, User } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
-import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const signupSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters'),
-  phone: z
-    .string()
-    .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
 })
 
-interface SignupFormState {
+interface SignupForm {
   name: string
+  email: string
+  password: string
   phone: string
 }
 
 interface SignupErrors {
   name?: string
+  email?: string
+  password?: string
   phone?: string
   general?: string
 }
 
-export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
-  const t = AUTH_COPY[locale ?? 'en']
+export default function SignupPage() {
   const router = useRouter()
-  const [form, setForm] = useState<SignupFormState>({ name: '', phone: '' })
+  const id = useId()
+  const [form, setForm] = useState<SignupForm>({ name: '', email: '', password: '', phone: '' })
   const [errors, setErrors] = useState<SignupErrors>({})
   const [loading, setLoading] = useState(false)
-  const [nameFocused, setNameFocused] = useState(false)
-  const [phoneFocused, setPhoneFocused] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [focused, setFocused] = useState<keyof SignupForm | null>(null)
   const [loginHref, setLoginHref] = useState('/login')
-  const nameErrorId = 'signup-name-error'
-  const phoneHintId = 'signup-phone-hint'
-  const phoneErrorId = 'signup-phone-error'
+
+  const nameId = `${id}-name`
+  const emailId = `${id}-email`
+  const passwordId = `${id}-password`
+  const phoneId = `${id}-phone`
 
   useEffect(() => {
     const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
-    if (returnTo) {
-      setLoginHref(`/login?return=${encodeURIComponent(returnTo)}`)
-    }
+    if (returnTo) setLoginHref(`/login?return=${encodeURIComponent(returnTo)}`)
   }, [])
 
-  function handleChange(field: keyof SignupFormState, value: string) {
+  function set(field: keyof SignupForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => ({
-      ...prev,
-      [field]: undefined,
-      general: undefined,
-    }))
+    if (errors[field] || errors.general) {
+      setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }))
+    }
   }
 
-  function handleBlur(field: keyof SignupFormState) {
+  function handleBlur(field: keyof SignupForm) {
     const value = form[field]
     if (!value) return
-    const singleField = signupSchema.pick({ [field]: true } as Record<typeof field, true>)
-    const result = singleField.safeParse({ [field]: value })
+    const partial = signupSchema.pick({ [field]: true } as Record<typeof field, true>)
+    const result = partial.safeParse({ [field]: value })
     if (!result.success) {
       setErrors((prev) => ({ ...prev, [field]: result.error.issues[0].message }))
     }
@@ -71,21 +72,24 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setErrors({})
+
     const result = signupSchema.safeParse(form)
     if (!result.success) {
-      const fieldErrors: SignupErrors = {}
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof SignupErrors
-        fieldErrors[field] = issue.message
-      }
-      setErrors(fieldErrors)
+      const flat = result.error.flatten().fieldErrors
+      setErrors({
+        name: flat.name?.[0],
+        email: flat.email?.[0],
+        password: flat.password?.[0],
+        phone: flat.phone?.[0],
+      })
       return
     }
+
     setLoading(true)
-    const normalizedName = result.data.name
     const rawPhone = form.phone.replace(/\D/g, '')
-    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
-    const returnTo = sanitizeReturnPath(typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('return'))
+    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : `+91${rawPhone}`
+    const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
     const flowId = crypto.randomUUID()
 
     try {
@@ -96,149 +100,203 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
           phone: cleanPhone,
           flow: 'signup',
           flow_id: flowId,
-          full_name: normalizedName,
+          full_name: result.data.name.trim(),
           return_to: returnTo,
         }),
       })
 
       if (!res.ok) {
-        setErrors({ general: t.signupRequestError })
+        setErrors({ general: 'Could not send the verification code. Please try again.' })
         return
       }
 
-      const otpStateSaved = savePendingOtp({
-        flow: 'signup',
-        flowId,
-        returnTo,
-      })
-
-      if (!otpStateSaved) {
-        console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
+      // Store credentials in sessionStorage — used after OTP to link email+password
+      try {
+        sessionStorage.setItem('bp-pending-credentials', JSON.stringify({
+          email: result.data.email,
+          password: result.data.password,
+        }))
+      } catch {
+        // sessionStorage unavailable — credentials will be skipped, user can set via forgot-password
       }
 
+      savePendingOtp({ flow: 'signup', flowId, returnTo })
       router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
     } catch {
-      setErrors({ general: t.signupRequestError })
+      setErrors({ general: 'Network error. Please try again.' })
     } finally {
       setLoading(false)
     }
   }
 
+  const fieldWrap = (field: keyof SignupForm, hasError: boolean) =>
+    cn(
+      'flex overflow-hidden rounded-[20px] border-2 bg-white transition-all duration-200 shadow-sm',
+      hasError
+        ? 'border-red-200 bg-red-50/30'
+        : focused === field
+        ? 'border-bp-accent shadow-lg shadow-bp-primary/8 ring-4 ring-bp-accent/5'
+        : 'border-bp-border/70 hover:border-bp-border'
+    )
+
+  const inputClass = 'flex-1 border-none bg-transparent py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25 pr-5'
+  const iconClass = (field: keyof SignupForm) =>
+    cn('h-4 w-4 transition-colors', focused === field ? 'text-bp-accent' : 'text-bp-primary/30')
+
   return (
     <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
       <div className="space-y-7">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <BpLogo
-            href="/"
-            size="auth"
-            className="h-12 w-[220px]"
-            linkClassName="justify-center"
-          />
-          <h1 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[36px]">
-            {t.signupHeading}
+
+        {/* Logo + heading */}
+        <div className="flex flex-col items-center text-center space-y-3">
+          <BpLogo href="/" size="auth" className="h-12 w-[220px]" linkClassName="justify-center" />
+          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[32px]">
+            Create your account
           </h1>
-          <p className="max-w-[36ch] text-[15px] leading-6 text-bp-body/70">{t.signupSubheading}</p>
+          <p className="text-[14px] text-bp-body/60 font-medium">Your phone number is verified via OTP — once only</p>
         </div>
 
         <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
           {errors.general && (
-            <div role="alert" className="mt-5 flex items-center gap-3 rounded-3xl border border-red-100 bg-red-50/50 p-4 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95 backdrop-blur-md">
-              <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500 shadow-sm shadow-red-200" />
+            <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95">
+              <div className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
               {errors.general}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-6">
-            <div className="space-y-3">
-              <label htmlFor="name" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
-                {t.signupLabelName}
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            {/* Full name */}
+            <div className="space-y-2">
+              <label htmlFor={nameId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                Full name
               </label>
-              <div className="relative group">
+              <div className={fieldWrap('name', !!errors.name)}>
+                <span className="flex shrink-0 items-center pl-4 pr-3">
+                  <User className={iconClass('name')} />
+                </span>
                 <input
-                  id="name"
+                  id={nameId}
                   type="text"
-                  placeholder="e.g. Rahul Sharma"
-                  {...(errors.name
-                    ? {
-                        'aria-invalid': 'true',
-                        'aria-describedby': nameErrorId,
-                      }
-                    : {})}
-                  className={cn(
-                    'w-full rounded-[30px] border-2 bg-white py-5 pl-14 pr-6 text-[17px] font-semibold text-bp-primary outline-none shadow-sm shadow-bp-primary/5 transition-all duration-500',
-                    errors.name
-                      ? 'border-red-100 bg-red-50/30'
-                      : nameFocused
-                        ? 'border-bp-accent shadow-xl shadow-bp-primary/10 ring-4 ring-bp-accent/5'
-                        : 'border-bp-border/70 hover:border-bp-border'
-                  )}
+                  autoComplete="name"
+                  placeholder="Rahul Sharma"
                   value={form.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  onFocus={() => setNameFocused(true)}
-                  onBlur={() => { setNameFocused(false); handleBlur('name') }}
+                  onChange={(e) => set('name', e.target.value)}
+                  onFocus={() => setFocused('name')}
+                  onBlur={() => { setFocused(null); handleBlur('name') }}
+                  className={inputClass}
+                  aria-invalid={!!errors.name}
                 />
-                <User className={cn('absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-500', nameFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
               </div>
-              {errors.name && <p id={nameErrorId} className="ml-2 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.name}</p>}
+              {errors.name && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.name}</p>}
             </div>
 
-            <div className="space-y-3">
-              <label htmlFor="phone" className="ml-2 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
-                {t.signupLabelPhone}
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor={emailId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                Email address
               </label>
-              <div className="relative group">
-                <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2">
-                  <Smartphone className={cn('h-5 w-5 transition-colors duration-500', phoneFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
-                  <span className={cn('text-[17px] font-bold transition-colors duration-500', phoneFocused ? 'text-bp-accent' : 'text-bp-primary/40')}>+91</span>
-                </div>
+              <div className={fieldWrap('email', !!errors.email)}>
+                <span className="flex shrink-0 items-center pl-4 pr-3">
+                  <Mail className={iconClass('email')} />
+                </span>
                 <input
-                  id="phone"
-                  type="tel"
-                  placeholder="98765 43210"
-                  {...(errors.phone
-                    ? {
-                        'aria-invalid': 'true',
-                        'aria-describedby': `${phoneHintId} ${phoneErrorId}`,
-                      }
-                    : {
-                        'aria-describedby': phoneHintId,
-                      })}
-                  className={cn(
-                    'w-full rounded-[30px] border-2 bg-white py-5 pl-28 pr-6 text-[18px] font-semibold text-bp-primary outline-none shadow-sm shadow-bp-primary/5 transition-all duration-500',
-                    errors.phone
-                      ? 'border-red-100 bg-red-50/30'
-                      : phoneFocused
-                        ? 'border-bp-accent shadow-xl shadow-bp-primary/10 ring-4 ring-bp-accent/5'
-                        : 'border-bp-border/70 hover:border-bp-border'
-                  )}
-                  value={formatIndianPhone(form.phone)}
-                  onChange={(e) => handleChange('phone', stripPhoneFormat(e.target.value))}
-                  onFocus={() => setPhoneFocused(true)}
-                  onBlur={() => { setPhoneFocused(false); handleBlur('phone') }}
+                  id={emailId}
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={(e) => set('email', e.target.value)}
+                  onFocus={() => setFocused('email')}
+                  onBlur={() => { setFocused(null); handleBlur('email') }}
+                  className={inputClass}
+                  aria-invalid={!!errors.email}
                 />
               </div>
-              <p id={phoneHintId} className="ml-2 text-[12px] leading-5 text-bp-body/55">{t.signupPhoneHelper}</p>
-              {errors.phone && <p id={phoneErrorId} className="ml-2 text-[12px] font-semibold text-red-500 animate-in slide-in-from-top-2">{errors.phone}</p>}
+              {errors.email && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.email}</p>}
             </div>
 
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor={passwordId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                Password
+              </label>
+              <div className={fieldWrap('password', !!errors.password)}>
+                <span className="flex shrink-0 items-center pl-4 pr-3">
+                  <Lock className={iconClass('password')} />
+                </span>
+                <input
+                  id={passwordId}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  placeholder="Min. 8 characters"
+                  value={form.password}
+                  onChange={(e) => set('password', e.target.value)}
+                  onFocus={() => setFocused('password')}
+                  onBlur={() => { setFocused(null); handleBlur('password') }}
+                  className="flex-1 border-none bg-transparent py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25"
+                  aria-invalid={!!errors.password}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="flex shrink-0 items-center pr-4 pl-2 text-bp-primary/30 hover:text-bp-primary transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.password}</p>}
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <label htmlFor={phoneId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                Mobile number <span className="normal-case font-normal text-bp-body/40">(for OTP verification)</span>
+              </label>
+              <div className={fieldWrap('phone', !!errors.phone)}>
+                <span className="flex shrink-0 items-center border-r border-bp-border/70 bg-bp-surface/60 px-4 py-4 text-[14px] font-bold text-bp-primary gap-2">
+                  <Smartphone className={iconClass('phone')} />
+                  +91
+                </span>
+                <input
+                  id={phoneId}
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="98765 43210"
+                  maxLength={12}
+                  value={formatIndianPhone(form.phone)}
+                  onChange={(e) => set('phone', stripPhoneFormat(e.target.value))}
+                  onFocus={() => setFocused('phone')}
+                  onBlur={() => { setFocused(null); handleBlur('phone') }}
+                  className="flex-1 border-none bg-transparent px-4 py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25"
+                  aria-invalid={!!errors.phone}
+                />
+              </div>
+              {errors.phone
+                ? <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.phone}</p>
+                : <p className="ml-1 text-[12px] text-bp-body/45">We&apos;ll send a one-time code to verify your number.</p>
+              }
+            </div>
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
               className={cn(
-                'relative mt-2 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[30px] py-6 text-[16px] font-bold text-white transition-all active:scale-[0.98] group shadow-xl',
+                'relative mt-2 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[20px] py-4 text-[15px] font-bold text-white shadow-lg transition-all active:scale-[0.98] group',
                 loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
               )}
             >
               {loading ? (
                 <div className="flex items-center gap-3">
-                  <div className="h-5 w-5 rounded-full border-3 border-white/30 border-t-white animate-spin" />
-                  <span>{t.signupButtonLoading}</span>
+                  <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <span>Sending code…</span>
                 </div>
               ) : (
                 <>
-                  <span className="relative z-10">{t.signupButtonSubmit}</span>
-                  <ArrowRight size={18} strokeWidth={4} className="relative z-10 text-bp-accent/70 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <span className="relative z-10">Continue — verify phone</span>
+                  <ArrowRight size={16} strokeWidth={3} className="relative z-10 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </>
               )}
             </button>
@@ -246,11 +304,12 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
         </section>
 
         <p className="text-center text-[14px] font-semibold tracking-tight text-bp-body/60">
-          {t.signupAlreadyAccount}{' '}
-          <Link href={loginHref} className="font-bold text-bp-accent no-underline transition-colors hover:text-bp-accent/80">
-            {t.signupLoginOtpLink}
+          Already have an account?{' '}
+          <Link href={loginHref} className="font-bold text-bp-accent no-underline hover:text-bp-accent/80 transition-colors">
+            Sign in
           </Link>
         </p>
+
       </div>
     </div>
   )

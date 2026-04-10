@@ -112,6 +112,24 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       }
       clearPendingOtp()
 
+      // After signup OTP: link email+password to the phone-verified account
+      if (pendingOtp?.flow === 'signup') {
+        try {
+          const raw = sessionStorage.getItem('bp-pending-credentials')
+          if (raw) {
+            const creds = JSON.parse(raw) as { email: string; password: string }
+            await fetch('/api/auth/set-credentials', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(creds),
+            })
+            sessionStorage.removeItem('bp-pending-credentials')
+          }
+        } catch {
+          // Best-effort — user can set email via forgot-password if this fails
+        }
+      }
+
       const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role
       const redirectTo = data.redirectTo ?? resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
 
