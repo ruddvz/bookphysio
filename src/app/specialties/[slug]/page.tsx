@@ -140,5 +140,48 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
   const { slug } = await params
   const data = SPECIALTIES_DATA[slug]
   if (!data) notFound()
-  return <SpecialtyArticle data={data} />
+
+  const pageUrl = `https://bookphysio.in/specialties/${slug}`
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in' },
+      { '@type': 'ListItem', position: 2, name: 'Specialties', item: 'https://bookphysio.in/search' },
+      { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
+    ],
+  }
+
+  const medicalWebPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    name: `${data.title} in India`,
+    description: data.description,
+    url: pageUrl,
+    about: {
+      '@type': 'MedicalSpecialty',
+      name: 'PhysicalTherapy',
+    },
+    lastReviewed: '2026-04-07',
+    reviewedBy: {
+      '@type': 'Organization',
+      name: 'BookPhysio',
+      url: 'https://bookphysio.in',
+    },
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalWebPageSchema) }}
+      />
+      <SpecialtyArticle data={data} />
+    </>
+  )
 }

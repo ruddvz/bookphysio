@@ -46,10 +46,42 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
+function buildSpecialtySchemas(slug: string, specialtyLabel: string, description: string) {
+  const pageUrl = `https://bookphysio.in/specialty/${slug}`
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in' },
+      { '@type': 'ListItem', position: 2, name: specialtyLabel, item: pageUrl },
+    ],
+  }
+
+  const medicalSpecialtySchema = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    name: `${specialtyLabel} in India`,
+    description,
+    url: pageUrl,
+    about: {
+      '@type': 'MedicalSpecialty',
+      name: 'PhysicalTherapy',
+    },
+    provider: {
+      '@id': 'https://bookphysio.in/#organization',
+    },
+  }
+
+  return { breadcrumbSchema, medicalSpecialtySchema }
+}
+
 export default async function SpecialtyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const specialty = SPECIALTY_MAP[slug]
   if (!specialty) notFound()
+
+  const { breadcrumbSchema, medicalSpecialtySchema } = buildSpecialtySchemas(slug, specialty.label, specialty.description)
 
   const specialtySignals = [
     {
@@ -77,6 +109,14 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalSpecialtySchema) }}
+      />
       <Navbar />
 
       <main className="flex-grow">
