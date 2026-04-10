@@ -18,15 +18,20 @@ vi.mock('next/image', () => ({
   ),
 }))
 
-vi.mock('@/components/auth/DemoAccessPanel', () => ({
-  DemoAccessPanel: () => <div>Demo access panel</div>,
+vi.mock('@/lib/supabase/client', () => ({
+  createClient: () => ({
+    auth: {
+      signInWithOAuth: vi.fn(),
+    },
+  }),
 }))
 
 describe('LoginPage', () => {
-  it('shows the demo access section', () => {
+  it('renders the email and password fields without exposing raw credentials', () => {
     render(<LoginPage />)
 
-    expect(screen.getByText(/demo access panel/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
     expect(screen.queryByText(/demo accounts/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/90000 00000/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/99999 99999/i)).not.toBeInTheDocument()

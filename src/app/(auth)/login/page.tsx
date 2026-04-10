@@ -9,7 +9,6 @@ import BpLogo from '@/components/BpLogo'
 import { createClient } from '@/lib/supabase/client'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
-import { type StaticLocale } from '@/lib/i18n/dynamic-pages'
 
 const loginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -22,7 +21,7 @@ interface LoginErrors {
   general?: string
 }
 
-export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
+export default function LoginPage() {
   const router = useRouter()
   const id = useId()
   const [email, setEmail] = useState('')
@@ -79,13 +78,13 @@ export default function LoginPage({ locale }: { locale?: StaticLocale } = {}) {
       const data = await res.json() as { redirectTo?: string; error?: string }
 
       if (!res.ok) {
-        setErrors({ general: data.error ?? 'Incorrect email or password' })
+        setErrors({ general: 'Incorrect email or password. Please try again.' })
         return
       }
 
       router.push(data.redirectTo ?? '/patient/dashboard')
     } catch {
-      setErrors({ general: 'Network error. Please try again.' })
+      setErrors({ general: 'Unable to sign in right now. Please try again.' })
     } finally {
       setLoading(false)
     }

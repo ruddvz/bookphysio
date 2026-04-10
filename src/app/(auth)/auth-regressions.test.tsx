@@ -23,10 +23,6 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
-vi.mock('@/components/auth/DemoAccessPanel', () => ({
-  DemoAccessPanel: () => <div>Demo access panel</div>,
-}))
-
 vi.mock('@/components/BpLogo', () => ({
   default: ({ href }: { href?: string }) => (href ? <a href={href}>BookPhysio Logo</a> : <div>BookPhysio Logo</div>),
 }))
@@ -43,6 +39,7 @@ vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
       resetPasswordForEmail: vi.fn(),
+      signInWithOAuth: vi.fn(),
     },
   }),
 }))
@@ -73,9 +70,8 @@ describe('Auth regressions', () => {
     const { container } = render(<LoginPage />)
 
     expect(screen.getByRole('link', { name: /bookphysio logo/i })).toHaveAttribute('href', '/')
-    expect(screen.getByText(/demo access panel/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /email magic link/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/mobile number/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
     expect(screen.queryByText(/demo accounts/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/90000 00000/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/99999 99999/i)).not.toBeInTheDocument()
@@ -91,45 +87,40 @@ describe('Auth regressions', () => {
     expect(container.firstChild).toHaveClass('pb-10')
   })
 
-  it('keeps the polished login chrome locale-aware when a locale override is provided', () => {
-    render(<LoginPage locale="hi" />)
+  it('renders the login page in English with email and password fields', () => {
+    render(<LoginPage />)
 
-    expect(screen.getByText(/वापस स्वागत है/i)).toBeInTheDocument()
-    expect(screen.getByText(/मोबाइल नंबर/i)).toBeInTheDocument()
-    expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/welcome back/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
   })
 
-  it('stores login OTP state in session storage and navigates with a clean verify URL', async () => {
+  it('redirects to dashboard after a successful email+password login', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: vi.fn().mockResolvedValue({}),
+        json: vi.fn().mockResolvedValue({ redirectTo: '/patient/dashboard' }),
       })
     )
 
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByLabelText(/mobile number/i), {
-      target: { value: '9876543210' },
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: 'secret123' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
+      expect(push).toHaveBeenCalledWith('/patient/dashboard')
     })
-
-    expect(readPendingOtp()).toEqual({
-      flow: 'login',
-      flowId: expect.any(String),
-      returnTo: null,
-    })
-
-    expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
   })
 
-  it('masks login OTP failures behind generic UI copy', async () => {
+  it('masks login failures behind generic UI copy', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -140,14 +131,17 @@ describe('Auth regressions', () => {
 
     render(<LoginPage />)
 
-    fireEvent.change(screen.getByLabelText(/mobile number/i), {
-      target: { value: '9876543210' },
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: 'wrongpass' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/unable to send a login code right now/i)).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toBeInTheDocument()
     })
 
     expect(screen.queryByText(/provider-only failure detail/i)).not.toBeInTheDocument()
@@ -167,11 +161,17 @@ describe('Auth regressions', () => {
     fireEvent.change(screen.getByLabelText(/full name/i), {
       target: { value: 'Rahul Sharma' },
     })
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'rahul@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: 'securepass123' },
+    })
     fireEvent.change(screen.getByLabelText(/mobile number/i), {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|create account|start your recovery/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue — verify phone/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
@@ -200,119 +200,92 @@ describe('Auth regressions', () => {
     fireEvent.change(screen.getByLabelText(/full name/i), {
       target: { value: 'Rahul Sharma' },
     })
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'rahul@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: 'securepass123' },
+    })
     fireEvent.change(screen.getByLabelText(/mobile number/i), {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|create account|start your recovery/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue — verify phone/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/unable to start account verification right now/i)).toBeInTheDocument()
+      expect(screen.getByText(/could not send the verification code/i)).toBeInTheDocument()
     })
 
     expect(screen.queryByText(/user already exists in shard 2/i)).not.toBeInTheDocument()
   })
 
-  it('uses generic success copy for magic-link login requests without echoing the email address', async () => {
+  it('shows generic error copy on login network failure without leaking server details', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({
-          message: 'If an account exists, a magic link has been sent.',
-        }),
-      })
+      vi.fn().mockRejectedValue(new Error('Network error'))
     )
 
     render(<LoginPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /email magic link/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'user@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: 'secret123' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in with email/i })).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByRole('textbox', { name: /email address/i }), {
-      target: { value: 'person@example.com' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
-
-    await waitFor(() => {
-      expect(screen.getByText(/if an account exists for/i)).toBeInTheDocument()
-    })
-
-    expect(screen.queryByText(/person@example.com/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(/unable to sign in right now/i)
+    expect(screen.queryByText(/^network error$/i)).not.toBeInTheDocument()
   })
 
-  it('keeps the email dialog error state accessible and generic on validation and request failures', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        json: vi.fn().mockResolvedValue({ error: 'Unknown email address' }),
-      })
-    )
-
+  it('marks the email field invalid with accessible error wiring when validation fails', async () => {
     render(<LoginPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /email magic link/i }))
-    fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in with email/i })).toBeInTheDocument()
-    })
-
-    const emailInput = screen.getByRole('textbox', { name: /email address/i })
+    const emailInput = screen.getByLabelText(/email address/i)
 
     fireEvent.change(emailInput, {
       target: { value: 'not-an-email' },
     })
-    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
+
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: /email address/i })).toHaveAttribute('aria-invalid', 'true')
+      expect(emailInput).toHaveAttribute('aria-invalid', 'true')
     })
-
-    expect(screen.getByRole('textbox', { name: /email address/i }).getAttribute('aria-describedby')).toMatch(/-email-error$/)
-    expect(screen.getByRole('alert')).toHaveTextContent(/please enter a valid email address/i)
-
-    fireEvent.change(emailInput, {
-      target: { value: 'person@example.com' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /send magic link/i }))
-
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/unable to send a magic link right now/i)
-    })
-
-    expect(screen.queryByText(/unknown email address/i)).not.toBeInTheDocument()
   })
 
-  it('marks the login phone field invalid with accessible error wiring when validation fails', async () => {
+  it('marks the password field invalid with accessible error when left blank', async () => {
     render(<LoginPage />)
 
-    const phoneInput = screen.getByLabelText(/mobile number/i)
+    const passwordInput = screen.getByLabelText(/^password$/i)
 
-    fireEvent.change(phoneInput, {
-      target: { value: '12345' },
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: 'user@example.com' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue with secure otp|send otp|secure login/i }))
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(phoneInput).toHaveAttribute('aria-invalid', 'true')
+      expect(passwordInput).toHaveAttribute('aria-invalid', 'true')
     })
-
-    expect(phoneInput).toHaveAttribute('aria-describedby', expect.stringContaining('-phone-hint'))
-    expect(screen.getByText(/enter a valid 10-digit indian mobile number/i).id).toMatch(/-phone-error$/)
   })
 
-  it('offers both mobile otp and email magic-link login paths from signup', () => {
+  it('links to the sign-in page from the signup footer', () => {
     render(<SignupPage />)
 
-    expect(screen.getByRole('link', { name: /sign in with mobile otp/i })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login')
+  })
+
+  it('links to the forgot-password page from the login form', () => {
+    render(<LoginPage />)
+
+    expect(screen.getByRole('link', { name: /forgot password/i })).toHaveAttribute('href', '/forgot-password')
   })
 
   it('exports route-specific metadata for login and doctor signup', () => {

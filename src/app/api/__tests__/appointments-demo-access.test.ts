@@ -24,6 +24,7 @@ describe('GET /api/appointments demo access', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'true')
   })
 
   it('returns patient demo dashboard appointments without a Supabase session', async () => {
