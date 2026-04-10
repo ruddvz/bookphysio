@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from '@/app/providers'
 import { CookieConsent } from '@/components/CookieConsent'
 import { PublicAnalytics } from '@/components/PublicAnalytics'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const fontVariables = {
   ['--font-inter' as const]: '"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -72,6 +73,7 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <CookieConsent />
         <PublicAnalytics />
+        <SpeedInsights />
       </body>
     </html>
   )
