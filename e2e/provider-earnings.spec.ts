@@ -103,7 +103,7 @@ test.describe('Provider Earnings Flow', () => {
 
     await page.goto('/provider/earnings')
 
-    await expect(page.locator('h1')).toContainText('Earnings')
+    await expect(page.locator('h1')).toContainText(/ledger & earnings/i)
     const generateBillLink = page.getByRole('link', { name: /issue invoice/i })
     await expect(generateBillLink).toBeVisible()
 
@@ -111,7 +111,7 @@ test.describe('Provider Earnings Flow', () => {
     await expect(page.locator('text=₹738')).toBeVisible()
 
     await expect(page.locator('text=Rahul Sharma')).toBeVisible()
-    await expect(page.locator('text=₹144').first()).toBeVisible()
+    await expect(page.locator('text=₹800').first()).toBeVisible()
     await expect(page.locator('text=Paid').first()).toBeVisible()
 
     await expect(page.locator('text=Revenue Growth')).toBeVisible()
@@ -120,6 +120,6 @@ test.describe('Provider Earnings Flow', () => {
     await generateBillLink.click()
     await expect(page).toHaveURL(/\/provider\/bills\/new/)
     await expect(page.getByRole('heading', { name: /generate invoice/i })).toBeVisible()
-    await expect(page.getByRole('checkbox', { name: /clinical gst calculation/i })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: /apply gst \(18%\)/i })).toBeChecked()
   })
 })

@@ -90,7 +90,7 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
 
   // Link back to login
-  await expect(page.getByRole('link', { name: /log in/i })).toBeVisible()
+  await expect(page.getByRole('link', { name: /sign in with mobile otp|log in/i })).toBeVisible()
 
 })
 
