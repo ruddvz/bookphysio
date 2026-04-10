@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 
 const PUBLIC_ANALYTICS_PATHS = new Set([
   '/',
@@ -63,5 +63,5 @@ export function PublicAnalytics() {
     return null
   }
 
-  return <Analytics path={pathname} route={pathname} />
+  return <Analytics />
 }
