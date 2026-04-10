@@ -8,11 +8,7 @@ const PREVIEW_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000
 const encoder = new TextEncoder()
 
 export function isPublicPreviewGateEnabled(): boolean {
-  if (process.env.ENABLE_PUBLIC_PREVIEW_GATE === 'false') {
-    return false
-  }
-
-  return true
+  return process.env.ENABLE_PUBLIC_PREVIEW_GATE === 'true'
 }
 
 export function getPreviewTokenSigningSecret(): string | null {
@@ -20,7 +16,7 @@ export function getPreviewTokenSigningSecret(): string | null {
     process.env.PREVIEW_TOKEN_SECRET ??
     process.env.DEMO_COOKIE_SECRET ??
     process.env.PREVIEW_PASSWORD ??
-    'bp-preview-signing-secret-2026'
+    null
   )
 }
 

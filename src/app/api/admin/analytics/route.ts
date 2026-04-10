@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getDemoAdminAnalytics } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
+import { apiRatelimit } from '@/lib/upstash'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
@@ -23,6 +24,15 @@ export async function GET(request: NextRequest) {
 
   if (profile?.role !== 'admin') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  try {
+    const rateLimit = await apiRatelimit.limit(`admin-analytics:${user.id}`)
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again shortly.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
   }
 
   const now = new Date()

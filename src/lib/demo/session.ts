@@ -129,7 +129,11 @@ function constantTimeEqual(left: string, right: string): boolean {
 }
 
 async function signDemoCookiePayload(payloadSegment: string): Promise<string | null> {
-  const secret = process.env.DEMO_COOKIE_SECRET ?? process.env.PREVIEW_PASSWORD ?? 'bp-preview-signing-secret-2026'
+  const secret = process.env.DEMO_COOKIE_SECRET ?? process.env.PREVIEW_PASSWORD ?? null
+
+  if (!secret) {
+    return null
+  }
 
   const key = await getDemoSigningKey(secret)
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payloadSegment))

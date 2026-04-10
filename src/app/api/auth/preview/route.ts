@@ -21,11 +21,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
-  const secret = process.env.PREVIEW_PASSWORD || 'bookphysio2026'
+  const secret = process.env.PREVIEW_PASSWORD
 
   const tokenSigningSecret = getPreviewTokenSigningSecret()
   if (!tokenSigningSecret) {
     return NextResponse.json({ error: 'Preview token signing is not configured' }, { status: 503 })
+  }
+
+  if (!secret) {
+    return NextResponse.json({ error: 'Preview password is not configured' }, { status: 503 })
   }
 
   const ip = getRequestIpAddress(request) ?? 'anonymous'

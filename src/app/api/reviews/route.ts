@@ -1,11 +1,21 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createReviewSchema } from '@/lib/validations/review'
+import { reviewsRatelimit } from '@/lib/upstash'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  try {
+    const rateLimit = await reviewsRatelimit.limit(`reviews:${user.id}`)
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: 'Too many review submissions. Please wait before trying again.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
+  }
 
   const parsed = createReviewSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })

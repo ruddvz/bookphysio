@@ -5,6 +5,7 @@ import { sendDemoMessage } from '@/lib/demo/store'
 import { hasMessagingCareRelationship, type SupabaseAdminLike } from '@/lib/messaging/access'
 import { messageRequestSchema } from '@/lib/validations/message'
 import type { Message } from '@/app/api/contracts/message'
+import { messagesRatelimit } from '@/lib/upstash'
 
 function isDuplicateConversationError(error: { code?: string; message?: string } | null) {
   return error?.code === '23505' || error?.message?.includes('idx_conversations_user_pair_unique')
@@ -49,6 +50,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  try {
+    const rateLimit = await messagesRatelimit.limit(`messages:${user.id}`)
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: 'Too many messages. Please wait before sending another.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
+  }
 
   const { data: senderProfile } = await supabase
     .from('users')
