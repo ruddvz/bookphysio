@@ -72,7 +72,7 @@ test.describe('Flow 2: OTP Login — New User', () => {
     await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
     await expect(page.getByLabel('Mobile Number')).toBeVisible()
     await expect(page.getByText('+91').first()).toBeVisible()
-    await expect(page.getByRole('button', { name: /secure login/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
   })
 
   test('login form validates phone number before submission', async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe('Flow 2: OTP Login — New User', () => {
     const phoneInput = page.getByLabel('Mobile Number')
     await phoneInput.fill('123') // Too short
 
-    const sendBtn = page.getByRole('button', { name: /secure login/i })
+    const sendBtn = page.getByRole('button', { name: /continue with secure otp/i })
     await sendBtn.click()
 
     // Should show validation error or remain on login page (not navigate away)
@@ -97,10 +97,10 @@ test.describe('Flow 3: OTP Login — Returning User', () => {
   test('signup page has name and phone fields', async ({ page }) => {
     await page.goto('/signup')
 
-    await expect(page.getByRole('heading', { name: /start your recovery/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /create your account/i })).toBeVisible()
     await expect(page.getByLabel('Full Name')).toBeVisible()
     await expect(page.getByLabel('Mobile Number')).toBeVisible()
-    await expect(page.getByRole('button', { name: /create account/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
   })
 
   test('signup links back to login', async ({ page }) => {
@@ -348,7 +348,7 @@ test.describe('Navigation: All Route Groups Load', () => {
     '/search',
     '/doctor/placeholder',
     '/book/placeholder',
-    '/specialty/sports-physiotherapy',
+    '/specialty/sports',
     '/city/mumbai',
     '/about',
     '/faq',

@@ -2,25 +2,23 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Specialty & City Landing Pages', () => {
   test('specialty page renders correct content and title', async ({ page }) => {
-    await page.goto('/specialty/sports-physio')
-    await expect(page.locator('h1')).toContainText('Sports Physiotherapists')
-    await expect(page).toHaveTitle(/Best Sports Physiotherapists in India | BookPhysio.in/)
-    // Check for Dr. Priya (mock sports physio)
-    await expect(page.locator('text=Dr. Priya Sharma')).toBeVisible()
+    await page.goto('/specialty/sports')
+    await expect(page.locator('h1')).toContainText('Sports Sciences Physiotherapists')
+    await expect(page).toHaveTitle(/Best Sports Sciences Physiotherapists in India/)
+    await expect(page.getByRole('link', { name: /search sports sciences/i })).toBeVisible()
   })
 
   test('city page renders correct content and title', async ({ page }) => {
     await page.goto('/city/mumbai')
     await expect(page.locator('h1')).toContainText('Physiotherapists in Mumbai')
     await expect(page).toHaveTitle(/Best Physiotherapists in Mumbai | BookPhysio.in/)
-    // Check for Dr. Priya (mock Mumbai physio)
-    await expect(page.locator('text=Dr. Priya Sharma')).toBeVisible()
+    await expect(page.getByRole('link', { name: /search in mumbai/i })).toBeVisible()
   })
 
-  test('city with no doctors shows empty state', async ({ page }) => {
+  test('city landing still renders a search CTA when live providers are unavailable', async ({ page }) => {
     await page.goto('/city/surat')
-    await expect(page.locator('text=No providers currently in Surat')).toBeVisible()
-    await expect(page.locator('text=Explore Other Cities')).toBeVisible()
+    await expect(page.locator('h1')).toContainText('Physiotherapists in Surat')
+    await expect(page.getByRole('link', { name: /search in surat/i })).toBeVisible()
   })
 
   test('invalid slug returns 404', async ({ page }) => {

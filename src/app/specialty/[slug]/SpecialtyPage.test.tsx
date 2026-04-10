@@ -8,31 +8,27 @@ vi.mock('next/navigation', () => ({
 }))
 
 describe('SpecialtyPage', () => {
-  const mockParams = Promise.resolve({ slug: 'sports-physio' })
+  const mockParams = Promise.resolve({ slug: 'sports' })
 
   it('renders correctly with given specialty', async () => {
     const Result = await SpecialtyPage({ params: mockParams })
     render(Result)
     
-    expect(screen.getByText('Sports Physiotherapists')).toBeInTheDocument()
-    expect(screen.getByText(/Expert care for sports injuries/i)).toBeInTheDocument()
-    // Check if any doctor cards are rendered (Dr. Priya is sports)
-    expect(screen.getByText(/Dr. Priya Sharma/i)).toBeInTheDocument()
+    expect(screen.getByText('Sports Sciences Physiotherapists')).toBeInTheDocument()
+    expect(screen.getByText(/injury prevention, athletic rehabilitation/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /search sports sciences/i })).toHaveAttribute('href', '/search?specialty=sports')
   })
 
   it('generates correct metadata', async () => {
     const metadata = await generateMetadata({ params: mockParams })
-    expect(metadata.title).toContain('Best Sports Physiotherapists in India')
-    expect(metadata.description).toContain('sports injuries')
+    expect(metadata.title).toContain('Best Sports Sciences Physiotherapists in India')
+    expect(metadata.description).toContain('athletic rehabilitation')
   })
 
-  it('shows empty state for unknown categories if not caught by notFound', async () => {
+  it('returns not found metadata for unknown specialties', async () => {
     const mockParamsEmpty = Promise.resolve({ slug: 'pain-management' })
-    const Result = await SpecialtyPage({ params: mockParamsEmpty })
-    render(Result)
-    
-    expect(screen.getByText('Pain Management Specialists')).toBeInTheDocument()
-    // Should show the default text since mock doctors list doesn't include specific pain specialists
-    // Actually the mock logic shows all doctors for unknown slugs in my implementation
+    const metadata = await generateMetadata({ params: mockParamsEmpty })
+
+    expect(metadata.title).toBe('Not Found | BookPhysio.in')
   })
 })

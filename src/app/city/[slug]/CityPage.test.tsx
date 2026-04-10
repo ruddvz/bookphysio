@@ -16,17 +16,16 @@ describe('CityPage', () => {
     
     expect(screen.getByText('Physiotherapists in Mumbai')).toBeInTheDocument()
     expect(screen.getByText(/Find top-rated physiotherapists in Mumbai/i)).toBeInTheDocument()
-    // Dr. Priya lives in Mumbai in mock data
-    expect(screen.getByText(/Dr. Priya Sharma/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /search in mumbai/i })).toHaveAttribute('href', '/search?location=Mumbai')
   })
 
-  it('shows empty state for cities with no mock doctors', async () => {
+  it('keeps the surat landing page usable with a search CTA', async () => {
     const mockParamsSurat = Promise.resolve({ slug: 'surat' })
     const Result = await CityPage({ params: mockParamsSurat })
     render(Result)
     
-    expect(screen.getByText('No providers currently in Surat')).toBeInTheDocument()
-    expect(screen.getByText(/Explore Other Cities/i)).toBeInTheDocument()
+    expect(screen.getByText('Physiotherapists in Surat')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /search in surat/i })).toHaveAttribute('href', '/search?location=Surat')
   })
 
   it('generates correct metadata for a city', async () => {
