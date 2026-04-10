@@ -40,6 +40,8 @@ describe('GET /api/auth/demo-session', () => {
   it('returns 204 in production when a signed demo cookie lacks preview authorization', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'false')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'false')
 
     const { GET } = await import('../auth/demo-session/route')
     const cookiePayload = createDemoCookiePayload('patient')
@@ -131,6 +133,8 @@ describe('POST /api/auth/demo-session', () => {
   it('rejects production requests without preview authorization', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'false')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'false')
 
     const { POST } = await import('../auth/demo-session/route')
     const request = new NextRequest('http://localhost/api/auth/demo-session', {
@@ -150,6 +154,8 @@ describe('POST /api/auth/demo-session', () => {
   it('rejects preview cookies in production when the public preview gate is disabled', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'false')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'false')
 
     const { POST } = await import('../auth/demo-session/route')
     const previewToken = await createPreviewToken('preview-secret')
