@@ -95,11 +95,7 @@ function decodeBase64Url(value: string): string {
 }
 
 export function isDemoAccessEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === 'false') {
-    return false
-  }
-
-  return true
+  return process.env.NEXT_PUBLIC_ENABLE_DEMO === 'true'
 }
 
 async function getDemoSigningKey(secret: string): Promise<CryptoKey> {

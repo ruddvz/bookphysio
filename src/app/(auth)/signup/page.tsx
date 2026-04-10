@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowRight, Smartphone, User } from 'lucide-react'
+import { ArrowRight, Camera, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
@@ -39,6 +40,8 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
   const [nameFocused, setNameFocused] = useState(false)
   const [phoneFocused, setPhoneFocused] = useState(false)
   const [loginHref, setLoginHref] = useState('/login')
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
   const nameErrorId = 'signup-name-error'
   const phoneHintId = 'signup-phone-hint'
   const phoneErrorId = 'signup-phone-error'
@@ -49,6 +52,22 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
       setLoginHref(`/login?return=${encodeURIComponent(returnTo)}`)
     }
   }, [])
+
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result as string
+      setAvatarPreview(dataUrl)
+      try {
+        sessionStorage.setItem('bp-pending-avatar', JSON.stringify({ dataUrl, mimeType: file.type, fileName: file.name }))
+      } catch {
+        // sessionStorage unavailable — avatar will be skipped
+      }
+    }
+    reader.readAsDataURL(file)
+  }
 
   function handleChange(field: keyof SignupFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -138,6 +157,38 @@ export default function SignupPage({ locale }: { locale?: StaticLocale } = {}) {
             {t.signupHeading}
           </h1>
           <p className="max-w-[36ch] text-[15px] leading-6 text-bp-body/70">{t.signupSubheading}</p>
+        </div>
+
+        {/* Avatar picker */}
+        <div className="flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={() => avatarInputRef.current?.click()}
+            className="group relative h-20 w-20 overflow-hidden rounded-full border-2 border-dashed border-bp-border/70 bg-bp-surface transition-all hover:border-bp-accent hover:bg-bp-accent/5 focus:outline-none focus:ring-2 focus:ring-bp-accent/30"
+            aria-label="Upload profile photo"
+          >
+            {avatarPreview ? (
+              <Image src={avatarPreview} alt="Profile preview" fill className="object-cover" />
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-1">
+                <Camera className="h-6 w-6 text-bp-body/30 transition-colors group-hover:text-bp-accent" />
+              </div>
+            )}
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 transition-all group-hover:bg-black/10">
+              <Camera className={cn('h-5 w-5 text-white opacity-0 transition-opacity group-hover:opacity-100', avatarPreview ? 'drop-shadow' : 'hidden')} />
+            </div>
+          </button>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/35">
+            {avatarPreview ? 'Tap to change photo' : 'Add profile photo (optional)'}
+          </p>
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="sr-only"
+            onChange={handleAvatarChange}
+            aria-hidden="true"
+          />
         </div>
 
         <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
