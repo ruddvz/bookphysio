@@ -70,11 +70,11 @@ describe('Homepage regressions', () => {
       </>
     )
 
-    expect(screen.getByText(/Everything you need to know before booking your first session/i)).toBeInTheDocument()
-    expect(screen.getByText(/Find a verified physiotherapist, check their availability, and book your session/i)).toBeInTheDocument()
-    expect(screen.getByText(/Choose a specialty and we'll surface IAP-verified physiotherapists near you/i)).toBeInTheDocument()
-    expect(screen.getByText(/Credentials, visit format, fees, and availability/i)).toBeInTheDocument()
-    expect(screen.getByText(/We built BookPhysio to make finding quality physiotherapy care in India simple, transparent, and trustworthy./i)).toBeInTheDocument()
+    expect(screen.getByText(/Before you book, here is what people usually want to know/i)).toBeInTheDocument()
+    expect(screen.getByText(/Finding a physiotherapist should not feel like a research project/i)).toBeInTheDocument()
+    expect(screen.getByText(/Pick a specialty and we will show you verified physiotherapists/i)).toBeInTheDocument()
+    expect(screen.getByText(/Credentials, visit format, fees and availability are all on the same page/i)).toBeInTheDocument()
+    expect(screen.getByText(/You see the session fee and any taxes before you book/i)).toBeInTheDocument()
     expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
 
     expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
@@ -138,7 +138,7 @@ describe('Homepage regressions', () => {
 
     render(<Testimonials />)
     expect(screen.getByText('Verified credentials')).toBeInTheDocument()
-    expect(screen.getByText('Transparent pricing')).toBeInTheDocument()
-    expect(screen.getByText('Home visits available')).toBeInTheDocument()
+    expect(screen.getByText('Clear pricing')).toBeInTheDocument()
+    expect(screen.getByText('Clinic or home visit')).toBeInTheDocument()
   })
 })

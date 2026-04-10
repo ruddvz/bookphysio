@@ -102,7 +102,7 @@ describe('FeaturedDoctors', () => {
 
     const profileLinks = screen.getAllByRole('link')
 
-    expect(profileLinks.map((link) => link.getAttribute('href'))).toEqual([
+    expect(profileLinks.map((link: HTMLElement) => link.getAttribute('href'))).toEqual([
       '/doctor/1',
       '/doctor/2',
       '/doctor/3',
