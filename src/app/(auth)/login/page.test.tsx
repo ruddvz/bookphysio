@@ -42,7 +42,7 @@ describe('LoginPage', () => {
     const link = screen.getByRole('link', { name: /bookphysio home/i })
 
     expect(link).toHaveAttribute('href', '/')
-    expect(link.className).toContain('justify-start')
+    expect(link.className).toContain('justify-center')
     expect(screen.getByRole('img', { name: 'BookPhysio.in' })).toHaveAttribute('src', '/logo.png')
   })
 })

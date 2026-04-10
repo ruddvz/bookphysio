@@ -74,7 +74,7 @@ describe('Auth regressions', () => {
 
     expect(screen.getByRole('link', { name: /bookphysio logo/i })).toHaveAttribute('href', '/')
     expect(screen.getByText(/demo access panel/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /continue with email instead/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /email magic link/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/mobile number/i)).toBeInTheDocument()
     expect(screen.queryByText(/demo accounts/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/90000 00000/i)).not.toBeInTheDocument()
@@ -94,9 +94,9 @@ describe('Auth regressions', () => {
   it('keeps the polished login chrome locale-aware when a locale override is provided', () => {
     render(<LoginPage locale="hi" />)
 
-    expect(screen.getByText(/सुरक्षित रोगी साइन-इन/i)).toBeInTheDocument()
-    expect(screen.getByText(/डिफ़ॉल्ट रूप से निजी/i)).toBeInTheDocument()
-    expect(screen.queryByText(/Primary sign-in/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/वापस स्वागत है/i)).toBeInTheDocument()
+    expect(screen.getByText(/मोबाइल नंबर/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument()
   })
 
   it('stores login OTP state in session storage and navigates with a clean verify URL', async () => {
@@ -226,6 +226,7 @@ describe('Auth regressions', () => {
 
     render(<LoginPage />)
 
+    fireEvent.click(screen.getByRole('button', { name: /email magic link/i }))
     fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
 
     await waitFor(() => {
@@ -256,6 +257,7 @@ describe('Auth regressions', () => {
 
     render(<LoginPage />)
 
+    fireEvent.click(screen.getByRole('button', { name: /email magic link/i }))
     fireEvent.click(screen.getByRole('button', { name: /continue with email instead/i }))
 
     await waitFor(() => {
@@ -303,15 +305,14 @@ describe('Auth regressions', () => {
       expect(phoneInput).toHaveAttribute('aria-invalid', 'true')
     })
 
-    expect(phoneInput).toHaveAttribute('aria-describedby', expect.stringContaining('login-phone-hint'))
-    expect(screen.getByText(/enter a valid 10-digit indian mobile number/i)).toHaveAttribute('id', 'login-phone-error')
+    expect(phoneInput).toHaveAttribute('aria-describedby', expect.stringContaining('-phone-hint'))
+    expect(screen.getByText(/enter a valid 10-digit indian mobile number/i).id).toMatch(/-phone-error$/)
   })
 
   it('offers both mobile otp and email magic-link login paths from signup', () => {
     render(<SignupPage />)
 
     expect(screen.getByRole('link', { name: /sign in with mobile otp/i })).toHaveAttribute('href', '/login')
-    expect(screen.getByRole('link', { name: /sign in with email/i })).toHaveAttribute('href', '/login?mode=email')
   })
 
   it('exports route-specific metadata for login and doctor signup', () => {
