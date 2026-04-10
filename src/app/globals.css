@@ -504,6 +504,8 @@
 }
 @keyframes float  { 0%,100% { transform:translateY(0);    } 50% { transform:translateY(-8px); } }
 @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+@keyframes chipScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+@keyframes chipScrollReverse { from { transform:translateX(-50%); } to { transform:translateX(0); } }
 @keyframes blob   {
   0%,100% { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; }
   50%     { border-radius: 40% 60% 30% 70% / 60% 40% 60% 30%; }
@@ -520,7 +522,16 @@
 .animate-scale-in   { animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) both; }
 .animate-specialty  { animation: spinWord 3.5s ease-in-out forwards; }
 .animate-float      { animation: float 3s ease-in-out infinite; }
-.animate-ticker     { animation: ticker 30s linear infinite; }
+.animate-ticker              { animation: ticker 30s linear infinite; }
+.animate-chip-marquee         { animation: chipScroll linear infinite; will-change: transform; }
+.animate-chip-marquee-reverse { animation: chipScrollReverse linear infinite; will-change: transform; }
+/* Pause marquee on pointer hover so users can click chips */
+[data-chip-row]:hover .animate-chip-marquee,
+[data-chip-row]:hover .animate-chip-marquee-reverse { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-chip-marquee,
+  .animate-chip-marquee-reverse { animation-play-state: paused; }
+}
 .animate-pulse-ring { animation: pulse-ring 2s ease infinite; }
 .animate-blob       { animation: blob 8s ease-in-out infinite; }
 

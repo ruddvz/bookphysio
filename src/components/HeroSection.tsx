@@ -246,34 +246,62 @@ export default function HeroSection() {
               </div>
             </form>
 
-            <div className="mt-4 overflow-x-auto scrollbar-none -mx-4 px-4 pb-2">
+            {/* Auto-scrolling honeycomb chip marquee — three rows, alternating direction */}
+            <div className="mt-4 -mx-4 pb-2">
               <div
                 role="group"
                 aria-label="Browse common conditions"
-                className="mx-auto inline-flex min-w-max flex-col gap-3"
+                className="flex flex-col gap-3"
               >
-                {HERO_CHIP_ROWS.map((row, rowIndex) => (
-                  <div
-                    key={`hero-chip-row-${rowIndex}`}
-                    data-chip-row
-                    className={cn(
-                      'flex min-w-max gap-3',
-                      rowIndex === 1 && 'pl-8 sm:pl-12',
-                      rowIndex === 2 && 'pl-4 sm:pl-6'
-                    )}
-                  >
-                    {row.map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => { setCondition(tag); handleSearch() }}
-                        className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold sm:min-w-[148px]"
+                {HERO_CHIP_ROWS.map((row, rowIndex) => {
+                  const isReverse = rowIndex === 1
+                  // Negative delays start each row mid-animation so chips appear centred on first paint
+                  const delays = ['-8s', '-14s', '-4s']
+                  return (
+                    <div
+                      key={`hero-chip-row-${rowIndex}`}
+                      data-chip-row
+                      className="overflow-hidden"
+                    >
+                      <div
+                        className={cn(
+                          'flex gap-3',
+                          isReverse ? 'animate-chip-marquee-reverse' : 'animate-chip-marquee',
+                        )}
+                        style={{
+                          animationDuration: `${28 + rowIndex * 4}s`,
+                          animationDelay: delays[rowIndex],
+                        }}
                       >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                ))}
+                        {/* Visible chips — announced by screen readers */}
+                        {row.map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => { setCondition(tag); handleSearch() }}
+                            className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                        {/* Duplicate for seamless infinite loop — hidden from assistive tech */}
+                        <span aria-hidden="true" className="contents">
+                          {row.map((tag) => (
+                            <button
+                              key={`dup-${tag}`}
+                              type="button"
+                              tabIndex={-1}
+                              onClick={() => { setCondition(tag); handleSearch() }}
+                              className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
