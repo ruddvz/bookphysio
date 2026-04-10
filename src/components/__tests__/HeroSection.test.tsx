@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { vi, describe, it, expect } from 'vitest'
 import HeroSection from '../HeroSection'
 
@@ -35,5 +35,17 @@ describe('HeroSection', () => {
     // Confirm old multi-breakpoint font classes are absent (replaced by clamp-based utility)
     expect(h1?.className).not.toContain('text-[54px]')
     expect(h1?.className).not.toContain('md:text-[82px]')
+  })
+
+  it('renders a three-row honeycomb condition strip with plain-language options', () => {
+    render(<HeroSection />)
+
+    const strip = screen.getByRole('group', { name: /browse common conditions/i })
+
+    expect(strip.querySelectorAll('[data-chip-row]')).toHaveLength(3)
+    expect(within(strip).getAllByRole('button')).toHaveLength(21)
+    expect(within(strip).getByRole('button', { name: 'Back pain' })).toBeInTheDocument()
+    expect(within(strip).getByRole('button', { name: 'Home visit' })).toBeInTheDocument()
+    expect(within(strip).getByRole('button', { name: 'Stroke recovery' })).toBeInTheDocument()
   })
 })

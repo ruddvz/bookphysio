@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const ROTATING_WORDS = [
   'sports rehab',
@@ -13,12 +14,13 @@ const ROTATING_WORDS = [
   'joint mobility',
 ]
 
-const CONDITIONS = [
-  'Back Pain', 'Knee Rehab', 'Sports Injury', 'Post-Surgery',
-  'Neck Pain', 'Shoulder Pain', 'Neuro Care', 'Geriatric Care',
-  "Women's Health", 'Pediatric Care', 'Arthritis', 'Hip Pain',
-  'Sciatica', 'Frozen Shoulder', 'Plantar Fasciitis', 'Stroke Rehab',
+const HERO_CHIP_ROWS = [
+  ['Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain', 'Joint stiffness'],
+  ['Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica', 'Balance issues', 'Posture issues'],
+  ['Stroke recovery', 'Child physio', 'Pregnancy pain', 'Senior care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
 ]
+
+const CONDITIONS = HERO_CHIP_ROWS.flat()
 
 const CITIES = [
   'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
@@ -244,39 +246,33 @@ export default function HeroSection() {
               </div>
             </form>
 
-            {/* Suggestion chips — horizontally scrollable */}
-            <div className="mt-4 overflow-x-auto scrollbar-none -mx-4 px-4">
-              <div className="flex gap-2 w-max mx-auto">
-                {[
-                  'Back Pain', 'Sports Injury', 'Home Visit', 'Post-Surgery',
-                  'Neck Pain', 'Knee Rehab', 'Shoulder Pain', 'Neuro Care',
-                  "Women's Health", 'Arthritis', 'Sciatica', 'Hip Pain',
-                ].map(tag => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => { setCondition(tag); handleSearch() }}
-                    className="shrink-0 px-4 py-2 text-[13px] font-medium rounded-full cursor-pointer transition-colors border"
-                    style={{
-                      background: 'rgba(255,255,255,0.7)',
-                      color: '#5A5880',
-                      borderColor: '#E0DFEE',
-                    }}
-                    onMouseEnter={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'white'
-                      el.style.borderColor = '#C7CEEF'
-                      el.style.color = '#3D4FA3'
-                    }}
-                    onMouseLeave={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'rgba(255,255,255,0.7)'
-                      el.style.borderColor = '#E0DFEE'
-                      el.style.color = '#5A5880'
-                    }}
+            <div className="mt-4 overflow-x-auto scrollbar-none -mx-4 px-4 pb-2">
+              <div
+                role="group"
+                aria-label="Browse common conditions"
+                className="mx-auto inline-flex min-w-max flex-col gap-3"
+              >
+                {HERO_CHIP_ROWS.map((row, rowIndex) => (
+                  <div
+                    key={`hero-chip-row-${rowIndex}`}
+                    data-chip-row
+                    className={cn(
+                      'flex min-w-max gap-3',
+                      rowIndex === 1 && 'pl-8 sm:pl-12',
+                      rowIndex === 2 && 'pl-4 sm:pl-6'
+                    )}
                   >
-                    {tag}
-                  </button>
+                    {row.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => { setCondition(tag); handleSearch() }}
+                        className="min-w-[132px] shrink-0 rounded-full border border-[#E0DFEE] bg-white/75 px-4 py-2.5 text-[13px] font-semibold text-[#5A5880] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C7CEEF] hover:bg-white hover:text-[#3D4FA3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B9BD8]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-w-[148px]"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
