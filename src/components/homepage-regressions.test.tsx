@@ -38,7 +38,7 @@ describe('Homepage regressions', () => {
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /patient testimonials/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)
 
@@ -48,7 +48,7 @@ describe('Homepage regressions', () => {
     const hero = screen.getByRole('region', { name: /hero section/i })
     const shell = hero.querySelector('.bp-container')
     const animatedWordFrame = screen.getByText(/sports rehab/i).parentElement
-    const statsRow = screen.getByText('5,000+').closest('div')?.parentElement
+    const statsRow = screen.getByText('IAP').closest('div')?.parentElement
 
     expect(hero.className).toContain('min-h-[100svh]')
     expect(hero.className).toContain('justify-center')
@@ -74,7 +74,7 @@ describe('Homepage regressions', () => {
     expect(screen.getByText(/Find a verified physiotherapist, check their availability, and book your session/i)).toBeInTheDocument()
     expect(screen.getByText(/Choose a specialty and we'll surface IAP-verified physiotherapists near you/i)).toBeInTheDocument()
     expect(screen.getByText(/Credentials, visit format, fees, and availability/i)).toBeInTheDocument()
-    expect(screen.getByText(/Real patients, real results. Every review is tied to a verified booking./i)).toBeInTheDocument()
+    expect(screen.getByText(/We built BookPhysio to make finding quality physiotherapy care in India simple, transparent, and trustworthy./i)).toBeInTheDocument()
     expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
 
     expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
@@ -137,8 +137,8 @@ describe('Homepage regressions', () => {
     expect(workflow.querySelector('.lucide-star')).not.toBeInTheDocument()
 
     render(<Testimonials />)
-    expect(screen.getByText('AM')).toBeInTheDocument()
-    expect(screen.getByText('SK')).toBeInTheDocument()
-    expect(screen.getByText('VS')).toBeInTheDocument()
+    expect(screen.getByText('Verified credentials')).toBeInTheDocument()
+    expect(screen.getByText('Transparent pricing')).toBeInTheDocument()
+    expect(screen.getByText('Home visits available')).toBeInTheDocument()
   })
 })

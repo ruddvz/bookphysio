@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bookphysio.in"),
   title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
   description:
-    "India's first physio-only booking platform. Find and book IAP-verified physiotherapists for home visits and in-clinic sessions across 18 cities. Same-day slots available.",
+    "India's first physio-only booking platform. Find and book IAP-verified physiotherapists for home visits and in-clinic sessions across India. Same-day slots available.",
   keywords: "physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India",
   icons: {
     icon: "/icon.png?v=20260404b",

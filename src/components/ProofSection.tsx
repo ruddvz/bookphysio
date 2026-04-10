@@ -52,7 +52,7 @@ export default function ProofSection() {
           <div className="space-y-3">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-[13px] font-semibold text-slate-500">
                   Example provider categories
                 </span>
