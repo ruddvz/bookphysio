@@ -57,7 +57,7 @@ test.describe('Provider Availability Flow', () => {
     // Toggle Saturday
     const toggleSaturday = page.getByLabel(/Saturday/i)
     await expect(toggleSaturday).toBeEnabled()
-    await toggleSaturday.locator('xpath=ancestor::label[1]').click()
+    await page.locator('label:has(input[aria-label="Saturday"])').click()
     
     // Check that Save button is now enabled
     await expect(saveButton).toBeEnabled()
