@@ -434,6 +434,25 @@
   .bp-badge-lavender { background: #F0EDF9; color: #6A4FA0; border: 1px solid #C4B5E8; }
   .bp-badge-slate    { background: var(--color-bp-elevated); color: var(--color-bp-body); border: 1px solid var(--color-bp-border); }
 
+  .bp-hero-chip {
+    border: 1px solid var(--color-bp-border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.78);
+    color: var(--color-bp-body);
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .bp-hero-chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-bp-primary-muted);
+    background: #FFFFFF;
+    color: var(--color-bp-primary-dark);
+    box-shadow: 0 10px 24px -18px rgba(139,155,216,0.7);
+  }
+  .bp-hero-chip:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--color-bp-accent-rgb),0.18);
+  }
+
   /* Stat card */
   .bp-stat-card {
     background: var(--color-bp-card);

@@ -17,7 +17,7 @@ const ROTATING_WORDS = [
 const HERO_CHIP_ROWS = [
   ['Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain', 'Joint stiffness'],
   ['Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica', 'Balance issues', 'Posture issues'],
-  ['Stroke recovery', 'Child physio', 'Pregnancy pain', 'Senior care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
+  ['Stroke recovery', 'Kids physio', 'Pregnancy pain', 'Elderly care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
 ]
 
 const CONDITIONS = HERO_CHIP_ROWS.flat()
@@ -267,7 +267,7 @@ export default function HeroSection() {
                         key={tag}
                         type="button"
                         onClick={() => { setCondition(tag); handleSearch() }}
-                        className="min-w-[132px] shrink-0 rounded-full border border-[#E0DFEE] bg-white/75 px-4 py-2.5 text-[13px] font-semibold text-[#5A5880] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C7CEEF] hover:bg-white hover:text-[#3D4FA3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B9BD8]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-w-[148px]"
+                        className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold sm:min-w-[148px]"
                       >
                         {tag}
                       </button>
