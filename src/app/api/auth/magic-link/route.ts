@@ -19,17 +19,21 @@ export async function POST(request: NextRequest) {
   }
 
   const ip = getRequestIpAddress(request)
-  if (ip) {
-    const sourceLimit = await otpRatelimit.limit(`magic-link:ip:${ip}`)
-    if (!sourceLimit.success) {
+  try {
+    if (ip) {
+      const sourceLimit = await otpRatelimit.limit(`magic-link:ip:${ip}`)
+      if (!sourceLimit.success) {
+        return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+      }
+    }
+
+    const rateLimitKey = `magic-link:${email.toLowerCase()}`
+    const { success } = await otpRatelimit.limit(rateLimitKey)
+    if (!success) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
     }
-  }
-
-  const rateLimitKey = `magic-link:${email.toLowerCase()}`
-  const { success } = await otpRatelimit.limit(rateLimitKey)
-  if (!success) {
-    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  } catch {
+    // Rate limiter unavailable — allow through
   }
 
   const supabase = await createClient()
