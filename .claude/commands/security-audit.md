@@ -5,14 +5,15 @@ Full-spectrum security audit combining Shield orchestration and Shannon pentesti
 ## Usage
 
 ```
-/security-audit [mode]
+/security-audit
 ```
 
-**Modes:**
+**Just run it with no arguments.** It runs everything — all 6 phases, full report, baseline saved.
+
+Optional modes if you ever need a focused scan:
 - `quick` — SCA + secrets + AI SAST only (~3 min)
-- `full` — All phases including pentest analysis (~10-15 min) ← **default**
-- `pentest` — Shannon 5-domain attack analysis only (auth, injection, XSS, SSRF, business logic)
-- `sast` — AI static analysis only (TypeScript/Next.js rules)
+- `pentest` — Shannon 5-domain attack analysis only
+- `sast` — AI static analysis only
 - `fix` — Generate fix diffs for existing findings
 - `verify` — Re-scan and compare against saved baseline
 - `score` — Display current risk score from last baseline
@@ -20,14 +21,15 @@ Full-spectrum security audit combining Shield orchestration and Shannon pentesti
 
 ## Instructions
 
-Follow the `security-full-scan` skill pipeline exactly. The mode from $ARGUMENTS determines which phases to run:
+Follow the `security-full-scan` skill pipeline exactly.
 
-### Mode: `quick` (or no argument)
+### Default (no argument) — runs EVERYTHING
+Run all 6 phases: Recon → Tool Scans → AI SAST → Shannon Pentest Domains → Scoring → Full Report.
+This is the complete Shield + Shannon pipeline.
+
+### Mode: `quick`
 Run Phases 1 (recon only), 2 (all tool scans), and 3 (AI SAST).
-Skip Phases 4 (pentest domains) and produce abbreviated report.
-
-### Mode: `full`
-Run all 6 phases. This is the complete Shield + Shannon pipeline.
+Skip Phase 4 (pentest domains) and produce abbreviated report.
 
 ### Mode: `pentest`
 Run Phase 1 (full recon) and Phase 4 (all 5 Shannon attack domains).
