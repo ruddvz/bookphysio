@@ -5,6 +5,8 @@ import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
+import { createClient } from '@/lib/supabase/server'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 
 // Safely initialize the rate limiter if environment variables exist
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -17,23 +19,32 @@ const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_RE
 const ratelimit = redis
   ? new Ratelimit({
       redis: redis,
-      limiter: Ratelimit.slidingWindow(20, '1 h'), // 20 requests per hour per IP
+      limiter: Ratelimit.slidingWindow(20, '1 h'), // 20 requests per hour per user/IP
     })
   : null
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Optional Rate Limiting (The "Cap")
+    // 1. Auth check — require a valid session (real user or demo)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const demoSession = !user ? await getDemoSessionFromCookies(req.cookies) : null
+
+    if (!user && !demoSession) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
+
+    // 2. Rate Limiting — key by user ID or IP
     if (ratelimit) {
-      const ip = getRequestIpAddress(req) ?? 'anonymous'
-      const { success } = await ratelimit.limit(ip)
-      
+      const rateLimitKey = user?.id ?? demoSession?.userId ?? getRequestIpAddress(req) ?? 'anonymous'
+      const { success } = await ratelimit.limit(rateLimitKey)
+
       if (!success) {
         return new NextResponse("Rate limit exceeded. Please wait a bit before asking BookPhysio AI again.", { status: 429 })
       }
     }
 
-    // 2. Read and validate the messages from the frontend
+    // 3. Read and validate the messages from the frontend
     let body: unknown
     try {
       body = await req.json()
@@ -48,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     const { messages } = parsed.data
 
-    // 3. System Persona Prompt
+    // 4. System Persona Prompt
     const systemPrompt = `
       You are BookPhysio AI, an empathetic and highly professional personal recovery companion built for BookPhysio.in, an Indian physiotherapy platform.
       
@@ -66,7 +77,7 @@ export async function POST(req: NextRequest) {
       - Reply politely but firmly: "I am BookPhysio AI, a specialized physical recovery assistant. I cannot assist with [topic], but I am ready to help you triage any physical pain or injuries you might have."
     `
 
-    // 4. Connect to Google Gemini (or any LLM) and stream the response
+    // 5. Connect to Google Gemini (or any LLM) and stream the response
     const result = streamText({
       model: patientModels, 
       system: systemPrompt,

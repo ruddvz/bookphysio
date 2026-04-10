@@ -36,6 +36,24 @@ export const bookingUserRatelimit = new Ratelimit({
   prefix: 'bp:booking:user',
 })
 
+export const uploadRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, '10 m'),
+  prefix: 'bp:upload',
+})
+
+export const messagesRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '1 m'),
+  prefix: 'bp:messages',
+})
+
+export const reviewsRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, '10 m'),
+  prefix: 'bp:reviews',
+})
+
 const releaseOwnedLockScript = redis.createScript<number>([
   'local current = redis.call("GET", KEYS[1])',
   'if current == ARGV[1] then',
