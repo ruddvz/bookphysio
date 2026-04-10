@@ -201,8 +201,8 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full h-12 text-white border-none rounded-full text-[15px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
-        disabled ? 'bg-[#a0cdc9] cursor-not-allowed' : 'bg-bp-accent hover:bg-bp-primary cursor-pointer'
+      className={`w-full h-11 text-white border-none rounded-lg text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
+        disabled ? 'bg-bp-primary/40 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary-dark cursor-pointer'
       }`}
     >
       {children}
@@ -214,7 +214,7 @@ function BackLink({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 text-bp-body text-[14px] bg-transparent border-none cursor-pointer pt-3 mx-auto hover:text-bp-primary transition-colors outline-none"
+      className="flex items-center gap-1.5 text-gray-600 text-[14px] bg-transparent border-none cursor-pointer pt-3 mx-auto hover:text-bp-primary transition-colors outline-none"
     >
       <ArrowLeft className="w-4 h-4" />
       Back
@@ -244,7 +244,7 @@ function FocusableInput({
       placeholder={placeholder}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      style={{ ...inputStyle, ...extraStyle, borderColor: focused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)' }}
+      style={{ ...inputStyle, ...extraStyle, borderColor: focused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
     />
   )
 }
@@ -253,7 +253,7 @@ function FocusableInput({
 
 function ProgressIndicator({ current }: { current: StepNumber }) {
   return (
-    <div className="mb-8" aria-label="Signup progress">
+    <div className="my-6" aria-label="Signup progress">
       <div className="flex items-center justify-between">
         {STEP_LABELS.map((label, i) => {
           const step = (i + 1) as StepNumber
@@ -263,22 +263,22 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
           return (
             <div key={label} className="flex items-center flex-1 last:flex-none">
               {/* Circle + label */}
-              <div className="flex flex-col items-center gap-1.5">
+              <div className="flex flex-col items-center gap-1">
                 <div
                   aria-current={active ? 'step' : undefined}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold transition-colors ${
                     done
-                      ? 'bg-bp-accent text-white'
+                      ? 'bg-bp-primary text-white'
                       : active
-                      ? 'border-2 border-bp-accent bg-white text-bp-accent ring-2 ring-bp-accent/20'
-                      : 'border-2 border-[#BBBBBB] bg-white text-bp-body/60'
+                      ? 'border-2 border-bp-primary bg-white text-bp-primary'
+                      : 'border-2 border-gray-200 bg-white text-gray-400'
                   }`}
                 >
-                  {done ? <Check className="w-4 h-4" strokeWidth={2.5} /> : step}
+                  {done ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : step}
                 </div>
                 <span
-                  className={`text-[11px] whitespace-nowrap hidden sm:block ${
-                    active ? 'text-bp-accent font-semibold' : done ? 'text-bp-accent' : 'text-bp-body/60'
+                  className={`text-[10px] whitespace-nowrap hidden sm:block ${
+                    active ? 'text-bp-primary font-semibold' : done ? 'text-bp-primary' : 'text-gray-400'
                   }`}
                 >
                   {label}
@@ -287,9 +287,9 @@ function ProgressIndicator({ current }: { current: StepNumber }) {
 
               {/* Connector line */}
               {i < STEP_LABELS.length - 1 && (
-                <div className="mx-1.5 mb-4 h-[2px] flex-1">
+                <div className="mx-1 mb-4 h-[2px] flex-1">
                   <div
-                    className={`h-full transition-colors ${step < current ? 'bg-bp-accent' : 'bg-bp-body/30'}`}
+                    className={`h-full transition-colors ${step < current ? 'bg-bp-primary' : 'bg-gray-200'}`}
                   />
                 </div>
               )}
@@ -344,7 +344,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
       <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Personal Details
       </h2>
-      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: '#555B6E', marginBottom: '24px' }}>
         Let&apos;s start with your basic information
       </p>
 
@@ -371,7 +371,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
             <Image src={avatarPreview} alt="Profile preview" fill style={{ objectFit: 'cover' }} />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '4px' }}>
-              <Camera style={{ width: '24px', height: '24px', color: 'var(--color-bp-accent)' }} />
+              <Camera style={{ width: '24px', height: '24px', color: 'var(--color-bp-primary)' }} />
             </div>
           )}
         </button>
@@ -379,7 +379,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '2px' }}>
             {avatarPreview ? 'Change photo' : 'Add professional photo'}
           </p>
-          <p style={{ fontSize: '11px', color: 'var(--color-bp-body)', opacity: 0.6 }}>
+          <p style={{ fontSize: '11px', color: '#555B6E', opacity: 0.6 }}>
             Use a clear headshot in professional attire
           </p>
         </div>
@@ -417,7 +417,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
               display: 'flex',
               alignItems: 'center',
               fontSize: '15px',
-              color: 'var(--color-bp-body)',
+              color: '#555B6E',
               flexShrink: 0,
             }}
           >
@@ -434,7 +434,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
             style={{
               ...inputStyle,
               borderRadius: '0 8px 8px 0',
-              borderColor: phoneFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
+              borderColor: phoneFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
             }}
           />
         </div>
@@ -442,7 +442,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
       </div>
 
       <div style={{ marginBottom: '24px' }}>
-        <Label>Email <span style={{ fontWeight: 400, color: 'var(--color-bp-body)' }}>(optional)</span></Label>
+        <Label>Email <span style={{ fontWeight: 400, color: '#555B6E' }}>(optional)</span></Label>
         <FocusableInput
           value={data.email}
           onChange={(v) => onChange({ ...data, email: v })}
@@ -503,7 +503,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
       <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Professional Details
       </h2>
-      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: '#555B6E', marginBottom: '24px' }}>
         Your credentials and expertise
       </p>
 
@@ -522,7 +522,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
               border: 'none',
               cursor: 'pointer',
               backgroundColor: data.registrationType === 'IAP' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'IAP' ? 'var(--color-bp-accent)' : 'var(--color-bp-body)',
+              color: data.registrationType === 'IAP' ? 'var(--color-bp-primary)' : '#555B6E',
               boxShadow: data.registrationType === 'IAP' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
               transition: 'all 0.2s'
             }}
@@ -540,7 +540,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
               border: 'none',
               cursor: 'pointer',
               backgroundColor: data.registrationType === 'STATE' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'STATE' ? 'var(--color-bp-accent)' : 'var(--color-bp-body)',
+              color: data.registrationType === 'STATE' ? 'var(--color-bp-primary)' : '#555B6E',
               boxShadow: data.registrationType === 'STATE' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
               transition: 'all 0.2s'
             }}
@@ -595,7 +595,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
                 value={deg}
                 checked={data.degree === deg}
                 onChange={() => onChange({ ...data, degree: deg })}
-                style={{ accentColor: 'var(--color-bp-accent)' }}
+                style={{ accentColor: 'var(--color-bp-primary)' }}
               />
               {deg}
             </label>
@@ -625,7 +625,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
                 type="checkbox"
                 checked={data.specialties.includes(s)}
                 onChange={() => toggleSpecialty(s)}
-                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
               />
               {s}
             </label>
@@ -688,7 +688,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
       <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Practice Details
       </h2>
-      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: '#555B6E', marginBottom: '24px' }}>
         Where you see patients
       </p>
 
@@ -716,7 +716,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
             height: 'auto',
             padding: '10px 12px',
             resize: 'vertical',
-            borderColor: areaFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
+            borderColor: areaFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
           }}
         />
         <FieldError msg={errors.address} />
@@ -729,7 +729,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
           onChange={(e) => onChange({ ...data, city: e.target.value })}
           onFocus={() => setCityFocused(true)}
           onBlur={() => setCityFocused(false)}
-          style={{ ...inputStyle, borderColor: cityFocused ? 'var(--color-bp-accent)' : 'var(--color-bp-border)' }}
+          style={{ ...inputStyle, borderColor: cityFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
         >
           <option value="">Select city</option>
           {CITIES.map((c) => (
@@ -759,7 +759,7 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
                 type="checkbox"
                 checked={data.visitTypes.includes(vt)}
                 onChange={() => toggleVisitType(vt)}
-                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
               />
               {label}
             </label>
@@ -827,7 +827,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
       <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
         Pricing &amp; Availability
       </h2>
-      <p style={{ fontSize: '14px', color: 'var(--color-bp-body)', marginBottom: '24px' }}>
+      <p style={{ fontSize: '14px', color: '#555B6E', marginBottom: '24px' }}>
         Set your fees and working hours
       </p>
 
@@ -847,7 +847,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                   backgroundColor: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
                   borderRight: 'none', borderRadius: '8px 0 0 8px',
                   display: 'flex', alignItems: 'center',
-                  fontSize: '15px', color: 'var(--color-bp-body)', flexShrink: 0,
+                  fontSize: '15px', color: '#555B6E', flexShrink: 0,
                 }}>₹</div>
                 <input
                   type="text"
@@ -860,7 +860,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                   style={{
                     ...inputStyle,
                     borderRadius: '0 8px 8px 0',
-                    borderColor: focusedFee === vt ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
+                    borderColor: focusedFee === vt ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
                     cursor: active ? 'text' : 'not-allowed',
                   }}
                 />
@@ -883,7 +883,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                 value={d}
                 checked={data.slotDuration === d}
                 onChange={() => onChange({ ...data, slotDuration: d })}
-                style={{ accentColor: 'var(--color-bp-accent)' }}
+                style={{ accentColor: 'var(--color-bp-primary)' }}
               />
               {d} min
             </label>
@@ -897,10 +897,10 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
         <Label>Weekly Availability</Label>
         <FieldError msg={errors.availability} />
         <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr 1fr 1fr', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>Day</span>
-          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>On?</span>
-          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>From</span>
-          <span style={{ fontSize: '12px', color: 'var(--color-bp-body)', fontWeight: 600 }}>To</span>
+          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>Day</span>
+          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>On?</span>
+          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>From</span>
+          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>To</span>
           {DAYS.map((day) => {
             const av = data.availability[day]
             const dim = !av.enabled
@@ -913,7 +913,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                 aria-label={`Enable ${day}`}
                 checked={av.enabled}
                 onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
-                style={{ accentColor: 'var(--color-bp-accent)', width: '16px', height: '16px' }}
+                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
               />,
               <select
                 key={`${day}-start`}
@@ -930,7 +930,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                   padding: '0 8px',
                   opacity: dim ? 0.4 : 1,
                   pointerEvents: dim ? 'none' : 'auto',
-                  borderColor: focusedTimes === `${day}-start` ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
+                  borderColor: focusedTimes === `${day}-start` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
                 }}
               >
                 {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -950,7 +950,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                     padding: '0 8px',
                     opacity: dim ? 0.4 : 1,
                     pointerEvents: dim ? 'none' : 'auto',
-                    borderColor: focusedTimes === `${day}-end` ? 'var(--color-bp-accent)' : 'var(--color-bp-border)',
+                    borderColor: focusedTimes === `${day}-end` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
                   }}
                 >
                   {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -1076,7 +1076,7 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack }: Step5Props) 
     <div className="text-center">
       <h2 className="text-[22px] font-bold text-bp-primary mb-2">Almost there!</h2>
       <p className="text-[15px] text-bp-primary mb-1">Verify your mobile number</p>
-      <p className="text-[14px] text-bp-body mb-7">
+      <p className="text-[14px] text-gray-600 mb-7">
         We sent a 6-digit code to your mobile number.
       </p>
 
@@ -1094,11 +1094,11 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack }: Step5Props) 
         <p className="text-[12px] text-[#DC2626] mb-3">{error}</p>
       )}
 
-      <p className="text-[14px] text-bp-body mb-5">
+      <p className="text-[14px] text-gray-600 mb-5">
         {canResend ? (
           <button
             onClick={handleResend}
-            className="bg-transparent border-none text-bp-accent cursor-pointer text-[14px] font-semibold hover:text-bp-primary transition-colors outline-none"
+            className="bg-transparent border-none text-bp-primary cursor-pointer text-[14px] font-semibold hover:text-bp-primary transition-colors outline-none"
           >
             Resend code
           </button>
@@ -1238,8 +1238,8 @@ export default function DoctorSignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-[24px] border border-bp-border p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-xl shadow-bp-primary/5 animate-in fade-in duration-500">
-      <div className="flex justify-center">
+    <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
+      <div className="flex justify-center mb-6">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>
       <ProgressIndicator current={currentStep} />

@@ -205,10 +205,10 @@ export default function Navbar({
               </Link>
               <Link
                 href={loginHref}
-                className="bp-btn bp-btn-primary bp-btn-sm"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#6B7BF5] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#5363D7]"
               >
                 Sign in
-                <ArrowRight size={14} />
+                <ArrowRight size={13} />
               </Link>
             </div>
 

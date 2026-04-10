@@ -131,47 +131,47 @@ export default function SignupPage() {
 
   const fieldWrap = (field: keyof SignupForm, hasError: boolean) =>
     cn(
-      'flex overflow-hidden rounded-[20px] border-2 bg-white transition-all duration-200 shadow-sm',
+      'flex overflow-hidden rounded-lg border bg-white transition-colors',
       hasError
-        ? 'border-red-200 bg-red-50/30'
+        ? 'border-red-300'
         : focused === field
-        ? 'border-bp-accent shadow-lg shadow-bp-primary/8 ring-4 ring-bp-accent/5'
-        : 'border-bp-border/70 hover:border-bp-border'
+        ? 'border-bp-primary ring-3 ring-bp-primary/10'
+        : 'border-gray-200 hover:border-gray-300'
     )
 
-  const inputClass = 'flex-1 border-none bg-transparent py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25 pr-5'
+  const inputClass = 'flex-1 border-none bg-transparent py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 pr-4'
   const iconClass = (field: keyof SignupForm) =>
-    cn('h-4 w-4 transition-colors', focused === field ? 'text-bp-accent' : 'text-bp-primary/30')
+    cn('h-4 w-4 transition-colors', focused === field ? 'text-bp-primary' : 'text-gray-400')
 
   return (
-    <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
-      <div className="space-y-7">
+    <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6">
 
         {/* Logo + heading */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <BpLogo href="/" size="auth" className="h-12 w-[220px]" linkClassName="justify-center" />
-          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[32px]">
+        <div className="flex flex-col items-center text-center space-y-2">
+          <BpLogo href="/" size="auth" className="h-10 w-[200px]" linkClassName="justify-center" />
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
             Create your account
           </h1>
-          <p className="text-[14px] text-bp-body/60 font-medium">Your phone number is verified via OTP — once only</p>
+          <p className="text-sm text-gray-500">Your phone number will be verified via OTP</p>
         </div>
 
-        <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
+        <div>
           {errors.general && (
-            <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95">
-              <div className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
+              <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
               {errors.general}
             </div>
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Full name */}
-            <div className="space-y-2">
-              <label htmlFor={nameId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+            <div className="space-y-1.5">
+              <label htmlFor={nameId} className="block text-sm font-medium text-gray-700">
                 Full name
               </label>
               <div className={fieldWrap('name', !!errors.name)}>
-                <span className="flex shrink-0 items-center pl-4 pr-3">
+                <span className="flex shrink-0 items-center pl-3 pr-2">
                   <User className={iconClass('name')} />
                 </span>
                 <input
@@ -187,16 +187,16 @@ export default function SignupPage() {
                   aria-invalid={!!errors.name}
                 />
               </div>
-              {errors.name && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.name}</p>}
+              {errors.name && <p className="text-xs font-medium text-red-500">{errors.name}</p>}
             </div>
 
             {/* Email */}
-            <div className="space-y-2">
-              <label htmlFor={emailId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+            <div className="space-y-1.5">
+              <label htmlFor={emailId} className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <div className={fieldWrap('email', !!errors.email)}>
-                <span className="flex shrink-0 items-center pl-4 pr-3">
+                <span className="flex shrink-0 items-center pl-3 pr-2">
                   <Mail className={iconClass('email')} />
                 </span>
                 <input
@@ -212,16 +212,16 @@ export default function SignupPage() {
                   aria-invalid={!!errors.email}
                 />
               </div>
-              {errors.email && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.email}</p>}
+              {errors.email && <p className="text-xs font-medium text-red-500">{errors.email}</p>}
             </div>
 
             {/* Password */}
-            <div className="space-y-2">
-              <label htmlFor={passwordId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+            <div className="space-y-1.5">
+              <label htmlFor={passwordId} className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <div className={fieldWrap('password', !!errors.password)}>
-                <span className="flex shrink-0 items-center pl-4 pr-3">
+                <span className="flex shrink-0 items-center pl-3 pr-2">
                   <Lock className={iconClass('password')} />
                 </span>
                 <input
@@ -233,28 +233,28 @@ export default function SignupPage() {
                   onChange={(e) => set('password', e.target.value)}
                   onFocus={() => setFocused('password')}
                   onBlur={() => { setFocused(null); handleBlur('password') }}
-                  className="flex-1 border-none bg-transparent py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25"
+                  className="flex-1 border-none bg-transparent py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400"
                   aria-invalid={!!errors.password}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="flex shrink-0 items-center pr-4 pl-2 text-bp-primary/30 hover:text-bp-primary transition-colors"
+                  className="flex shrink-0 items-center pr-3 pl-2 text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              {errors.password && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.password}</p>}
+              {errors.password && <p className="text-xs font-medium text-red-500">{errors.password}</p>}
             </div>
 
             {/* Phone */}
-            <div className="space-y-2">
-              <label htmlFor={phoneId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
-                Mobile number <span className="normal-case font-normal text-bp-body/40">(for OTP verification)</span>
+            <div className="space-y-1.5">
+              <label htmlFor={phoneId} className="block text-sm font-medium text-gray-700">
+                Mobile number <span className="font-normal text-gray-400">(OTP verification)</span>
               </label>
               <div className={fieldWrap('phone', !!errors.phone)}>
-                <span className="flex shrink-0 items-center border-r border-bp-border/70 bg-bp-surface/60 px-4 py-4 text-[14px] font-bold text-bp-primary gap-2">
+                <span className="flex shrink-0 items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-medium text-gray-600">
                   <Smartphone className={iconClass('phone')} />
                   +91
                 </span>
@@ -268,13 +268,13 @@ export default function SignupPage() {
                   onChange={(e) => set('phone', stripPhoneFormat(e.target.value))}
                   onFocus={() => setFocused('phone')}
                   onBlur={() => { setFocused(null); handleBlur('phone') }}
-                  className="flex-1 border-none bg-transparent px-4 py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25"
+                  className="flex-1 border-none bg-transparent px-3 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400"
                   aria-invalid={!!errors.phone}
                 />
               </div>
               {errors.phone
-                ? <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.phone}</p>
-                : <p className="ml-1 text-[12px] text-bp-body/45">We&apos;ll send a one-time code to verify your number.</p>
+                ? <p className="text-xs font-medium text-red-500">{errors.phone}</p>
+                : <p className="text-xs text-gray-400">We&apos;ll send a one-time code to verify your number.</p>
               }
             </div>
 
@@ -282,30 +282,26 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className={cn(
-                'relative mt-2 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[20px] py-4 text-[15px] font-bold text-white shadow-lg transition-all active:scale-[0.98] group',
-                loading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
-              )}
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <div className="flex items-center gap-3">
+                <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   <span>Sending code…</span>
-                </div>
+                </>
               ) : (
                 <>
-                  <span className="relative z-10">Continue — verify phone</span>
-                  <ArrowRight size={16} strokeWidth={3} className="relative z-10 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  Continue — verify phone
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
           </form>
-        </section>
+        </div>
 
-        <p className="text-center text-[14px] font-semibold tracking-tight text-bp-body/60">
+        <p className="text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <Link href={loginHref} className="font-bold text-bp-accent no-underline hover:text-bp-accent/80 transition-colors">
+          <Link href={loginHref} className="font-semibold text-bp-primary hover:text-bp-primary-dark transition-colors">
             Sign in
           </Link>
         </p>
