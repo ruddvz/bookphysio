@@ -2,22 +2,37 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Menu, X, ArrowRight, Stethoscope } from 'lucide-react'
+import {
+  ArrowRight,
+  Baby,
+  Bone,
+  Brain,
+  ChevronDown,
+  Dumbbell,
+  Flower2,
+  HeartPulse,
+  Menu,
+  Ribbon,
+  Stethoscope,
+  Users,
+  X,
+} from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } from '@/lib/i18n/static-pages'
+import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
 
-const SPECIALTIES = [
-  { label: 'Sports Physio',     href: '/search?specialty=Sports+Physio',     emoji: '🏃' },
-  { label: 'Neuro Physio',      href: '/search?specialty=Neuro+Physio',      emoji: '🧠' },
-  { label: 'Ortho Physio',      href: '/search?specialty=Ortho+Physio',      emoji: '🦴' },
-  { label: 'Paediatric Physio', href: '/search?specialty=Paediatric+Physio', emoji: '👶' },
-  { label: "Women's Health",    href: '/search?specialty=Womens+Health',      emoji: '🌸' },
-  { label: 'Geriatric Physio',  href: '/search?specialty=Geriatric+Physio',  emoji: '🤝' },
-  { label: 'Post-Surgery Rehab',href: '/search?specialty=Post-Surgery+Rehab',emoji: '🏥' },
-  { label: 'Home Visit Physio', href: '/search?specialty=Home+Visit',         emoji: '🏠' },
-]
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+  Bone,
+  Brain,
+  HeartPulse,
+  Dumbbell,
+  Baby,
+  Flower2,
+  Ribbon,
+  Users,
+}
 
 const navLinks = [
   { label: 'How it works', href: '/how-it-works' },
@@ -107,37 +122,58 @@ export default function Navbar({
                   />
                 </button>
 
-                {/* Mega dropdown */}
+                {/* Mega dropdown — 4-column grid of title cards */}
                 {browseOpen && (
                   <div
                     id="browse-dropdown"
-                    className="absolute left-0 top-full mt-2 w-[400px] bg-white rounded-2xl border border-indigo-100 shadow-2xl shadow-indigo-900/15 p-4 animate-slide-down"
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[540px] bg-white rounded-2xl border border-slate-200 shadow-2xl shadow-slate-900/10 p-5 animate-slide-down"
                   >
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
-                      Browse by Specialty
-                    </p>
-                    <div className="grid grid-cols-2 gap-1">
-                      {SPECIALTIES.map((s) => (
-                        <Link
-                          key={s.label}
-                          href={effectiveLocale === 'hi' ? `/hi${s.href}` : s.href}
-                          onClick={() => setBrowseOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-150"
-                        >
-                          <span className="text-base leading-none">{s.emoji}</span>
-                          {s.label}
-                        </Link>
-                      ))}
+                    <div className="flex items-center justify-between px-1 mb-4">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                        Specialties
+                      </p>
+                      <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                        NCAHP recognised
+                      </p>
                     </div>
-                    <div className="mt-3 pt-3 border-t border-indigo-50">
+                    <div className="grid grid-cols-2 gap-2">
+                      {SPECIALTIES.map((s) => {
+                        const Icon = ICON_MAP[s.icon] ?? Stethoscope
+                        return (
+                          <Link
+                            key={s.slug}
+                            href={`/specialties/${s.slug}`}
+                            onClick={() => setBrowseOpen(false)}
+                            className="group flex items-start gap-3 rounded-xl border border-transparent px-3.5 py-3 transition-all duration-150 hover:bg-slate-50 hover:border-slate-200"
+                          >
+                            <div className={cn(
+                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors',
+                              s.tint.bg, s.tint.text,
+                            )}>
+                              <Icon size={18} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[13px] font-semibold text-slate-800 group-hover:text-indigo-700 transition-colors leading-tight">
+                                {s.label}
+                              </p>
+                              <p className="text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2">
+                                {s.tagline}
+                              </p>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-slate-100">
                       <Link
                         href={searchHref}
                         onClick={() => setBrowseOpen(false)}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-indigo-50/50 hover:bg-indigo-100/50 transition-all group"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 transition-all group"
                       >
-                        <span className="text-[13px] font-semibold text-indigo-600 group-hover:text-indigo-800">
-                          View all physiotherapists →
+                        <span className="text-[13px] font-semibold text-slate-600 group-hover:text-indigo-700">
+                          Browse all physiotherapists
                         </span>
+                        <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
                       </Link>
                     </div>
                   </div>
@@ -212,24 +248,29 @@ export default function Navbar({
             </div>
 
             <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 px-2 mb-3">
                 Specialties
               </p>
-              {SPECIALTIES.map((s) => (
-                <Link
-                  key={s.label}
-                  href={effectiveLocale === 'hi' ? `/hi${s.href}` : s.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-                >
-                  <span className="text-base">{s.emoji}</span>
-                  {s.label}
-                </Link>
-              ))}
+              {SPECIALTIES.map((s) => {
+                const Icon = ICON_MAP[s.icon] ?? Stethoscope
+                return (
+                  <Link
+                    key={s.slug}
+                    href={`/specialties/${s.slug}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition-colors"
+                  >
+                    <div className={cn('flex h-8 w-8 items-center justify-center rounded-lg', s.tint.bg, s.tint.text)}>
+                      <Icon size={16} />
+                    </div>
+                    {s.label}
+                  </Link>
+                )
+              })}
 
               <div className="h-px bg-slate-100 my-4" />
 
-              <p className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 px-2 mb-3">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 px-2 mb-3">
                 Platform
               </p>
               <Link

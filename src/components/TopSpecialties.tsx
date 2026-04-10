@@ -1,75 +1,31 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import {
+  ArrowRight,
+  Baby,
+  Bone,
+  Brain,
+  Dumbbell,
+  Flower2,
+  HeartPulse,
+  Ribbon,
+  Stethoscope,
+  Users,
+} from 'lucide-react'
+import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
 
-const specialties = [
-  {
-    emoji: '🏃',
-    label: 'Sports Physio',
-    desc: 'Athletic injuries and performance recovery.',
-    href: '/search?specialty=Sports+Physio',
-    from: '#0F4C81',
-    to:   '#1565C0',
-    text: 'text-blue-700',
-    bg:   'bg-blue-50',
-    border: 'border-blue-100',
-    hoverBorder: 'hover:border-blue-200',
-  },
-  {
-    emoji: '🧠',
-    label: 'Neuro Physio',
-    desc: 'Stroke rehab, nerve recovery, and balance.',
-    href: '/search?specialty=Neuro+Physio',
-    from: '#0D766E',
-    to:   '#0F766E',
-    text: 'text-indigo-700',
-    bg:   'bg-indigo-50',
-    border: 'border-indigo-100',
-    hoverBorder: 'hover:border-indigo-200',
-  },
-  {
-    emoji: '🦴',
-    label: 'Ortho Physio',
-    desc: 'Joint pain, posture, and mobility support.',
-    href: '/search?specialty=Ortho+Physio',
-    text: 'text-green-700',
-    bg:   'bg-green-50',
-    border: 'border-green-100',
-    hoverBorder: 'hover:border-green-200',
-  },
-  {
-    emoji: '👶',
-    label: 'Paediatric Physio',
-    desc: 'Growth, motor skills, and early intervention.',
-    href: '/search?specialty=Paediatric+Physio',
-    text: 'text-sky-700',
-    bg:   'bg-sky-50',
-    border: 'border-sky-100',
-    hoverBorder: 'hover:border-sky-200',
-  },
-  {
-    emoji: '🌸',
-    label: "Women's Health",
-    desc: 'Pre- and post-natal recovery and pelvic care.',
-    href: '/search?specialty=Womens+Health',
-    text: 'text-pink-700',
-    bg:   'bg-pink-50',
-    border: 'border-pink-100',
-    hoverBorder: 'hover:border-pink-200',
-  },
-  {
-    emoji: '🤝',
-    label: 'Geriatric Physio',
-    desc: 'Strength, mobility, and independence at home.',
-    href: '/search?specialty=Geriatric+Physio',
-    text: 'text-violet-700',
-    bg:   'bg-violet-50',
-    border: 'border-violet-100',
-    hoverBorder: 'hover:border-violet-200',
-  },
-]
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+  Bone,
+  Brain,
+  HeartPulse,
+  Dumbbell,
+  Baby,
+  Flower2,
+  Ribbon,
+  Users,
+}
 
 export default function TopSpecialties() {
   return (
@@ -98,54 +54,57 @@ export default function TopSpecialties() {
         </div>
 
         {/* Grid */}
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {specialties.map(({ emoji, label, desc, href, text, bg, border, hoverBorder }) => (
-            <Link
-              key={label}
-              href={href}
-              className={cn(
-                'group flex flex-col gap-4 p-6 rounded-2xl border bg-white',
-                'transition-all duration-200 hover:-translate-y-1',
-                'hover:shadow-lg hover:shadow-slate-200/80',
-                border,
-                hoverBorder,
-              )}
-            >
-              {/* Icon */}
-              <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center text-3xl', bg)}>
-                {emoji}
-              </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {SPECIALTIES.map((s) => {
+            const Icon = ICON_MAP[s.icon] ?? Stethoscope
+            return (
+              <Link
+                key={s.slug}
+                href={`/specialties/${s.slug}`}
+                className={cn(
+                  'group flex flex-col gap-4 p-6 rounded-2xl border bg-white',
+                  'transition-all duration-200 hover:-translate-y-1',
+                  'hover:shadow-lg hover:shadow-slate-200/80',
+                  s.tint.border,
+                  s.tint.hoverBorder,
+                )}
+              >
+                {/* Icon */}
+                <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', s.tint.bg, s.tint.text)}>
+                  <Icon size={22} />
+                </div>
 
-              {/* Content */}
-              <div className="flex-1">
-                <h3 className={cn('text-[18px] font-bold mb-1.5 transition-colors group-hover:text-indigo-700', text)}>
-                  {label}
-                </h3>
-                <p className="text-slate-500 text-[14px] leading-relaxed">{desc}</p>
-              </div>
+                {/* Content */}
+                <div className="flex-1">
+                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-indigo-700', s.tint.text)}>
+                    {s.label}
+                  </h3>
+                  <p className="text-slate-500 text-[13px] leading-relaxed">{s.tagline}</p>
+                </div>
 
-              {/* CTA */}
-              <div className="flex items-center gap-1.5 text-[13px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors">
-                Find specialists
-                <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-          ))}
+                {/* CTA */}
+                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors">
+                  Learn more
+                  <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </Link>
+            )
+          })}
         </div>
 
         {/* Trust strip */}
         <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-slate-200">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold">
-            ✓ IAP-verified care
+            IAP-verified care
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
-            🏠 Home visits available
+            Home visits available
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
-            ⚡ Same-day booking
+            Same-day booking
           </div>
-          <p className="ml-auto text-[13px] text-slate-400 font-medium hidden md:block">
-            Search should feel curated, not crowded.
+          <p className="ml-auto text-[12px] text-slate-400 font-medium hidden md:block">
+            NCAHP-recognised specialties
           </p>
         </div>
       </div>

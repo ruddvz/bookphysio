@@ -4,47 +4,21 @@ import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { Globe2, House, IndianRupee, Stethoscope } from 'lucide-react'
+import { SPECIALTIES } from '@/lib/specialties'
 
 export async function generateStaticParams() {
-  return [
-    { slug: 'sports-physio' },
-    { slug: 'neuro-physio' },
-    { slug: 'ortho-physio' },
-    { slug: 'paediatric-physio' },
-    { slug: 'womens-health' },
-    { slug: 'geriatric-physio' },
-    { slug: 'post-surgery-rehab' },
-    { slug: 'pain-management' },
-  ]
+  return SPECIALTIES.map((s) => ({ slug: s.slug }))
 }
 
-const SPECIALTY_MAP: Record<string, { label: string; description: string }> = {
-  'sports-physio': { label: 'Sports Physiotherapists', description: 'Expert care for sports injuries, performance enhancement, and athletic rehabilitation.' },
-  'neuro-physio': { label: 'Neurological Physiotherapists', description: "Specialized therapy for stroke, Parkinson's, multiple sclerosis, and other neurological conditions." },
-  'ortho-physio': { label: 'Orthopedic Physiotherapists', description: 'Treatment for bone, joint, and muscle conditions including arthritis, fractures, and back pain.' },
-  'paediatric-physio': { label: 'Paediatric Physiotherapists', description: 'Compassionate physical therapy for children, supporting developmental milestones and growth.' },
-  'womens-health': { label: "Women's Health Physiotherapists", description: 'Tailored support for prenatal care, postpartum recovery, and pelvic health.' },
-  'geriatric-physio': { label: 'Geriatric Physiotherapists', description: 'Enhancing mobility and quality of life for seniors through specialized geriatric care.' },
-  'post-surgery-rehab': { label: 'Post-Surgery Rehabilitation', description: 'Structured recovery programs to regain strength and mobility after orthopedic or neuro surgery.' },
-  'pain-management': { label: 'Pain Management Specialists', description: 'Evidence-based approaches to chronic pain relief and functional restoration.' },
-}
-
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const specialty = SPECIALTY_MAP[slug]
-  if (!specialty) return { title: 'Not Found | BookPhysio.in' }
-
-  const title = `Best ${specialty.label} in India | Verified Experts | BookPhysio.in`
-  const description = `Find and book verified ${specialty.label} near you. ${specialty.description} Same-day appointments available for clinic and home visits.`
-
-  return {
-    title,
-    description,
-    openGraph: { title, description, url: `https://bookphysio.in/specialty/${slug}`, siteName: 'BookPhysio.in', locale: 'en_IN', type: 'website' },
-    alternates: { canonical: `https://bookphysio.in/specialty/${slug}` },
-  }
-}
+const SPECIALTY_META: Record<string, { label: string; description: string }> = Object.fromEntries(
+  SPECIALTIES.map((s) => [
+    s.slug,
+    {
+      label: `${s.label} Physiotherapists`,
+      description: s.tagline,
+    },
+  ])
+)
 
 function buildSpecialtySchemas(slug: string, specialtyLabel: string, description: string) {
   const pageUrl = `https://bookphysio.in/specialty/${slug}`
@@ -76,9 +50,25 @@ function buildSpecialtySchemas(slug: string, specialtyLabel: string, description
   return { breadcrumbSchema, medicalSpecialtySchema }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const specialty = SPECIALTY_META[slug]
+  if (!specialty) return { title: 'Not Found | BookPhysio.in' }
+
+  const title = `Best ${specialty.label} in India | Verified Experts | BookPhysio.in`
+  const description = `Find and book verified ${specialty.label} near you. ${specialty.description} Same-day appointments available for clinic and home visits.`
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, url: `https://bookphysio.in/specialty/${slug}`, siteName: 'BookPhysio.in', locale: 'en_IN', type: 'website' },
+    alternates: { canonical: `https://bookphysio.in/specialty/${slug}` },
+  }
+}
+
 export default async function SpecialtyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const specialty = SPECIALTY_MAP[slug]
+  const specialty = SPECIALTY_META[slug]
   if (!specialty) notFound()
 
   const { breadcrumbSchema, medicalSpecialtySchema } = buildSpecialtySchemas(slug, specialty.label, specialty.description)
@@ -125,7 +115,7 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
           <div className="max-w-[1142px] mx-auto px-6 lg:px-10 py-12 lg:py-16">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F4F3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
               <Stethoscope className="h-3.5 w-3.5" />
-              Verified specialization
+              Verified specialisation
             </div>
             <h1 className="mt-5 text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
               {specialty.label}
