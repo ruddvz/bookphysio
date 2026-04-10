@@ -91,7 +91,10 @@ export const AUTH_COPY = {
     loginButtonEmail: 'Send Magic Link',
     loginButtonLoading: 'Authenticating...',
     loginInboxTitle: 'Check your inbox',
-    loginInboxBody: (_email: string) => 'If an account exists for this email, a magic login link is on its way.',
+    loginInboxBody: (email: string) => {
+      void email
+      return 'If an account exists for this email, a magic login link is on its way.'
+    },
     loginBackToLogin: 'Back to login',
     loginNewUser: 'New to BookPhysio?',
     loginCreateAccount: 'Create an account',
@@ -164,7 +167,10 @@ export const AUTH_COPY = {
     loginButtonEmail: 'मैजिक लिंक भेजें',
     loginButtonLoading: 'प्रमाणित हो रहा है...',
     loginInboxTitle: 'अपना इनबॉक्स देखें',
-    loginInboxBody: (_email: string) => 'यदि इस ईमेल के लिए कोई खाता है, तो मैजिक लॉगिन लिंक भेज दिया गया है।',
+    loginInboxBody: (email: string) => {
+      void email
+      return 'यदि इस ईमेल के लिए कोई खाता है, तो मैजिक लॉगिन लिंक भेज दिया गया है।'
+    },
     loginBackToLogin: 'लॉगिन पर वापस जाएं',
     loginNewUser: 'BookPhysio में नए हैं?',
     loginCreateAccount: 'खाता बनाएं',

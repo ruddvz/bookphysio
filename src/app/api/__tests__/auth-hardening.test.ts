@@ -252,6 +252,7 @@ describe('Auth and admin hardening routes', () => {
   it('returns 404 for the public preview API when the production preview gate is disabled', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'false')
 
     const { POST } = await import('../auth/preview/route')
     const response = await POST(new Request('http://localhost/api/auth/preview', {
