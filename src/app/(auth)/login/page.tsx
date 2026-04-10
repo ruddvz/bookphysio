@@ -107,31 +107,31 @@ export default function LoginPage() {
     }
   }
 
-  const inputBase = 'flex-1 border-none bg-transparent py-4 text-[15px] font-semibold text-bp-primary outline-none placeholder:text-bp-primary/25'
+  const inputBase = 'flex-1 border-none bg-transparent py-4 text-[15px] text-gray-900 outline-none placeholder:text-gray-400'
 
   return (
-    <div className="w-full rounded-[42px] border border-white/80 bg-white/82 p-8 pb-10 shadow-[0_30px_80px_-40px_rgba(33,42,71,0.35)] ring-1 ring-bp-primary/5 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 sm:p-10 sm:pb-12">
-      <div className="space-y-7">
+    <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6">
 
         {/* Logo + heading */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <BpLogo href="/" size="auth" className="h-12 w-[220px]" linkClassName="justify-center" />
-          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.03em] text-bp-primary sm:text-[32px]">
+        <div className="flex flex-col items-center text-center space-y-2">
+          <BpLogo href="/" size="auth" className="h-10 w-[200px]" linkClassName="justify-center" />
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
             Welcome back
           </h1>
-          <p className="text-[14px] text-bp-body/60 font-medium">Sign in to your BookPhysio account</p>
+          <p className="text-sm text-gray-500">Sign in to your BookPhysio account</p>
         </div>
 
         {/* OAuth buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <button
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={!!oauthLoading || loading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-[16px] border-2 border-bp-border/80 bg-white py-3 text-[13px] font-bold text-bp-primary transition-all hover:border-bp-border hover:shadow-md disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             {oauthLoading === 'google' ? (
-              <div className="h-4 w-4 rounded-full border-2 border-bp-primary/20 border-t-bp-primary animate-spin" />
+              <div className="h-4 w-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
             ) : (
               <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -147,10 +147,10 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('apple')}
             disabled={!!oauthLoading || loading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-[16px] border-2 border-bp-border/80 bg-white py-3 text-[13px] font-bold text-bp-primary transition-all hover:border-bp-border hover:shadow-md disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             {oauthLoading === 'apple' ? (
-              <div className="h-4 w-4 rounded-full border-2 border-bp-primary/20 border-t-bp-primary animate-spin" />
+              <div className="h-4 w-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
             ) : (
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
                 <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
@@ -162,32 +162,32 @@ export default function LoginPage() {
 
         {/* Divider */}
         <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-bp-border/60" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/35">or</span>
-          <div className="h-px flex-1 bg-bp-border/60" />
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">or</span>
+          <div className="h-px flex-1 bg-gray-200" />
         </div>
 
         {/* Email + password form */}
-        <section className="rounded-[28px] border border-bp-border/70 bg-white p-6 shadow-sm shadow-bp-primary/5 sm:p-7">
+        <div>
           {errors.general && (
-            <div role="alert" className="mb-5 flex items-center gap-3 rounded-2xl border border-red-100 bg-red-50/60 p-3.5 text-[13px] font-semibold text-red-600 animate-in fade-in zoom-in-95">
-              <div className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
+              <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
               {errors.general}
             </div>
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Email */}
-            <div className="space-y-2">
-              <label htmlFor={emailId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+            <div className="space-y-1.5">
+              <label htmlFor={emailId} className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <div className={cn(
-                'flex overflow-hidden rounded-[20px] border-2 bg-white transition-all duration-200 shadow-sm',
-                errors.email ? 'border-red-200 bg-red-50/30' : emailFocused ? 'border-bp-accent shadow-lg shadow-bp-primary/8 ring-4 ring-bp-accent/5' : 'border-bp-border/70 hover:border-bp-border'
+                'flex overflow-hidden rounded-lg border bg-white transition-colors',
+                errors.email ? 'border-red-300' : emailFocused ? 'border-bp-primary ring-3 ring-bp-primary/10' : 'border-gray-200 hover:border-gray-300'
               )}>
-                <span className="flex shrink-0 items-center pl-4 pr-3">
-                  <Mail className={cn('h-4 w-4 transition-colors', emailFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
+                <span className="flex shrink-0 items-center pl-3 pr-2">
+                  <Mail className={cn('h-4 w-4 transition-colors', emailFocused ? 'text-bp-primary' : 'text-gray-400')} />
                 </span>
                 <input
                   id={emailId}
@@ -198,29 +198,29 @@ export default function LoginPage() {
                   onChange={(e) => { setEmail(e.target.value); clearFieldError('email') }}
                   onFocus={() => setEmailFocused(true)}
                   onBlur={() => setEmailFocused(false)}
-                  className={cn(inputBase, 'pr-5')}
+                  className={cn(inputBase, 'pr-4')}
                   aria-invalid={!!errors.email}
                 />
               </div>
-              {errors.email && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.email}</p>}
+              {errors.email && <p className="text-xs font-medium text-red-500">{errors.email}</p>}
             </div>
 
             {/* Password */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor={passwordId} className="ml-1 block text-[11px] font-bold uppercase tracking-[0.24em] text-bp-body/45">
+                <label htmlFor={passwordId} className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-[12px] font-bold text-bp-accent no-underline hover:text-bp-primary transition-colors">
+                <Link href="/forgot-password" className="text-xs font-medium text-bp-primary hover:text-bp-primary-dark transition-colors">
                   Forgot password?
                 </Link>
               </div>
               <div className={cn(
-                'flex overflow-hidden rounded-[20px] border-2 bg-white transition-all duration-200 shadow-sm',
-                errors.password ? 'border-red-200 bg-red-50/30' : passwordFocused ? 'border-bp-accent shadow-lg shadow-bp-primary/8 ring-4 ring-bp-accent/5' : 'border-bp-border/70 hover:border-bp-border'
+                'flex overflow-hidden rounded-lg border bg-white transition-colors',
+                errors.password ? 'border-red-300' : passwordFocused ? 'border-bp-primary ring-3 ring-bp-primary/10' : 'border-gray-200 hover:border-gray-300'
               )}>
-                <span className="flex shrink-0 items-center pl-4 pr-3">
-                  <Lock className={cn('h-4 w-4 transition-colors', passwordFocused ? 'text-bp-accent' : 'text-bp-primary/30')} />
+                <span className="flex shrink-0 items-center pl-3 pr-2">
+                  <Lock className={cn('h-4 w-4 transition-colors', passwordFocused ? 'text-bp-primary' : 'text-gray-400')} />
                 </span>
                 <input
                   id={passwordId}
@@ -237,53 +237,48 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="flex shrink-0 items-center pr-4 pl-2 text-bp-primary/30 hover:text-bp-primary transition-colors"
+                  className="flex shrink-0 items-center pr-3 pl-2 text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              {errors.password && <p className="ml-1 text-[12px] font-semibold text-red-500">{errors.password}</p>}
+              {errors.password && <p className="text-xs font-medium text-red-500">{errors.password}</p>}
             </div>
 
             {/* Submit */}
             <button
               type="submit"
               disabled={loading || !!oauthLoading}
-              className={cn(
-                'relative mt-2 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[20px] py-4 text-[15px] font-bold text-white shadow-lg transition-all active:scale-[0.98] group',
-                loading || oauthLoading ? 'bg-gray-200 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-accent shadow-bp-primary/20'
-              )}
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <div className="flex items-center gap-3">
+                <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                   <span>Signing in…</span>
-                </div>
+                </>
               ) : (
                 <>
-                  <span className="relative z-10">Sign in</span>
-                  <ArrowRight size={16} strokeWidth={3} className="relative z-10 transition-transform group-hover:translate-x-1" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-bp-accent to-bp-accent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  Sign in
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
           </form>
-        </section>
+        </div>
 
         {/* Footer links */}
-        <div className="space-y-3 text-center">
-          <p className="text-[14px] font-semibold tracking-tight text-bp-body/60">
+        <div className="space-y-2.5 text-center text-sm">
+          <p className="text-gray-500">
             New to BookPhysio?{' '}
-            <Link href={signupHref} className="font-bold text-bp-accent no-underline hover:text-bp-accent/80 transition-colors">
+            <Link href={signupHref} className="font-semibold text-bp-primary hover:text-bp-primary-dark transition-colors">
               Create an account
             </Link>
           </p>
-          <p className="flex items-center justify-center gap-1 text-[14px] font-semibold tracking-tight text-bp-body/45">
+          <p className="text-gray-400">
             Are you a doctor?{' '}
-            <Link href="/doctor-signup" className="inline-flex items-center gap-1 font-bold text-bp-primary no-underline hover:text-bp-accent transition-colors">
-              Join as a doctor
-              <ArrowRight className="h-3.5 w-3.5" />
+            <Link href="/doctor-signup" className="font-semibold text-gray-700 hover:text-bp-primary transition-colors">
+              Join as a provider
             </Link>
           </p>
         </div>
