@@ -4,29 +4,29 @@ import { BadgeCheck, Clock3, Home, MapPin, ShieldCheck, ArrowRight } from 'lucid
 const features = [
   {
     icon: BadgeCheck,
-    title: 'IAP Verified Clinicians',
-    desc: 'Every profile shows registration number, degree, and patient feedback — before it hits search.',
+    title: 'Verified clinicians',
+    desc: 'Each profile shows the provider\u2019s registration number, qualifications and specialties, so you know who you are booking.',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
   },
   {
     icon: Home,
-    title: 'Home Visits Included',
-    desc: 'Book care where the patient needs it — home and clinic options always shown side by side.',
+    title: 'Clinic or at home',
+    desc: 'Providers list both options where they offer them, with separate fees and travel areas for home visits.',
     color: 'text-violet-600',
     bg: 'bg-violet-50',
   },
   {
     icon: Clock3,
-    title: 'Same-Day Slots',
-    desc: 'Availability shows inline so your booking feels immediate, not buried inside a full calendar.',
+    title: 'Real availability',
+    desc: 'You see the slots that are actually open on each provider\u2019s calendar, not a generic booking form.',
     color: 'text-amber-600',
     bg: 'bg-amber-50',
   },
   {
     icon: ShieldCheck,
-    title: 'Transparent Pricing',
-    desc: 'Fees, GST, and payment method stay visible upfront. No surprises at checkout.',
+    title: 'Clear pricing',
+    desc: 'Fees, GST and the payment method are shown before you confirm, so the total never changes on you.',
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
   },
@@ -42,10 +42,10 @@ export default function HealthSystems() {
 
           {/* Left column */}
           <div>
-            <div className="bp-kicker mb-4">Built for Trust</div>
-            <h2 className="text-slate-900 mb-4">Everything a patient needs to feel confident.</h2>
+            <div className="bp-kicker mb-4">Built for trust</div>
+            <h2 className="text-slate-900 mb-4">Everything you need before you book.</h2>
             <p className="text-slate-500 text-[16px] leading-relaxed mb-8">
-              Credentials, visit format, fees, and availability — shown upfront, not buried in steps.
+              Credentials, visit format, fees and availability are all on the same page, so you can make a decision without opening five tabs.
             </p>
 
             <div className="space-y-3 mb-8">

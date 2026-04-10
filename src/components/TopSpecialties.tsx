@@ -79,12 +79,12 @@ export default function TopSpecialties() {
         {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
-            <div className="bp-kicker mb-4">Browse by Specialty</div>
+            <div className="bp-kicker mb-4">Browse by specialty</div>
             <h2 className="text-slate-900 mb-3">
-              Start from the care you need.
+              Start from what is bothering you.
             </h2>
             <p className="text-slate-500 text-[16px] leading-relaxed">
-              Choose a specialty and we&apos;ll surface IAP-verified physiotherapists near you — with real-time availability.
+              Pick a specialty and we will show you verified physiotherapists in your city, along with their real availability.
             </p>
           </div>
 

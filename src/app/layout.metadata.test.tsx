@@ -28,7 +28,7 @@ describe('RootLayout metadata regressions', () => {
 
     expect(metadata.openGraph).toMatchObject({
       title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
-      description: "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      description: 'BookPhysio is a focused booking platform for physiotherapy in India. Find IAP-verified physiotherapists for home visits and in-clinic sessions.',
       siteName: 'BookPhysio',
       type: 'website',
       url: 'https://bookphysio.in',
@@ -40,14 +40,14 @@ describe('RootLayout metadata regressions', () => {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'BookPhysio — Book Verified Physiotherapists in India',
+        alt: 'BookPhysio: Book Verified Physiotherapists in India',
       },
     ])
 
     expect(metadata.twitter).toEqual({
       card: 'summary_large_image',
       title: 'Book Physiotherapists Online in India | Home Visits | BookPhysio.in',
-      description: "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      description: 'BookPhysio is a focused booking platform for physiotherapy in India. Find IAP-verified physiotherapists for home visits and in-clinic sessions.',
       images: ['/opengraph-image'],
     })
   })

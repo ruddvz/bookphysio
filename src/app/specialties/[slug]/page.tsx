@@ -6,9 +6,9 @@ import { buildSpecialtyArticleMetadata } from '@/components/specialties/articleM
 const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
   'sports-physio': {
     title: 'Sports Physiotherapy',
-    subtitle: 'Get back in the game safely and stronger than ever.',
+    subtitle: 'Get back to your sport, safely.',
     description:
-      'Sports physiotherapy is a specialized branch of physical therapy dedicated to the prevention, evaluation, treatment, and rehabilitation of sports and exercise-related injuries. Whether you are a professional athlete or a weekend warrior, our verified specialists utilize advanced biomechanical analysis and progressive loading strategies to accelerate your recovery. Common conditions treated include ACL tears, rotator cuff injuries, tennis elbow, hamstring strains, and severe ligament sprains.',
+      'Sports physiotherapy focuses on preventing and treating injuries that happen during sport or exercise. Whether you play competitively or just run on weekends, a sports physiotherapist looks at how you move, builds you back up with a progressive programme, and helps you return to activity without rushing it. It is commonly used for ACL tears, rotator cuff problems, tennis elbow, hamstring strains and ligament sprains.',
     highlights: [
       'Biomechanical analysis and correction',
       'Customized return-to-play protocols',
@@ -26,7 +26,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
     title: 'Neurological Physiotherapy',
     subtitle: 'Re-wiring the brain for improved mobility and independence.',
     description:
-      "Neurological physiotherapy involves the treatment of individuals with movement and function disorders that have originated from problems within the body's nervous and neuromuscular system. Our highly trained therapists focus on neuroplasticity—the brain's ability to adapt and form new neural connections. This therapy is deeply critical for recovery following strokes, spinal cord injuries, or managing degenerative conditions like Parkinson's disease and Multiple Sclerosis.",
+      "Neurological physiotherapy helps people who have movement or function problems caused by a condition affecting the brain, spinal cord or nerves. Therapists use the brain's ability to form new connections, known as neuroplasticity, to help you recover movement and confidence. It is commonly used after a stroke or spinal cord injury, and for people living with Parkinson's disease, Multiple Sclerosis or similar conditions.",
     highlights: [
       'Gait (walking) retraining and optimization',
       'Advanced balance and coordination exercises',
@@ -44,7 +44,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
     title: 'Orthopedic Physiotherapy',
     subtitle: 'Expert relief for your bones, joints, ligaments, and sore muscles.',
     description:
-      'Orthopedic physiotherapy is the cornerstone of musculoskeletal rehabilitation. This specialty focuses entirely on diagnosing, managing, and treating disorders and injuries of the musculoskeletal system. Highly recommended for post-operative recovery (like knee or hip replacements), managing chronic arthritis, repairing fractures, and treating acute back or neck pain. Our practitioners use hands-on clinical interventions tailored to your specific anatomical trauma.',
+      'Orthopaedic physiotherapy deals with problems of the bones, joints, ligaments and muscles. It is commonly used after a knee or hip replacement, for back or neck pain, for recovery after a fracture, and for people living with arthritis. Your physiotherapist will assess how you are moving, use hands-on techniques where helpful, and give you exercises to do between sessions so the improvements stick.',
     highlights: [
       'Expert manual therapy and joint mobilization',
       'Post-operative rehabilitation pathways',
@@ -62,7 +62,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
     title: 'Paediatric Physiotherapy',
     subtitle: 'Gentle, engaging, and dedicated care for infants and children.',
     description:
-      'Children are not just small adults; they have unique biomechanical and developmental needs. Paediatric physiotherapy provides early intervention and treatment for infants, toddlers, children, and adolescents. Focusing on congenital conditions, developmental delays, cerebral palsy, torticollis, and growth-related injuries. Our specialists use heavily interactive, play-based therapy techniques to keep children engaged while they build strength and hit their gross motor milestones.',
+      'Children move, grow and heal differently from adults, and paediatric physiotherapy is built around that. It supports infants, toddlers and older children with developmental delays, cerebral palsy, torticollis, posture issues and growth-related injuries. Sessions use play-based activities so children stay engaged while they build strength and work towards their next motor milestones, with parents involved at every step.',
     highlights: [
       'Fun, play-based therapeutic exercises',
       'Gross motor milestone tracking and achievement',
@@ -78,9 +78,9 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
   },
   'womens-health': {
     title: "Women's Health Physiotherapy",
-    subtitle: 'Discreet, empowering care focused on the female anatomy.',
+    subtitle: 'Private, supportive care for pre and post-natal recovery and pelvic health.',
     description:
-      "Women's Health Physiotherapy is a highly specialized realm of physical therapy dedicated to treating conditions related directly to the female pelvis and pelvic floor. It is absolutely essential for pre-natal physical preparation, comprehensive post-partum recovery, treating diastasis recti (abdominal separation), and managing various forms of urinary incontinence or pelvic organ prolapse. Our practitioners ensure a safe, private, and highly supportive environment.",
+      "Women's health physiotherapy focuses on the pelvis and pelvic floor. It can help you prepare for childbirth, recover after delivery, rebuild core strength if you have diastasis recti, and manage issues like urinary incontinence or pelvic organ prolapse. Sessions are one-to-one and confidential, and your physiotherapist will explain each step so you feel comfortable throughout.",
     highlights: [
       'Comprehensive pelvic floor rehabilitation',
       'Safe pre-natal and post-partum exercise planning',
@@ -98,7 +98,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
     title: 'Geriatric Physiotherapy',
     subtitle: 'Compassionate care to maintain independence and quality of life.',
     description:
-      'Aging brings significant changes to our bodies, often resulting in declining strength, stiff joints, and compromised balance. Geriatric physiotherapy is specifically tailored to the unique physical needs of older adults. The primary focus is on preserving functional independence, managing osteoarthritis pain without heavy medication, treating osteoporosis, and crucially: preventing falls. We ensure older adults continue to live comfortably and safely inside their own homes.',
+      'Getting older often means less strength, stiffer joints and a slightly shakier sense of balance. Geriatric physiotherapy is built around those changes. The focus is on keeping you independent at home, managing osteoarthritis and osteoporosis, easing chronic pain without relying only on medicines, and most importantly, preventing falls. Sessions can happen at home or at the clinic, whichever feels easier.',
     highlights: [
       'Dedicated fall prevention training',
       'Osteoarthritis and joint wear management',

@@ -5,29 +5,29 @@ const steps = [
   {
     num: '01',
     icon: Search,
-    title: 'Search with context',
-    desc: 'Start with your condition, then filter by city, visit type, and fee.',
+    title: 'Search',
+    desc: 'Start with your city or what is bothering you, like back pain or a knee injury.',
     color: 'bg-indigo-50 text-indigo-600',
   },
   {
     num: '02',
     icon: SlidersHorizontal,
-    title: 'Compare options',
-    desc: 'Read credentials, ratings, and live availability easily.',
+    title: 'Compare',
+    desc: 'Check each physiotherapist\u2019s credentials, fees and whether they offer home visits.',
     color: 'bg-violet-50 text-violet-600',
   },
   {
     num: '03',
     icon: CalendarCheck,
-    title: 'Book instantly',
-    desc: 'Select a slot and get instant confirmation — no callbacks.',
+    title: 'Book',
+    desc: 'Pick a time that works, confirm with a mobile OTP, and get a confirmation message.',
     color: 'bg-teal-50 text-teal-600',
   },
   {
     num: '04',
     icon: HeartPulse,
-    title: 'Start recovery',
-    desc: 'Meet your verified physio and begin your journey.',
+    title: 'Start your session',
+    desc: 'Meet your physiotherapist at the clinic or at home, and focus on getting better.',
     color: 'bg-rose-50 text-rose-600',
   },
 ]
@@ -38,10 +38,10 @@ export default function HowItWorks() {
       <div className="bp-container z-10 relative">
         {/* Header */}
         <div className="max-w-2xl mb-16 mx-auto text-center">
-          <div className="bp-kicker mb-4 mx-auto">Simple Workflow</div>
-          <h2 className="text-slate-900 mb-4 tracking-tight">The booking flow reads in one pass.</h2>
+          <div className="bp-kicker mb-4 mx-auto">How it works</div>
+          <h2 className="text-slate-900 mb-4 tracking-tight">Four steps from search to session.</h2>
           <p className="text-slate-500 text-[17px] leading-relaxed">
-            Find a verified physiotherapist, check their availability, and book your session — fast and frictionless.
+            Finding a physiotherapist should not feel like a research project. On BookPhysio, most people go from their first search to a confirmed booking in under a minute.
           </p>
         </div>
 

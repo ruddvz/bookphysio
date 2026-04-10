@@ -20,7 +20,7 @@ const features = [
   {
     icon: Clock,
     title: 'Instant confirmation',
-    desc: 'What you see is what you book. No callbacks, no waiting — slot reserved in seconds.',
+    desc: 'What you see is what you book. No callbacks or waiting around. Your slot is held as soon as you confirm.',
     color: 'text-violet-600',
     bg: 'bg-violet-50',
   },
@@ -39,10 +39,10 @@ export default function ProofSection() {
       <div className="bp-container">
         {/* Section header */}
         <div className="max-w-2xl mb-16">
-          <div className="bp-kicker mb-4">Network Transparency</div>
-          <h2 className="text-slate-900 mb-4">Real-time availability, zero guesswork</h2>
+          <div className="bp-kicker mb-4">Straightforward booking</div>
+          <h2 className="text-slate-900 mb-4">Real availability, no guesswork</h2>
           <p className="text-slate-500 text-[17px] leading-relaxed">
-            Every slot you see is genuinely available. All prices, timings, and credentials shown upfront — no surprises.
+            Every slot on a provider page is a slot the physiotherapist has actually opened up. Fees, timings and credentials are shown upfront, so there are no surprises at the session.
           </p>
         </div>
 
@@ -105,9 +105,9 @@ export default function ProofSection() {
           {/* Why trust section */}
           <div className="space-y-6 lg:sticky lg:top-28">
             <div>
-              <h3 className="text-slate-900 text-[22px] font-bold mb-2">Why trust our network?</h3>
+              <h3 className="text-slate-900 text-[22px] font-bold mb-2">Why you can trust the list</h3>
               <p className="text-slate-500 text-[15px] leading-relaxed">
-                We built India&apos;s first search-first physiotherapy platform to eliminate guesswork in finding quality care.
+                Every provider you see has been checked by our team. We focus only on physiotherapy, so the details on a profile are the details you actually need before booking.
               </p>
             </div>
 

@@ -9,27 +9,27 @@ const faqs = [
   {
     id: 1,
     q: 'How do you verify physiotherapists?',
-    a: 'Every provider goes through a 3-step check — IAP/State Council registration number, degree upload (BPT/MPT), and identity verification — before appearing in search results. We then surface their credentials on the public profile so you can judge for yourself.',
+    a: 'Every provider shares their IAP or State Council registration number and a qualification proof when they sign up. Our team checks these against the public registers before the profile goes live, and the credentials are shown on their public page so you can see them for yourself.',
   },
   {
     id: 2,
     q: 'Can I book a home visit?',
-    a: 'Yes. Home-visit availability is shown alongside in-clinic options on every provider card. You pick the format that fits your needs — no separate flows.',
+    a: 'Yes. On each provider page you can see whether they offer home visits, the areas they cover, and their home-visit fee, and you can book either option in the same flow.',
   },
   {
     id: 3,
     q: 'How are prices shown?',
-    a: 'Session fees are displayed in INR before booking — no hidden extras. GST and payment method details appear in the checkout, so there are zero surprises at the end.',
+    a: 'Session fees are shown in Indian Rupees on every provider card, and GST and the payment method are shown again on the checkout screen, so the total you pay at the end is the same amount you saw at the start.',
   },
   {
     id: 4,
     q: 'What happens after I book?',
-    a: 'You get an instant SMS confirmation with session details. The appointment appears in your patient dashboard where you can manage, reschedule, or cancel within the allowed window.',
+    a: 'You get an SMS confirmation with the session details as soon as the provider accepts the booking. The appointment also shows up in your Patient Dashboard, where you can view it, reschedule it, or cancel it.',
   },
   {
     id: 5,
     q: 'Can I cancel or reschedule a session?',
-    a: 'Yes. From your dashboard you can cancel or request a reschedule within the cancellation window set by the provider (usually 24 hours). Refund terms are shown before you confirm.',
+    a: 'Yes. You can cancel or reschedule free of charge up to four hours before the session from your Patient Dashboard. Cancellations inside the four-hour window may be charged in full at the provider\u2019s discretion.',
   },
 ]
 
@@ -43,10 +43,10 @@ export default function FAQ() {
 
           {/* Left: header + CTA */}
           <div className="lg:sticky lg:top-28">
-            <div className="bp-kicker mb-4">Help Center</div>
-            <h2 className="text-slate-900 mb-4">Questions patients ask before they book.</h2>
+            <div className="bp-kicker mb-4">Common questions</div>
+            <h2 className="text-slate-900 mb-4">Before you book, here is what people usually want to know.</h2>
             <p className="text-slate-500 text-[16px] leading-relaxed mb-8">
-              Everything you need to know before booking your first session. Can&apos;t find an answer?
+              Short answers to the questions we hear most often. If yours is not here, our support team is happy to help.
             </p>
             <div className="flex flex-col gap-3">
               <Link

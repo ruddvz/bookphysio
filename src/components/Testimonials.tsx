@@ -3,19 +3,19 @@ import { ShieldCheck, Clock, Home } from 'lucide-react'
 const promises = [
   {
     title: 'Verified credentials',
-    description: 'Every physiotherapist on BookPhysio is checked against IAP records, degree uploads, and government ID before going live.',
+    description: 'We check every physiotherapist against their IAP or State Council registration before their profile goes live on the site.',
     icon: ShieldCheck,
     color: 'bg-indigo-100 text-indigo-700',
   },
   {
-    title: 'Transparent pricing',
-    description: 'See the consultation fee upfront — no hidden charges, no surprises at checkout. What you see is what you pay.',
+    title: 'Clear pricing',
+    description: 'You see the session fee and any taxes before you book. The amount you pay at the end is the amount you saw at the start.',
     icon: Clock,
     color: 'bg-violet-100 text-violet-700',
   },
   {
-    title: 'Home visits available',
-    description: 'Filter by home visit or in-clinic. Compare providers and book the format that works best for your recovery.',
+    title: 'Clinic or home visit',
+    description: 'Filter by home visit or in-clinic, compare providers side by side, and book whichever option fits your day better.',
     icon: Home,
     color: 'bg-emerald-100 text-emerald-700',
   },
@@ -28,10 +28,10 @@ export default function Testimonials() {
         {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
-            <div className="bp-kicker mb-4">Our Promise</div>
-            <h2 className="text-slate-900 mb-3">What you can expect.</h2>
+            <div className="bp-kicker mb-4">What to expect</div>
+            <h2 className="text-slate-900 mb-3">Straightforward, start to finish.</h2>
             <p className="text-slate-500 text-[16px] leading-relaxed">
-              We built BookPhysio to make finding quality physiotherapy care in India simple, transparent, and trustworthy.
+              We are a new platform, so here is what we are promising from day one: verified providers, honest prices and no unnecessary steps.
             </p>
           </div>
 

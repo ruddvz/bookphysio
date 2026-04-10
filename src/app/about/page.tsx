@@ -4,26 +4,26 @@ import { ShieldCheck, IndianRupee, Globe, Heart } from 'lucide-react'
 
 const benefits = [
   {
-    title: 'Verified Experts',
-    text: 'Every therapist on our platform is verified for credentials and clinical experience.',
+    title: 'Verified physiotherapists',
+    text: 'We check every provider\u2019s IAP or State Council registration before their profile goes live.',
     icon: ShieldCheck,
     tint: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
-    title: 'Clinical Depth',
-    text: 'Specialized focus on orthopedic, neurological, and pediatric rehabilitation.',
+    title: 'Focused on physio',
+    text: 'Only physiotherapy, so the search, filters and profiles are built around how rehab actually works.',
     icon: Heart,
     tint: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
-    title: 'Transparent Pricing',
-    text: 'Know exactly what you pay before you book. No hidden clinical charges.',
+    title: 'Clear pricing',
+    text: 'You see the session fee and any taxes before you book. No surprise charges at the end.',
     icon: IndianRupee,
     tint: 'bg-[#E7EEFB] text-[#2F5EC4]',
   },
   {
-    title: 'India-Wide Reach',
-    text: 'Connecting expert care to every corner of India, from clinics to your home.',
+    title: 'Clinic or home visit',
+    text: 'Book a visit at the provider\u2019s clinic, or invite them home, whichever works better for you.',
     icon: Globe,
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
@@ -39,15 +39,14 @@ export default function AboutPage() {
         <section className="bg-white border-b border-slate-200/70">
           <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
-              Verified Marketplace
+              About BookPhysio
             </div>
             <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
-              India&apos;s focused platform for{' '}
-              <span className="text-[#00766C]">Physiotherapy</span>
+              A calmer way to find a{' '}
+              <span className="text-[#00766C]">physiotherapist</span>
             </h1>
             <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[720px] mx-auto text-slate-600">
-              We help patients discover verified physiotherapists, compare visit options, and book
-              clearly across India.
+              BookPhysio helps patients in India find verified physiotherapists, see what they charge, and book a clinic or home visit without endless phone calls.
             </p>
           </div>
         </section>
@@ -59,18 +58,14 @@ export default function AboutPage() {
               <div>
                 <div className="w-10 h-1 bg-[#FF6B35] rounded-full mb-5" />
                 <h2 className="text-[24px] lg:text-[28px] font-bold text-[#1A1C29] tracking-tight leading-tight">
-                  A new paradigm in rehabilitation
+                  Why we built this
                 </h2>
                 <div className="mt-5 space-y-4 text-[15px] text-slate-600 leading-relaxed">
                   <p>
-                    BookPhysio.in is India&apos;s leading platform dedicated exclusively to
-                    physiotherapy. Recovery requires more than just a session — it requires
-                    specialized expertise and continuity.
+                    Finding a good physiotherapist in India usually means asking friends, scrolling through generic health directories, or calling three clinics to ask if anyone is free. Recovery, especially from back pain, a sports injury or a surgery, usually needs several sessions over weeks, not one.
                   </p>
                   <p>
-                    Our platform connects patients with verified provider profiles and clearly
-                    listed credentials for both in-clinic and home-visit care, making it easier to
-                    choose and book the right provider.
+                    BookPhysio is focused on that one thing. Every profile on the site belongs to a physiotherapist whose registration we have checked. You can see their specialties, fees and whether they offer home visits, and book them in a few taps.
                   </p>
                 </div>
               </div>
@@ -80,7 +75,7 @@ export default function AboutPage() {
                     <Globe className="w-8 h-8" />
                   </div>
                   <p className="text-[12px] font-semibold text-[#00766C] uppercase tracking-[0.2em]">
-                    National care network
+                    Built for India
                   </p>
                 </div>
               </div>
@@ -89,10 +84,10 @@ export default function AboutPage() {
             <div>
               <div className="text-center max-w-xl mx-auto mb-8 lg:mb-10">
                 <p className="text-[11px] font-semibold text-[#FF6B35] uppercase tracking-[0.2em] mb-2">
-                  Precision pillars
+                  What you get
                 </p>
                 <h2 className="text-[24px] lg:text-[28px] font-bold text-[#1A1C29] tracking-tight">
-                  Why experts choose us
+                  Four things we care about
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -118,11 +113,12 @@ export default function AboutPage() {
                 <Heart className="w-6 h-6" />
               </div>
               <h2 className="text-[22px] lg:text-[26px] font-bold text-[#1A1C29] tracking-tight">
-                Leading clinical recovery
+                We are just getting started
               </h2>
               <p className="mt-3 text-[14px] lg:text-[15px] text-slate-600 max-w-[640px] mx-auto leading-relaxed">
-                We are dedicated to making physiotherapy discovery and booking clearer for patients
-                and providers alike.
+                BookPhysio is an early-stage platform. If you are a patient who needs help finding care, or a physiotherapist who wants to be listed, write to us at{' '}
+                <a href="mailto:hello@bookphysio.in" className="font-semibold text-[#00766C] hover:text-[#005A52] underline underline-offset-4">hello@bookphysio.in</a>.
+                We read every message.
               </p>
             </div>
           </div>

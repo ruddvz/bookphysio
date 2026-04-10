@@ -172,7 +172,7 @@ export default function HeroSection() {
           {/* Kicker */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-200 bg-white/70 backdrop-blur-sm text-indigo-500 text-[12px] font-bold uppercase tracking-widest mb-8 animate-fade-up shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            India&apos;s first physio-only booking platform
+            Physiotherapy booking, built for India
           </div>
 
           {/* Headline */}
@@ -193,8 +193,7 @@ export default function HeroSection() {
 
           {/* Subheading */}
           <p className="text-[18px] leading-relaxed max-w-2xl mx-auto mb-10 animate-fade-up delay-200" style={{ color: '#5A5880' }}>
-            IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.
-            From search to booked — under 60 seconds.
+            Find IAP-verified physiotherapists for a clinic visit or a session at home. Pick a time, confirm with an OTP, and you are done.
           </p>
 
           {/* Search bar */}

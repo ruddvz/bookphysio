@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from 'lucide-react'
 
 const bullets = [
-  { icon: Users,     text: 'Connect with thousands of patients seeking expert physio care' },
-  { icon: TrendingUp, text: 'Smart scheduling that reduces no-shows and fills empty slots' },
-  { icon: Calendar,  text: 'Manage your calendar, patient records, and earnings in one place' },
+  { icon: Users,     text: 'Reach patients in your city who are actively looking for a physiotherapist right now.' },
+  { icon: TrendingUp, text: 'OTP-confirmed bookings and automatic reminders cut down on no-shows.' },
+  { icon: Calendar,  text: 'One place for your calendar, patient notes, invoices and payouts.' },
 ]
 
 const mockAppts = [
@@ -90,12 +90,12 @@ export default function ProviderCTA() {
 
             <div>
               <h2 className="text-white text-[36px] md:text-[48px] font-extrabold tracking-tight leading-[1.05] mb-4">
-                Grow your practice,
+                Spend less time
                 <br />
-                <span className="text-gradient-lavender">effortlessly.</span>
+                <span className="text-gradient-lavender">chasing patients.</span>
               </h2>
               <p className="text-slate-400 text-[17px] leading-relaxed">
-                Join the network of IAP-verified physiotherapists using BookPhysio to fill their calendars, reduce admin, and focus on what matters — patient recovery.
+                BookPhysio gives IAP-verified physiotherapists a simple way to accept bookings, manage their calendar and handle payments, so you can spend more of your day actually treating people.
               </p>
             </div>
 

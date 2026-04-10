@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'BookPhysio — Book Physiotherapists Online in India'
+export const alt = 'BookPhysio: Book Physiotherapists Online in India'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -58,7 +58,7 @@ export default function OGImage() {
           }}
         >
           <span style={{ color: '#12B3A0', fontSize: 13, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-            India&apos;s Physio-Only Platform
+            Physiotherapy, Booked Simply
           </span>
         </div>
 

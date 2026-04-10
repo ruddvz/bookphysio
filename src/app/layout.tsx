@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bookphysio.in"),
   title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
   description:
-    "India's first physio-only booking platform. Find and book IAP-verified physiotherapists for home visits and in-clinic sessions across India. Same-day slots available.",
+    "Find and book IAP-verified physiotherapists in India for home visits and in-clinic sessions. Clear pricing, real availability, and same-day slots with many providers.",
   keywords: "physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India",
   icons: {
     icon: "/icon.png?v=20260404b",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
     description:
-      "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      "BookPhysio is a focused booking platform for physiotherapy in India. Find IAP-verified physiotherapists for home visits and in-clinic sessions.",
     siteName: "BookPhysio",
     type: "website",
     url: "https://bookphysio.in",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "BookPhysio — Book Verified Physiotherapists in India",
+        alt: "BookPhysio: Book Verified Physiotherapists in India",
       },
     ],
   },
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Book Physiotherapists Online in India | Home Visits | BookPhysio.in",
     description:
-      "India's first physio-only platform. IAP-verified physiotherapists for home visits and in-clinic sessions across 18 Indian cities.",
+      "BookPhysio is a focused booking platform for physiotherapy in India. Find IAP-verified physiotherapists for home visits and in-clinic sessions.",
     images: ["/opengraph-image"],
   },
 };
