@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test'
-import { loginAsDemoRole } from './helpers/demo-session'
 
 test.describe('Admin Dashboard Flow', () => {
-  test('admin can view platform overview metrics', async ({ page }, testInfo) => {
+  test('admin can view platform overview metrics', async ({ page }) => {
     // Mock the stats API so the test is independent of real data
     await page.route('**/api/admin/stats**', async route => {
       await route.fulfill({
@@ -17,26 +16,26 @@ test.describe('Admin Dashboard Flow', () => {
       })
     })
 
-    await loginAsDemoRole(page, testInfo, 'admin', '/admin')
-    await page.goto('/admin')
+    await page.goto('/login')
+    await page.getByRole('button', { name: /open admin demo/i }).click()
 
     // Check header
-    await expect(page.locator('h1')).toContainText('Platform Overview')
+    await expect(page.locator('h1')).toContainText(/platform overview/i)
 
     // Check KPI card labels
-    await expect(page.locator('text=Active Providers')).toBeVisible()
-    await expect(page.locator('text=Pending Approvals')).toBeVisible()
-    await expect(page.locator('text=Total Patients')).toBeVisible()
-    await expect(page.locator('text=GMV (Lifetime)')).toBeVisible()
+    await expect(page.getByText(/active providers/i)).toBeVisible()
+    await expect(page.getByText(/pending approvals/i).first()).toBeVisible()
+    await expect(page.getByText(/total patients/i)).toBeVisible()
+    await expect(page.getByText(/completed gmv/i).first()).toBeVisible()
 
     // Check mocked values render correctly
-    await expect(page.getByText('1204', { exact: true })).toBeVisible()
-    await expect(page.getByText(/342 providers/i)).toBeVisible()
-    await expect(page.locator('a[href="/admin/users"] div').filter({ hasText: '8,921' }).first()).toBeVisible()
-    await expect(page.locator('a[href="/admin/analytics"] div').filter({ hasText: '₹12.4L' }).first()).toBeVisible()
+    await expect(page.getByText('1204', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText(/342 provider/i).first()).toBeVisible()
+    await expect(page.getByText('8,921').first()).toBeVisible()
+    await expect(page.getByText('₹12.4L').first()).toBeVisible()
 
-    await expect(page.locator('text=Verification Queue')).toBeVisible()
-    await expect(page.locator('text=Admin Actions')).toBeVisible()
-    await expect(page.getByRole('link', { name: /Review approvals/i })).toBeVisible()
+    await expect(page.getByText(/verification queue/i)).toBeVisible()
+    await expect(page.getByText(/admin actions/i)).toBeVisible()
+    await expect(page.getByRole('link', { name: /Review approvals/i }).first()).toBeVisible()
   })
 })

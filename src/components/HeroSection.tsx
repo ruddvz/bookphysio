@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const ROTATING_WORDS = [
   'sports rehab',
@@ -13,12 +14,13 @@ const ROTATING_WORDS = [
   'joint mobility',
 ]
 
-const CONDITIONS = [
-  'Back Pain', 'Knee Rehab', 'Sports Injury', 'Post-Surgery',
-  'Neck Pain', 'Shoulder Pain', 'Neuro Care', 'Geriatric Care',
-  "Women's Health", 'Pediatric Care', 'Arthritis', 'Hip Pain',
-  'Sciatica', 'Frozen Shoulder', 'Plantar Fasciitis', 'Stroke Rehab',
+const HERO_CHIP_ROWS = [
+  ['Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain', 'Joint stiffness'],
+  ['Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica', 'Balance issues', 'Posture issues'],
+  ['Stroke recovery', 'Kids physio', 'Pregnancy pain', 'Elderly care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
 ]
+
+const CONDITIONS = HERO_CHIP_ROWS.flat()
 
 const CITIES = [
   'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
@@ -244,40 +246,62 @@ export default function HeroSection() {
               </div>
             </form>
 
-            {/* Suggestion chips — horizontally scrollable */}
-            <div className="mt-4 overflow-x-auto scrollbar-none -mx-4 px-4">
-              <div className="flex gap-2 w-max mx-auto">
-                {[
-                  'Back Pain', 'Sports Injury', 'Home Visit', 'Post-Surgery',
-                  'Neck Pain', 'Knee Rehab', 'Shoulder Pain', 'Neuro Care',
-                  "Women's Health", 'Arthritis', 'Sciatica', 'Hip Pain',
-                ].map(tag => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => { setCondition(tag); handleSearch() }}
-                    className="shrink-0 px-4 py-2 text-[13px] font-medium rounded-full cursor-pointer transition-colors border"
-                    style={{
-                      background: 'rgba(255,255,255,0.7)',
-                      color: '#5A5880',
-                      borderColor: '#E0DFEE',
-                    }}
-                    onMouseEnter={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'white'
-                      el.style.borderColor = '#C7CEEF'
-                      el.style.color = '#3D4FA3'
-                    }}
-                    onMouseLeave={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'rgba(255,255,255,0.7)'
-                      el.style.borderColor = '#E0DFEE'
-                      el.style.color = '#5A5880'
-                    }}
-                  >
-                    {tag}
-                  </button>
-                ))}
+            {/* Auto-scrolling honeycomb chip marquee — three rows, alternating direction */}
+            <div className="mt-4 -mx-4 pb-2">
+              <div
+                role="group"
+                aria-label="Browse common conditions"
+                className="flex flex-col gap-3"
+              >
+                {HERO_CHIP_ROWS.map((row, rowIndex) => {
+                  const isReverse = rowIndex === 1
+                  // Negative delays start each row mid-animation so chips appear centred on first paint
+                  const delays = ['-8s', '-14s', '-4s']
+                  return (
+                    <div
+                      key={`hero-chip-row-${rowIndex}`}
+                      data-chip-row
+                      className="overflow-hidden"
+                    >
+                      <div
+                        className={cn(
+                          'flex gap-3',
+                          isReverse ? 'animate-chip-marquee-reverse' : 'animate-chip-marquee',
+                        )}
+                        style={{
+                          animationDuration: `${28 + rowIndex * 4}s`,
+                          animationDelay: delays[rowIndex],
+                        }}
+                      >
+                        {/* Visible chips — announced by screen readers */}
+                        {row.map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => { setCondition(tag); handleSearch() }}
+                            className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                        {/* Duplicate for seamless infinite loop — hidden from assistive tech */}
+                        <span aria-hidden="true" className="contents">
+                          {row.map((tag) => (
+                            <button
+                              key={`dup-${tag}`}
+                              type="button"
+                              tabIndex={-1}
+                              onClick={() => { setCondition(tag); handleSearch() }}
+                              className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>

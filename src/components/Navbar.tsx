@@ -48,7 +48,6 @@ export default function Navbar({
 } = {}) {
   const [browseOpen, setBrowseOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [mobileSpecialtiesOpen, setMobileSpecialtiesOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const effectiveLocale = locale ?? 'en'
@@ -227,93 +226,122 @@ export default function Navbar({
         </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu — Full-screen gradient overlay */}
       {mobileOpen && (
-        <>
-          {/* Backdrop */}
+        <div
+          className="lg:hidden fixed inset-0 z-[99] flex flex-col overflow-hidden animate-fade-in"
+          style={{ background: 'linear-gradient(155deg, #F0EEFF 0%, #E8F8F7 40%, #FFF5F8 75%, #FFF8F0 100%)' }}
+        >
+          {/* Decorative blobs — mirrors hero */}
           <div
-            className="lg:hidden fixed inset-0 z-[98] bg-slate-900/40 backdrop-blur-sm animate-fade-in"
-            onClick={() => setMobileOpen(false)}
+            className="absolute -top-24 -left-24 w-[400px] h-[400px] rounded-full opacity-40 pointer-events-none"
+            style={{ background: 'radial-gradient(circle, #C4B5E8 0%, transparent 70%)' }}
           />
-          {/* Drawer */}
-          <div className="lg:hidden fixed inset-y-0 right-0 z-[99] w-[300px] bg-white shadow-2xl animate-slide-down flex flex-col">
-            <div className="flex items-center justify-end px-6 h-[68px] border-b border-slate-100">
-              <button
-                type="button"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-50 text-slate-600"
-              >
-                <X size={16} />
-              </button>
+          <div
+            className="absolute -bottom-16 -right-16 w-[320px] h-[320px] rounded-full opacity-30 pointer-events-none"
+            style={{ background: 'radial-gradient(circle, #7DCFC9 0%, transparent 70%)' }}
+          />
+          <div
+            className="absolute inset-0 opacity-[0.035] pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle, #8B9BD8 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
+            }}
+          />
+
+          {/* Header */}
+          <div className="relative z-10 flex items-center justify-between px-6 h-[68px] shrink-0">
+            <Link href="/" onClick={() => setMobileOpen(false)} aria-label="BookPhysio home">
+              <BpLogo size="nav" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              className="flex items-center justify-center w-10 h-10 rounded-full border border-indigo-100 bg-white/70 backdrop-blur-sm text-slate-600 hover:text-indigo-700 transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Scrollable nav body */}
+          <nav className="relative z-10 flex-1 overflow-y-auto px-5 pt-2 pb-4" aria-label="Mobile navigation">
+            {/* Specialties grid */}
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-3 px-1" style={{ color: '#9290B0' }}>
+              Specialties
+            </p>
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              {SPECIALTIES.map((s) => {
+                const Icon = ICON_MAP[s.icon] ?? Stethoscope
+                return (
+                  <Link
+                    key={s.slug}
+                    href={`/specialties/${s.slug}`}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      'group flex items-center gap-3 rounded-2xl border bg-white/65 backdrop-blur-sm px-3.5 py-3 transition-all duration-150 hover:bg-white/90 hover:shadow-sm',
+                      s.tint.border,
+                    )}
+                  >
+                    <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', s.tint.bg, s.tint.text)}>
+                      <Icon size={16} />
+                    </div>
+                    <span className="text-[13px] font-semibold text-slate-700 group-hover:text-indigo-700 transition-colors leading-tight">
+                      {s.label}
+                    </span>
+                  </Link>
+                )
+              })}
             </div>
 
-            <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-              {/* Browse specialties — collapsible */}
-              <button
-                type="button"
-                onClick={() => setMobileSpecialtiesOpen(o => !o)}
-                className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-[14px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                <span>Browse specialties</span>
-                <ChevronDown
-                  size={15}
-                  className={cn('text-slate-400 transition-transform duration-200', mobileSpecialtiesOpen && 'rotate-180')}
-                />
-              </button>
+            {/* Browse all */}
+            <Link
+              href={searchHref}
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between px-4 py-3 mb-4 rounded-2xl bg-white/50 border border-indigo-100/60 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-indigo-700 transition-all group"
+            >
+              Browse all physiotherapists
+              <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+            </Link>
 
-              {mobileSpecialtiesOpen && (
-                <div className="space-y-0.5 pl-1">
-                  {SPECIALTIES.map((s) => {
-                    const Icon = ICON_MAP[s.icon] ?? Stethoscope
-                    return (
-                      <Link
-                        key={s.slug}
-                        href={`/specialties/${s.slug}`}
-                        onClick={() => setMobileOpen(false)}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-700 transition-colors"
-                      >
-                        <div className={cn('flex h-7 w-7 items-center justify-center rounded-lg shrink-0', s.tint.bg, s.tint.text)}>
-                          <Icon size={14} />
-                        </div>
-                        {s.label}
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+            <div className="h-px bg-indigo-100/50 mb-4" />
 
-              <div className="h-px bg-slate-100 my-2" />
-
+            {/* Nav links */}
+            <div className="space-y-1.5">
               <Link
                 href={howItWorksHref}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
               >
                 How it works
               </Link>
               <Link
                 href="/doctor-signup"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
               >
                 <Stethoscope size={16} className="text-indigo-400" />
-                For doctors
-              </Link>
-            </nav>
-
-            <div className="px-4 pb-8 border-t border-slate-100 pt-4">
-              <Link
-                href={loginHref}
-                onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white text-[14px] font-semibold transition-colors"
-                style={{ background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)' }}
-              >
-                Sign in
-                <ArrowRight size={14} />
+                For providers
               </Link>
             </div>
+          </nav>
+
+          {/* Sign-in CTA */}
+          <div className="relative z-10 shrink-0 px-5 pb-10 pt-3">
+            <Link
+              href={loginHref}
+              onClick={() => setMobileOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
+              style={{
+                background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
+                boxShadow: '0 4px 24px rgba(139,155,216,0.40)',
+              }}
+            >
+              Sign in
+              <ArrowRight size={16} />
+            </Link>
           </div>
-        </>
+        </div>
       )}
     </>
   )

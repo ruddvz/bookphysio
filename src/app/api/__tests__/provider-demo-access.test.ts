@@ -24,6 +24,7 @@ describe('provider demo access routes', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'true')
   })
 
   it('returns provider demo patient roster without a Supabase session', async () => {

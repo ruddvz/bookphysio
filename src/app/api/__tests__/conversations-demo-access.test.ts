@@ -24,6 +24,7 @@ describe('GET /api/conversations demo access', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('NEXT_PUBLIC_ENABLE_DEMO', 'true')
   })
 
   it('returns demo conversations for the signed-in demo user', async () => {

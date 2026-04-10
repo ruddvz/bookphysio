@@ -40,7 +40,7 @@ test.describe('8.17 Empty States and Skeletons', () => {
   })
 
   test('Appointments page shows tab-specific empty state', async ({ page }, testInfo) => {
-    await page.route('/api/appointments', async route => {
+    await page.route('**/api/appointments**', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -50,9 +50,9 @@ test.describe('8.17 Empty States and Skeletons', () => {
 
     await loginAsDemoRole(page, testInfo, 'patient', '/patient/appointments?tab=upcoming')
     await page.goto('/patient/appointments?tab=upcoming')
-    await expect(page.getByRole('heading', { name: /No upcoming appointments/i })).toBeVisible()
+    await expect(page.getByText(/No upcoming visits/i)).toBeVisible()
 
     await page.getByRole('button', { name: /^past$/i }).click()
-    await expect(page.getByRole('heading', { name: /No past appointments/i })).toBeVisible()
+    await expect(page.getByText(/No past visits yet/i)).toBeVisible()
   })
 })

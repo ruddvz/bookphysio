@@ -49,6 +49,7 @@ describe('GET /api/auth/dev-signup', () => {
   it('rejects preview cookies in production when the public preview gate is disabled', async () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'false')
 
     const { GET } = await import('../auth/dev-signup/route')
     const previewToken = await createPreviewToken('preview-secret')
