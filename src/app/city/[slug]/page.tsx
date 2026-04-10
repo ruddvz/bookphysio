@@ -50,10 +50,43 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
+function buildCitySchemas(slug: string, cityLabel: string) {
+  const pageUrl = `https://bookphysio.in/city/${slug}`
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in' },
+      { '@type': 'ListItem', position: 2, name: `Physiotherapists in ${cityLabel}`, item: pageUrl },
+    ],
+  }
+
+  const medicalBusinessSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalBusiness',
+    name: `BookPhysio ${cityLabel}`,
+    description: `Find and book verified physiotherapists in ${cityLabel} for home visits and in-clinic sessions.`,
+    url: pageUrl,
+    areaServed: {
+      '@type': 'City',
+      name: cityLabel,
+    },
+    medicalSpecialty: 'PhysicalTherapy',
+    parentOrganization: {
+      '@id': 'https://bookphysio.in/#organization',
+    },
+  }
+
+  return { breadcrumbSchema, medicalBusinessSchema }
+}
+
 export default async function CityPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const city = CITY_MAP[slug]
   if (!city) notFound()
+
+  const { breadcrumbSchema, medicalBusinessSchema } = buildCitySchemas(slug, city.label)
 
   const citySignals = [
     {
@@ -81,6 +114,14 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalBusinessSchema) }}
+      />
       <Navbar />
 
       <main className="flex-grow">

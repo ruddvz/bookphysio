@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { SPECIALTIES } from '@/lib/specialties'
 
 // Base URL for the site
 const BASE_URL = 'https://bookphysio.in'
@@ -34,18 +35,6 @@ const cities = [
   'surat',
 ]
 
-// Specialties from SPECIALTY_MAP in src/app/specialty/[slug]/page.tsx
-const specialties = [
-  'sports-physio',
-  'neuro-physio',
-  'ortho-physio',
-  'paediatric-physio',
-  'womens-health',
-  'geriatric-physio',
-  'post-surgery-rehab',
-  'pain-management',
-]
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticMaps = staticRoutes.map(({ path, lastModified, priority }) => ({
     url: `${BASE_URL}${path}`,
@@ -61,16 +50,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
-  const specialtyMaps = specialties.map((specialty) => ({
+  const specialtySlugs = SPECIALTIES.map((s) => s.slug)
+
+  const specialtyMaps = specialtySlugs.map((specialty) => ({
     url: `${BASE_URL}/specialty/${specialty}`,
-    lastModified: new Date('2026-03-01'),
+    lastModified: new Date('2026-04-10'),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
 
-  const specialtyArticleMaps = specialties.slice(0, 6).map((specialty) => ({
+  const specialtyArticleMaps = specialtySlugs.map((specialty) => ({
     url: `${BASE_URL}/specialties/${specialty}`,
-    lastModified: new Date('2026-04-07'),
+    lastModified: new Date('2026-04-10'),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))

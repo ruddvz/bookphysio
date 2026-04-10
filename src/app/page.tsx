@@ -18,16 +18,22 @@ const organizationSchema = {
   url: 'https://bookphysio.in',
   logo: 'https://bookphysio.in/logo.png',
   description: 'India\'s first physiotherapy-only booking platform connecting patients with IAP-verified physiotherapists for in-clinic and home visit sessions.',
-  foundingDate: '2024',
+  foundingDate: '2024-01-01',
   areaServed: {
     '@type': 'Country',
     name: 'India',
   },
   medicalSpecialty: 'PhysicalTherapy',
-  sameAs: [],
+  sameAs: [
+    'https://www.linkedin.com/company/bookphysio',
+    'https://twitter.com/bookphysio',
+    'https://www.instagram.com/bookphysio.in',
+  ],
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'customer support',
+    email: 'support@bookphysio.in',
+    telephone: '+91-8000000000',
     availableLanguage: ['English', 'Hindi'],
   },
 }
