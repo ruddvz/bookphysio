@@ -166,14 +166,8 @@ export default function HeroSection() {
       />
 
       {/* Content */}
-      <div className="bp-container relative z-10 pt-28 pb-20">
+      <div className="bp-container relative z-10 pt-20 pb-20">
         <div className="max-w-5xl mx-auto text-center">
-
-          {/* Kicker */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-200 bg-white/70 backdrop-blur-sm text-indigo-500 text-[12px] font-bold uppercase tracking-widest mb-8 animate-fade-up shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            Physiotherapy booking, built for India
-          </div>
 
           {/* Headline */}
           <h1 className="mb-6 animate-fade-up delay-100" style={{ color: '#2D2B55' }}>
@@ -250,35 +244,41 @@ export default function HeroSection() {
               </div>
             </form>
 
-            {/* Suggestion chips */}
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {['Back Pain', 'Sports Injury', 'Home Visit', 'Post-Surgery'].map(tag => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => { setCondition(tag); handleSearch() }}
-                  className="px-4 py-2 bg-indigo-50/50 hover:bg-indigo-100/50 text-indigo-700 text-[13px] font-medium rounded-full cursor-pointer transition-colors border border-indigo-100/50"
-                  style={{
-                    background: 'rgba(255,255,255,0.7)',
-                    color: '#5A5880',
-                    borderColor: '#E0DFEE',
-                  }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget
-                    el.style.background = 'white'
-                    el.style.borderColor = '#C7CEEF'
-                    el.style.color = '#3D4FA3'
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget
-                    el.style.background = 'rgba(255,255,255,0.7)'
-                    el.style.borderColor = '#E0DFEE'
-                    el.style.color = '#5A5880'
-                  }}
-                >
-                  {tag}
-                </button>
-              ))}
+            {/* Suggestion chips — horizontally scrollable */}
+            <div className="mt-4 overflow-x-auto scrollbar-none -mx-4 px-4">
+              <div className="flex gap-2 w-max mx-auto">
+                {[
+                  'Back Pain', 'Sports Injury', 'Home Visit', 'Post-Surgery',
+                  'Neck Pain', 'Knee Rehab', 'Shoulder Pain', 'Neuro Care',
+                  "Women's Health", 'Arthritis', 'Sciatica', 'Hip Pain',
+                ].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => { setCondition(tag); handleSearch() }}
+                    className="shrink-0 px-4 py-2 text-[13px] font-medium rounded-full cursor-pointer transition-colors border"
+                    style={{
+                      background: 'rgba(255,255,255,0.7)',
+                      color: '#5A5880',
+                      borderColor: '#E0DFEE',
+                    }}
+                    onMouseEnter={e => {
+                      const el = e.currentTarget
+                      el.style.background = 'white'
+                      el.style.borderColor = '#C7CEEF'
+                      el.style.color = '#3D4FA3'
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget
+                      el.style.background = 'rgba(255,255,255,0.7)'
+                      el.style.borderColor = '#E0DFEE'
+                      el.style.color = '#5A5880'
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
