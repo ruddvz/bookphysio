@@ -62,7 +62,7 @@ test('login: GET /login shows phone OTP login form', async ({ page }) => {
   await expect(page.getByText('+91').first()).toBeVisible()
 
   // Submit button
-  await expect(page.getByRole('button', { name: /secure login/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
 
   // Link to signup
   await expect(page.getByRole('link', { name: /create an account/i })).toBeVisible()
@@ -78,7 +78,7 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   expect(response?.status()).toBe(200)
 
   // Heading
-  await expect(page.getByRole('heading', { name: /start your recovery/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /create your account/i })).toBeVisible()
 
   // Full Name input
   await expect(page.getByLabel('Full Name')).toBeVisible()
@@ -87,10 +87,10 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   await expect(page.getByLabel('Mobile Number')).toBeVisible()
 
   // Submit button
-  await expect(page.getByRole('button', { name: /create account/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
 
   // Link back to login
-  await expect(page.getByRole('link', { name: /log in/i })).toBeVisible()
+  await expect(page.getByRole('link', { name: /sign in with mobile otp|log in/i })).toBeVisible()
 
 })
 

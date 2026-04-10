@@ -10,6 +10,7 @@ import Navbar from './Navbar'
 import ProofSection from './ProofSection'
 import Testimonials from './Testimonials'
 import TopSpecialties from './TopSpecialties'
+import { SPECIALTIES } from '@/lib/specialties'
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -125,12 +126,16 @@ describe('Homepage regressions', () => {
   it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {
     const { container: specialties } = render(<TopSpecialties />)
 
-    for (const cta of screen.getAllByText(/find specialists/i)) {
+    const specialtyCtas = screen.getAllByText(/learn more/i)
+
+    expect(specialtyCtas).toHaveLength(SPECIALTIES.length)
+
+    for (const cta of specialtyCtas) {
       expect(cta.className).toContain('text-slate-400')
       expect(cta.className).toContain('group-hover:text-indigo-600')
     }
 
-    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(7)
+    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(SPECIALTIES.length + 1)
 
     const { container: workflow } = render(<HowItWorks />)
     expect(workflow.querySelector('.lucide-sliders-horizontal')).toBeInTheDocument()

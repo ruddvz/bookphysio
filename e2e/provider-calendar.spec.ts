@@ -57,7 +57,7 @@ test.describe('Provider Calendar Flow', () => {
 
   test('provider can view 7-day calendar and navigation controls', async ({ page }) => {
     // Check heading
-    await expect(page.getByRole('heading', { name: /calendar/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /session schedule/i })).toBeVisible()
 
     // 7 day headers should be visible
     const dayHeaders = page.locator('div:has-text("Mon"), div:has-text("Tue"), div:has-text("Wed")')
@@ -67,7 +67,7 @@ test.describe('Provider Calendar Flow', () => {
     await expect(page.locator('button:has(svg.lucide-chevron-left)')).toBeVisible()
     await expect(page.locator('button:has(svg.lucide-chevron-right)')).toBeVisible()
     
-    await expect(page.getByRole('button', { name: /Book Session/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Book session$/i })).toBeVisible()
   })
 
   test('calendar grid contains time slots', async ({ page }) => {

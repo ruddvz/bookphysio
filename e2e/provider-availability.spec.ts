@@ -49,7 +49,7 @@ test.describe('Provider Availability Flow', () => {
     await page.goto('/provider/availability')
     
     // Check initial state
-    await expect(page.locator('h1')).toContainText('Availability Registry')
+    await expect(page.locator('h1')).toContainText(/availability registry/i)
     await expect(page.getByText(/5\s*Active/i)).toBeVisible()
     const saveButton = page.getByRole('button', { name: /Commit Changes/i })
     await expect(saveButton).toBeDisabled()
@@ -57,7 +57,7 @@ test.describe('Provider Availability Flow', () => {
     // Toggle Saturday
     const toggleSaturday = page.getByLabel(/Saturday/i)
     await expect(toggleSaturday).toBeEnabled()
-    await page.getByText('Saturday').click()
+    await page.locator('label:has(input[aria-label="Saturday"])').click()
     
     // Check that Save button is now enabled
     await expect(saveButton).toBeEnabled()
