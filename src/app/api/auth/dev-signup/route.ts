@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
   const role: DemoRole = roleParam && isDemoRole(roleParam) ? roleParam : 'patient'
   const requestedReturn =
     request.nextUrl.searchParams.get('returnTo') ?? request.nextUrl.searchParams.get('next') ?? getDemoRedirectPath(role)
+  // resolvePostAuthRedirect calls sanitizeReturnPath internally — open-redirect safe.
   const redirectTo = resolvePostAuthRedirect(role, requestedReturn)
   const cookiePayload = createDemoCookiePayload(role)
   const response = NextResponse.redirect(new URL(redirectTo, request.nextUrl.origin))

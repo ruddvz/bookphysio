@@ -3,6 +3,13 @@ import { verifyWebhookSignature } from '@/lib/razorpay'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendBookingConfirmation } from '@/lib/resend'
 
+// NOTE: The create-order and verify endpoints are intentionally disabled (503) while
+// the payment flow is being re-architected. This webhook remains active to handle
+// Razorpay's retry-delivery of any events from previously created orders, ensuring
+// idempotent payment completion for in-flight orders. HMAC verification + idempotency
+// checks guard against replay attacks. Re-enable create-order/verify alongside this
+// when the payment flow is officially re-launched.
+
 // Razorpay webhook payload shapes (minimal — only what we act on)
 interface RazorpayPaymentEntity {
   id: string

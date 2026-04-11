@@ -42,7 +42,6 @@ bookphysio.in
 │       ├── supabase/           # client.ts, server.ts, admin.ts
 │       ├── validations/        # Zod schemas (auth, booking, payment, provider, review, search)
 │       ├── razorpay.ts         # Razorpay client
-│       ├── msg91.ts            # MSG91 SMS/OTP
 │       ├── resend.ts           # Resend email
 │       ├── upstash.ts          # Rate limiting
 │       └── utils.ts            # cn() helper

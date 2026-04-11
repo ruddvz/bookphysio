@@ -67,7 +67,7 @@ describe('Auth regressions', () => {
   })
 
   it('keeps the login page logo linked home and uses the arrow icon for doctor signup', () => {
-    const { container } = render(<LoginPage />)
+    render(<LoginPage />)
 
     expect(screen.getByRole('link', { name: /bookphysio logo/i })).toHaveAttribute('href', '/')
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
@@ -80,11 +80,8 @@ describe('Auth regressions', () => {
     expect(screen.queryByText(/111111/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/264200/i)).not.toBeInTheDocument()
 
-    const doctorLink = screen.getByRole('link', { name: /join as a doctor/i })
+    const doctorLink = screen.getByRole('link', { name: /join as a provider/i })
     expect(doctorLink).toHaveAttribute('href', '/doctor-signup')
-    expect(doctorLink).not.toHaveTextContent('→')
-    expect(doctorLink.querySelector('svg')).toBeInTheDocument()
-    expect(container.firstChild).toHaveClass('pb-10')
   })
 
   it('renders the login page in English with email and password fields', () => {

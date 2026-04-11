@@ -10,6 +10,7 @@ import { otpSendSchema } from '@/lib/validations/auth'
 import { otpRatelimit } from '@/lib/upstash'
 import { createClient } from '@/lib/supabase/server'
 import { getDevPhoneRole } from '@/lib/auth/dev-otp'
+import { sanitizeReturnPath } from '@/lib/demo/session'
 
 const maskedLoginOtpResponse = { message: 'If an account exists, an OTP has been sent.' }
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     flow = parsed.data.flow
     flowId = typeof body.flow_id === 'string' ? body.flow_id : crypto.randomUUID()
     fullName = typeof body.full_name === 'string' ? body.full_name.trim() : undefined
-    returnTo = typeof body.return_to === 'string' ? body.return_to : null
+    returnTo = typeof body.return_to === 'string' ? sanitizeReturnPath(body.return_to) : null
 
     if (flow !== 'signup') {
       fullName = undefined

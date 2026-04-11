@@ -10,7 +10,7 @@
 | `supabase/server.ts` | Supabase server client (cookie-based) | Same + reads cookies | API routes, Server Components |
 | `supabase/admin.ts` | Supabase admin client (service role) | `SUPABASE_SERVICE_ROLE_KEY` | Admin-only operations, never client-side |
 | `razorpay.ts` | Razorpay payment gateway | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | `/api/payments/*` routes |
-| `msg91.ts` | MSG91 SMS/OTP (India) | `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID` | `/api/auth/otp/*` routes |
+| _(SMS/OTP)_ | Supabase Auth native phone provider — configured in Supabase dashboard (Auth → Providers → Phone → MSG91). No app-side client. | — | `/api/auth/otp/send` and `/api/auth/otp/verify` call `supabase.auth.signInWithOtp` / `verifyOtp` directly |
 | `resend.ts` | Resend transactional email | `RESEND_API_KEY` | Booking confirmation, notifications |
 | `upstash.ts` | Upstash Redis rate limiting | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | `middleware.ts` |
 | `utils.ts` | Utility: `cn()` classname merge | — | All UI components |
@@ -48,10 +48,10 @@ RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
 
-# MSG91 (India SMS/OTP)
-MSG91_AUTH_KEY=
-MSG91_TEMPLATE_ID=
-MSG91_SENDER_ID=
+# SMS / Phone OTP
+# Supabase Auth's native phone provider handles SMS delivery.
+# Configure MSG91 (auth key, DLT template, sender ID) inside the
+# Supabase dashboard: Auth → Providers → Phone. No app-side env vars.
 
 # Resend (email)
 RESEND_API_KEY=

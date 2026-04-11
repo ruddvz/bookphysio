@@ -6,8 +6,32 @@ import { canRoleAccessPath, isPatientPath, isProviderPath } from '@/lib/auth/acc
 const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
 
+function buildCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    // nonce replaces 'unsafe-inline'; 'strict-dynamic' trusts scripts loaded by nonce-tagged scripts.
+    // The Razorpay host is kept for legacy browsers that don't understand 'strict-dynamic'.
+    `script-src 'nonce-${nonce}' 'strict-dynamic' https://checkout.razorpay.com`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://*.upstash.io",
+    "worker-src 'self' blob:",
+    "frame-ancestors 'none'",
+  ].join('; ')
+}
+
 export default async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  // Generate a fresh nonce for every request so browsers enforce per-response CSP.
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))))
+  const csp = buildCsp(nonce)
+
+  // Propagate the nonce to Server Components via a request header (Next.js reads x-nonce
+  // automatically to stamp its own injected inline scripts, replacing 'unsafe-inline').
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-nonce', nonce)
+
+  let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set') })(),
@@ -17,7 +41,7 @@ export default async function middleware(request: NextRequest) {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -58,13 +82,19 @@ export default async function middleware(request: NextRequest) {
     if (rewrittenPathname !== pathname) {
       const url = request.nextUrl.clone()
       url.pathname = rewrittenPathname
-      return NextResponse.rewrite(url)
+      const demoRewrite = NextResponse.rewrite(url)
+      demoRewrite.headers.set('Content-Security-Policy', csp)
+      return demoRewrite
     }
 
-    return NextResponse.next({ request })
+    const demoNext = NextResponse.next({ request: { headers: requestHeaders } })
+    demoNext.headers.set('Content-Security-Policy', csp)
+    return demoNext
   }
 
   if (user && (isProviderRoute || isPatientRoute || isAdmin)) {
+    // Defense-in-depth: admin API routes independently enforce requireAdmin() server-side.
+    // This middleware redirect prevents unnecessary round-trips for non-admin UI users.
     const { data: profile, error: profileError } = await supabase
       .from('users')
       .select('role')
@@ -91,9 +121,12 @@ export default async function middleware(request: NextRequest) {
   if (rewrittenPathname !== pathname) {
     const url = request.nextUrl.clone()
     url.pathname = rewrittenPathname
-    return NextResponse.rewrite(url)
+    const rewriteResponse = NextResponse.rewrite(url)
+    rewriteResponse.headers.set('Content-Security-Policy', csp)
+    return rewriteResponse
   }
 
+  supabaseResponse.headers.set('Content-Security-Policy', csp)
   return supabaseResponse
 }
 

@@ -129,9 +129,14 @@ function constantTimeEqual(left: string, right: string): boolean {
 }
 
 async function signDemoCookiePayload(payloadSegment: string): Promise<string | null> {
-  const secret = process.env.DEMO_COOKIE_SECRET ?? process.env.PREVIEW_PASSWORD ?? null
+  // Only DEMO_COOKIE_SECRET is accepted — PREVIEW_PASSWORD is a user-visible shared secret
+  // and must never be used as a cryptographic signing key.
+  const secret = process.env.DEMO_COOKIE_SECRET ?? null
 
   if (!secret) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[demo/session] DEMO_COOKIE_SECRET is not set. Demo cookie signing will fail. Set DEMO_COOKIE_SECRET in your .env file.')
+    }
     return null
   }
 

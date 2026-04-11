@@ -9,8 +9,8 @@
 | Route | Method | File | Validation Schema | Contract Type | Notes |
 |-------|--------|------|-------------------|---------------|-------|
 | `/api/auth/signup` | POST | `auth/signup/route.ts` | `auth.ts` signupSchema | `user.ts` UserProfile | Patient + provider signup |
-| `/api/auth/otp/send` | POST | `auth/otp/send/route.ts` | `auth.ts` otpSendSchema | — | Send OTP via MSG91 |
-| `/api/auth/otp/verify` | POST | `auth/otp/verify/route.ts` | `auth.ts` otpVerifySchema | — | Verify 6-digit OTP |
+| `/api/auth/otp/send` | POST | `auth/otp/send/route.ts` | `auth.ts` otpSendSchema | — | Send phone OTP via Supabase Auth (Supabase dashboard handles MSG91 delivery) |
+| `/api/auth/otp/verify` | POST | `auth/otp/verify/route.ts` | `auth.ts` otpVerifySchema | — | Verify 6-digit OTP via Supabase Auth |
 | `/api/auth/magic-link` | POST | `auth/magic-link/route.ts` | — | — | Email magic-link login |
 
 ### Providers
