@@ -91,3 +91,25 @@ A: Yes. BookPhysio is fully available in English and Hindi. You can switch langu
 ## Markdown Mirrors
 For clean, plain-text versions of our pages:
 - Full site: https://bookphysio.in/llms-full.txt
+- Homepage: https://bookphysio.in/mirrors/home.md
+- About: https://bookphysio.in/mirrors/about.md
+- FAQ: https://bookphysio.in/mirrors/faq.md
+- How It Works: https://bookphysio.in/mirrors/how-it-works.md
+- Mumbai: https://bookphysio.in/mirrors/mumbai.md
+- Delhi: https://bookphysio.in/mirrors/delhi.md
+- Bangalore: https://bookphysio.in/mirrors/bangalore.md
+- Chennai: https://bookphysio.in/mirrors/chennai.md
+- Hyderabad: https://bookphysio.in/mirrors/hyderabad.md
+- Pune: https://bookphysio.in/mirrors/pune.md
+- Kolkata: https://bookphysio.in/mirrors/kolkata.md
+- Ahmedabad: https://bookphysio.in/mirrors/ahmedabad.md
+- Jaipur: https://bookphysio.in/mirrors/jaipur.md
+- Surat: https://bookphysio.in/mirrors/surat.md
+- Musculoskeletal: https://bookphysio.in/mirrors/musculoskeletal.md
+- Neurosciences: https://bookphysio.in/mirrors/neurosciences.md
+- Cardio-Pulmonary: https://bookphysio.in/mirrors/cardio-pulmonary.md
+- Sports: https://bookphysio.in/mirrors/sports.md
+- Paediatrics: https://bookphysio.in/mirrors/paediatrics.md
+- Women's Health: https://bookphysio.in/mirrors/womens-health.md
+- Oncology Rehab: https://bookphysio.in/mirrors/oncology-rehab.md
+- Community Rehab: https://bookphysio.in/mirrors/community-rehab.md

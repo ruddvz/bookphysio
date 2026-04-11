@@ -177,10 +177,10 @@ We already have `MedicalOrganization` and `WebSite` JSON-LD on the homepage (`sr
 | `MedicalOrganization` | Homepage | ✅ Done | — |
 | `WebSite` + `SearchAction` | Homepage | ✅ Done | — |
 | `FAQPage` | `/faq`, `/hi/faq` | ✅ Done | — |
-| `BreadcrumbList` | City pages | ❌ Missing | High |
-| `ItemList` | City pages | ❌ Missing | High |
-| `MedicalWebPage` | Specialty articles | ❌ Missing | High |
-| `LocalBusiness` per city | City pages | ❌ Missing | Medium |
+| `BreadcrumbList` | City pages | ✅ Done | — |
+| `MedicalBusiness` | City pages | ✅ Done | — |
+| `MedicalWebPage` | Specialty articles | ✅ Done | — |
+| `BreadcrumbList` | Specialty articles | ✅ Done | — |
 
 ### Schema to Add — City Pages (`/city/[slug]`)
 
@@ -439,8 +439,8 @@ IndexNow pings Bing/Yandex/others instantly when you publish or update a page. W
 
 | # | Task | Effort | File(s) |
 |---|---|---|---|
-| 1 | Create `public/llms.txt` with the content above | 15 min | `public/llms.txt` |
-| 2 | Add explicit AI bot rules to `robots.ts` | 10 min | `src/app/robots.ts` |
+| 1 | ~~Create `public/llms.txt` with the content above~~ | ✅ Done | `public/llms.txt` |
+| 2 | ~~Add explicit AI bot rules to `robots.ts`~~ | ✅ Done | `src/app/robots.ts` |
 | 3 | Submit sitemap to Google Search Console | 15 min | GSC dashboard |
 | 4 | Submit sitemap to Bing Webmaster Tools | 10 min | Bing dashboard |
 
@@ -448,9 +448,9 @@ IndexNow pings Bing/Yandex/others instantly when you publish or update a page. W
 
 | # | Task | Effort | File(s) |
 |---|---|---|---|
-| 5 | Add `BreadcrumbList` schema to city pages | 1 hr | `src/app/city/[slug]/page.tsx` |
-| 6 | Add `MedicalWebPage` schema to specialty articles | 1 hr | `src/components/specialties/SpecialtyArticle.tsx` |
-| 7 | Create `public/llms-full.txt` (full Markdown Mirror) | 2 hr | `public/llms-full.txt` |
+| 5 | ~~Add `BreadcrumbList` schema to city pages~~ | ✅ Done | `src/app/city/[slug]/page.tsx` |
+| 6 | ~~Add `MedicalWebPage` schema to specialty articles~~ | ✅ Done | `src/app/specialties/[slug]/page.tsx` |
+| 7 | ~~Create `public/llms-full.txt` (full Markdown Mirror)~~ | ✅ Done | `public/llms-full.txt` |
 | 8 | Add doctor profile URLs to sitemap | 1 hr | `src/app/sitemap.ts` |
 | 9 | Set up IndexNow post-deploy ping | 1 hr | `scripts/ping-indexnow.ts`, `public/<key>.txt` |
 
@@ -458,7 +458,7 @@ IndexNow pings Bing/Yandex/others instantly when you publish or update a page. W
 
 | # | Task | Effort | File(s) |
 |---|---|---|---|
-| 10 | Create individual Markdown Mirrors per page | 3 hr | `public/mirrors/*.md` |
+| 10 | ~~Create individual Markdown Mirrors per page~~ | ✅ Done | `public/mirrors/*.md` (22 files) |
 | 11 | Build city + specialty combo pages | 1 week | `src/app/city/[slug]/[specialty]/page.tsx` |
 | 12 | Build condition landing pages | 1 week | `src/app/condition/[slug]/page.tsx` |
 | 13 | Launch blog / content hub | 2 weeks | `src/app/blog/` |
