@@ -70,19 +70,20 @@ describe('GET /api/providers', () => {
     rpcMock.mockResolvedValue({ data: [], error: null })
   })
 
-  it('returns a stable empty response when Supabase credentials are unavailable', async () => {
+  it('returns 503 search_unavailable when Supabase credentials are missing', async () => {
     hasPublicSupabaseEnvMock.mockReturnValue(false)
 
     const { GET } = await import('../providers/route')
     const res = await GET(new Request('http://localhost/api/providers?city=Mumbai&page=2&limit=10') as never)
 
-    expect(res.status).toBe(200)
+    // Surface the real error rather than masking it as an empty result set —
+    // a silent [] previously hid misconfigured Supabase env from both the UI
+    // and from anyone debugging "search returns nothing".
+    expect(res.status).toBe(503)
     expect(res.headers.get('x-cache')).toBe('BYPASS')
     await expect(res.json()).resolves.toEqual({
-      providers: [],
-      total: 0,
-      page: 2,
-      limit: 10,
+      error: 'search_unavailable',
+      reason: 'supabase_env_missing',
     })
     expect(rpcMock).not.toHaveBeenCalled()
   })
