@@ -269,6 +269,8 @@ describe('Auth and admin hardening routes', () => {
 
   it('rate limits preview password attempts by trusted IP address', async () => {
     vi.stubEnv('PREVIEW_PASSWORD', 'preview-secret')
+    vi.stubEnv('ENABLE_PUBLIC_PREVIEW_GATE', 'true')
+    vi.stubEnv('PREVIEW_TOKEN_SECRET', 'preview-token-secret')
     vi.stubEnv('VERCEL', '1')
     previewRateLimitMock.mockResolvedValue({ success: false })
 
