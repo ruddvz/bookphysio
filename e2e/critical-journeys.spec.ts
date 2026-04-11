@@ -45,9 +45,9 @@ test('search: GET /search loads without JS errors', async ({ page }) => {
 })
 
 // ---------------------------------------------------------------------------
-// Test 3: Login page — phone OTP form is present
+// Test 3: Login page — email/password form is present
 // ---------------------------------------------------------------------------
-test('login: GET /login shows phone OTP login form', async ({ page }) => {
+test('login: GET /login shows the current sign-in form', async ({ page }) => {
   const response = await page.goto('/login')
 
   expect(response?.status()).toBe(200)
@@ -55,17 +55,16 @@ test('login: GET /login shows phone OTP login form', async ({ page }) => {
   // Heading
   await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
 
-  // Mobile number label
-  await expect(page.getByLabel('Mobile Number')).toBeVisible()
-
-  // +91 prefix
-  await expect(page.getByText('+91').first()).toBeVisible()
+  // Current auth fields
+  await expect(page.getByLabel('Email address')).toBeVisible()
+  await expect(page.getByLabel(/^Password$/)).toBeVisible()
 
   // Submit button
-  await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^sign in$/i })).toBeVisible()
 
-  // Link to signup
+  // Primary auth links
   await expect(page.getByRole('link', { name: /create an account/i })).toBeVisible()
+  await expect(page.getByRole('link', { name: /join as a provider/i })).toBeVisible()
 
 })
 
@@ -83,14 +82,15 @@ test('signup: GET /signup shows name and phone signup form', async ({ page }) =>
   // Full Name input
   await expect(page.getByLabel('Full Name')).toBeVisible()
 
-  // Mobile Number input
-  await expect(page.getByLabel('Mobile Number')).toBeVisible()
+  // Email + Mobile Number inputs
+  await expect(page.getByLabel('Email address')).toBeVisible()
+  await expect(page.getByLabel(/Mobile number/i)).toBeVisible()
 
   // Submit button
-  await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /continue — verify phone/i })).toBeVisible()
 
   // Link back to login
-  await expect(page.getByRole('link', { name: /sign in with mobile otp|log in/i })).toBeVisible()
+  await expect(page.getByRole('link', { name: /^sign in$/i })).toBeVisible()
 
 })
 
@@ -110,8 +110,8 @@ test('patient dashboard: unauthenticated GET /patient/dashboard redirects to /lo
   // client-side redirect. Either way the user must end up at /login or see
   // the login form — not the authenticated dashboard content.
   const isAtLogin = finalUrl.includes('/login')
-  const hasLoginForm = await page.getByLabel('Mobile Number').isVisible().catch(() => false)
-  const hasLoginHeading = await page.getByRole('heading', { name: /log in/i }).isVisible().catch(() => false)
+  const hasLoginForm = await page.getByLabel('Email address').isVisible().catch(() => false)
+  const hasLoginHeading = await page.getByRole('heading', { name: /welcome back/i }).isVisible().catch(() => false)
 
   // Also check: the authenticated dashboard elements must NOT be visible
   // (e.g. the sign-out avatar button rendered by PatientLayout)

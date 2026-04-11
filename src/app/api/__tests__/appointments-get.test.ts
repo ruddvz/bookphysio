@@ -4,6 +4,8 @@ import { buildAppointmentNotes } from '@/lib/booking/policy'
 
 const createClientMock = vi.fn()
 const supabaseAdminFromMock = vi.fn()
+const getDemoSessionFromCookiesMock = vi.fn()
+const hasPublicSupabaseEnvMock = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: (...args: unknown[]) => createClientMock(...args),
@@ -13,6 +15,18 @@ vi.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     from: (table: string) => supabaseAdminFromMock(table),
   },
+}))
+
+vi.mock('@/lib/demo/session', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/demo/session')>('@/lib/demo/session')
+  return {
+    ...actual,
+    getDemoSessionFromCookies: (...args: unknown[]) => getDemoSessionFromCookiesMock(...args),
+  }
+})
+
+vi.mock('@/lib/supabase/env', () => ({
+  hasPublicSupabaseEnv: (...args: unknown[]) => hasPublicSupabaseEnvMock(...args),
 }))
 
 function createAdminReadChain(result: unknown[] | Record<string, unknown>) {
@@ -45,6 +59,20 @@ describe('GET /api/appointments', () => {
   beforeEach(() => {
     vi.resetModules()
     vi.clearAllMocks()
+    getDemoSessionFromCookiesMock.mockResolvedValue(null)
+    hasPublicSupabaseEnvMock.mockReturnValue(true)
+  })
+
+  it('returns 401 instead of throwing when Supabase credentials are unavailable', async () => {
+    hasPublicSupabaseEnvMock.mockReturnValue(false)
+
+    const { GET } = await import('../appointments/route')
+    const response = await GET(new NextRequest('http://localhost/api/appointments'))
+
+    expect(response.status).toBe(401)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' })
+    expect(createClientMock).not.toHaveBeenCalled()
   })
 
   it('returns a trimmed patient dashboard payload when dashboard view is requested', async () => {

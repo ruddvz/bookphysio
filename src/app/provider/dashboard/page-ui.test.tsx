@@ -35,10 +35,11 @@ function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status })
 }
 
-function getTodayAndTomorrowKeys(): { todayKey: string; tomorrowKey: string } {
+function getTodayAndTomorrowKeys(): { yesterdayKey: string; todayKey: string; tomorrowKey: string } {
   const todayKey = formatIndiaDateInput(new Date())
+  const yesterdayKey = formatIndiaDateInput(new Date(parseIndiaDate(todayKey).getTime() - 24 * 60 * 60 * 1000))
   const tomorrowKey = formatIndiaDateInput(new Date(parseIndiaDate(todayKey).getTime() + 24 * 60 * 60 * 1000))
-  return { todayKey, tomorrowKey }
+  return { yesterdayKey, todayKey, tomorrowKey }
 }
 
 describe('ProviderDashboardHome page', () => {
@@ -52,7 +53,7 @@ describe('ProviderDashboardHome page', () => {
   })
 
   it('shows the next consult from future schedule entries and keeps the most recent patient visible', async () => {
-    const { todayKey, tomorrowKey } = getTodayAndTomorrowKeys()
+    const { yesterdayKey, tomorrowKey } = getTodayAndTomorrowKeys()
     const tomorrowLabel = `${formatIndiaDate(tomorrowKey, { day: 'numeric', month: 'short' })} at 9:00 AM`
 
     vi.mocked(fetch).mockImplementation((input) => {
@@ -65,7 +66,7 @@ describe('ProviderDashboardHome page', () => {
               visit_id: 'past-visit',
               profile_id: 'profile-1',
               patient_name: 'Past Patient',
-              visit_date: todayKey,
+              visit_date: yesterdayKey,
               visit_time: '00:30',
               fee_inr: 900,
               visit_number: 2,

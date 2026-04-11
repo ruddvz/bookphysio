@@ -7,6 +7,7 @@ const rateLimitMock = vi.fn()
 const getRequestIpAddressMock = vi.fn()
 const redisGetMock = vi.fn()
 const redisSetMock = vi.fn()
+const hasPublicSupabaseEnvMock = vi.fn()
 
 const fallbackProvidersBuilder = {
   eq: vi.fn(() => fallbackProvidersBuilder),
@@ -52,6 +53,10 @@ vi.mock('@/lib/server/runtime', () => ({
   getRequestIpAddress: (...args: unknown[]) => getRequestIpAddressMock(...args),
 }))
 
+vi.mock('@/lib/supabase/env', () => ({
+  hasPublicSupabaseEnv: (...args: unknown[]) => hasPublicSupabaseEnvMock(...args),
+}))
+
 describe('GET /api/providers', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -59,9 +64,27 @@ describe('GET /api/providers', () => {
     getRequestIpAddressMock.mockReturnValue('203.0.113.10')
     redisGetMock.mockResolvedValue(null)
     redisSetMock.mockResolvedValue('OK')
+    hasPublicSupabaseEnvMock.mockReturnValue(true)
     fallbackProvidersOrderMock.mockResolvedValue({ data: [], error: null })
     providerDetailsInMock.mockResolvedValue({ data: [], error: null })
     rpcMock.mockResolvedValue({ data: [], error: null })
+  })
+
+  it('returns a stable empty response when Supabase credentials are unavailable', async () => {
+    hasPublicSupabaseEnvMock.mockReturnValue(false)
+
+    const { GET } = await import('../providers/route')
+    const res = await GET(new Request('http://localhost/api/providers?city=Mumbai&page=2&limit=10') as never)
+
+    expect(res.status).toBe(200)
+    expect(res.headers.get('x-cache')).toBe('BYPASS')
+    await expect(res.json()).resolves.toEqual({
+      providers: [],
+      total: 0,
+      page: 2,
+      limit: 10,
+    })
+    expect(rpcMock).not.toHaveBeenCalled()
   })
 
   it('returns 200 with empty results', async () => {

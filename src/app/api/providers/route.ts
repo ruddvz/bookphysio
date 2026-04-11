@@ -6,6 +6,7 @@ import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 const SEARCH_CACHE_TTL_SECONDS = 60
 
@@ -344,6 +345,17 @@ export async function GET(request: NextRequest) {
   }
 
   const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  if (!hasPublicSupabaseEnv()) {
+    return NextResponse.json({
+      providers: [],
+      total: 0,
+      page,
+      limit,
+    } satisfies SearchResponse, {
+      headers: { 'X-Cache': 'BYPASS' },
+    })
+  }
+
   const supabase = await createClient()
 
   let resolvedSpecialtyId: string | null = null

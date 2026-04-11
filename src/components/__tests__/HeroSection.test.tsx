@@ -1,9 +1,11 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { vi, describe, it, expect } from 'vitest'
 import HeroSection from '../HeroSection'
 
+const pushMock = vi.fn()
+
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: pushMock }),
 }))
 
 describe('HeroSection', () => {
@@ -50,5 +52,28 @@ describe('HeroSection', () => {
     expect(within(strip).getByRole('button', { name: 'Back pain' })).toBeInTheDocument()
     expect(within(strip).getByRole('button', { name: 'Home visit' })).toBeInTheDocument()
     expect(within(strip).getByRole('button', { name: 'Stroke recovery' })).toBeInTheDocument()
+  })
+
+  it('navigates to search with the selected chip condition', () => {
+    render(<HeroSection />)
+
+    const strip = screen.getByRole('group', { name: /browse common conditions/i })
+    fireEvent.click(within(strip).getByRole('button', { name: 'Back pain' }))
+
+    expect(pushMock).toHaveBeenCalledWith('/search?condition=Back+pain')
+  })
+
+  it('submits both condition and location from the hero search form', () => {
+    render(<HeroSection />)
+
+    fireEvent.change(screen.getByRole('combobox', { name: /condition/i }), {
+      target: { value: 'Back pain' },
+    })
+    fireEvent.change(screen.getByRole('combobox', { name: /location/i }), {
+      target: { value: 'Mumbai' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /find care/i }))
+
+    expect(pushMock).toHaveBeenCalledWith('/search?condition=Back+pain&location=Mumbai')
   })
 })

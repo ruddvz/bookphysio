@@ -9,6 +9,7 @@ const bookingUserRateLimitMock = vi.fn()
 const redisGetMock = vi.fn()
 const redisSetMock = vi.fn()
 const redisDelMock = vi.fn()
+const hasPublicSupabaseEnvMock = vi.fn()
 let adminAppointmentInsertHandler: ((payload: unknown) => void) | undefined
 let adminExistingBookings: unknown[] | undefined
 let redisState = new Map<string, string>()
@@ -48,6 +49,10 @@ vi.mock('@/lib/upstash', () => ({
     return 0
   },
   getActiveBookingHoldTtlSeconds: () => 1800,
+}))
+
+vi.mock('@/lib/supabase/env', () => ({
+  hasPublicSupabaseEnv: (...args: unknown[]) => hasPublicSupabaseEnvMock(...args),
 }))
 
 function createRoleChain(role: 'patient' | 'provider' | 'admin') {
@@ -216,6 +221,7 @@ describe('POST /api/appointments', () => {
     adminAppointmentInsertHandler = undefined
     adminExistingBookings = undefined
     redisState = new Map()
+    hasPublicSupabaseEnvMock.mockReturnValue(true)
     bookingIpRateLimitMock.mockResolvedValue({ success: true })
     bookingUserRateLimitMock.mockResolvedValue({ success: true })
     redisGetMock.mockImplementation(async (key: string) => redisState.get(String(key)) ?? null)
