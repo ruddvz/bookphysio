@@ -29,7 +29,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type AIChatVariant = 'patient' | 'provider'
+type AIChatVariant = 'patient' | 'provider' | 'pai'
 
 type AceExpression = 'neutral' | 'happy' | 'thinking' | 'caring'
 
@@ -286,6 +286,68 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
     footerNote: 'Built to look and feel like a premium clinical copilot, not a generic chat widget.',
     contextLabel: 'Clinical decision support and research briefings',
   }
+
+  // PAI variant
+  return {
+    eyebrow: 'Physiotherapy AI',
+    title: 'Your clinical knowledge companion for physio, rehab, and recovery.',
+    description:
+      'PAI is a physiopedia-style knowledge engine built for India — condition explainers, rehab protocols, red flag checks, and patient education, all backed by current evidence.',
+    modeLabel: 'PAI mode',
+    liveNote:
+      'Ask about any musculoskeletal condition, rehabilitation protocol, or red flag symptom. PAI responds with structured, evidence-cited guidance tailored for the Indian clinical context.',
+    primaryHref: '/search',
+    primaryLabel: 'Find a physiotherapist',
+    secondaryHref: '/patient/motio',
+    secondaryLabel: 'Talk to Ace AI',
+    quickPrompts: [
+      'What is frozen shoulder?',
+      'Rehab exercises after ACL surgery',
+      'Red flags for lower back pain',
+      'Post-op physio for knee replacement',
+    ],
+    metrics: [
+      { label: 'Evidence base', value: 'CPG cited', caption: 'Cochrane, JOSPT, BJSM references', icon: BookOpen, tone: 'teal' as Tone },
+      { label: 'Conditions', value: '100+ covered', caption: 'MSK, neurological, sports, post-op', icon: Activity, tone: 'emerald' as Tone },
+      { label: 'Context', value: 'India-first', caption: 'IAP guidelines, Indian clinical context', icon: MapPin, tone: 'amber' as Tone },
+    ],
+    safetyTitle: 'Clinical guardrails',
+    safetyPoints: [
+      'PAI explains, not diagnoses — always uses "may suggest" language for patient safety.',
+      'Red flag symptoms are flagged clearly with urgent referral guidance.',
+      "PAI complements, never replaces, your physiotherapist's clinical judgment.",
+    ],
+    railTitle: 'What PAI covers',
+    railCards: [
+      {
+        label: 'Conditions',
+        title: 'Structured condition explainers',
+        detail: 'Anatomy, mechanism, stages, and prognosis in clear language.',
+        icon: BrainCircuit,
+        tone: 'violet' as Tone,
+        href: '/patient/motio',
+        cta: 'Try Ace for triage',
+      },
+      {
+        label: 'Rehab',
+        title: 'Exercise protocols with sets/reps',
+        detail: 'Evidence-based rehab plans with progression cues and frequency.',
+        icon: ClipboardList,
+        tone: 'teal' as Tone,
+        href: '/search',
+        cta: 'Find a physio',
+      },
+      {
+        label: 'Safety',
+        title: 'Red flag identification',
+        detail: 'PAI identifies warning symptoms that require urgent medical care.',
+        icon: ShieldCheck,
+        tone: 'amber' as Tone,
+      },
+    ],
+    footerNote: 'PAI is an educational tool. Always consult a qualified physiotherapist for diagnosis and treatment.',
+    contextLabel: 'Clinical knowledge, rehab protocols, and patient education',
+  }
 }
 
 function toneClasses(tone: Tone) {
@@ -293,8 +355,8 @@ function toneClasses(tone: Tone) {
 }
 
 function renderMessageContent(content: string) {
-  return content.split(/(\[C\d+\])/g).map((part, index) => {
-    if (/\[C\d+\]/.test(part)) {
+  return content.split(/(\[[CK]\d+\])/g).map((part, index) => {
+    if (/\[[CK]\d+\]/.test(part)) {
       return (
         <span
           key={`${part}-${index}`}
@@ -551,7 +613,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                   {chatMessages.map((message, index) => {
                     const isUser = message.role === 'user'
                     const citationIds = Array.from(
-                      new Set((message.content.match(/\[C\d+\]/g) ?? []).map((citation) => citation.replace(/[\[\]]/g, '')))
+                      new Set((message.content.match(/\[[CK]\d+\]/g) ?? []).map((citation) => citation.replace(/[\[\]]/g, '')))
                     )
 
                     return (
@@ -641,7 +703,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     className="flex items-center gap-3 rounded-full border border-bp-border bg-white p-2.5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.2)] transition-all focus-within:border-bp-accent/30 focus-within:shadow-[0_24px_60px_-28px_rgba(0,118,108,0.2)]"
                   >
                     <label htmlFor={inputId} className="sr-only">
-                      {variant === 'patient' ? 'Ask BookPhysio AI about symptoms and recovery' : 'Ask BookPhysio AI about a clinical case'}
+                      {variant === 'patient' ? 'Ask BookPhysio AI about symptoms and recovery' : variant === 'pai' ? 'Ask PAI about a condition, protocol, or exercise' : 'Ask BookPhysio AI about a clinical case'}
                     </label>
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
                       <AceMascot expression={currentExpression} />
@@ -651,14 +713,14 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       ref={inputRef}
                       value={input}
                       onChange={handleInputChange}
-                      placeholder={variant === 'patient' ? 'Describe what hurts, how long it has been going on, and what makes it worse...' : 'Summarize the case, findings, and what you want the AI to help with...'}
+                      placeholder={variant === 'patient' ? 'Describe what hurts, how long it has been going on, and what makes it worse...' : variant === 'pai' ? 'Ask about a condition, rehab protocol, exercise, or red flag symptom...' : 'Summarize the case, findings, and what you want the AI to help with...'}
                       className="min-w-0 flex-1 bg-transparent px-2 py-3 text-[15px] font-medium text-bp-primary outline-none placeholder:text-bp-body/40"
                       disabled={isLoading}
                     />
                     <button
                       type="submit"
                       disabled={!(input || '').trim() || isLoading}
-                      aria-label={variant === 'patient' ? 'Send recovery question' : 'Send clinical question'}
+                      aria-label={variant === 'patient' ? 'Send recovery question' : variant === 'pai' ? 'Send PAI question' : 'Send clinical question'}
                       className={cn(
                         'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all',
                         (input || '').trim() && !isLoading
