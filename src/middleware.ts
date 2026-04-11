@@ -10,9 +10,17 @@ const ADMIN_PREFIX = '/admin'
 function buildCsp(nonce: string): string {
   return [
     "default-src 'self'",
-    // nonce replaces 'unsafe-inline'; 'strict-dynamic' trusts scripts loaded by nonce-tagged scripts.
-    // The Razorpay host is kept for legacy browsers that don't understand 'strict-dynamic'.
-    `script-src 'nonce-${nonce}' 'strict-dynamic' https://checkout.razorpay.com`,
+    // NOTE: The homepage and most public pages are statically prerendered at build
+    // time, so there is no way to stamp a per-request nonce onto their inline
+    // framework scripts. Pairing 'nonce-' + 'strict-dynamic' with static HTML
+    // caused every <script> on the page to be blocked by the browser, killing
+    // hydration site-wide (rotating H1 froze, burger menu wouldn't click,
+    // dropdowns wouldn't open, search was dead). We keep the nonce + strict-dynamic
+    // as a best-effort hardening for any dynamically rendered routes, but add
+    // 'self' and 'unsafe-inline' so static prerendered scripts can actually run.
+    // Browsers that honor 'strict-dynamic' will ignore 'unsafe-inline'/'self';
+    // browsers/pages that don't will fall back to the same-origin rule.
+    `script-src 'self' 'unsafe-inline' 'nonce-${nonce}' 'strict-dynamic' https://checkout.razorpay.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
