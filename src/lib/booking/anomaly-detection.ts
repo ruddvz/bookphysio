@@ -11,6 +11,9 @@ async function getAiModel(): Promise<LanguageModel> {
   return patientModels
 }
 
+/** Fee threshold (in ₹) above which AI analysis is always triggered */
+const HIGH_VALUE_BOOKING_THRESHOLD_INR = 5000
+
 /**
  * Booking Anomaly Detection
  *
@@ -266,7 +269,7 @@ export async function checkBookingAnomaly(context: AnomalyCheckContext): Promise
     const ruleFlags = runRuleBasedChecks(context, patientHistory, providerCtx)
 
     // Step 2: AI-enhanced analysis (only if rule flags exist OR high-value booking)
-    const shouldRunAi = ruleFlags.length > 0 || context.feeInr > 5000
+    const shouldRunAi = ruleFlags.length > 0 || context.feeInr > HIGH_VALUE_BOOKING_THRESHOLD_INR
     let aiResult: { isAnomaly: boolean; severity: 'low' | 'medium' | 'high'; reason: string } = {
       isAnomaly: false,
       severity: 'low',

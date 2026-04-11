@@ -100,7 +100,10 @@ function AiInsightsCard() {
     try {
       const res = await fetch('/api/admin/ai-insights', { method: 'POST' })
       if (!res.ok) {
-        const body = await res.json().catch(() => null) as { error?: string } | null
+        const body = await res.json().catch((e: unknown) => {
+          console.warn('[admin] Failed to parse error response:', e)
+          return null
+        }) as { error?: string } | null
         throw new Error(body?.error ?? `HTTP ${res.status}`)
       }
       const data = await res.json() as AiInsights
