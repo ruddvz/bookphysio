@@ -8,6 +8,7 @@ const adminUpdateUserByIdMock = vi.fn()
 const otpRateLimitMock = vi.fn()
 const apiRateLimitMock = vi.fn()
 const previewRateLimitMock = vi.fn()
+const hasPublicSupabaseEnvMock = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: (...args: unknown[]) => createClientMock(...args),
@@ -36,6 +37,10 @@ vi.mock('@/lib/upstash', () => ({
   },
 }))
 
+vi.mock('@/lib/supabase/env', () => ({
+  hasPublicSupabaseEnv: (...args: unknown[]) => hasPublicSupabaseEnvMock(...args),
+}))
+
 function createSingleRowChain(result: unknown) {
   const chain = {
     select: vi.fn(() => chain),
@@ -62,6 +67,7 @@ describe('Auth and admin hardening routes', () => {
     otpRateLimitMock.mockResolvedValue({ success: true })
     apiRateLimitMock.mockResolvedValue({ success: true })
     previewRateLimitMock.mockResolvedValue({ success: true })
+    hasPublicSupabaseEnvMock.mockReturnValue(true)
   })
 
   afterEach(() => {

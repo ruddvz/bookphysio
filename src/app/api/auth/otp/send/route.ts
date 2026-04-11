@@ -11,6 +11,7 @@ import { otpRatelimit } from '@/lib/upstash'
 import { createClient } from '@/lib/supabase/server'
 import { getDevPhoneRole } from '@/lib/auth/dev-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 const maskedLoginOtpResponse = { message: 'If an account exists, an OTP has been sent.' }
 
@@ -86,6 +87,13 @@ export async function POST(request: NextRequest) {
     if (!success) return NextResponse.json({ error: 'Too many OTP requests. Try again in 10 minutes.' }, { status: 429 })
   } catch {
     // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
+  }
+
+  if (!hasPublicSupabaseEnv()) {
+    return NextResponse.json(
+      { error: 'Phone verification is temporarily unavailable. Please try again later.' },
+      { status: 503 },
+    )
   }
 
   // Initialize Supabase OTP session

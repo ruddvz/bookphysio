@@ -142,7 +142,7 @@ export default function Navbar({
                         return (
                           <Link
                             key={s.slug}
-                            href={`/specialties/${s.slug}`}
+                            href={`/specialty/${s.slug}`}
                             onClick={() => setBrowseOpen(false)}
                             className="group flex items-start gap-3 rounded-xl border border-transparent px-3.5 py-3 transition-all duration-150 hover:bg-slate-50 hover:border-slate-200"
                           >
@@ -276,7 +276,7 @@ export default function Navbar({
                 return (
                   <Link
                     key={s.slug}
-                    href={`/specialties/${s.slug}`}
+                    href={`/specialty/${s.slug}`}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
                       'group flex items-center gap-3 rounded-2xl border bg-white/65 backdrop-blur-sm px-3.5 py-3 transition-all duration-150 hover:bg-white/90 hover:shadow-sm',

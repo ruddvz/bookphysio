@@ -63,25 +63,25 @@ test.describe('Flow 1: Search → Book → Pay → Confirmation', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Flow 2: OTP Login — New User
+// Flow 2: Login — Current auth form
 // ---------------------------------------------------------------------------
-test.describe('Flow 2: OTP Login — New User', () => {
-  test('login page has phone OTP form with +91 prefix', async ({ page }) => {
+test.describe('Flow 2: Login', () => {
+  test('login page has email and password fields', async ({ page }) => {
     await page.goto('/login')
 
     await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
-    await expect(page.getByLabel('Mobile Number')).toBeVisible()
-    await expect(page.getByText('+91').first()).toBeVisible()
-    await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
+    await expect(page.getByLabel('Email address')).toBeVisible()
+    await expect(page.getByLabel(/^Password$/)).toBeVisible()
+    await expect(page.getByRole('button', { name: /^sign in$/i })).toBeVisible()
   })
 
-  test('login form validates phone number before submission', async ({ page }) => {
+  test('login form keeps users on the page when credentials are invalid', async ({ page }) => {
     await page.goto('/login')
 
-    const phoneInput = page.getByLabel('Mobile Number')
-    await phoneInput.fill('123') // Too short
+    await page.getByLabel('Email address').fill('invalid-email')
+    await page.getByLabel(/^Password$/).fill('123')
 
-    const sendBtn = page.getByRole('button', { name: /continue with secure otp/i })
+    const sendBtn = page.getByRole('button', { name: /^sign in$/i })
     await sendBtn.click()
 
     // Should show validation error or remain on login page (not navigate away)
@@ -91,21 +91,22 @@ test.describe('Flow 2: OTP Login — New User', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Flow 3: OTP Login — Returning User (same form as Flow 2)
+// Flow 3: Signup
 // ---------------------------------------------------------------------------
-test.describe('Flow 3: OTP Login — Returning User', () => {
-  test('signup page has name and phone fields', async ({ page }) => {
+test.describe('Flow 3: Signup', () => {
+  test('signup page has the current account creation fields', async ({ page }) => {
     await page.goto('/signup')
 
     await expect(page.getByRole('heading', { name: /create your account/i })).toBeVisible()
     await expect(page.getByLabel('Full Name')).toBeVisible()
-    await expect(page.getByLabel('Mobile Number')).toBeVisible()
-    await expect(page.getByRole('button', { name: /continue with secure otp/i })).toBeVisible()
+    await expect(page.getByLabel('Email address')).toBeVisible()
+    await expect(page.getByLabel(/Mobile number/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: /continue — verify phone/i })).toBeVisible()
   })
 
   test('signup links back to login', async ({ page }) => {
     await page.goto('/signup')
-    await expect(page.getByRole('link', { name: /sign in with mobile otp|log in/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /^sign in$/i })).toBeVisible()
   })
 })
 

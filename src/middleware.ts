@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getDemoRedirectPath, getDemoSessionFromCookies, resolvePostAuthRedirect } from '@/lib/demo/session'
 import { canRoleAccessPath, isPatientPath, isProviderPath } from '@/lib/auth/access'
+import { getPublicSupabaseEnv } from '@/lib/supabase/env'
 
 const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
@@ -32,25 +33,29 @@ export default async function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce)
 
   let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
+  const supabaseEnv = getPublicSupabaseEnv()
+  const supabase = supabaseEnv
+    ? createServerClient(
+        supabaseEnv.url,
+        supabaseEnv.anonKey,
+        {
+          cookies: {
+            getAll() { return request.cookies.getAll() },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+              supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
+              cookiesToSet.forEach(({ name, value, options }) =>
+                supabaseResponse.cookies.set(name, value, options)
+              )
+            },
+          },
+        }
+      )
+    : null
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set') })(),
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? (() => { throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY is not set') })(),
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = supabase
+    ? await supabase.auth.getUser()
+    : { data: { user: null } }
   const demoSession = user ? null : await getDemoSessionFromCookies(request.cookies)
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
@@ -92,7 +97,7 @@ export default async function middleware(request: NextRequest) {
     return demoNext
   }
 
-  if (user && (isProviderRoute || isPatientRoute || isAdmin)) {
+  if (user && supabase && (isProviderRoute || isPatientRoute || isAdmin)) {
     // Defense-in-depth: admin API routes independently enforce requireAdmin() server-side.
     // This middleware redirect prevents unnecessary round-trips for non-admin UI users.
     const { data: profile, error: profileError } = await supabase

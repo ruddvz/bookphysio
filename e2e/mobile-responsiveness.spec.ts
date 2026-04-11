@@ -20,17 +20,17 @@ test('mobile 8.16: Booking flow wizard steps render without horizontal scroll', 
   expect(hasHorizontalOverflow).toBe(false)
 })
 
-// Test Flow 2: OTP Login
-test('mobile 8.16: OTP login form inputs are full-width and tappable', async ({ page }) => {
+// Test Flow 2: Login
+test('mobile 8.16: login form inputs are full-width and tappable', async ({ page }) => {
   await page.goto('/login')
   
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
   const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
   expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
 
-  // Verify mobile number is visible
-  const mobileInput = page.getByLabel('Mobile Number')
-  await expect(mobileInput).toBeVisible()
+  // Verify primary auth fields are visible
+  await expect(page.getByLabel('Email address')).toBeVisible()
+  await expect(page.getByLabel(/^Password$/)).toBeVisible()
 })
 
 // Test Flow 6: Patient dashboard cards stack vertically
