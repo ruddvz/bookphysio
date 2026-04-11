@@ -15,7 +15,7 @@ function buildCsp(nonce: string): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://textbelt.com https://*.upstash.io",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://*.upstash.io",
     "worker-src 'self' blob:",
     "frame-ancestors 'none'",
   ].join('; ')

@@ -40,6 +40,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Track what we created so we can roll back on partial failure.
+  let providerCreated = false
+  let locationCreated = false
+  let specialtiesLinked = false
+
   try {
     const body = await request.json()
     const validated = onboardSchema.parse(body)
@@ -48,8 +53,8 @@ export async function POST(request: NextRequest) {
     // 1. Update user metadata — role stays 'patient' until admin approves
     const { error: userError } = await supabaseAdmin
       .from('users')
-      .update({ 
-        full_name: step1.name 
+      .update({
+        full_name: step1.name
       })
       .eq('id', user.id)
 
@@ -72,7 +77,7 @@ export async function POST(request: NextRequest) {
         id: user.id, // ID matches user ID
         title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
-        iap_registration_no: step2.registrationType === 'STATE' 
+        iap_registration_no: step2.registrationType === 'STATE'
           ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
           : (step2.iapNumber || ''),
         consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
@@ -84,6 +89,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (providerError) throw providerError
+    providerCreated = true
 
     // 3. Create Location
     const { error: locError } = await supabaseAdmin
@@ -98,25 +104,26 @@ export async function POST(request: NextRequest) {
       })
 
     if (locError) throw locError
+    locationCreated = true
 
-    // 4. Handle Specialties (Assuming Specialties table has name matches or just inserting for now)
-    // In a real app, we'd fetch IDs for specialty names. 
-    // For now, we'll try to find them or skip if logic is complex.
-    // Let's assume we have a table 'specialties' and we link them.
+    // 4. Link Specialties by name match (best-effort — taxonomy is admin-managed)
     const { data: existingSpecialties } = await supabaseAdmin
       .from('specialties')
       .select('id, name')
-    
+
     if (existingSpecialties) {
       const selectedIds = existingSpecialties
         .filter(s => step2.specialties.includes(s.name))
         .map(s => s.id)
-      
+
       if (selectedIds.length > 0) {
         await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', user.id)
-        await supabaseAdmin.from('provider_specialties').insert(
-          selectedIds.map(sid => ({ provider_id: user.id, specialty_id: sid }))
-        )
+        const { error: linkError } = await supabaseAdmin
+          .from('provider_specialties')
+          .insert(selectedIds.map(sid => ({ provider_id: user.id, specialty_id: sid })))
+
+        if (linkError) throw linkError
+        specialtiesLinked = true
       }
     }
 
@@ -124,6 +131,35 @@ export async function POST(request: NextRequest) {
 
   } catch (error: unknown) {
     console.error('Onboarding error:', error)
-    return NextResponse.json({ error: 'Onboarding failed. Please try again.' }, { status: 500 })
+
+    // Best-effort rollback so a half-onboarded provider doesn't linger.
+    // Order matters: child rows (specialties, locations) before parent (providers).
+    if (specialtiesLinked) {
+      await supabaseAdmin
+        .from('provider_specialties')
+        .delete()
+        .eq('provider_id', user.id)
+        .then(undefined, (err: unknown) => console.error('Rollback provider_specialties failed:', err))
+    }
+    if (locationCreated) {
+      await supabaseAdmin
+        .from('locations')
+        .delete()
+        .eq('provider_id', user.id)
+        .then(undefined, (err: unknown) => console.error('Rollback locations failed:', err))
+    }
+    if (providerCreated) {
+      await supabaseAdmin
+        .from('providers')
+        .delete()
+        .eq('id', user.id)
+        .then(undefined, (err: unknown) => console.error('Rollback providers failed:', err))
+    }
+
+    const message = error instanceof z.ZodError
+      ? 'Some onboarding fields are invalid. Please review and try again.'
+      : 'Onboarding failed. Please try again or contact support.'
+
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
