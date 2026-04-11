@@ -20,6 +20,13 @@ export default function robots(): MetadataRoute.Robots {
           '/dev-login',
         ],
       },
+      // Explicitly allow AI bots to crawl public pages
+      { userAgent: 'GPTBot', allow: '/' },
+      { userAgent: 'ChatGPT-User', allow: '/' },
+      { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'PerplexityBot', allow: '/' },
+      { userAgent: 'Amazonbot', allow: '/' },
+      { userAgent: 'GoogleOther', allow: '/' },
     ],
   }
 }
