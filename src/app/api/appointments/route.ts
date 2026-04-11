@@ -17,6 +17,7 @@ import { buildAppointmentNotes, getVisitTypeConsultationFee } from '@/lib/bookin
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
+import { sendProviderNewBooking } from '@/lib/resend'
 
 type PaymentRecord = {
   status: 'created' | 'paid' | 'failed' | 'refunded'
@@ -317,6 +318,49 @@ export async function POST(request: NextRequest) {
       console.error('[api/appointments] Failed to persist active booking hold:', error)
       return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
     }
+  }
+
+  // Notify provider of new booking (best-effort — do not fail on email error)
+  try {
+    const { data: providerUser } = await supabaseAdmin
+      .from('users')
+      .select('full_name, email')
+      .eq('id', slot.provider_id)
+      .single()
+
+    const { data: patientUser } = await supabaseAdmin
+      .from('users')
+      .select('full_name')
+      .eq('id', user.id)
+      .single()
+
+    const { data: slotDetails } = await supabaseAdmin
+      .from('availabilities')
+      .select('starts_at')
+      .eq('id', availability_id)
+      .single()
+
+    if (providerUser?.email && patientUser && slotDetails) {
+      const startsAt = slotDetails.starts_at ? new Date(slotDetails.starts_at as string) : null
+      const dateStr = startsAt
+        ? startsAt.toLocaleDateString('en-IN', { dateStyle: 'long' })
+        : 'TBD'
+      const timeStr = startsAt
+        ? startsAt.toLocaleTimeString('en-IN', { timeStyle: 'short' })
+        : 'TBD'
+
+      await sendProviderNewBooking(providerUser.email as string, {
+        providerName: providerUser.full_name as string,
+        patientName: patientUser.full_name as string,
+        appointmentDate: dateStr,
+        appointmentTime: timeStr,
+        visitType: visit_type,
+        amountInr: feeInr,
+        appointmentId: appointment.id as string,
+      })
+    }
+  } catch (emailError) {
+    console.error('[api/appointments] Provider notification email failed (non-fatal):', emailError)
   }
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })

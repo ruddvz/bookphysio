@@ -8,6 +8,7 @@ import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { getActiveBookingAppointmentHoldKey, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
+import { sendAppointmentCancellation } from '@/lib/resend'
 
 type PaymentRecord = {
   status: 'created' | 'paid' | 'failed' | 'refunded'
@@ -221,6 +222,44 @@ export async function PATCH(
   if (!data) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
 
   await clearActiveBookingHold(appt.id)
+
+  // Send cancellation email to patient (best-effort)
+  try {
+    const { supabaseAdmin: adminClient } = await import('@/lib/supabase/admin')
+
+    const { data: patientUser } = await adminClient
+      .from('users')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single()
+
+    const { data: providerUser } = await adminClient
+      .from('users')
+      .select('full_name')
+      .eq('id', data.provider_id)
+      .single()
+
+    const availability = Array.isArray(data.availabilities) ? data.availabilities[0] : data.availabilities
+    const startsAt = availability && typeof availability === 'object' && 'starts_at' in availability
+      ? new Date((availability as { starts_at: string }).starts_at)
+      : null
+
+    if (patientUser?.email && providerUser) {
+      await sendAppointmentCancellation(patientUser.email as string, {
+        patientName: patientUser.full_name as string,
+        providerName: providerUser.full_name as string,
+        appointmentDate: startsAt
+          ? startsAt.toLocaleDateString('en-IN', { dateStyle: 'long' })
+          : 'TBD',
+        appointmentTime: startsAt
+          ? startsAt.toLocaleTimeString('en-IN', { timeStyle: 'short' })
+          : 'TBD',
+        visitType: data.visit_type as string,
+      })
+    }
+  } catch (emailError) {
+    console.error('[api/appointments/[id]] Cancellation email failed (non-fatal):', emailError)
+  }
 
   return jsonNoStore(
     withAppointmentDetailNotes(data, {

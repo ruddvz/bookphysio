@@ -1,39 +1,50 @@
 import { Resend } from 'resend'
+import {
+  bookingConfirmationTemplate,
+  providerNewBookingTemplate,
+  appointmentCancellationTemplate,
+  welcomePatientTemplate,
+  welcomeProviderTemplate,
+  providerApprovedTemplate,
+  type BookingConfirmationData,
+  type ProviderNewBookingData,
+  type AppointmentCancellationData,
+  type WelcomePatientData,
+  type WelcomeProviderData,
+  type ProviderApprovedData,
+} from './email/templates'
 
 const resend = new Resend(process.env.RESEND_API_KEY || 'placeholder-resend-key')
+const FROM = process.env.RESEND_FROM_EMAIL ?? 'noreply@mail.bookphysio.in'
 
-export async function sendBookingConfirmation({
-  to,
-  patientName,
-  providerName,
-  appointmentDate,
-  appointmentTime,
-  visitType,
-  amountInr,
-}: {
-  to: string
-  patientName: string
-  providerName: string
-  appointmentDate: string
-  appointmentTime: string
-  visitType: string
-  amountInr: number
-}) {
-  return resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || 'noreply@bookphysio.in',
-    to,
-    subject: `Appointment Confirmed — ${providerName}`,
-    html: `
-      <h2>Appointment Confirmed</h2>
-      <p>Hi ${patientName},</p>
-      <p>Your appointment with <strong>${providerName}</strong> is confirmed.</p>
-      <ul>
-        <li><strong>Date:</strong> ${appointmentDate}</li>
-        <li><strong>Time:</strong> ${appointmentTime}</li>
-        <li><strong>Type:</strong> ${visitType}</li>
-        <li><strong>Fee:</strong> ₹${amountInr}</li>
-      </ul>
-      <p>You can manage your appointment at <a href="${process.env.NEXT_PUBLIC_APP_URL}/appointments">bookphysio.in</a></p>
-    `,
-  })
+// All email sends are best-effort — callers should wrap in try/catch.
+
+export async function sendBookingConfirmation(to: string, data: BookingConfirmationData) {
+  const { subject, html } = bookingConfirmationTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
+}
+
+export async function sendProviderNewBooking(to: string, data: ProviderNewBookingData) {
+  const { subject, html } = providerNewBookingTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
+}
+
+export async function sendAppointmentCancellation(to: string, data: AppointmentCancellationData) {
+  const { subject, html } = appointmentCancellationTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
+}
+
+export async function sendWelcomePatient(to: string, data: WelcomePatientData) {
+  const { subject, html } = welcomePatientTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
+}
+
+export async function sendWelcomeProvider(to: string, data: WelcomeProviderData) {
+  const { subject, html } = welcomeProviderTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
+}
+
+export async function sendProviderApproved(to: string, data: ProviderApprovedData) {
+  const { subject, html } = providerApprovedTemplate(data)
+  return resend.emails.send({ from: FROM, to, subject, html })
 }

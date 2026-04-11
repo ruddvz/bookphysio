@@ -3,6 +3,7 @@ import { getRequestIpAddress } from '@/lib/server/runtime'
 import { createClient } from '@/lib/supabase/server'
 import { signupPatientSchema, signupProviderSchema } from '@/lib/validations/auth'
 import { otpRatelimit } from '@/lib/upstash'
+import { sendWelcomePatient, sendWelcomeProvider } from '@/lib/resend'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
@@ -38,6 +39,19 @@ export async function POST(request: NextRequest) {
   })
 
   if (error) return NextResponse.json({ error: 'Unable to complete signup' }, { status: 400 })
+
+  // Send welcome email (best-effort — do not fail signup on email error)
+  if (data.user?.email && full_name) {
+    try {
+      if (role === 'provider') {
+        await sendWelcomeProvider(data.user.email, { providerName: full_name })
+      } else {
+        await sendWelcomePatient(data.user.email, { patientName: full_name })
+      }
+    } catch (emailError) {
+      console.error('[api/auth/signup] Welcome email failed (non-fatal):', emailError)
+    }
+  }
 
   return NextResponse.json({
     user: { id: data.user?.id, email: data.user?.email, phone: data.user?.phone },

@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     if (appt) {
       const { data: patient } = await supabaseAdmin
         .from('users')
-        .select('full_name, phone')
+        .select('full_name, phone, email')
         .eq('id', appt.patient_id)
         .single()
 
@@ -136,15 +136,18 @@ export async function POST(request: NextRequest) {
         const date = startsAt ? new Date(startsAt).toLocaleDateString('en-IN', { dateStyle: 'long' }) : 'TBD'
         const time = startsAt ? new Date(startsAt).toLocaleTimeString('en-IN', { timeStyle: 'short' }) : 'TBD'
 
-        await sendBookingConfirmation({
-          to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
-          patientName: patient.full_name,
-          providerName: provider.full_name,
-          appointmentDate: date,
-          appointmentTime: time,
-          visitType: appt.visit_type,
-          amountInr: appt.fee_inr,
-        })
+        const patientEmail = (patient as unknown as { email?: string }).email
+        if (patientEmail) {
+          await sendBookingConfirmation(patientEmail, {
+            patientName: patient.full_name as string,
+            providerName: provider.full_name as string,
+            appointmentDate: date,
+            appointmentTime: time,
+            visitType: appt.visit_type as string,
+            amountInr: appt.fee_inr as number,
+            appointmentId: existingPayment.appointment_id as string,
+          })
+        }
       }
     }
   } catch (emailError) {

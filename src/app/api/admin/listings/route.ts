@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { sendProviderApproved } from '@/lib/resend'
 
 const approveSchema = z.object({
   provider_id: z.string().uuid(),
@@ -42,5 +43,24 @@ export async function PATCH(request: NextRequest) {
     .eq('id', provider_id)
 
   if (error) return NextResponse.json({ error: 'Update failed' }, { status: 500 })
+
+  // Send provider-approved email when approving (best-effort)
+  if (approved) {
+    try {
+      const { data: providerRecord } = await supabaseAdmin
+        .from('providers')
+        .select('users!inner (full_name, email)')
+        .eq('id', provider_id)
+        .single()
+
+      const user = providerRecord?.users as unknown as { full_name: string; email: string } | null
+      if (user?.email) {
+        await sendProviderApproved(user.email, { providerName: user.full_name })
+      }
+    } catch (emailError) {
+      console.error('[api/admin/listings] Provider approved email failed (non-fatal):', emailError)
+    }
+  }
+
   return NextResponse.json({ success: true })
 }
