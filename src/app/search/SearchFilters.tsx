@@ -316,7 +316,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
 
                 <div className="grid grid-cols-2 gap-3">
 
-                   {CITIES.slice(0, 8).map(c => (
+                   {CITIES.map(c => (
                      <button 
                        key={c}
                        onClick={() => pushParams({ city: c === currentCity ? null : c })}
@@ -353,6 +353,30 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                      <span>₹0</span>
                      <span>₹2000</span>
                   </div>
+                </div>
+              </section>
+
+              {/* Visit Type */}
+              <section>
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><MapPin size={20} /></div>
+                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Visit Type</label>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {['Any', ...VISIT_TYPES].map(type => (
+                    <button
+                      key={type}
+                      onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
+                      className={cn(
+                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-center transition-all active:scale-[0.97]",
+                        currentVisitType === type
+                          ? "bg-bp-accent text-white border-bp-accent shadow-xl shadow-bp-accent/20"
+                          : "bg-white text-bp-body border-bp-border"
+                      )}
+                    >
+                      {type}
+                    </button>
+                  ))}
                 </div>
               </section>
             </div>

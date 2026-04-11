@@ -14,11 +14,13 @@ import { metadata as verifyOtpMetadata } from './verify-otp/layout'
 import { clearPendingOtp, readPendingOtp, savePendingOtp } from '@/lib/auth/pending-otp'
 
 const push = vi.fn()
+const refresh = vi.fn()
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push,
     back: vi.fn(),
+    refresh,
   }),
   useSearchParams: () => new URLSearchParams(),
 }))
@@ -40,12 +42,14 @@ vi.mock('@/lib/supabase/client', () => ({
     auth: {
       resetPasswordForEmail: vi.fn(),
       signInWithOAuth: vi.fn(),
+      signInWithPassword: vi.fn().mockResolvedValue({ data: {}, error: null }),
     },
   }),
 }))
 
 afterEach(() => {
   push.mockReset()
+  refresh.mockReset()
   clearPendingOtp()
   window.history.replaceState({}, '', '/verify-otp')
   vi.unstubAllGlobals()

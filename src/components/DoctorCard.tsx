@@ -301,7 +301,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                             setSelectedSlot(isSelected ? null : { time: slot, dayIso: day.iso })
                           }}
                           className={cn(
-                            'inline-flex w-full items-center justify-center gap-1 rounded-xl border py-2 text-[11px] font-bold transition-all',
+                            'inline-flex w-full items-center justify-center gap-1 rounded-xl border min-h-[44px] py-2.5 text-[11px] font-bold transition-all',
                             isSelected
                               ? 'border-bp-accent bg-bp-accent text-white shadow-lg shadow-bp-accent/20'
                               : 'border-bp-border bg-bp-surface/30 text-bp-body hover:border-bp-accent/25 hover:text-bp-primary'
