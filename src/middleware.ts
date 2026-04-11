@@ -7,30 +7,30 @@ import { getPublicSupabaseEnv } from '@/lib/supabase/env'
 const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
 
-function buildCsp(nonce: string): string {
-  return [
-    "default-src 'self'",
-    // nonce replaces 'unsafe-inline'; 'strict-dynamic' trusts scripts loaded by nonce-tagged scripts.
-    // The Razorpay host is kept for legacy browsers that don't understand 'strict-dynamic'.
-    `script-src 'nonce-${nonce}' 'strict-dynamic' https://checkout.razorpay.com`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://*.upstash.io",
-    "worker-src 'self' blob:",
-    "frame-ancestors 'none'",
-  ].join('; ')
-}
+// Nonce-based CSP requires every page to be dynamically rendered (no static
+// pre-rendering).  Many pages in this app use generateStaticParams / static
+// rendering for performance, so the nonce can never be injected into their
+// pre-built HTML.  The browser then blocks every script whose nonce doesn't
+// match the per-request CSP header, killing React hydration entirely.
+//
+// Fix: use 'self' + 'unsafe-inline' instead of nonces.  This still prevents
+// loading scripts from arbitrary third-party origins while being compatible
+// with static rendering.  See Next.js docs:
+//   node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md
+const isDev = process.env.NODE_ENV === 'development'
+const cspHeader = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://checkout.razorpay.com`,
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://*.upstash.io",
+  "worker-src 'self' blob:",
+  "frame-ancestors 'none'",
+].join('; ')
 
 export default async function middleware(request: NextRequest) {
-  // Generate a fresh nonce for every request so browsers enforce per-response CSP.
-  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))))
-  const csp = buildCsp(nonce)
-
-  // Propagate the nonce to Server Components via a request header (Next.js reads x-nonce
-  // automatically to stamp its own injected inline scripts, replacing 'unsafe-inline').
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', nonce)
 
   let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
   const supabaseEnv = getPublicSupabaseEnv()
@@ -88,12 +88,12 @@ export default async function middleware(request: NextRequest) {
       const url = request.nextUrl.clone()
       url.pathname = rewrittenPathname
       const demoRewrite = NextResponse.rewrite(url)
-      demoRewrite.headers.set('Content-Security-Policy', csp)
+      demoRewrite.headers.set('Content-Security-Policy', cspHeader)
       return demoRewrite
     }
 
     const demoNext = NextResponse.next({ request: { headers: requestHeaders } })
-    demoNext.headers.set('Content-Security-Policy', csp)
+    demoNext.headers.set('Content-Security-Policy', cspHeader)
     return demoNext
   }
 
@@ -127,11 +127,11 @@ export default async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = rewrittenPathname
     const rewriteResponse = NextResponse.rewrite(url)
-    rewriteResponse.headers.set('Content-Security-Policy', csp)
+    rewriteResponse.headers.set('Content-Security-Policy', cspHeader)
     return rewriteResponse
   }
 
-  supabaseResponse.headers.set('Content-Security-Policy', csp)
+  supabaseResponse.headers.set('Content-Security-Policy', cspHeader)
   return supabaseResponse
 }
 
