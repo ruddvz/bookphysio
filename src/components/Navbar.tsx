@@ -35,8 +35,6 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 }
 
 const navLinks = [
-  { label: 'Services', href: '/services' },
-  { label: 'Session packs', href: '/packages' },
   { label: 'How it works', href: '/how-it-works' },
   { label: 'For doctors', href: '/doctor-signup' },
 ]
@@ -310,20 +308,6 @@ export default function Navbar({
 
             {/* Nav links */}
             <div className="space-y-1.5">
-              <Link
-                href="/services"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
-              >
-                Services
-              </Link>
-              <Link
-                href="/packages"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
-              >
-                Session packs
-              </Link>
               <Link
                 href={howItWorksHref}
                 onClick={() => setMobileOpen(false)}

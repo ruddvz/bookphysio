@@ -2,11 +2,9 @@ import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/HeroSection'
 import ProofSection from '@/components/ProofSection'
 import TopSpecialties from '@/components/TopSpecialties'
-import FeaturedServices from '@/components/FeaturedServices'
 import HowItWorks from '@/components/HowItWorks'
 import HealthSystems from '@/components/HealthSystems'
 import ProviderCTA from '@/components/ProviderCTA'
-import FeaturedPackages from '@/components/FeaturedPackages'
 import Testimonials from '@/components/Testimonials'
 import FAQ from '@/components/FAQ'
 import CityLinks from '@/components/CityLinks'
@@ -74,11 +72,9 @@ export default function Home() {
         <HeroSection />
         <ProofSection />
         <TopSpecialties />
-        <FeaturedServices />
         <HowItWorks />
         <HealthSystems />
         <ProviderCTA />
-        <FeaturedPackages />
         <Testimonials />
         <FAQ />
         <CityLinks />
