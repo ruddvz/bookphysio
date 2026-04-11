@@ -53,6 +53,7 @@ export default function Navbar({
   const effectiveLocale = locale ?? 'en'
   const searchHref = effectiveLocale === 'hi' ? '/hi/search' : '/search'
   const loginHref  = effectiveLocale === 'hi' ? '/hi/login'  : '/login'
+  // Hindi signup still redirects to the English flow, so link directly to /signup.
   const signupHref = '/signup'
   const howItWorksHref = locale ? getLocalizedStaticHref(locale, '/how-it-works') : '/how-it-works'
 

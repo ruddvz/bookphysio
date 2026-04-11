@@ -21,7 +21,11 @@ function isAuthorizedCron(request: NextRequest): boolean {
   const isProduction = process.env.NODE_ENV === 'production'
 
   if (isProduction) {
-    return Boolean(cronSecret) && authorizationHeader === `Bearer ${cronSecret}`
+    if (!cronSecret) {
+      return false
+    }
+
+    return authorizationHeader === `Bearer ${cronSecret}`
   }
 
   if (!cronSecret) {

@@ -43,11 +43,13 @@ function rewriteWithCsp(url: URL): NextResponse {
 }
 
 function resolveRewrittenPathname(hostname: string, pathname: string): string {
-  if (hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')) {
+  const normalizedHostname = hostname.split(':')[0]
+
+  if (normalizedHostname === 'ai.bookphysio.in' && (pathname === '/' || pathname === '/index')) {
     return '/patient/dashboard'
   }
 
-  if (hostname.includes('motio.bookphysio.in') && (pathname === '/' || pathname === '/index')) {
+  if (normalizedHostname === 'motio.bookphysio.in' && (pathname === '/' || pathname === '/index')) {
     return '/provider/dashboard'
   }
 

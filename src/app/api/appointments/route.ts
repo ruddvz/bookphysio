@@ -342,6 +342,7 @@ export async function POST(request: NextRequest) {
       await checkBookingAnomaly(anomalyContext)
     })
   } catch {
+    console.warn('[api/appointments] after() unavailable, running anomaly detection inline')
     await checkBookingAnomaly(anomalyContext)
   }
 

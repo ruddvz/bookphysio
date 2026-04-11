@@ -41,7 +41,7 @@ const ROLE_CONFIG: Record<DashboardRole, RoleConfig> = {
 }
 
 const DISMISS_KEY_PREFIX = 'bp-pwa-dismissed-'
-const DISMISS_TTL_MS = 7 * 24 * 60 * 60 * 1000
+const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000
 const memoryDismissedAt = new Map<string, string>()
 
 function getIconSrc(role: DashboardRole): string {
@@ -381,7 +381,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
     if (isStandalone()) return
 
     const dismissedAt = readDismissedAt(dismissKey)
-    if (dismissedAt && Date.now() - dismissedAt < DISMISS_TTL_MS) {
+    if (dismissedAt && Date.now() - dismissedAt < DISMISS_DURATION_MS) {
       return
     }
 
