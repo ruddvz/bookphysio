@@ -204,10 +204,16 @@ export default function PackagesPage() {
                     { label: 'Total price', values: PACKAGES.map(p => `₹${p.totalPrice.toLocaleString('en-IN')}`) },
                     { label: 'Savings', values: PACKAGES.map(p => p.discount > 0 ? `${p.discount}%` : '—') },
                     { label: 'Validity', values: PACKAGES.map(p => `${p.validityDays} days`) },
-                    { label: 'Progress tracking', values: ['—', '✓', '✓', '✓'] },
-                    { label: 'Priority rebooking', values: ['—', '✓', '✓', '✓'] },
-                    { label: 'Review sessions', values: ['—', '—', 'Mid-course', 'Monthly'] },
-                    { label: 'Family transferable', values: ['—', '—', '—', '✓'] },
+                    { label: 'Progress tracking', values: PACKAGES.map(p => p.benefits.some(b => b.toLowerCase().includes('progress')) ? '✓' : '—') },
+                    { label: 'Priority rebooking', values: PACKAGES.map(p => p.benefits.some(b => b.toLowerCase().includes('priority')) ? '✓' : '—') },
+                    { label: 'Review sessions', values: PACKAGES.map(p => {
+                      const review = p.benefits.find(b => b.toLowerCase().includes('review'))
+                      if (!review) return '—'
+                      if (review.toLowerCase().includes('monthly')) return 'Monthly'
+                      if (review.toLowerCase().includes('mid-course')) return 'Mid-course'
+                      return '✓'
+                    }) },
+                    { label: 'Family transferable', values: PACKAGES.map(p => p.benefits.some(b => b.toLowerCase().includes('transferable')) ? '✓' : '—') },
                   ].map(({ label, values }) => (
                     <tr key={label} className="hover:bg-white transition-colors">
                       <td className="py-3.5 pl-4 text-[14px] font-medium text-slate-600">{label}</td>

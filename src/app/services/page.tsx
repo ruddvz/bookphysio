@@ -168,7 +168,7 @@ export default function ServicesPage() {
                   >
                     {/* Header */}
                     <div className="flex items-start justify-between mb-5">
-                      <div className={cn('w-13 h-13 rounded-xl flex items-center justify-center', service.tint.bg, service.tint.text)}>
+                      <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', service.tint.bg, service.tint.text)}>
                         <Icon size={24} />
                       </div>
                       <div className="text-right">
