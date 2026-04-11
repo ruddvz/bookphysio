@@ -56,7 +56,7 @@ src/lib/utils.ts
 - `src/app/provider/**` — bp-ui-provider owns
 - `src/app/admin/**` — bp-ui-admin owns
 - `supabase/**` — backend agent owns
-- `src/lib/supabase/**`, `src/lib/razorpay.ts`, `src/lib/msg91.ts` — backend agent owns
+- `src/lib/supabase/**`, `src/lib/razorpay.ts` — backend agent owns
 - `tests/`
 
 ## Shared Components You Own

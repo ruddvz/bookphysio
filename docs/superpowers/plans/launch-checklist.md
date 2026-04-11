@@ -63,7 +63,8 @@
 ### Payments & Auth
 - [ ] Razorpay **live mode** keys confirmed in production `.env` — not sandbox keys
 - [ ] MSG91 DLT template approved and sender ID registered with TRAI — test OTP delivery from a number never used in sandbox
-- [ ] MSG91 OTP delivery tested on real Indian numbers (+91) from a cold device
+- [ ] MSG91 credentials (auth key + DLT template + sender ID) entered in **Supabase dashboard → Auth → Providers → Phone** (the app does not read MSG91 env vars directly)
+- [ ] OTP delivery tested on real Indian numbers (+91) from a cold device — verify the SMS arrives via Supabase's send-test-OTP button AND via the app's `/login` flow
 - [ ] Upstash Redis rate limiting verified on OTP and booking API routes — confirm limits enforced in production config
 
 ### Data & Compliance
@@ -103,7 +104,7 @@
 
 ### Critical User Flows (all must pass end-to-end with real data)
 - [ ] Patient: search → select doctor → select slot → pay (Razorpay live) → booking confirmation
-- [ ] Patient: OTP login (MSG91 delivery on real +91 number)
+- [ ] Patient: OTP login (Supabase phone provider → MSG91 delivery on real +91 number)
 - [ ] Provider: onboarding (5-step signup, ICP number required)
 - [ ] Provider: appointment management and status updates
 - [ ] Admin: login and dashboard access

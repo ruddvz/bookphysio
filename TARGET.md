@@ -76,7 +76,7 @@ https://www.zocdoc.com
 
 ## Why
 Building bookphysio.in — a physiotherapy booking platform for India — modelled on ZocDoc's UX.
-The clone is the UI foundation; the backend (Supabase, Razorpay, MSG91) is layered on top.
+The clone is the UI foundation; the backend (Supabase Auth + DB, Razorpay, Resend; SMS via Supabase's MSG91 phone provider) is layered on top.
 
 ## Anti-Bot Strategy
 ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page inspection:
@@ -131,7 +131,7 @@ ZocDoc is JS-rendered and has anti-bot protection. Use Chrome MCP for all page i
 ### Authentication
 | ZocDoc | bookphysio.in |
 |--------|--------------|
-| Email + password | Phone OTP via MSG91 (primary) |
+| Email + password | Phone OTP via Supabase Auth (MSG91 configured in Supabase dashboard) |
 | Google OAuth | Google OAuth (keep — secondary) |
 | "Enter your email" | "Enter your mobile number (+91)" |
 | Email OTP | SMS OTP (6-digit, 10 min expiry) |

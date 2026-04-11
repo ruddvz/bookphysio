@@ -36,11 +36,17 @@ This inserts specialties needed for the app to function.
 
 ## 4. Configure Authentication
 
-### Phone Auth (MSG91 OTP)
+### Phone Auth (Supabase native, MSG91 backend)
 1. Go to **Authentication > Providers > Phone**
 2. Enable Phone provider
-3. Set **SMS Provider**: `Custom` (we handle OTP via MSG91 in our API routes)
-4. Disable email confirmations if phone-first auth is preferred
+3. Set **SMS Provider**: choose `MSG91` from the dropdown and fill in:
+   - **Auth Key** — from MSG91 dashboard
+   - **Template ID** — DLT-approved OTP template (must contain `{{otp}}` placeholder per Supabase contract)
+   - **Sender ID** — DLT-approved 6-character header
+4. Save and click **Send test OTP** to confirm an SMS arrives on a real +91 number before going live
+5. Disable email confirmations if phone-first auth is preferred
+
+> **Important:** the app does NOT include an MSG91 client. `app/api/auth/otp/send` calls `supabase.auth.signInWithOtp({ phone })` and `app/api/auth/otp/verify` calls `supabase.auth.verifyOtp(...)`. All SMS delivery happens server-side inside Supabase using the credentials configured above. If OTP SMS is not arriving in production, the fix is in this dashboard, not in the repo.
 
 ### Auth Settings
 1. **Authentication > Settings**:
@@ -104,9 +110,9 @@ Go to **GitHub repo > Settings > Secrets and variables > Actions** and add:
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://<project-ref>.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | From Supabase dashboard |
 | `SUPABASE_SERVICE_ROLE_KEY` | From Supabase dashboard |
-| `MSG91_AUTH_KEY` | From MSG91 dashboard |
-| `MSG91_TEMPLATE_ID` | From MSG91 dashboard |
 | `NEXT_PUBLIC_APP_URL` | `https://bookphysio.in` |
+
+> MSG91 keys are configured **inside Supabase Auth → Providers → Phone**, not as repo secrets. The Next.js app never sees them.
 
 ### Optional Secrets (can add later)
 | Secret | Purpose |
