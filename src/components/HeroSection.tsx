@@ -50,11 +50,14 @@ function SearchField({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    // Use 'click' (not 'mousedown') so the listener fires AFTER the trigger's
+    // own onClick has run — otherwise opening one field would race with
+    // closing it on the same gesture and the dropdown would never appear.
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onCloseOptions()
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('click', handler)
+    return () => document.removeEventListener('click', handler)
   }, [onCloseOptions])
 
   const filtered = value

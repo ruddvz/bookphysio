@@ -346,14 +346,15 @@ export async function GET(request: NextRequest) {
 
   const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
   if (!hasPublicSupabaseEnv()) {
-    return NextResponse.json({
-      providers: [],
-      total: 0,
-      page,
-      limit,
-    } satisfies SearchResponse, {
-      headers: { 'X-Cache': 'BYPASS' },
-    })
+    // Surface a real error instead of silently returning an empty list. The previous
+    // 200 + [] fallback masked missing Supabase env so the UI showed "no results in
+    // your area" and we couldn't tell the difference between "actually no providers"
+    // and "the search backend is not configured".
+    console.error('[api/providers] Supabase env missing — search unavailable')
+    return NextResponse.json(
+      { error: 'search_unavailable', reason: 'supabase_env_missing' },
+      { status: 503, headers: { 'X-Cache': 'BYPASS' } },
+    )
   }
 
   const supabase = await createClient()
@@ -428,6 +429,18 @@ export async function GET(request: NextRequest) {
 
   const results = (data ?? []) as SearchProviderRpcRow[]
   const total = results.length > 0 ? (results[0].total_count || 0) : 0
+
+  if (results.length === 0 && (city || resolvedSpecialtyId || visit_type)) {
+    // One-line breadcrumb so the next "search returns nothing" debugging round
+    // surfaces the actual filters that produced an empty page.
+    console.warn('[api/providers] zero results', {
+      city: city ?? null,
+      specialty_id: resolvedSpecialtyId,
+      visit_type: visit_type ?? null,
+      min_rating: min_rating ?? 0,
+      max_fee_inr: max_fee_inr ?? null,
+    })
+  }
 
   const providerIds = results.map((provider) => provider.id)
   const { data: providerDetails, error: providerDetailsError } = providerIds.length > 0
