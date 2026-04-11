@@ -15,9 +15,13 @@ export async function GET(request: NextRequest) {
   const admin = await requireAdmin(supabase)
   if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const rateLimit = await apiRatelimit.limit(`admin-users:${admin.id}`)
-  if (!rateLimit.success) {
-    return NextResponse.json({ error: 'Too many requests. Please try again shortly.' }, { status: 429 })
+  try {
+    const rateLimit = await apiRatelimit.limit(`admin-users:${admin.id}`)
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again shortly.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
   }
 
   const page = Number(new URL(request.url).searchParams.get('page') ?? '1')

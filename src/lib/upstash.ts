@@ -1,6 +1,18 @@
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 
+// Warn loudly at module init if Upstash credentials are missing in production.
+// All rate limiters wrap their calls in try/catch and allow through on failure, so
+// the app will still serve requests — but ALL rate limiting will be silently disabled.
+if (process.env.NODE_ENV === 'production' &&
+  (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)) {
+  console.error(
+    '[upstash] CRITICAL: UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is not set. ' +
+    'All rate limiting (OTP, login, booking, uploads, messaging, AI) is DISABLED. ' +
+    'Set both environment variables immediately.'
+  )
+}
+
 export const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || 'https://dummy.redis.com',
   token: process.env.UPSTASH_REDIS_REST_TOKEN || 'dummy_token',

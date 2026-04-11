@@ -12,10 +12,13 @@ export function isPublicPreviewGateEnabled(): boolean {
 }
 
 export function getPreviewTokenSigningSecret(): string | null {
+  // PREVIEW_TOKEN_SECRET is the dedicated signing secret for preview tokens.
+  // DEMO_COOKIE_SECRET is acceptable as a fallback since it is already a server-only
+  // signing key. PREVIEW_PASSWORD must NOT be used here — it is a user-visible shared
+  // password, not a cryptographic secret.
   return (
     process.env.PREVIEW_TOKEN_SECRET ??
     process.env.DEMO_COOKIE_SECRET ??
-    process.env.PREVIEW_PASSWORD ??
     null
   )
 }
