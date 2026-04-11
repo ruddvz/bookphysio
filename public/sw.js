@@ -1,13 +1,22 @@
 // BookPhysio Service Worker — caches essential app shell assets for offline/PWA use.
 // Uses a cache-first strategy for static assets and network-first for API calls.
 
-const CACHE_NAME = 'bp-cache-v1'
+const CACHE_NAME = 'bp-cache-v2'
 const APP_SHELL = [
   '/',
   '/search',
   '/manifest.json',
+  '/manifest-admin.json',
+  '/manifest-provider.json',
+  '/manifest-patient.json',
   '/icon-192.png',
   '/icon-512.png',
+  '/icon-admin-192.png',
+  '/icon-admin-512.png',
+  '/icon-patient-192.png',
+  '/icon-patient-512.png',
+  '/icon-provider-192.png',
+  '/icon-provider-512.png',
 ]
 
 self.addEventListener('install', (event) => {

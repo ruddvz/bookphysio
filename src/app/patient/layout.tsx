@@ -8,6 +8,8 @@ import {
   CreditCard,
 } from 'lucide-react'
 import TopPillNav, { type NavItem } from '@/components/dashboard/TopPillNav'
+import { DashboardManifest } from '@/components/DashboardManifest'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 
 const navItems: NavItem[] = [
   { href: '/patient/dashboard',    label: 'Dashboard',    icon: LayoutDashboard, exact: true },
@@ -18,15 +20,19 @@ const navItems: NavItem[] = [
 
 export default function PatientLayout({ children }: { children: ReactNode }) {
   return (
-    <TopPillNav
-      role="patient"
-      items={navItems}
-      notificationsHref="/patient/notifications"
-      messagesHref="/patient/messages"
-      profileHref="/patient/profile"
-      roleLabel="Patient"
-    >
-      {children}
-    </TopPillNav>
+    <>
+      <DashboardManifest role="patient" />
+      <TopPillNav
+        role="patient"
+        items={navItems}
+        notificationsHref="/patient/notifications"
+        messagesHref="/patient/messages"
+        profileHref="/patient/profile"
+        roleLabel="Patient"
+      >
+        <PWAInstallPrompt role="patient" />
+        {children}
+      </TopPillNav>
+    </>
   )
 }

@@ -3,6 +3,8 @@
 import { ReactNode } from 'react'
 import { LayoutDashboard, ShieldCheck, Users, BarChart3 } from 'lucide-react'
 import TopPillNav, { type NavItem } from '@/components/dashboard/TopPillNav'
+import { DashboardManifest } from '@/components/DashboardManifest'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 
 const navItems: NavItem[] = [
   { href: '/admin',           label: 'Overview',  icon: LayoutDashboard, exact: true },
@@ -13,13 +15,17 @@ const navItems: NavItem[] = [
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <TopPillNav
-      role="admin"
-      items={navItems}
-      profileHref="/admin"
-      roleLabel="Administrator"
-    >
-      {children}
-    </TopPillNav>
+    <>
+      <DashboardManifest role="admin" />
+      <TopPillNav
+        role="admin"
+        items={navItems}
+        profileHref="/admin"
+        roleLabel="Administrator"
+      >
+        <PWAInstallPrompt role="admin" />
+        {children}
+      </TopPillNav>
+    </>
   )
 }

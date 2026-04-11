@@ -19,9 +19,9 @@ export const metadata: Metadata = {
     'Find and book IAP-verified physiotherapists in India for home visits and in-clinic sessions. Clear pricing, real availability, and same-day slots with many providers.',
   keywords: 'physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India',
   icons: {
-    icon: '/icon.png?v=20260404b',
-    shortcut: '/icon.png?v=20260404b',
-    apple: '/icon.png?v=20260404b',
+    icon: '/icon.png?v=20260411',
+    shortcut: '/icon.png?v=20260411',
+    apple: '/icon.png?v=20260411',
   },
   manifest: '/manifest.json',
   appleWebApp: {
