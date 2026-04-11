@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       system: SUPPORT_SYSTEM_PROMPT,
       messages,
       temperature: 0.4,
-      maxTokens: 512,
+      maxOutputTokens: 512,
     })
 
     return result.toTextStreamResponse()

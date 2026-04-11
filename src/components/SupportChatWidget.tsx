@@ -34,7 +34,9 @@ function getUIMessageText(message: UIMessage): string {
 export function SupportChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [hasNewMessage, setHasNewMessage] = useState(false)
+  // Tracks how many messages were visible when chat was last opened;
+  // badge shows when new messages arrive while chat is closed.
+  const [lastSeenCount, setLastSeenCount] = useState(1) // 1 = INITIAL_MESSAGE
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const inputId = useId()
@@ -62,23 +64,26 @@ export function SupportChatWidget() {
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'
+  const hasNewMessage = !isOpen && messages.length > lastSeenCount
 
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight
     }
-    if (!isOpen && messages.length > 1) {
-      setHasNewMessage(true)
-    }
-  }, [messages, isOpen])
+  }, [messages])
 
   useEffect(() => {
     if (isOpen) {
-      setHasNewMessage(false)
       inputRef.current?.focus()
     }
   }, [isOpen])
 
+  function handleToggle() {
+    setIsOpen((prev) => {
+      if (!prev) setLastSeenCount(messages.length)
+      return !prev
+    })
+  }
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setInput(event.target.value)
   }
@@ -252,7 +257,7 @@ export function SupportChatWidget() {
       {/* Floating toggle button */}
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleToggle}
         aria-label={isOpen ? 'Close support chat' : 'Open support chat'}
         className={cn(
           'fixed bottom-6 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_32px_-8px_rgba(0,118,108,0.6)] transition-all sm:right-6',
