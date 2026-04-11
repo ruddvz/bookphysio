@@ -101,7 +101,7 @@ function handleDemoRequest(
   requestHeaders: Headers,
   pathname: string,
   rewrittenPathname: string,
-  role: 'patient' | 'provider',
+  role: 'patient' | 'provider' | 'admin',
 ): NextResponse {
   if (!canRoleAccessPath(role, rewrittenPathname)) {
     return redirectWithCsp(new URL(getDemoRedirectPath(role), request.url))

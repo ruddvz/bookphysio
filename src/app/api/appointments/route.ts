@@ -328,16 +328,22 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  after(async () => {
-    await checkBookingAnomaly({
-      appointmentId: appointment.id as string,
-      patientId: user.id,
-      providerId: slot.provider_id as string,
-      feeInr: feeInr,
-      visitType: visit_type,
-      bookedAt: new Date().toISOString(),
+  const anomalyContext = {
+    appointmentId: appointment.id as string,
+    patientId: user.id,
+    providerId: slot.provider_id as string,
+    feeInr: feeInr,
+    visitType: visit_type,
+    bookedAt: new Date().toISOString(),
+  }
+
+  try {
+    after(async () => {
+      await checkBookingAnomaly(anomalyContext)
     })
-  })
+  } catch {
+    await checkBookingAnomaly(anomalyContext)
+  }
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
 }
