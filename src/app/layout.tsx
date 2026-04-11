@@ -1,15 +1,10 @@
 import type { CSSProperties } from 'react'
 import type { Metadata, Viewport } from 'next'
-import dynamic from 'next/dynamic'
 import './globals.css'
 import { Providers } from '@/app/providers'
 import { CookieConsent } from '@/components/CookieConsent'
 import { PublicAnalytics } from '@/components/PublicAnalytics'
-
-const SupportChatWidget = dynamic(
-  () => import('@/components/SupportChatWidget').then((mod) => mod.SupportChatWidget),
-  { ssr: false }
-)
+import { SupportChatWidgetLoader } from '@/components/SupportChatWidgetLoader'
 
 const fontVariables = {
   ['--font-inter' as const]: '"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -78,7 +73,7 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <CookieConsent />
         <PublicAnalytics />
-        <SupportChatWidget />
+        <SupportChatWidgetLoader />
       </body>
     </html>
   )
