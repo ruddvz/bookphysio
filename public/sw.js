@@ -38,8 +38,8 @@ self.addEventListener('fetch', (event) => {
     caches.match(request).then((cached) => {
       if (cached) return cached
       return fetch(request).then((response) => {
-        // Only cache same-origin, successful responses
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+        // Only cache same-origin successful responses (basic) or CORS (cors)
+        if (!response || response.status !== 200 || (response.type !== 'basic' && response.type !== 'cors')) {
           return response
         }
         const clone = response.clone()
