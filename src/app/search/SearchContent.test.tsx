@@ -127,7 +127,7 @@ describe('SearchContent', () => {
     render(<SearchContent />)
 
     expect(screen.queryByTestId('featured-doctors')).toBeNull()
-    expect(screen.getByTestId('empty-state').textContent).toContain('No exact matches found')
+    expect(screen.getByText('No exact matches found')).toBeTruthy()
   })
 
   it('maps condition-style searches to specialty filters before calling the providers API', () => {

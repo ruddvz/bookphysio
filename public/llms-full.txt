@@ -1,0 +1,287 @@
+# BookPhysio — Full Site Content
+
+> Source: https://bookphysio.in
+> Last updated: 2026-04-11
+> Platform: India's first physiotherapy-only booking platform
+
+---
+
+## Page: Home
+
+### Hero
+Book verified physios for sports rehab, home visits, post-surgery care, neuro rehab, back pain relief, and joint mobility.
+
+Find IAP-verified physiotherapists for a clinic visit or a session at home. Pick a time, confirm with an OTP, and you are done.
+
+### Common Conditions
+Back pain, Neck pain, Shoulder pain, Knee pain, Hip pain, Heel pain, Joint stiffness, Sports injury, Post-surgery care, Home visit, Slip disc, Sciatica, Balance issues, Posture issues, Stroke recovery, Kids physio, Pregnancy pain, Elderly care, Ankle sprain, Hand pain, Wrist pain
+
+### Trust Stats
+- IAP — Verified providers
+- 10+ — Cities supported
+- Free — To list your practice
+- 60s — To book a session
+
+### Specialties
+Start from what is bothering you. Pick a specialty and we will show you verified physiotherapists in your city, along with their real availability.
+
+NCAHP-recognised specialties:
+- Musculoskeletal — Bones, joints, muscles, and ligaments. From back pain to post-fracture recovery.
+- Neurosciences — Stroke recovery, nerve rehabilitation, and neurological movement disorders.
+- Cardio-Pulmonary — Heart and lung rehabilitation, ICU recovery, and breathing retraining.
+- Sports Sciences — Injury prevention, athletic rehabilitation, and return-to-play programmes.
+- Paediatrics — Developmental support, motor milestones, and early intervention for children.
+- Women's Health — Prenatal and postnatal recovery, pelvic floor rehabilitation, and core strength.
+- Oncology Rehab — Specialised rehabilitation during and after cancer treatment.
+- Community Rehab — Geriatric care, disability management, and community-based recovery.
+
+### How It Works
+Four steps from search to session. Finding a physiotherapist should not feel like a research project. On BookPhysio, most people go from their first search to a confirmed booking in under a minute.
+
+1. Search — Start with your city or what is bothering you, like back pain or a knee injury.
+2. Compare — Check each physiotherapist's credentials, fees and whether they offer home visits.
+3. Book — Pick a time that works, confirm with a mobile OTP, and get a confirmation message.
+4. Start your session — Meet your physiotherapist at the clinic or at home, and focus on getting better.
+
+Trust badges: IAP Verified, Instant Confirmation, No Hidden Fees
+
+### Homepage FAQ
+
+Q: How do you verify physiotherapists?
+A: We check every physiotherapist's IAP or State Council registration against public registers before they can appear on the platform.
+
+Q: Can I book a home visit?
+A: Yes. Providers who offer home visits show their coverage areas and fees on their profile. You can filter search results to show only home-visit providers.
+
+Q: How are prices shown?
+A: Each provider card shows session fees in INR. At checkout you see the full breakdown including GST and payment method.
+
+Q: What happens after I book?
+A: You get an SMS confirmation with the appointment details. The appointment also appears in your Patient Dashboard where you can view, reschedule, or cancel.
+
+Q: Can I cancel or reschedule?
+A: Yes. Cancellations are free up to 4 hours before the session. Inside the 4-hour window, a cancellation fee may apply.
+
+---
+
+## Page: About
+
+### A calmer way to find a physiotherapist
+
+BookPhysio helps patients in India find verified physiotherapists, see what they charge, and book a clinic or home visit without endless phone calls.
+
+### Why we built this
+Finding a good physiotherapist in India usually means asking friends, scrolling through generic health directories, or calling three clinics before you find one that answers. We built BookPhysio because there was no single place where you could search specifically for physiotherapists, compare them on the things that actually matter, and book without a phone call.
+
+Every profile on the site belongs to a physiotherapist whose registration we have checked. You can see their specialties, fees and whether they offer home visits, and book them in a few taps.
+
+### What we stand for
+- Verified physiotherapists — IAP or State Council registration verified before a profile goes live.
+- Focused on physio — Search and filters are built for how rehab actually works, not shoe-horned from a general doctor directory.
+- Clear pricing — See session fees and taxes before you book. No "call for price."
+- Clinic or home visit — Choose what works for you and your schedule.
+
+### We are just getting started
+BookPhysio is live in 10 cities and growing. If you are a patient who has been put through the referral runaround, or a physiotherapist who wants a straightforward way to reach new patients, we would love to hear from you.
+
+Contact: hello@bookphysio.in
+
+---
+
+## Page: FAQ
+
+### Booking a session
+
+Q: How do I book a physiotherapy session on BookPhysio?
+A: Search for physiotherapists by condition, specialty or city. Choose a provider, pick a time slot that suits you, and confirm the booking with an OTP sent to your phone. You will receive a confirmation SMS with the details.
+
+Q: What does "IAP-verified" mean?
+A: It means we have checked the physiotherapist's registration with the Indian Association of Physiotherapists or the relevant State Council before their profile goes live on the platform.
+
+Q: Can I book a home visit?
+A: Yes. Many providers on BookPhysio offer home-visit sessions. Use the "Home visit" filter on the search page to find physiotherapists who come to you. Fees for home visits may differ from clinic sessions.
+
+Q: Which cities does BookPhysio serve?
+A: We are currently live in Mumbai, Delhi/NCR, Bangalore, Chennai, Hyderabad, Pune, Kolkata, Ahmedabad, Jaipur, and Surat. We are expanding — check back soon or drop us a note if your city is not listed.
+
+Q: Do I need a doctor's prescription or referral?
+A: No. You can book directly with any physiotherapist on the platform without a referral or prescription.
+
+### Payments and refunds
+
+Q: What payment methods do you accept?
+A: We use Razorpay as our payment gateway. You can pay via UPI, debit or credit cards, and net banking.
+
+Q: Do I get a GST invoice?
+A: Yes. A GST-compliant invoice is generated for every successful payment and is available in your Patient Dashboard under payment history.
+
+Q: What is your cancellation policy?
+A: Cancellations made more than 4 hours before the scheduled session are free. Inside the 4-hour window, a cancellation fee may apply depending on the provider's policy.
+
+Q: How long do refunds take?
+A: Refunds are processed within 5–7 business days back to your original payment method once a cancellation is confirmed.
+
+Q: What if I am not satisfied with my session?
+A: Contact us at support@bookphysio.in within 24 hours of your appointment describing the issue. We will work with the provider to resolve it and will issue a refund or credit if appropriate.
+
+### Safety and privacy
+
+Q: How do you protect my data?
+A: All data is encrypted in transit (TLS) and at rest. We follow industry-standard security practices and never share your personal health information with third parties without your consent.
+
+Q: Is my payment information safe?
+A: Yes. Razorpay handles all payment processing. BookPhysio never stores your card numbers or UPI PINs.
+
+Q: Who is the grievance officer?
+A: For any complaints or privacy concerns, contact our grievance officer at support@bookphysio.in. We respond within 48 hours.
+
+Q: Can I use BookPhysio for emergencies?
+A: No. BookPhysio is for scheduled physiotherapy appointments. For medical emergencies, please call 112 or go to the nearest hospital emergency department.
+
+### For physiotherapists
+
+Q: How do I list my practice on BookPhysio?
+A: Visit the provider sign-up page and complete the 5-step registration. You will need your IAP or State Council registration number, qualification details, and practice information.
+
+Q: Is listing free?
+A: Yes. Creating your profile is free. BookPhysio charges a small platform fee on each completed booking.
+
+Q: What tools does the provider dashboard offer?
+A: You get a calendar to manage availability, an appointment list, patient records, an earnings tracker, and a messaging system to communicate with patients.
+
+Q: Who owns the patient records?
+A: You (the physiotherapist) own the clinical records. BookPhysio stores them securely on your behalf but they are your records and your patients' records.
+
+---
+
+## Page: How It Works
+
+### For Patients — 4 Steps to Your Session
+
+1. Search — Enter your condition (e.g. back pain) or a specific physiotherapist's name, plus your location.
+2. Choose Provider — Compare physiotherapists by specialty, patient rating, session fees, and distance from you.
+3. Pick a Slot — Select an available date and time that works for you.
+4. Book Instantly — Confirm with an OTP and get an instant booking confirmation via SMS. Your session details appear in your Patient Dashboard.
+
+Get back to feeling your best.
+
+### For Providers — 4 Steps to Growing Your Practice
+
+1. Register Practice — Create your profile with IAP or State Council credentials, qualifications, and practice details.
+2. Set Availability — Configure your working hours, slot duration, and whether you offer clinic visits, home visits, or both.
+3. Accept Bookings — Manage incoming appointments from your Provider Dashboard. Review patient details before each session.
+4. Track Earnings — Monitor your weekly and monthly revenue, completed sessions, and patient feedback.
+
+Grow your practice with India's best physio network.
+
+---
+
+## Page: Search
+
+Find Physiotherapists Near You. Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.
+
+URL: https://bookphysio.in/search
+
+---
+
+## Page: Privacy Policy
+
+BookPhysio takes your privacy seriously. Full privacy policy available at: https://bookphysio.in/privacy
+
+---
+
+## Page: Terms of Service
+
+Full terms of service available at: https://bookphysio.in/terms
+
+---
+
+## Specialty Pages
+
+### Musculoskeletal Physiotherapy
+Bones, joints, muscles, and ligaments — from back pain to post-fracture recovery. Find verified musculoskeletal physiotherapists near you.
+URL: https://bookphysio.in/specialty/musculoskeletal
+
+### Neurosciences Physiotherapy
+Stroke recovery, nerve rehabilitation, and neurological movement disorders. Expert neuro physios available for home visits and clinic sessions.
+URL: https://bookphysio.in/specialty/neurosciences
+
+### Cardio-Pulmonary Physiotherapy
+Heart and lung rehabilitation, ICU recovery, and breathing retraining. Specialist cardio-pulmonary physiotherapists across India.
+URL: https://bookphysio.in/specialty/cardio-pulmonary
+
+### Sports Physiotherapy
+Injury prevention, athletic rehabilitation, and return-to-play programmes. Sports physios for athletes of all levels.
+URL: https://bookphysio.in/specialty/sports
+
+### Paediatric Physiotherapy
+Developmental support, motor milestones, and early intervention for children. Paediatric physios with gentle, child-friendly approaches.
+URL: https://bookphysio.in/specialty/paediatrics
+
+### Women's Health Physiotherapy
+Prenatal and postnatal recovery, pelvic floor rehabilitation, and core strength. Specialist women's health physiotherapists.
+URL: https://bookphysio.in/specialty/womens-health
+
+### Oncology Rehabilitation
+Specialised rehabilitation during and after cancer treatment. Oncology rehab physiotherapists for gentle, evidence-based recovery.
+URL: https://bookphysio.in/specialty/oncology-rehab
+
+### Community Rehabilitation
+Geriatric care, disability management, and community-based recovery. Physiotherapists for elderly patients and home-bound individuals.
+URL: https://bookphysio.in/specialty/community-rehab
+
+---
+
+## City Pages
+
+### Mumbai
+Find and book physiotherapists in Mumbai. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/mumbai
+
+### Delhi / NCR
+Find and book physiotherapists in Delhi and NCR. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/delhi
+
+### Bangalore
+Find and book physiotherapists in Bangalore. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/bangalore
+
+### Chennai
+Find and book physiotherapists in Chennai. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/chennai
+
+### Hyderabad
+Find and book physiotherapists in Hyderabad. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/hyderabad
+
+### Pune
+Find and book physiotherapists in Pune. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/pune
+
+### Kolkata
+Find and book physiotherapists in Kolkata. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/kolkata
+
+### Ahmedabad
+Find and book physiotherapists in Ahmedabad. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/ahmedabad
+
+### Jaipur
+Find and book physiotherapists in Jaipur. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/jaipur
+
+### Surat
+Find and book physiotherapists in Surat. Home visits and clinic sessions available. IAP-verified providers with transparent pricing.
+URL: https://bookphysio.in/city/surat
+
+---
+
+## Contact & Support
+
+- Website: https://bookphysio.in
+- Email: support@bookphysio.in
+- General inquiries: hello@bookphysio.in
+- Phone: +91-8000000000
+- LinkedIn: https://www.linkedin.com/company/bookphysio
+- Twitter: https://twitter.com/bookphysio
+- Instagram: https://www.instagram.com/bookphysio.in

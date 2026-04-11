@@ -97,6 +97,7 @@ interface FallbackProviderRow {
   experience_years: number | null
   consultation_fee_inr: number | null
   specialty_ids: string[] | null
+  verified: boolean | null
   users: FallbackProviderUserRow | FallbackProviderUserRow[] | null
   locations: FallbackProviderLocationRow[] | null
 }
@@ -204,10 +205,10 @@ async function searchProvidersWithoutRpc({
       experience_years,
       consultation_fee_inr,
       specialty_ids,
+      verified,
       users!inner (full_name, avatar_url),
       locations (id, city, lat, lng, visit_type)
     `)
-    .eq('verified', true)
     .eq('active', true)
     .gte('rating_avg', min_rating ?? 0)
     .lte('consultation_fee_inr', maximumFee)

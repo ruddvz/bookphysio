@@ -30,13 +30,14 @@ export const metadata: Metadata = {
 
 export default function SearchPage() {
   return (
-    <div className="bg-bp-surface min-h-screen flex flex-col">
+    <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1">
         <Suspense fallback={
-          <div className="max-w-[1142px] mx-auto px-6 md:px-[60px] py-24 text-center text-bp-body/60">
-            Loading search results...
+          <div className="max-w-[1142px] mx-auto px-4 sm:px-6 md:px-10 py-20 text-center text-[#999]">
+            <div className="w-8 h-8 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin mx-auto mb-4" />
+            <p className="text-[14px] font-medium">Loading search results...</p>
           </div>
         }>
           <SearchContent />

@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { X, ChevronDown, Check, MapPin, Activity, Wallet, Filter } from 'lucide-react'
+import { X, ChevronDown, Check, MapPin, Activity, Wallet, Home, Building2, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -33,25 +33,29 @@ type VisitType = 'Any' | 'In-clinic' | 'Home Visit'
 const DEFAULT_MAX_FEE = 2000
 const DEFAULT_CITY = ''
 
+const VISIT_TYPE_ICONS: Record<string, typeof Home> = {
+  'Any': SlidersHorizontal,
+  'In-clinic': Building2,
+  'Home Visit': Home,
+}
+
 // ---------------------------------------------------------------------------
-// Help Component: Custom Dropdown (Premium)
+// FilterPill — compact filter chip for desktop
 // ---------------------------------------------------------------------------
 
-function FilterDropdown({ 
-  label, 
-  value, 
-  options, 
+function FilterPill({
+  label,
+  value,
+  options,
   onChange,
   icon: Icon,
-  className 
-}: { 
-  label: string, 
-  value: string, 
-  options: string[], 
-  onChange: (val: string) => void,
+}: {
+  label: string
+  value: string
+  options: string[]
+  onChange: (val: string) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon?: any,
-  className?: string
+  icon?: any
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,43 +70,49 @@ function FilterDropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const isActive = !!value
+
   return (
-    <div className={cn("relative", className)} ref={containerRef}>
+    <div className="relative" ref={containerRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2.5 px-6 py-3 rounded-xl border text-[14px] font-bold tracking-tight transition-all whitespace-nowrap active:scale-95 group",
-          value 
-            ? "border-bp-accent/30 bg-bp-accent/10/50 text-bp-accent shadow-sm shadow-bp-accent/10" 
-            : "border-bp-border bg-white text-bp-body hover:border-bp-body/30 hover:bg-bp-surface/50"
+          "flex items-center gap-2 h-10 px-4 rounded-full text-[13px] font-semibold transition-all duration-200 whitespace-nowrap border",
+          isActive
+            ? "bg-[#00766C] text-white border-[#00766C] shadow-sm"
+            : "bg-white text-[#333333] border-[#E5E7EB] hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/50"
         )}
       >
-        {Icon && <Icon size={16} className={cn("transition-colors", value ? "text-bp-accent" : "text-bp-body/40 group-hover:text-bp-body")} />}
+        {Icon && <Icon size={15} className={isActive ? "text-white/80" : "text-[#666666]"} />}
         <span>{value || label}</span>
-        <ChevronDown size={14} className={cn("transition-all duration-300 text-bp-body/40 group-hover:text-bp-body", isOpen && "rotate-180 text-bp-accent")} />
+        <ChevronDown size={13} className={cn("transition-transform duration-200", isOpen && "rotate-180", isActive ? "text-white/60" : "text-[#999]")} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-64 bg-white border border-bp-border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-50 py-3 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-          <div className="px-4 py-2 text-[11px] font-bold text-bp-body/40 uppercase tracking-widest border-b border-bp-border/50 mb-2">
-            Select {label}
-          </div>
+        <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E7EB] rounded-xl shadow-lg shadow-black/8 z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
           <button
-            onClick={() => { onChange(''); setIsOpen(false); }}
-            className="w-full px-5 py-3 text-left text-[14px] font-bold text-bp-body hover:bg-bp-accent/10 transition-colors flex items-center justify-between group"
+            onClick={() => { onChange(''); setIsOpen(false) }}
+            className={cn(
+              "w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors flex items-center justify-between",
+              !value ? "text-[#00766C] bg-[#E6F4F3]/50" : "text-[#333] hover:bg-[#F5F5F5]"
+            )}
           >
-            Any {label}
-            {!value && <Check className="w-4 h-4 text-bp-accent" />}
+            All {label}s
+            {!value && <Check className="w-3.5 h-3.5 text-[#00766C]" />}
           </button>
-          <div className="max-h-60 overflow-y-auto custom-scrollbar">
+          <div className="border-t border-[#F3F4F6] my-1" />
+          <div className="max-h-56 overflow-y-auto">
             {options.map((opt) => (
               <button
                 key={opt}
-                onClick={() => { onChange(opt); setIsOpen(false); }}
-                className="w-full px-5 py-3 text-left text-[14px] font-bold text-bp-primary hover:bg-bp-accent/10 transition-colors flex items-center justify-between"
+                onClick={() => { onChange(opt); setIsOpen(false) }}
+                className={cn(
+                  "w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors flex items-center justify-between",
+                  value === opt ? "text-[#00766C] bg-[#E6F4F3]/50" : "text-[#333] hover:bg-[#F5F5F5]"
+                )}
               >
                 {opt}
-                {value === opt && <Check className="w-4 h-4 text-bp-accent" />}
+                {value === opt && <Check className="w-3.5 h-3.5 text-[#00766C]" />}
               </button>
             ))}
           </div>
@@ -113,7 +123,7 @@ function FilterDropdown({
 }
 
 // ---------------------------------------------------------------------------
-// Main export — horizontal bar (desktop) + drawer trigger (mobile)
+// Main export
 // ---------------------------------------------------------------------------
 
 export default function SearchFilters({ total = 0, basePath = '/search' }: { total?: number; basePath?: string }) {
@@ -139,6 +149,13 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     currentMaxFee !== DEFAULT_MAX_FEE ||
     currentSpecialty !== ''
 
+  const activeCount = [
+    currentCity !== DEFAULT_CITY,
+    currentVisitType !== 'Any',
+    currentMaxFee !== DEFAULT_MAX_FEE,
+    currentSpecialty !== '',
+  ].filter(Boolean).length
+
   const pushParams = useCallback(
     (updates: Record<string, string | null>, options?: { replace?: boolean }) => {
       const next = new URLSearchParams(searchParams.toString())
@@ -154,7 +171,6 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
         router.replace(nextUrl)
         return
       }
-
       router.push(nextUrl)
     },
     [basePath, router, searchParams]
@@ -171,12 +187,11 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     setDrawerOpen(false)
   }
 
-
   return (
     <div className="w-full">
       {/* ── Desktop Horizontal Bar ── */}
-      <div className="hidden md:flex items-center gap-4 flex-wrap">
-        <FilterDropdown 
+      <div className="hidden md:flex items-center gap-2.5 flex-wrap">
+        <FilterPill
           label="Location"
           value={currentCity}
           options={CITIES}
@@ -184,7 +199,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
           onChange={(val) => pushParams({ city: val })}
         />
 
-        <FilterDropdown 
+        <FilterPill
           label="Specialty"
           value={currentSpecialty}
           options={SPECIALTIES}
@@ -192,112 +207,114 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
           onChange={(val) => pushParams({ specialty: val })}
         />
 
-        {/* Visit Type Toggle (Modern Segmented Control) */}
-        <div className="flex bg-bp-surface p-1.5 rounded-xl border border-bp-border ml-1 shadow-inner">
-          {['Any', ...VISIT_TYPES].map((type) => (
-            <button
-              key={type}
-              onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
-              className={cn(
-                "px-5 py-2 rounded-xl text-[13px] font-bold transition-all duration-300",
-                currentVisitType === type 
-                  ? "bg-white text-bp-accent shadow-[0_4px_12px_rgba(0,0,0,0.05)] translate-y-[-1px]" 
-                  : "text-bp-body/40 hover:text-bp-body"
-              )}
-            >
-              {type}
-            </button>
-          ))}
+        {/* Visit Type Pills */}
+        <div className="flex items-center bg-[#F5F5F5] rounded-full p-0.5 border border-[#E5E7EB]">
+          {['Any', ...VISIT_TYPES].map((type) => {
+            const IconComp = VISIT_TYPE_ICONS[type] ?? SlidersHorizontal
+            return (
+              <button
+                key={type}
+                onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
+                className={cn(
+                  "flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[12px] font-semibold transition-all duration-200",
+                  currentVisitType === type
+                    ? "bg-white text-[#00766C] shadow-sm"
+                    : "text-[#666] hover:text-[#333]"
+                )}
+              >
+                <IconComp size={13} />
+                {type}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Pricing Filter (Premium Slider) */}
-        <div className="flex items-center gap-4 px-6 py-2.5 rounded-xl border border-bp-border bg-white ml-1 hover:border-bp-body/30 transition-colors">
-          <div className="flex flex-col">
-             <span id="max-fee-label" className="text-[9px] font-bold text-bp-body/40 uppercase tracking-widest leading-none mb-1">Max Fee</span>
-             <span className="text-[14px] font-bold text-bp-accent whitespace-nowrap leading-none">₹{localMaxFee}</span>
-          </div>
+        {/* Fee Range */}
+        <div className="flex items-center gap-3 h-10 px-4 rounded-full border border-[#E5E7EB] bg-white">
+          <Wallet size={14} className="text-[#666] shrink-0" />
+          <span id="desktop-fee-label" className="text-[12px] text-[#999] font-medium shrink-0">Max</span>
+          <span className="text-[13px] font-bold text-[#00766C] shrink-0">₹{localMaxFee}</span>
           <input
             type="range"
             min={0}
             max={2000}
             step={100}
-            aria-labelledby="max-fee-label"
-            aria-label="Maximum consultation fee"
+            aria-labelledby="desktop-fee-label"
             value={localMaxFee}
             onChange={(e) => setLocalMaxFee(Number(e.target.value))}
             onPointerUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) }, { replace: true })}
             onKeyUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) }, { replace: true })}
-            className="w-24 accent-bp-accent cursor-pointer"
+            className="w-20 accent-[#00766C] cursor-pointer"
           />
         </div>
 
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="text-[14px] font-bold text-bp-secondary hover:text-bp-secondary px-4 ml-auto transition-colors flex items-center gap-2 group"
+            className="flex items-center gap-1.5 h-10 px-3.5 rounded-full text-[12px] font-semibold text-[#999] hover:text-[#FF6B35] hover:bg-[#FFF7F1] border border-transparent hover:border-[#FF6B35]/20 transition-all ml-auto"
           >
-            <X size={14} className="group-hover:rotate-90 transition-transform" />
-            Reset
+            <X size={13} />
+            Clear all
           </button>
         )}
       </div>
 
-      {/* ── Mobile: Toggle ── */}
+      {/* ── Mobile Filter Button ── */}
       <div className="md:hidden">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="inline-flex items-center justify-between w-full px-6 py-4 rounded-xl border border-bp-border bg-white text-[15px] font-bold text-bp-primary shadow-md active:scale-[0.98] transition-transform"
+          className="inline-flex items-center justify-between w-full h-12 px-4 rounded-xl border border-[#E5E7EB] bg-white text-[14px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
         >
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-lg bg-bp-accent/10 flex items-center justify-center text-bp-accent">
-                <Filter size={16} strokeWidth={3} />
-             </div>
-             Filters
-             {hasActiveFilters && (
-               <span className="flex h-2.5 w-2.5 rounded-full bg-bp-secondary ring-4 ring-bp-secondary/10 animate-pulse" />
-             )}
+          <div className="flex items-center gap-2.5">
+            <SlidersHorizontal size={16} className="text-[#00766C]" />
+            <span>Filters</span>
+            {activeCount > 0 && (
+              <span className="flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full bg-[#00766C] text-white text-[10px] font-bold">
+                {activeCount}
+              </span>
+            )}
           </div>
-          <div className="text-[13px] text-bp-body/40 font-bold">{total} Results</div>
+          <span className="text-[12px] text-[#999] font-medium">{total} results</span>
         </button>
       </div>
 
-      {/* ── Mobile: Slide-up Drawer (Premium) ── */}
+      {/* ── Mobile Drawer ── */}
       {drawerOpen && (
         <div className="fixed inset-0 z-[100] flex flex-col justify-end">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={() => setDrawerOpen(false)} />
-          <div className="relative bg-white rounded-t-[48px] p-8 max-h-[92vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-24 duration-700 ease-out">
-            <div className="w-16 h-1.5 bg-bp-surface rounded-full mx-auto mb-10" />
-            
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                 <h2 className="text-3xl font-bold text-bp-primary tracking-tight mb-1">Search Filters</h2>
-                 <p className="text-[14px] font-bold text-bp-body/40 tracking-tight">Personalize your results</p>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+          <div className="relative bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom duration-300">
+            {/* Handle */}
+            <div className="sticky top-0 bg-white pt-3 pb-2 z-10 rounded-t-3xl">
+              <div className="w-10 h-1 bg-[#E5E7EB] rounded-full mx-auto mb-4" />
+              <div className="flex items-center justify-between px-6 pb-3 border-b border-[#F3F4F6]">
+                <h2 className="text-[18px] font-bold text-[#333]">Filters</h2>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label="Close filters"
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F5F5F5] text-[#666]"
+                >
+                  <X size={16} />
+                </button>
               </div>
-              <button 
-                onClick={() => setDrawerOpen(false)} 
-                aria-label="Close filters"
-                className="w-12 h-12 bg-bp-surface flex items-center justify-center rounded-2xl text-bp-body/40 active:scale-90 transition-transform"
-              >
-                <X size={24} strokeWidth={3} />
-              </button>
             </div>
 
-            <div className="space-y-12">
+            <div className="px-6 py-5 space-y-7">
+              {/* Specialty */}
               <section>
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><Activity size={20} /></div>
-                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Specialty</label>
+                <div className="flex items-center gap-2 mb-3">
+                  <Activity size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">Specialty</label>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-wrap gap-2">
                   {SPECIALTIES.map(s => (
                     <button
                       key={s}
                       onClick={() => pushParams({ specialty: s === currentSpecialty ? null : s })}
                       className={cn(
-                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-left transition-all active:scale-[0.97]",
-                        currentSpecialty === s 
-                          ? "bg-bp-accent text-white border-bp-accent shadow-xl shadow-bp-accent/20" 
-                          : "bg-white text-bp-body border-bp-border"
+                        "text-[13px] font-medium py-2 px-3.5 rounded-full border transition-all",
+                        currentSpecialty === s
+                          ? "bg-[#00766C] text-white border-[#00766C]"
+                          : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
                       )}
                     >
                       {s}
@@ -306,97 +323,99 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                 </div>
               </section>
 
+              {/* Location */}
               <section>
-                <div className="flex items-center gap-3 mb-6">
-
-
-                   <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><MapPin size={20} /></div>
-                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Location</label>
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">City</label>
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-
-                   {CITIES.map(c => (
-                     <button 
-                       key={c}
-                       onClick={() => pushParams({ city: c === currentCity ? null : c })}
-                       className={cn(
-                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-left transition-all active:scale-[0.97]",
-                        currentCity === c 
-                          ? "bg-bp-primary text-white border-bp-primary" 
-                          : "bg-white text-bp-body border-bp-border"
+                <div className="flex flex-wrap gap-2">
+                  {CITIES.map(c => (
+                    <button
+                      key={c}
+                      onClick={() => pushParams({ city: c === currentCity ? null : c })}
+                      className={cn(
+                        "text-[13px] font-medium py-2 px-3.5 rounded-full border transition-all",
+                        currentCity === c
+                          ? "bg-[#00766C] text-white border-[#00766C]"
+                          : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
                       )}
-                     >
-                       {c}
-                     </button>
-                   ))}
+                    >
+                      {c}
+                    </button>
+                  ))}
                 </div>
               </section>
 
+              {/* Fee */}
               <section>
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 bg-bp-secondary/10 rounded-xl flex items-center justify-center text-bp-secondary"><Wallet size={20} /></div>
-                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Consultation Fee</label>
+                <div className="flex items-center gap-2 mb-3">
+                  <Wallet size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">Max Consultation Fee</label>
                 </div>
-                <div className="bg-bp-surface p-8 rounded-[32px] border border-bp-border/50">
-                  <div className="flex justify-between items-end mb-6">
-                    <div className="text-4xl font-bold text-bp-accent tracking-tighter">₹{localMaxFee}</div>
-                    <div className="text-[12px] font-bold text-bp-body/30 uppercase tracking-widest leading-none pb-2">Limit</div>
+                <div className="bg-[#F9FAFB] p-5 rounded-2xl border border-[#F3F4F6]">
+                  <div className="flex justify-between items-baseline mb-4">
+                    <span className="text-[28px] font-bold text-[#00766C] tracking-tight">₹{localMaxFee}</span>
+                    <span id="mobile-fee-label" className="text-[11px] text-[#999] font-medium">max per session</span>
                   </div>
                   <input
                     type="range" min={0} max={2000} step={100} value={localMaxFee}
-                    aria-label="Maximum consultation fee"
+                    aria-labelledby="mobile-fee-label"
                     onChange={(e) => setLocalMaxFee(Number(e.target.value))}
-                    className="w-full h-2.5 bg-bp-surface rounded-lg appearance-none cursor-pointer accent-bp-accent"
+                    className="w-full accent-[#00766C] cursor-pointer"
                   />
-                  <div className="flex justify-between mt-3 text-[11px] font-bold text-bp-body/30 tracking-widest">
-                     <span>₹0</span>
-                     <span>₹2000</span>
+                  <div className="flex justify-between mt-2 text-[11px] text-[#999]">
+                    <span>₹0</span>
+                    <span>₹2,000</span>
                   </div>
                 </div>
               </section>
 
               {/* Visit Type */}
               <section>
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 bg-bp-accent/10 rounded-xl flex items-center justify-center text-bp-accent"><MapPin size={20} /></div>
-                   <label className="text-[13px] font-bold text-bp-primary uppercase tracking-[0.1em]">Visit Type</label>
+                <div className="flex items-center gap-2 mb-3">
+                  <Home size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">Visit Type</label>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {['Any', ...VISIT_TYPES].map(type => (
-                    <button
-                      key={type}
-                      onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
-                      className={cn(
-                        "text-[14px] font-bold py-4 px-4 rounded-2xl border text-center transition-all active:scale-[0.97]",
-                        currentVisitType === type
-                          ? "bg-bp-accent text-white border-bp-accent shadow-xl shadow-bp-accent/20"
-                          : "bg-white text-bp-body border-bp-border"
-                      )}
-                    >
-                      {type}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  {['Any', ...VISIT_TYPES].map(type => {
+                    const IconComp = VISIT_TYPE_ICONS[type] ?? SlidersHorizontal
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
+                        className={cn(
+                          "flex flex-col items-center gap-1.5 py-3.5 px-3 rounded-xl border text-center transition-all",
+                          currentVisitType === type
+                            ? "bg-[#00766C] text-white border-[#00766C]"
+                            : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
+                        )}
+                      >
+                        <IconComp size={18} />
+                        <span className="text-[12px] font-semibold">{type}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               </section>
             </div>
 
-            <div className="mt-16 flex gap-4 sticky bottom-0 bg-white/80 backdrop-blur-xl pt-4 pb-4">
-              <button 
-                onClick={clearAll} 
-                className="flex-1 py-5 text-[15px] font-bold text-bp-body/40 hover:text-bp-body transition-colors"
+            {/* Bottom actions */}
+            <div className="sticky bottom-0 bg-white border-t border-[#F3F4F6] px-6 py-4 flex gap-3">
+              <button
+                onClick={clearAll}
+                className="flex-1 py-3 text-[14px] font-semibold text-[#666] rounded-xl border border-[#E5E7EB] hover:bg-[#F5F5F5] transition-colors"
               >
-                Reset All
+                Reset
               </button>
-              <button 
+              <button
                 onClick={() => {
                   pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })
                   setDrawerOpen(false)
                 }}
-                className="flex-[2.5] py-5 rounded-[22px] bg-bp-accent text-white text-[17px] font-bold shadow-2xl shadow-bp-accent/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-3"
+                className="flex-[2] py-3 rounded-xl bg-[#00766C] text-white text-[14px] font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
               >
-                Apply Filters
-                <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center text-sm">{total}</div>
+                Show {total} results
               </button>
             </div>
           </div>
