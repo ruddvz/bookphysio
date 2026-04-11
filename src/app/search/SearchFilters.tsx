@@ -232,14 +232,14 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
         {/* Fee Range */}
         <div className="flex items-center gap-3 h-10 px-4 rounded-full border border-[#E5E7EB] bg-white">
           <Wallet size={14} className="text-[#666] shrink-0" />
-          <span className="text-[12px] text-[#999] font-medium shrink-0">Max</span>
+          <span id="desktop-fee-label" className="text-[12px] text-[#999] font-medium shrink-0">Max</span>
           <span className="text-[13px] font-bold text-[#00766C] shrink-0">₹{localMaxFee}</span>
           <input
             type="range"
             min={0}
             max={2000}
             step={100}
-            aria-label="Maximum consultation fee"
+            aria-labelledby="desktop-fee-label"
             value={localMaxFee}
             onChange={(e) => setLocalMaxFee(Number(e.target.value))}
             onPointerUp={() => pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) }, { replace: true })}
@@ -356,11 +356,11 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                 <div className="bg-[#F9FAFB] p-5 rounded-2xl border border-[#F3F4F6]">
                   <div className="flex justify-between items-baseline mb-4">
                     <span className="text-[28px] font-bold text-[#00766C] tracking-tight">₹{localMaxFee}</span>
-                    <span className="text-[11px] text-[#999] font-medium">max per session</span>
+                    <span id="mobile-fee-label" className="text-[11px] text-[#999] font-medium">max per session</span>
                   </div>
                   <input
                     type="range" min={0} max={2000} step={100} value={localMaxFee}
-                    aria-label="Maximum consultation fee"
+                    aria-labelledby="mobile-fee-label"
                     onChange={(e) => setLocalMaxFee(Number(e.target.value))}
                     className="w-full accent-[#00766C] cursor-pointer"
                   />
