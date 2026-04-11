@@ -987,9 +987,10 @@ interface Step5Props {
   onChange: (d: Step5Data) => void
   onSubmit: () => void
   onBack: () => void
+  submitError?: string
 }
 
-function Step5({ data, flowId, phone, onChange, onSubmit, onBack }: Step5Props) {
+function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError }: Step5Props) {
   const [countdown, setCountdown] = useState(45)
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
@@ -1093,6 +1094,9 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack }: Step5Props) 
       {error && (
         <p className="text-[12px] text-[#DC2626] mb-3">{error}</p>
       )}
+      {submitError && !error && (
+        <p className="text-[12px] text-[#DC2626] mb-3">{submitError}</p>
+      )}
 
       <p className="text-[14px] text-gray-600 mb-5">
         {canResend ? (
@@ -1130,6 +1134,7 @@ export default function DoctorSignupPage() {
   const [providerOtpFlowId, setProviderOtpFlowId] = useState<string | null>(null)
   const [otpRequestError, setOtpRequestError] = useState('')
   const [otpRequestLoading, setOtpRequestLoading] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const pendingAvatarRef = useRef<{ dataUrl: string; mimeType: string; fileName: string } | null>(null)
 
@@ -1197,6 +1202,7 @@ export default function DoctorSignupPage() {
   }
   async function handleSubmit() {
     // Send all data to onboarding API
+    setSubmitError('')
     try {
       const step4Payload = {
         ...step4,
@@ -1230,10 +1236,11 @@ export default function DoctorSignupPage() {
         }
         router.push('/provider/dashboard')
       } else {
-        alert('Onboarding failed. Please contact support.')
+        const payload = (await res.json().catch(() => ({}))) as { error?: string }
+        setSubmitError(payload.error ?? 'Onboarding failed. Please contact support.')
       }
     } catch {
-      alert('Network error')
+      setSubmitError('Network error. Please check your connection and try again.')
     }
   }
 
@@ -1272,6 +1279,7 @@ export default function DoctorSignupPage() {
           onChange={setStep5}
           onSubmit={handleSubmit}
           onBack={goBack}
+          submitError={submitError}
         />
       )}
     </div>
