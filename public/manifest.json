@@ -3,37 +3,48 @@
   "short_name": "BookPhysio",
   "description": "Find and book physiotherapists near you. In-clinic and home visits available across India.",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#00766C",
   "icons": [
     {
-      "src": "/icon.png?v=20260404b",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon.png?v=20260404b",
+      "src": "/icon-192.png?v=20260404b",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/icon.png?v=20260404b",
+      "src": "/icon-192-maskable.png?v=20260404b",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png?v=20260404b",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png?v=20260404b",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
     {
       "name": "Find Physios",
       "url": "/search",
-      "icons": [{ "src": "/icon.png?v=20260404b", "sizes": "any", "type": "image/png" }]
+      "icons": [{ "src": "/icon-192.png?v=20260404b", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "My Bookings",
       "url": "/patient/dashboard",
-      "icons": [{ "src": "/icon.png?v=20260404b", "sizes": "any", "type": "image/png" }]
+      "icons": [{ "src": "/icon-192.png?v=20260404b", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

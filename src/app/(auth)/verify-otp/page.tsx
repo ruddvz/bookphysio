@@ -135,7 +135,10 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
       // Brief success flash before redirect
       setVerified(true)
-      setTimeout(() => router.push(redirectTo), 800)
+      setTimeout(() => {
+        router.push(redirectTo)
+        router.refresh()
+      }, 800)
     } catch {
       setError('Network error. Please try again.')
     } finally {

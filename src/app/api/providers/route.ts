@@ -10,8 +10,14 @@ import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/li
 const SEARCH_CACHE_TTL_SECONDS = 60
 
 function buildSearchCacheKey(params: Record<string, string>): string {
-  // Stable sort keys so cache hits regardless of param order
-  const sorted = Object.keys(params).sort().map((k) => `${k}=${params[k]}`).join('&')
+  // Stable sort keys so cache hits regardless of param order.
+  // Normalise city to lower-case so "Surat" and "surat" share one cache entry
+  // (the DB query is already case-insensitive via ILIKE).
+  const normalised: Record<string, string> = {}
+  for (const [key, value] of Object.entries(params)) {
+    normalised[key] = key === 'city' ? value.toLowerCase() : value
+  }
+  const sorted = Object.keys(normalised).sort().map((k) => `${k}=${normalised[k]}`).join('&')
   return `bp:search:v1:${sorted}`
 }
 

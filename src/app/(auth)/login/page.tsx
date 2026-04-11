@@ -82,7 +82,16 @@ export default function LoginPage() {
         return
       }
 
+      // Sign in on the client-side Supabase instance so onAuthStateChange fires
+      // and AuthContext picks up the session without a full page reload.
+      const supabase = createClient()
+      await supabase.auth.signInWithPassword({ email, password }).catch(() => {
+        // Best-effort — the server already authenticated, cookies are set.
+        // The router.refresh() below will revalidate server components anyway.
+      })
+
       router.push(data.redirectTo ?? '/patient/dashboard')
+      router.refresh()
     } catch {
       setErrors({ general: 'Unable to sign in right now. Please try again.' })
     } finally {
