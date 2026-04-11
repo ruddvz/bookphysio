@@ -18,6 +18,8 @@ const staticRoutes: Array<{ path: string; lastModified: string; priority: number
   { path: '/hi/privacy',     lastModified: '2026-04-03', priority: 0.3 },
   { path: '/hi/terms',       lastModified: '2026-04-03', priority: 0.3 },
   { path: '/search',      lastModified: '2026-03-15', priority: 0.9 },
+  { path: '/services',    lastModified: '2026-04-11', priority: 0.9 },
+  { path: '/packages',    lastModified: '2026-04-11', priority: 0.9 },
   { path: '/hi/search',   lastModified: '2026-04-07', priority: 0.7 },
 ]
 
