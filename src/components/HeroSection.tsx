@@ -133,7 +133,7 @@ export default function HeroSection() {
       setTimeout(() => {
         setWordIdx(i => (i + 1) % ROTATING_WORDS.length)
         setWordVisible(true)
-      }, 400)
+      }, 500)
     }, 3000)
     return () => clearInterval(id)
   }, [])
@@ -190,7 +190,7 @@ export default function HeroSection() {
             <span className="relative inline-flex items-end">
               <span
                 className={cn(
-                  'text-gradient-lavender inline-block transition-all duration-400',
+                  'text-gradient-lavender inline-block transition-all duration-500',
                   wordVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-[-8px]',
