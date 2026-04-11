@@ -9,6 +9,8 @@ const columns = [
     heading: 'Platform',
     links: [
       { label: 'Search physios', href: '/search' },
+      { label: 'Services',       href: '/services' },
+      { label: 'Session packs',  href: '/packages' },
       { label: 'How it works',   href: '/how-it-works' },
       { label: 'About us',       href: '/about' },
       { label: 'FAQ',            href: '/faq' },
