@@ -219,7 +219,7 @@ describe('GET /api/providers', () => {
       lat: 19.076,
       lng: 72.8777,
     })
-    expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('verified', true)
+    expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('active', true)
     expect(fallbackProvidersBuilder.gte).toHaveBeenCalledWith('rating_avg', 0)
     expect(fallbackProvidersBuilder.lte).toHaveBeenCalledWith('consultation_fee_inr', 2000000)
     expect(fallbackProvidersBuilder.limit).toHaveBeenCalled()
