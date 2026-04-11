@@ -70,7 +70,7 @@ describe('Auth regressions', () => {
     expect(screen.queryByText(/BookPhysio is a booking platform/i)).not.toBeInTheDocument()
   })
 
-  it('keeps the login page logo linked home and uses the arrow icon for doctor signup', () => {
+  it('keeps the login page logo linked home and shows the provider signup link', () => {
     render(<LoginPage />)
 
     expect(screen.getByRole('link', { name: /bookphysio logo/i })).toHaveAttribute('href', '/')
@@ -84,8 +84,8 @@ describe('Auth regressions', () => {
     expect(screen.queryByText(/111111/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/264200/i)).not.toBeInTheDocument()
 
-    const doctorLink = screen.getByRole('link', { name: /join as a provider/i })
-    expect(doctorLink).toHaveAttribute('href', '/doctor-signup')
+    const providerLink = screen.getByRole('link', { name: /join as a provider/i })
+    expect(providerLink).toHaveAttribute('href', '/doctor-signup')
   })
 
   it('renders the login page in English with email and password fields', () => {

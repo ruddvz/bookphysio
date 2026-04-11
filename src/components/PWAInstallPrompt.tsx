@@ -67,11 +67,15 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
   useEffect(() => {
     if (isStandalone()) return
 
-    const dismissed = localStorage.getItem(dismissKey)
-    if (dismissed) {
-      const dismissedAt = parseInt(dismissed, 10)
-      // Show again after 7 days
-      if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return
+    try {
+      const dismissed = localStorage.getItem(dismissKey)
+      if (dismissed) {
+        const dismissedAt = parseInt(dismissed, 10)
+        // Show again after 7 days
+        if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return
+      }
+    } catch {
+      // localStorage may be unavailable (private mode, embedded contexts)
     }
 
     const handleBeforeInstall = (e: Event) => {
@@ -108,7 +112,11 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
 
   const handleDismiss = useCallback(() => {
     setShowBanner(false)
-    localStorage.setItem(dismissKey, String(Date.now()))
+    try {
+      localStorage.setItem(dismissKey, String(Date.now()))
+    } catch {
+      // localStorage may be unavailable (private mode, embedded contexts)
+    }
   }, [dismissKey])
 
   const config = ROLE_CONFIG[role]

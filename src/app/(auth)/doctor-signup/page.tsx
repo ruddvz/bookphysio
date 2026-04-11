@@ -988,9 +988,10 @@ interface Step5Props {
   onSubmit: () => void
   onBack: () => void
   submitError?: string
+  onClearSubmitError?: () => void
 }
 
-function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError }: Step5Props) {
+function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError, onClearSubmitError }: Step5Props) {
   const [countdown, setCountdown] = useState(45)
   const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
@@ -1025,6 +1026,7 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError }:
 
   async function handleResend() {
     setError('')
+    onClearSubmitError?.()
     setCanResend(false)
     setCountdown(45)
     onChange({ otp: Array(OTP_LENGTH).fill('') })
@@ -1084,7 +1086,7 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError }:
       <div className="mb-4">
         <OtpInput
           value={data.otp}
-          onChange={(otp) => onChange({ otp })}
+          onChange={(otp) => { onChange({ otp }); onClearSubmitError?.() }}
           onComplete={handleSubmitOtp}
           disabled={loading}
           error={!!error}
@@ -1280,6 +1282,7 @@ export default function DoctorSignupPage() {
           onSubmit={handleSubmit}
           onBack={goBack}
           submitError={submitError}
+          onClearSubmitError={() => setSubmitError('')}
         />
       )}
     </div>

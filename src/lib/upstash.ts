@@ -2,8 +2,9 @@ import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 
 // Warn loudly at module init if Upstash credentials are missing in production.
-// All rate limiters wrap their calls in try/catch and allow through on failure, so
-// the app will still serve requests — but ALL rate limiting will be silently disabled.
+// Missing credentials disable all rate limiting, but request behavior on rate-limit
+// failures depends on each call site: some handlers may allow through, while others
+// may fail closed and return an error instead.
 if (process.env.NODE_ENV === 'production' &&
   (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)) {
   console.error(

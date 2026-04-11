@@ -76,7 +76,9 @@ export default async function middleware(request: NextRequest) {
     url.pathname = '/login'
     url.search = ''
     url.searchParams.set('return', returnTo)
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    redirectResponse.headers.set('Content-Security-Policy', cspHeader)
+    return redirectResponse
   }
 
   if (!user && demoSession) {
@@ -112,6 +114,7 @@ export default async function middleware(request: NextRequest) {
         status: 500,
         headers: {
           'Cache-Control': 'no-store',
+          'Content-Security-Policy': cspHeader,
         },
       })
     }
@@ -119,7 +122,9 @@ export default async function middleware(request: NextRequest) {
     const roleHomeUrl = new URL(resolvePostAuthRedirect(profile?.role, null), request.url)
 
     if (!canRoleAccessPath(profile?.role, rewrittenPathname)) {
-      return NextResponse.redirect(roleHomeUrl)
+      const roleRedirect = NextResponse.redirect(roleHomeUrl)
+      roleRedirect.headers.set('Content-Security-Policy', cspHeader)
+      return roleRedirect
     }
   }
 

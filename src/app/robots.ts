@@ -20,13 +20,28 @@ export default function robots(): MetadataRoute.Robots {
           '/dev-login',
         ],
       },
-      // Explicitly allow AI bots to crawl public pages
-      { userAgent: 'GPTBot', allow: '/' },
-      { userAgent: 'ChatGPT-User', allow: '/' },
-      { userAgent: 'ClaudeBot', allow: '/' },
-      { userAgent: 'PerplexityBot', allow: '/' },
-      { userAgent: 'Amazonbot', allow: '/' },
-      { userAgent: 'GoogleOther', allow: '/' },
+      // Explicitly allow AI bots to crawl public pages while inheriting the
+      // same disallow list so they cannot access protected routes.
+      ...[
+        'GPTBot',
+        'ChatGPT-User',
+        'ClaudeBot',
+        'PerplexityBot',
+        'Amazonbot',
+        'GoogleOther',
+      ].map((bot) => ({
+        userAgent: bot,
+        allow: '/' as const,
+        disallow: [
+          '/admin',
+          '/api',
+          '/book',
+          '/patient',
+          '/provider',
+          '/preview',
+          '/dev-login',
+        ],
+      })),
     ],
   }
 }

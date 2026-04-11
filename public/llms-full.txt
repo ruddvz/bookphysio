@@ -122,7 +122,7 @@ Q: How long do refunds take?
 A: Refunds are processed within 5–7 business days back to your original payment method once a cancellation is confirmed.
 
 Q: What if I am not satisfied with my session?
-A: Contact us at support@bookphysio.in within 24 hours of your appointment describing the issue. We will work with the provider to resolve it and will issue a refund or credit if appropriate.
+A: Contact us at support@bookphysio.in within 7 days of your appointment describing the issue. We will work with the provider to resolve it and will issue a refund or credit if appropriate.
 
 ### Safety and privacy
 
@@ -133,7 +133,7 @@ Q: Is my payment information safe?
 A: Yes. Razorpay handles all payment processing. BookPhysio never stores your card numbers or UPI PINs.
 
 Q: Who is the grievance officer?
-A: For any complaints or privacy concerns, contact our grievance officer at support@bookphysio.in. We respond within 48 hours.
+A: For any complaints or privacy concerns, contact our grievance officer at grievance@bookphysio.in. We respond within 48 hours.
 
 Q: Can I use BookPhysio for emergencies?
 A: No. BookPhysio is for scheduled physiotherapy appointments. For medical emergencies, please call 112 or go to the nearest hospital emergency department.

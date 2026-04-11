@@ -131,14 +131,18 @@ export default function HeroSection() {
   const [showCities, setShowCities]         = useState(false)
 
   useEffect(() => {
+    let nestedTimeout: ReturnType<typeof setTimeout> | undefined
     const id = setInterval(() => {
       setWordVisible(false)
-      setTimeout(() => {
+      nestedTimeout = setTimeout(() => {
         setWordIdx(i => (i + 1) % ROTATING_WORDS.length)
         setWordVisible(true)
       }, 500)
     }, 3000)
-    return () => clearInterval(id)
+    return () => {
+      clearInterval(id)
+      if (nestedTimeout !== undefined) clearTimeout(nestedTimeout)
+    }
   }, [])
 
   const handleSearch = (overrideCondition?: string) => {
