@@ -121,51 +121,62 @@ function SearchField({
 export default function HeroSection() {
   const router = useRouter()
   const [wordIdx, setWordIdx] = useState(0)
+  const [wordVisible, setWordVisible] = useState(true)
   const [condition, setCondition] = useState('')
   const [location, setLocation]   = useState('')
   const [showConditions, setShowConditions] = useState(false)
   const [showCities, setShowCities]         = useState(false)
 
   useEffect(() => {
-    const id = setInterval(() => setWordIdx(i => (i + 1) % ROTATING_WORDS.length), 3000)
+    const id = setInterval(() => {
+      setWordVisible(false)
+      setTimeout(() => {
+        setWordIdx(i => (i + 1) % ROTATING_WORDS.length)
+        setWordVisible(true)
+      }, 400)
+    }, 3000)
     return () => clearInterval(id)
   }, [])
 
-  const handleSearch = () => {
+  const handleSearch = (overrideCondition?: string) => {
     const params = new URLSearchParams()
-    if (condition.trim()) params.set('condition', condition.trim())
+    const c = overrideCondition ?? condition
+    if (c.trim()) params.set('condition', c.trim())
     if (location.trim())  params.set('location',  location.trim())
     router.push(params.toString() ? `/search?${params}` : '/search')
   }
 
   return (
     <section
-      className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden"
+      className="relative min-h-[100svh] flex flex-col justify-center"
       style={{ background: 'linear-gradient(155deg, #F0EEFF 0%, #E8F8F7 40%, #FFF5F8 75%, #FFF8F0 100%)' }}
       aria-label="Hero section"
     >
-      {/* Soft blob decorations */}
-      <div
-        className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-40 animate-blob"
-        style={{ background: 'radial-gradient(circle, #C4B5E8 0%, transparent 70%)' }}
-      />
-      <div
-        className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full opacity-30 animate-blob"
-        style={{ background: 'radial-gradient(circle, #7DCFC9 0%, transparent 70%)', animationDelay: '3s' }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full opacity-20"
-        style={{ background: 'radial-gradient(ellipse, #F4AABB 0%, transparent 70%)' }}
-      />
+      {/* Decorative container — overflow hidden to clip blobs, pointer-events-none so clicks pass through */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Soft blob decorations */}
+        <div
+          className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-40 animate-blob"
+          style={{ background: 'radial-gradient(circle, #C4B5E8 0%, transparent 70%)' }}
+        />
+        <div
+          className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full opacity-30 animate-blob"
+          style={{ background: 'radial-gradient(circle, #7DCFC9 0%, transparent 70%)', animationDelay: '3s' }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full opacity-20"
+          style={{ background: 'radial-gradient(ellipse, #F4AABB 0%, transparent 70%)' }}
+        />
 
-      {/* Subtle dot grid */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: 'radial-gradient(circle, #8B9BD8 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
+        {/* Subtle dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #8B9BD8 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+      </div>
 
       {/* Content */}
       <div className="bp-container relative z-10 pt-20 pb-20">
@@ -178,8 +189,12 @@ export default function HeroSection() {
             for{' '}
             <span className="relative inline-flex items-end">
               <span
-                key={wordIdx}
-                className="text-gradient-lavender animate-specialty inline-block"
+                className={cn(
+                  'text-gradient-lavender inline-block transition-all duration-400',
+                  wordVisible
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-[-8px]',
+                )}
               >
                 {ROTATING_WORDS[wordIdx]}
               </span>
@@ -278,7 +293,7 @@ export default function HeroSection() {
                           <button
                             key={tag}
                             type="button"
-                            onClick={() => { setCondition(tag); handleSearch() }}
+                            onClick={() => { setCondition(tag); handleSearch(tag) }}
                             className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
                           >
                             {tag}
@@ -291,7 +306,7 @@ export default function HeroSection() {
                               key={`dup-${tag}`}
                               type="button"
                               tabIndex={-1}
-                              onClick={() => { setCondition(tag); handleSearch() }}
+                              onClick={() => { setCondition(tag); handleSearch(tag) }}
                               className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
                             >
                               {tag}
