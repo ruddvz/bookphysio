@@ -29,7 +29,7 @@ Build strategy: Use the [ai-website-cloner-template](https://github.com/JCodesMo
 | Payments | Razorpay (UPI, cards, netbanking, wallets — India-first) |
 | Location discovery | City and pincode search with provider coverage cues |
 | Email | Resend (transactional — booking confirmations, password reset) |
-| SMS/OTP | MSG91 (Indian SMS gateway — OTP + appointment reminders) |
+| SMS/OTP | Supabase Auth phone provider with MSG91 backend (configured in Supabase dashboard, no app-side SMS client) |
 | Validation | Zod (all input boundaries) |
 | Client State | Zustand |
 | Server State | TanStack Query (React Query) |
@@ -74,7 +74,7 @@ src/lib/
   validations/    ← Zod schemas (one file per domain)
   razorpay.ts     ← Razorpay client init
   resend.ts       ← Resend email client
-  msg91.ts        ← MSG91 SMS client
+  (no SMS client — phone OTP routes call supabase.auth.signInWithOtp directly)
 src/app/api/
   contracts/      ← TypeScript types exported for UI agent consumption
                     (source of truth for API response shapes)
@@ -311,7 +311,7 @@ notifications (
 5. `?step=3` — confirm details, pay via Razorpay checkout
 6. On payment success webhook: appointment status → `confirmed`, slot → `is_booked: true`
 7. Redirect to `/book/[doctorId]/success` with summary
-8. Resend confirmation email + MSG91 SMS to patient and provider
+8. Resend confirmation email + Supabase phone-provider SMS to patient and provider
 
 ---
 
@@ -351,7 +351,7 @@ notifications (
 | Currency | INR (₹), stored as integer rupees, displayed with ₹ symbol |
 | Phone | +91 XXXXX XXXXX, E.164 format in DB (+91XXXXXXXXXX), validated with Zod |
 | Pincode | 6-digit Indian postal codes, Zod regex `/^[1-9][0-9]{5}$/` |
-| Auth | Phone/OTP via MSG91 as primary; email + Google as alternatives |
+| Auth | Phone/OTP via Supabase Auth (MSG91 backend configured in Supabase dashboard) as primary; email + Google as alternatives |
 | Payments | Razorpay (UPI, cards, netbanking, wallets) — not Stripe |
 | GST | 18% GST on platform service fee; `gst_amount_inr` tracked in `payments` table |
 | Provider credential | ICP registration number required for verification |
@@ -435,9 +435,8 @@ RAZORPAY_WEBHOOK_SECRET=
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=
 
-# MSG91 (SMS/OTP)
-MSG91_AUTH_KEY=
-MSG91_TEMPLATE_ID=
+# SMS / Phone OTP — configured INSIDE Supabase dashboard, not in app env.
+# Auth → Providers → Phone → MSG91 (auth key + DLT template + sender ID)
 
 # Upstash (rate limiting)
 UPSTASH_REDIS_REST_URL=

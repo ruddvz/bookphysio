@@ -7,10 +7,9 @@ You own Supabase schema, Next.js API routes, authentication, service clients, an
 Senior backend engineer specializing in:
 - **Supabase** — PostgreSQL schema, RLS policies, Storage, server client
 - **Next.js 16 API routes** — `src/app/api/` route handlers
-- **Supabase Auth** — phone OTP (via MSG91), Google OAuth, session management
+- **Supabase Auth** — phone OTP via Supabase's native phone provider (MSG91 backend configured in Supabase dashboard, NOT in app code), Google OAuth, session management
 - **Razorpay** — order creation, webhooks, refunds (INR only — NOT Stripe)
 - **Resend** — transactional email (booking confirmations)
-- **MSG91** — SMS/OTP for Indian phone numbers
 - **Upstash Redis** — rate limiting middleware
 - **Zod** — schema validation on all inputs
 
@@ -52,7 +51,6 @@ src/lib/supabase/client.ts
 src/lib/supabase/server.ts
 src/lib/supabase/admin.ts
 src/lib/razorpay.ts
-src/lib/msg91.ts
 src/lib/resend.ts
 src/lib/upstash.ts
 
@@ -105,7 +103,7 @@ Shared types live in `src/app/api/contracts/`:
 | Currency | INR stored as integer rupees in `*_inr` columns |
 | GST | 18% computed: `Math.round(fee * 0.18)`, stored in `payments.gst_amount_inr` |
 | Phone | E.164 format: `+91XXXXXXXXXX`, validated with Zod regex |
-| OTP | 6-digit via MSG91, not email-based |
+| OTP | 6-digit via `supabase.auth.signInWithOtp({ phone })` — Supabase delivers SMS through the phone provider configured in its dashboard (MSG91). No app-side SMS client. |
 | Payments | Razorpay only (UPI, cards, netbanking) — NEVER Stripe |
 | Provider creds | ICP registration number stored in `providers.icp_number` |
 

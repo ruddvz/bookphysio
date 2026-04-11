@@ -324,7 +324,7 @@ Run `code-reviewer` + `security-reviewer` **in parallel** (they're independent).
 - Phone: +91 XXXXX XXXXX, E.164 in DB, Zod validated
 - Pincode: 6-digit, regex `/^[1-9][0-9]{5}$/`
 - GST: 18%, computed server-side only, stored in `payments.gst_amount_inr`
-- Auth primary: phone OTP via MSG91 (not email)
+- Auth primary: phone OTP via Supabase Auth (Supabase dashboard delivers SMS through MSG91 — no app-side MSG91 client)
 - Provider credential: ICP registration number required
 - Payments: Razorpay (UPI, cards, netbanking) — NOT Stripe
 

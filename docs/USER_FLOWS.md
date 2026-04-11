@@ -41,16 +41,16 @@
 
 **Happy path:**
 1. Patient enters mobile number (10 digits, +91 auto-prepended) → clicks "Send OTP"
-2. `POST /api/auth/otp/send` called → MSG91 sends OTP SMS to number
+2. `POST /api/auth/otp/send` called → Supabase Auth `signInWithOtp` → SMS delivered via Supabase's MSG91 phone provider
 3. OTP input screen shown (6 digits, auto-advance between boxes)
 4. Patient enters OTP → `POST /api/auth/otp/verify` called
 5. On success: Supabase session created → patient redirected to `/patient/dashboard` (or original redirect target)
 
 **Error paths:**
 - Wrong OTP: "Incorrect OTP. Please try again." (input cleared, focus on first box)
-- Expired OTP (>10 min): "OTP expired. Tap 'Resend OTP'." → resend triggers new MSG91 send
+- Expired OTP (>10 min): "OTP expired. Tap 'Resend OTP'." → resend triggers a fresh Supabase OTP request
 - Rate limit hit (>3 sends in 10 min): "Too many OTP requests. Please wait 10 minutes."
-- MSG91 unavailable: "OTP service unavailable. Please try again shortly."
+- SMS provider unavailable (Supabase phone provider error): "OTP service unavailable. Please try again shortly."
 - Invalid phone number (not 10 digits): inline Zod error before API call
 
 **Edge cases:**
@@ -206,7 +206,7 @@
 **Happy path:**
 1. New appointment appears in provider's queue (status: `pending`)
 2. Provider clicks appointment → detail view with Accept / Reject buttons
-3. Accept: `PATCH /api/appointments/[id]` → status `confirmed` → patient notified via Resend/MSG91
+3. Accept: `PATCH /api/appointments/[id]` → status `confirmed` → patient notified via Resend (email) and Supabase phone-provider SMS
 4. Reject: `PATCH /api/appointments/[id]` → status `cancelled` → patient notified
 
 **Error paths:**

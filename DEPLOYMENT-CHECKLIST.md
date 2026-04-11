@@ -50,11 +50,13 @@
 - [ ] Get `RAZORPAY_WEBHOOK_SECRET` from webhook settings
 - [ ] Test live payment end-to-end (UPI + card)
 
-### MSG91 (SMS/OTP)
-- [ ] Register DLT template for OTP messages
-- [ ] Get production `MSG91_AUTH_KEY`
-- [ ] Get approved `MSG91_TEMPLATE_ID`
-- [ ] Test OTP send + verify flow end-to-end
+### Phone OTP (Supabase Auth → Phone provider → MSG91)
+- [ ] Register DLT template for OTP messages with TRAI
+- [ ] Get production MSG91 auth key, DLT template ID, sender ID
+- [ ] In Supabase dashboard → **Auth → Providers → Phone**, enable Phone, choose `MSG91`, paste auth key + template ID + sender ID
+- [ ] Send a test OTP from the dashboard to a real +91 number — confirm delivery
+- [ ] Test the full app OTP send + verify flow end-to-end on apex
+- [ ] **Do NOT** set `MSG91_*` env vars on the Next.js app — they are not read; the app only talks to Supabase
 
 ### Resend (Email)
 - [ ] Verify `bookphysio.in` domain on Resend (DNS records)

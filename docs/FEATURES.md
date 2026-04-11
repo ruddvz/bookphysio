@@ -268,28 +268,29 @@
 
 ---
 
-## 9.1 Auth — MSG91 OTP
+## 9.1 Auth — Supabase Phone OTP (MSG91 backend)
 
 **Route / Component:** `app/(auth)/verify-otp`, `app/api/auth/otp/send`, `app/api/auth/otp/verify`
 **Phase:** 9.1
-**Status:** [ ] pending
-**Tests:** [ ] pending
+**Status:** [x] done
+**Tests:** [x] auth-hardening.test.ts (16 tests)
 
 ### Acceptance Criteria
-- [ ] OTP send API calls MSG91 (not a stub) with valid +91 E.164 number
-- [ ] OTP verify API validates the code against MSG91 response
-- [ ] On success: Supabase session created, user redirected to dashboard
-- [ ] On failure (wrong code): inline error "Incorrect OTP. Try again."
-- [ ] On expired code: inline error "OTP expired. Resend OTP."
-- [ ] Rate limiting (Upstash) enforced on `/api/auth/otp/send` — max 3 sends per phone per 10 minutes
-- [ ] Phone number validated as E.164 (+91XXXXXXXXXX) via Zod before API call
+- [x] OTP send API calls `supabase.auth.signInWithOtp({ phone })` with valid +91 E.164 number — Supabase delivers the SMS via the phone provider configured in its dashboard (MSG91)
+- [x] OTP verify API calls `supabase.auth.verifyOtp({ phone, token, type: 'sms' })` and reads the resulting session
+- [x] On success: Supabase session created, user redirected to role-appropriate dashboard
+- [x] On failure (wrong code): inline error "Incorrect OTP. Try again."
+- [x] On expired code: inline error "OTP expired. Resend OTP."
+- [x] Rate limiting (Upstash) enforced on `/api/auth/otp/send` — max 3 sends per phone per 10 minutes, plus IP-keyed limit
+- [x] Phone number validated as E.164 (+91XXXXXXXXXX) via Zod before API call
+- [x] Raw phone numbers held in a signed `pending-otp` cookie, never echoed to the client
 
 ### Edge Cases
-- MSG91 API unavailable: "OTP service unavailable. Please try again shortly."
+- Supabase phone provider unavailable: "OTP service unavailable. Please try again shortly." (login flow returns a generic masked response to avoid account enumeration)
 - User enters OTP after session expiry: re-prompt login
 
 ### Dependencies
-- Requires: MSG91 DLT template approved and sender ID registered
+- Requires: Supabase Auth → Providers → Phone → MSG91 (auth key + DLT template + sender ID) configured in the Supabase dashboard. No app-side MSG91 client.
 
 ---
 
