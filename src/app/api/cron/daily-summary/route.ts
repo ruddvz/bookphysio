@@ -12,10 +12,15 @@ import { patientModels } from '@/lib/ai-config'
  * emails the summary to the admin, and stores it in the daily_summaries table.
  *
  * Cron schedule is defined in vercel.json.
- * Protected by CRON_SECRET header validation.
+ * Protected by Vercel cron header validation and optional CRON_SECRET bearer validation.
  */
 
 function isAuthorizedCron(request: NextRequest): boolean {
+  const vercelCronHeader = request.headers.get('x-vercel-cron')
+  if (vercelCronHeader) {
+    return true
+  }
+
   const cronSecret = process.env.CRON_SECRET
   if (!cronSecret) {
     // In development, allow through without a secret
