@@ -26,6 +26,7 @@ function isAuthorizedCron(request: NextRequest): boolean {
 
 interface DailyMetrics {
   date: string
+  dateIso: string
   appointments: number
   completed: number
   cancelled: number
@@ -107,8 +108,15 @@ async function gatherYesterdayMetrics(): Promise<DailyMetrics> {
     ?.filter(a => a.status === 'completed')
     .reduce((sum, a) => sum + (a.fee_inr ?? 0), 0) ?? 0
 
+  // Format yesterday's IST date as YYYY-MM-DD for DB storage
+  const yyyy = yesterdayIST.getFullYear()
+  const mm = String(yesterdayIST.getMonth() + 1).padStart(2, '0')
+  const dd = String(yesterdayIST.getDate()).padStart(2, '0')
+  const dateIso = `${yyyy}-${mm}-${dd}`
+
   return {
     date: dateLabel,
+    dateIso,
     appointments: dayAppts?.length ?? 0,
     completed,
     cancelled,
@@ -178,11 +186,11 @@ async function storeSummary(
   const { error } = await supabaseAdmin
     .from('daily_summaries')
     .upsert({
-      summary_date: new Date().toISOString().split('T')[0],
-      metrics: JSON.stringify(metrics),
-      ai_summary: JSON.stringify(aiResponse),
+      summary_date: metrics.dateIso,
+      metrics,
+      ai_summary: aiResponse,
       health_score: typeof aiResponse.healthScore === 'number' ? aiResponse.healthScore : null,
-      alerts: Array.isArray(aiResponse.alerts) ? JSON.stringify(aiResponse.alerts) : '[]',
+      alerts: Array.isArray(aiResponse.alerts) ? aiResponse.alerts : [],
       created_at: new Date().toISOString(),
     }, {
       onConflict: 'summary_date',

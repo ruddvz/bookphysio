@@ -100,8 +100,8 @@ function AiInsightsCard() {
     try {
       const res = await fetch('/api/admin/ai-insights', { method: 'POST' })
       if (!res.ok) {
-        const body = await res.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`)
+        const body = await res.json().catch(() => null) as { error?: string } | null
+        throw new Error(body?.error ?? `HTTP ${res.status}`)
       }
       const data = await res.json() as AiInsights
       setInsights(data)

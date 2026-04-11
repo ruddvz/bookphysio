@@ -43,6 +43,7 @@ interface ProviderContext {
   standardFee: number
   totalBookings: number
   verified: boolean
+  userId: string | null
 }
 
 async function getPatientBookingHistory(patientId: string): Promise<PatientBookingHistory> {
@@ -92,7 +93,7 @@ async function getProviderContext(providerId: string): Promise<ProviderContext> 
   ] = await Promise.all([
     admin
       .from('providers')
-      .select('consultation_fee_inr, verified')
+      .select('consultation_fee_inr, verified, user_id')
       .eq('id', providerId)
       .single(),
 
@@ -106,6 +107,7 @@ async function getProviderContext(providerId: string): Promise<ProviderContext> 
     standardFee: (provider?.consultation_fee_inr as number) ?? 0,
     totalBookings: bookingCount ?? 0,
     verified: (provider?.verified as boolean) ?? false,
+    userId: (provider?.user_id as string) ?? null,
   }
 }
 
@@ -137,9 +139,9 @@ function runRuleBasedChecks(
     )
   }
 
-  // Rule 4: Self-booking — patient ID matches provider user ID
-  if (context.patientId === context.providerId) {
-    flags.push('Self-booking: Patient ID matches provider ID')
+  // Rule 4: Self-booking — patient's user ID matches provider's user ID
+  if (providerCtx.userId && context.patientId === providerCtx.userId) {
+    flags.push('Self-booking: Patient user ID matches the provider\'s user ID')
   }
 
   // Rule 5: Unverified provider receiving bookings
@@ -237,7 +239,7 @@ async function storeAnomaly(
       provider_id: context.providerId,
       severity,
       reason,
-      rule_flags: JSON.stringify(ruleFlags),
+      rule_flags: ruleFlags,
       reviewed: false,
       created_at: new Date().toISOString(),
     })
