@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { supabaseAdmin } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 const onboardSchema = z.object({
   step1: z.object({
@@ -32,6 +32,219 @@ const onboardSchema = z.object({
   }),
 })
 
+type OnboardPayload = z.infer<typeof onboardSchema>
+
+interface RollbackState {
+  providerCreated: boolean
+  createdLocationIds: string[]
+  previousSpecialtyIds: string[]
+  selectedSpecialtyIds: string[]
+  specialtiesReplaced: boolean
+}
+
+async function validatePayload(request: NextRequest): Promise<OnboardPayload> {
+  const body = await request.json()
+  return onboardSchema.parse(body)
+}
+
+async function updateUserMetadata(userId: string, step1: OnboardPayload['step1']): Promise<void> {
+  const { error: userError } = await supabaseAdmin
+    .from('users')
+    .update({
+      full_name: step1.name,
+    })
+    .eq('id', userId)
+
+  if (userError) {
+    throw userError
+  }
+
+  const { error: authUserError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+    user_metadata: {
+      full_name: step1.name,
+      phone: step1.phone,
+      provider_pending: true,
+    },
+  })
+
+  if (authUserError) {
+    throw authUserError
+  }
+}
+
+async function createProviderProfile(
+  userId: string,
+  step2: OnboardPayload['step2'],
+  step4: OnboardPayload['step4'],
+): Promise<boolean> {
+  const { data: existingProvider, error: existingProviderError } = await supabaseAdmin
+    .from('providers')
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (existingProviderError) {
+    throw existingProviderError
+  }
+
+  const { error: providerError } = await supabaseAdmin
+    .from('providers')
+    .upsert({
+      id: userId,
+      title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
+      experience_years: Number.parseInt(step2.experienceYears, 10),
+      iap_registration_no: step2.registrationType === 'STATE'
+        ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
+        : (step2.iapNumber || ''),
+      consultation_fee_inr: Number.parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0', 10),
+      verified: false,
+      active: false,
+      onboarding_step: 4,
+    })
+
+  if (providerError) {
+    throw providerError
+  }
+
+  return !existingProvider
+}
+
+async function createLocation(
+  userId: string,
+  step3: OnboardPayload['step3'],
+): Promise<string[]> {
+  const { data, error } = await supabaseAdmin
+    .from('locations')
+    .insert({
+      provider_id: userId,
+      name: step3.clinicName,
+      address: step3.address,
+      city: step3.city,
+      pincode: step3.pincode,
+      visit_type: step3.visitTypes,
+    })
+    .select('id')
+
+  if (error) {
+    throw error
+  }
+
+  return (data ?? []).map((location) => location.id as string)
+}
+
+async function linkSpecialties(
+  userId: string,
+  step2: OnboardPayload['step2'],
+): Promise<Pick<RollbackState, 'previousSpecialtyIds' | 'selectedSpecialtyIds' | 'specialtiesReplaced'>> {
+  const { data: existingSpecialties, error: specialtiesError } = await supabaseAdmin
+    .from('specialties')
+    .select('id, name')
+
+  if (specialtiesError) {
+    throw specialtiesError
+  }
+
+  const selectedSpecialtyIds = (existingSpecialties ?? [])
+    .filter((specialty) => step2.specialties.includes(specialty.name as string))
+    .map((specialty) => specialty.id as string)
+
+  if (selectedSpecialtyIds.length === 0) {
+    return {
+      previousSpecialtyIds: [],
+      selectedSpecialtyIds: [],
+      specialtiesReplaced: false,
+    }
+  }
+
+  const { data: existingLinks, error: existingLinksError } = await supabaseAdmin
+    .from('provider_specialties')
+    .select('specialty_id')
+    .eq('provider_id', userId)
+
+  if (existingLinksError) {
+    throw existingLinksError
+  }
+
+  const previousSpecialtyIds = (existingLinks ?? []).map((link) => link.specialty_id as string)
+
+  const { error: deleteError } = await supabaseAdmin
+    .from('provider_specialties')
+    .delete()
+    .eq('provider_id', userId)
+
+  if (deleteError) {
+    throw deleteError
+  }
+
+  const { error: insertError } = await supabaseAdmin
+    .from('provider_specialties')
+    .insert(selectedSpecialtyIds.map((specialtyId) => ({ provider_id: userId, specialty_id: specialtyId })))
+
+  if (insertError) {
+    throw insertError
+  }
+
+  return {
+    previousSpecialtyIds,
+    selectedSpecialtyIds,
+    specialtiesReplaced: true,
+  }
+}
+
+async function rollbackOnboard(userId: string, state: RollbackState): Promise<void> {
+  if (state.specialtiesReplaced) {
+    if (state.selectedSpecialtyIds.length > 0) {
+      const { error: cleanupNewSpecialtiesError } = await supabaseAdmin
+        .from('provider_specialties')
+        .delete()
+        .eq('provider_id', userId)
+        .in('specialty_id', state.selectedSpecialtyIds)
+
+      if (cleanupNewSpecialtiesError) {
+        console.error('Rollback provider_specialties cleanup failed:', cleanupNewSpecialtiesError)
+      }
+    }
+
+    if (state.previousSpecialtyIds.length > 0) {
+      const { error: restoreSpecialtiesError } = await supabaseAdmin
+        .from('provider_specialties')
+        .upsert(
+          state.previousSpecialtyIds.map((specialtyId) => ({
+            provider_id: userId,
+            specialty_id: specialtyId,
+          })),
+          { onConflict: 'provider_id,specialty_id' },
+        )
+
+      if (restoreSpecialtiesError) {
+        console.error('Rollback provider_specialties restore failed:', restoreSpecialtiesError)
+      }
+    }
+  }
+
+  if (state.createdLocationIds.length > 0) {
+    const { error: locationRollbackError } = await supabaseAdmin
+      .from('locations')
+      .delete()
+      .in('id', state.createdLocationIds)
+
+    if (locationRollbackError) {
+      console.error('Rollback locations failed:', locationRollbackError)
+    }
+  }
+
+  if (state.providerCreated) {
+    const { error: providerRollbackError } = await supabaseAdmin
+      .from('providers')
+      .delete()
+      .eq('id', userId)
+
+    if (providerRollbackError) {
+      console.error('Rollback providers failed:', providerRollbackError)
+    }
+  }
+}
+
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -40,122 +253,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Track what we created so we can roll back on partial failure.
-  let providerCreated = false
-  let locationCreated = false
-  let specialtiesLinked = false
+  const rollbackState: RollbackState = {
+    providerCreated: false,
+    createdLocationIds: [],
+    previousSpecialtyIds: [],
+    selectedSpecialtyIds: [],
+    specialtiesReplaced: false,
+  }
 
   try {
-    const body = await request.json()
-    const validated = onboardSchema.parse(body)
-    const { step1, step2, step3, step4 } = validated
+    const { step1, step2, step3, step4 } = await validatePayload(request)
 
-    // 1. Update user metadata — role stays 'patient' until admin approves
-    const { error: userError } = await supabaseAdmin
-      .from('users')
-      .update({
-        full_name: step1.name
-      })
-      .eq('id', user.id)
+    await updateUserMetadata(user.id, step1)
+    rollbackState.providerCreated = await createProviderProfile(user.id, step2, step4)
+    rollbackState.createdLocationIds = await createLocation(user.id, step3)
 
-    if (userError) throw userError
-
-    const { error: authUserError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
-      user_metadata: {
-        full_name: step1.name,
-        phone: step1.phone,
-        provider_pending: true, // Admin must approve before role becomes 'provider'
-      },
-    })
-
-    if (authUserError) throw authUserError
-
-    // 2. Create provider profile
-    const { error: providerError } = await supabaseAdmin
-      .from('providers')
-      .upsert({
-        id: user.id, // ID matches user ID
-        title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
-        experience_years: parseInt(step2.experienceYears),
-        iap_registration_no: step2.registrationType === 'STATE'
-          ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
-          : (step2.iapNumber || ''),
-        consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
-        verified: false,
-        active: false, // Inactive until admin approves
-        onboarding_step: 4
-      })
-      .select()
-      .single()
-
-    if (providerError) throw providerError
-    providerCreated = true
-
-    // 3. Create Location
-    const { error: locError } = await supabaseAdmin
-      .from('locations')
-      .insert({
-        provider_id: user.id,
-        name: step3.clinicName,
-        address: step3.address,
-        city: step3.city,
-        pincode: step3.pincode,
-        visit_type: step3.visitTypes
-      })
-
-    if (locError) throw locError
-    locationCreated = true
-
-    // 4. Link Specialties by name match (best-effort — taxonomy is admin-managed)
-    const { data: existingSpecialties } = await supabaseAdmin
-      .from('specialties')
-      .select('id, name')
-
-    if (existingSpecialties) {
-      const selectedIds = existingSpecialties
-        .filter(s => step2.specialties.includes(s.name))
-        .map(s => s.id)
-
-      if (selectedIds.length > 0) {
-        await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', user.id)
-        const { error: linkError } = await supabaseAdmin
-          .from('provider_specialties')
-          .insert(selectedIds.map(sid => ({ provider_id: user.id, specialty_id: sid })))
-
-        if (linkError) throw linkError
-        specialtiesLinked = true
-      }
-    }
+    const specialtyState = await linkSpecialties(user.id, step2)
+    rollbackState.previousSpecialtyIds = specialtyState.previousSpecialtyIds
+    rollbackState.selectedSpecialtyIds = specialtyState.selectedSpecialtyIds
+    rollbackState.specialtiesReplaced = specialtyState.specialtiesReplaced
 
     return NextResponse.json({ success: true })
-
   } catch (error: unknown) {
     console.error('Onboarding error:', error)
-
-    // Best-effort rollback so a half-onboarded provider doesn't linger.
-    // Order matters: child rows (specialties, locations) before parent (providers).
-    // Only delete rows that were created in THIS request (tracked by the boolean flags).
-    if (specialtiesLinked) {
-      const { error: specRollbackError } = await supabaseAdmin
-        .from('provider_specialties')
-        .delete()
-        .eq('provider_id', user.id)
-      if (specRollbackError) console.error('Rollback provider_specialties failed:', specRollbackError)
-    }
-    if (locationCreated) {
-      const { error: locRollbackError } = await supabaseAdmin
-        .from('locations')
-        .delete()
-        .eq('provider_id', user.id)
-      if (locRollbackError) console.error('Rollback locations failed:', locRollbackError)
-    }
-    if (providerCreated) {
-      const { error: provRollbackError } = await supabaseAdmin
-        .from('providers')
-        .delete()
-        .eq('id', user.id)
-      if (provRollbackError) console.error('Rollback providers failed:', provRollbackError)
-    }
+    await rollbackOnboard(user.id, rollbackState)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

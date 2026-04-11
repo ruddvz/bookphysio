@@ -16,7 +16,19 @@ CREATE TABLE IF NOT EXISTS booking_anomalies (
 );
 
 CREATE INDEX IF NOT EXISTS idx_booking_anomalies_appointment ON booking_anomalies (appointment_id);
-CREATE INDEX IF NOT EXISTS idx_booking_anomalies_unreviewed ON booking_anomalies (reviewed, severity DESC) WHERE NOT reviewed;
+CREATE INDEX IF NOT EXISTS idx_booking_anomalies_unreviewed
+  ON booking_anomalies (
+    reviewed,
+    (
+      CASE severity
+        WHEN 'high' THEN 3
+        WHEN 'medium' THEN 2
+        WHEN 'low' THEN 1
+        ELSE 0
+      END
+    ) DESC
+  )
+  WHERE NOT reviewed;
 
 -- RLS: only admin users can read anomalies
 ALTER TABLE booking_anomalies ENABLE ROW LEVEL SECURITY;
@@ -24,19 +36,11 @@ ALTER TABLE booking_anomalies ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin users can read booking anomalies"
   ON booking_anomalies FOR SELECT
   USING (
-    EXISTS (
-      SELECT 1 FROM users
-      WHERE users.id = auth.uid()
-        AND users.role = 'admin'
-    )
+    auth_role() = 'admin'
   );
 
 CREATE POLICY "Admin users can update booking anomalies"
   ON booking_anomalies FOR UPDATE
   USING (
-    EXISTS (
-      SELECT 1 FROM users
-      WHERE users.id = auth.uid()
-        AND users.role = 'admin'
-    )
+    auth_role() = 'admin'
   );

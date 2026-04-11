@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { after, NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getDemoAppointments } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
@@ -328,16 +328,15 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Fire-and-forget anomaly detection — never blocks the response
-  checkBookingAnomaly({
-    appointmentId: appointment.id as string,
-    patientId: user.id,
-    providerId: slot.provider_id as string,
-    feeInr: feeInr,
-    visitType: visit_type,
-    bookedAt: new Date().toISOString(),
-  }).catch(() => {
-    // Intentionally swallowed — anomaly detection must never affect the booking
+  after(async () => {
+    await checkBookingAnomaly({
+      appointmentId: appointment.id as string,
+      patientId: user.id,
+      providerId: slot.provider_id as string,
+      feeInr: feeInr,
+      visitType: visit_type,
+      bookedAt: new Date().toISOString(),
+    })
   })
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })

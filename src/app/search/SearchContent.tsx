@@ -259,7 +259,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
                 {/* Suggested searches */}
                 <div className="mb-6">
-                  <p className="text-[12px] font-semibold text-[#999] uppercase tracking-wider mb-3">Try searching for</p>
+                  <p className="text-[12px] font-semibold text-[#999] uppercase tracking-wider mb-3">{t.suggestedSearchesLabel}</p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {SUGGESTED_SEARCHES.map((s) => (
                       <Link
@@ -306,7 +306,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               <div className="flex items-center gap-2">
                 <Sparkles size={14} className="text-[#00766C]" />
                 <span className="text-[13px] font-medium text-[#666]">
-                  Showing {doctors.length} of {total} physiotherapists in <span className="text-[#333] font-semibold">{displayLocation}</span>
+                  {t.resultSummary(doctors.length, total, displayLocation)}
                 </span>
               </div>
 

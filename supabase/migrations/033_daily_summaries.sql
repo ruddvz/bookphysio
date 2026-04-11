@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS daily_summaries (
   ai_summary    jsonb NOT NULL DEFAULT '{}'::jsonb,
   health_score  smallint,
   alerts        jsonb NOT NULL DEFAULT '[]'::jsonb,
-  created_at    timestamptz NOT NULL DEFAULT now()
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  updated_at    timestamptz NOT NULL DEFAULT now()
 );
 
 -- Index for fast lookups by date
@@ -20,11 +21,7 @@ ALTER TABLE daily_summaries ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin users can read daily summaries"
   ON daily_summaries FOR SELECT
   USING (
-    EXISTS (
-      SELECT 1 FROM users
-      WHERE users.id = auth.uid()
-        AND users.role = 'admin'
-    )
+    auth_role() = 'admin'
   );
 
 -- Service role bypasses RLS, so no INSERT policy needed for the cron job
