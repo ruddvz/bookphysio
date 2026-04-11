@@ -142,7 +142,7 @@ function runRuleBasedChecks(
     )
   }
 
-  // Rule 4: Self-booking — patient's user ID matches the provider's user ID (`providers.id`)
+  // Rule 4: Self-booking — patient's user ID matches the provider's user ID (`providers.user_id`)
   if (providerCtx.userId && context.patientId === providerCtx.userId) {
     flags.push('Self-booking: Patient user ID matches the provider\'s user ID')
   }
