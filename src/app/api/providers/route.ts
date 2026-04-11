@@ -6,12 +6,19 @@ import { getRequestIpAddress } from '@/lib/server/runtime'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 const SEARCH_CACHE_TTL_SECONDS = 60
 
 function buildSearchCacheKey(params: Record<string, string>): string {
-  // Stable sort keys so cache hits regardless of param order
-  const sorted = Object.keys(params).sort().map((k) => `${k}=${params[k]}`).join('&')
+  // Stable sort keys so cache hits regardless of param order.
+  // Normalise city to lower-case so "Surat" and "surat" share one cache entry
+  // (the DB query is already case-insensitive via ILIKE).
+  const normalised: Record<string, string> = {}
+  for (const [key, value] of Object.entries(params)) {
+    normalised[key] = key === 'city' ? value.toLowerCase() : value
+  }
+  const sorted = Object.keys(normalised).sort().map((k) => `${k}=${normalised[k]}`).join('&')
   return `bp:search:v1:${sorted}`
 }
 
@@ -338,6 +345,17 @@ export async function GET(request: NextRequest) {
   }
 
   const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  if (!hasPublicSupabaseEnv()) {
+    return NextResponse.json({
+      providers: [],
+      total: 0,
+      page,
+      limit,
+    } satisfies SearchResponse, {
+      headers: { 'X-Cache': 'BYPASS' },
+    })
+  }
+
   const supabase = await createClient()
 
   let resolvedSpecialtyId: string | null = null

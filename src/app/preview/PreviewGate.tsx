@@ -58,7 +58,11 @@ function PasswordForm() {
       window.location.reload()
     } else {
       const data = await res.json().catch(() => ({} as { error?: string }))
-      setError(data.error ?? 'Wrong password')
+      if (res.status === 503) {
+        setError('Preview is temporarily unavailable. Please try again later.')
+      } else {
+        setError(data.error ?? 'Wrong password')
+      }
       setLoading(false)
     }
   }

@@ -150,4 +150,25 @@ describe('SearchContent', () => {
     expect(params.get('specialty_id')).toBe('Sports Physio')
     expect(params.get('query')).toBeNull()
   })
+
+  it('maps common pain searches from the homepage chips to specialty filters before calling the providers API', () => {
+    searchParamsValue = new URLSearchParams('condition=Back pain&location=Delhi')
+
+    mockSearchSWR({
+      data: mockSearchResponse([]),
+      error: undefined,
+      isLoading: false,
+      mutate: vi.fn() as unknown as SWRResponse<SearchResponse, Error>['mutate'],
+    })
+
+    render(<SearchContent />)
+
+    const fetchUrl = mockedUseSWR.mock.calls[0]?.[0]
+    expect(typeof fetchUrl).toBe('string')
+
+    const params = new URL(fetchUrl as string, 'http://localhost').searchParams
+    expect(params.get('city')).toBe('Delhi')
+    expect(params.get('specialty_id')).toBe('Pain Management')
+    expect(params.get('query')).toBeNull()
+  })
 })

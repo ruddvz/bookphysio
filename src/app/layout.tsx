@@ -4,6 +4,8 @@ import './globals.css'
 import { Providers } from '@/app/providers'
 import { CookieConsent } from '@/components/CookieConsent'
 import { PublicAnalytics } from '@/components/PublicAnalytics'
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
+import { SupportChatWidgetLoader } from '@/components/SupportChatWidgetLoader'
 
 const fontVariables = {
   ['--font-inter' as const]: '"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -17,9 +19,9 @@ export const metadata: Metadata = {
     'Find and book IAP-verified physiotherapists in India for home visits and in-clinic sessions. Clear pricing, real availability, and same-day slots with many providers.',
   keywords: 'physiotherapist near me, book physiotherapist online India, home visit physiotherapy, physio booking India',
   icons: {
-    icon: '/icon.png?v=20260404b',
-    shortcut: '/icon.png?v=20260404b',
-    apple: '/icon.png?v=20260404b',
+    icon: '/icon.png?v=20260411',
+    shortcut: '/icon.png?v=20260411',
+    apple: '/icon.png?v=20260411',
   },
   manifest: '/manifest.json',
   appleWebApp: {
@@ -58,6 +60,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#18312D',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
@@ -72,6 +77,8 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <CookieConsent />
         <PublicAnalytics />
+        <ServiceWorkerRegistration />
+        <SupportChatWidgetLoader />
       </body>
     </html>
   )

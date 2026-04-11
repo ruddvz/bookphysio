@@ -13,6 +13,7 @@ import {
 } from '@/lib/demo/session'
 import { otpRatelimit } from '@/lib/upstash'
 import { getDevPhoneRole, isDevOtpCode } from '@/lib/auth/dev-otp'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 async function resolveUserRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -94,6 +95,13 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
+  }
+
+  if (!hasPublicSupabaseEnv()) {
+    return NextResponse.json(
+      { error: 'Phone verification is temporarily unavailable. Please request a new OTP later.' },
+      { status: 503 },
+    )
   }
 
   const supabase = await createClient()

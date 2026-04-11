@@ -8,6 +8,10 @@ concurrency:
   group: vercel-preview-${{ github.head_ref }}
   cancel-in-progress: true
 
+permissions:
+  pull-requests: write
+  issues: write
+
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

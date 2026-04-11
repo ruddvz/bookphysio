@@ -142,7 +142,7 @@ export default function Navbar({
                         return (
                           <Link
                             key={s.slug}
-                            href={`/specialties/${s.slug}`}
+                            href={`/specialty/${s.slug}`}
                             onClick={() => setBrowseOpen(false)}
                             className="group flex items-start gap-3 rounded-xl border border-transparent px-3.5 py-3 transition-all duration-150 hover:bg-slate-50 hover:border-slate-200"
                           >
@@ -198,10 +198,10 @@ export default function Navbar({
                 <LocaleSwitcher locale={locale} path={localeSwitchPath} />
               ) : null}
               <Link
-                href="/doctor-signup"
+                href="/signup"
                 className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-indigo-700 transition-colors"
               >
-                For doctors
+                Sign up
               </Link>
               <Link
                 href={loginHref}
@@ -276,7 +276,7 @@ export default function Navbar({
                 return (
                   <Link
                     key={s.slug}
-                    href={`/specialties/${s.slug}`}
+                    href={`/specialty/${s.slug}`}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
                       'group flex items-center gap-3 rounded-2xl border bg-white/65 backdrop-blur-sm px-3.5 py-3 transition-all duration-150 hover:bg-white/90 hover:shadow-sm',
@@ -326,16 +326,24 @@ export default function Navbar({
             </div>
           </nav>
 
-          {/* Sign-in CTA */}
-          <div className="relative z-10 shrink-0 px-5 pb-10 pt-3">
+          {/* Auth CTAs */}
+          <div className="relative z-10 shrink-0 px-5 pb-10 pt-3 space-y-3">
             <Link
-              href={loginHref}
+              href="/signup"
               onClick={() => setMobileOpen(false)}
               className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
               style={{
                 background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
                 boxShadow: '0 4px 24px rgba(139,155,216,0.40)',
               }}
+            >
+              Sign up
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              href={loginHref}
+              onClick={() => setMobileOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-indigo-200 bg-white/60 text-[15px] font-bold text-slate-700 active:scale-[0.98] transition-transform"
             >
               Sign in
               <ArrowRight size={16} />

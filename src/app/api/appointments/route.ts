@@ -17,6 +17,7 @@ import { buildAppointmentNotes, getVisitTypeConsultationFee } from '@/lib/bookin
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 type PaymentRecord = {
   status: 'created' | 'paid' | 'failed' | 'refunded'
@@ -80,6 +81,13 @@ async function isProviderAvailabilityBeingUpdated(providerId: string) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!hasPublicSupabaseEnv()) {
+    return jsonNoStore(
+      { error: 'Booking is temporarily unavailable while authentication is being configured.' },
+      { status: 503 },
+    )
+  }
+
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -323,13 +331,43 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
+  const demoSession = await getDemoSessionFromCookies(request.cookies)
   const dashboardView = request.nextUrl.searchParams.get('view') === 'dashboard'
 
-  if (!user && demoSession) {
-    if (dashboardView && demoSession.role === 'patient') {
+  if (!hasPublicSupabaseEnv()) {
+    if (demoSession) {
+      if (dashboardView && demoSession.role === 'patient') {
+        const demoAppointments = getDemoAppointments('patient')
+
+        return jsonNoStore({
+          appointments: demoAppointments.map((appointment) => ({
+            id: appointment.id,
+            status: appointment.status,
+            visit_type: appointment.visit_type,
+            fee_inr: appointment.fee_inr,
+            availabilities: appointment.availabilities
+              ? { starts_at: appointment.availabilities.starts_at }
+              : null,
+            providers: 'providers' in appointment ? appointment.providers : null,
+            locations: appointment.locations
+              ? { city: appointment.locations.city }
+              : null,
+          })),
+        })
+      }
+
+      return jsonNoStore({ appointments: getDemoAppointments(demoSession.role) })
+    }
+
+    return jsonNoStore({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const activeDemoSession = !user ? demoSession : null
+
+  if (!user && activeDemoSession) {
+    if (dashboardView && activeDemoSession.role === 'patient') {
       const demoAppointments = getDemoAppointments('patient')
 
       return jsonNoStore({
@@ -349,7 +387,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    return jsonNoStore({ appointments: getDemoAppointments(demoSession.role) })
+    return jsonNoStore({ appointments: getDemoAppointments(activeDemoSession.role) })
   }
 
   if (!user) return jsonNoStore({ error: 'Unauthorized' }, { status: 401 })
