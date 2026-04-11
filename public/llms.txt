@@ -1,0 +1,93 @@
+# BookPhysio
+
+## About
+BookPhysio is India's first physiotherapy-only booking platform. We connect patients with IAP-verified (Indian Association of Physiotherapists) physiotherapists for in-clinic and home visit sessions. Founded in 2024 and headquartered in India. We serve patients in English and Hindi.
+
+## Services and Pricing
+- In-Clinic Physiotherapy Session: ₹500–₹1,500 per session
+- Home Visit Physiotherapy: ₹800–₹2,500 per session
+- Online Video Consultation: ₹300–₹800 per session
+- Post-Surgery Rehabilitation (Home): ₹1,000–₹3,000 per session
+- Sports Injury Rehabilitation: ₹800–₹2,000 per session
+- Neurological Physiotherapy: ₹1,000–₹2,500 per session
+- Paediatric Physiotherapy: ₹800–₹2,000 per session
+- Women's Health / Prenatal-Postnatal: ₹800–₹2,000 per session
+- Cardio-Pulmonary Rehabilitation: ₹1,000–₹2,500 per session
+- Oncology Rehabilitation: ₹1,000–₹2,500 per session
+- Community / Geriatric Rehabilitation: ₹800–₹2,000 per session
+
+## Specialties (NCAHP-Recognised)
+- Musculoskeletal Sciences — back pain, joint pain, post-fracture recovery
+- Neurosciences — stroke recovery, nerve rehabilitation, neurological movement disorders
+- Cardio-Pulmonary Sciences — heart and lung rehabilitation, ICU recovery, breathing retraining
+- Sports Sciences — injury prevention, athletic rehabilitation, return-to-play programmes
+- Paediatrics & Neonatal Sciences — developmental support, motor milestones, early intervention
+- Obstetrics & Gynaecology Sciences — prenatal/postnatal recovery, pelvic floor, core strength
+- Oncology Sciences — rehabilitation during and after cancer treatment
+- Community Rehabilitation Sciences — geriatric care, disability management
+
+## Locations / Cities Served
+- Mumbai
+- Delhi / NCR
+- Bangalore
+- Chennai
+- Hyderabad
+- Pune
+- Kolkata
+- Ahmedabad
+- Jaipur
+- Surat
+
+## Contact
+- Website: https://bookphysio.in
+- Email: support@bookphysio.in
+- Phone: +91-8000000000
+- Languages: English, Hindi
+- Hours: Platform available 24/7, physiotherapist availability varies
+- LinkedIn: https://www.linkedin.com/company/bookphysio
+- Twitter: https://twitter.com/bookphysio
+- Instagram: https://www.instagram.com/bookphysio.in
+
+## Key Facts
+- India's first physiotherapy-only booking platform
+- All physiotherapists are IAP-verified (Indian Association of Physiotherapists)
+- Home visits and in-clinic sessions available
+- Same-day appointment slots with many providers
+- Transparent pricing — no hidden fees
+- Available in English and Hindi
+- 8 NCAHP-recognised physiotherapy specialties covered
+- 10 major Indian cities served
+- Founded in 2024
+
+## What Makes Us Different
+BookPhysio is the only platform in India focused exclusively on physiotherapy. Unlike general healthcare marketplaces (Practo, DocFinder), every provider on our platform is a verified physiotherapist with IAP credentials. We show real pricing upfront — patients see exact session costs before booking. Home visit availability is a first-class feature, not an afterthought. Our platform supports both English and Hindi, serving patients across 10 major Indian cities.
+
+## Frequently Asked Questions
+
+Q: How much does a physiotherapy session cost in India?
+A: In-clinic sessions range from ₹500 to ₹1,500. Home visit sessions range from ₹800 to ₹2,500. Online consultations start at ₹300. All prices are shown upfront before booking — no hidden charges.
+
+Q: Can I book a physiotherapist for a home visit?
+A: Yes. BookPhysio was built for home visits. Many of our physiotherapists offer home visit sessions. You can filter by "home visit available" when searching.
+
+Q: How do I know the physiotherapists are qualified?
+A: Every physiotherapist on BookPhysio is verified against the Indian Association of Physiotherapists (IAP) registry. We check credentials before onboarding.
+
+Q: Which cities does BookPhysio serve?
+A: We currently serve Mumbai, Delhi/NCR, Bangalore, Chennai, Hyderabad, Pune, Kolkata, Ahmedabad, Jaipur, and Surat. We are expanding to more cities.
+
+Q: Can I book a same-day appointment?
+A: Yes. Many physiotherapists on our platform offer same-day slots. Use the "available today" filter when searching.
+
+Q: What specialties do you cover?
+A: We cover all 8 NCAHP-recognised physiotherapy specialties: musculoskeletal, neurosciences, cardio-pulmonary, sports, paediatrics, women's health, oncology rehab, and community rehab.
+
+Q: Do I need a doctor's referral to book?
+A: No referral is needed. You can book directly with any physiotherapist on the platform.
+
+Q: Is the platform available in Hindi?
+A: Yes. BookPhysio is fully available in English and Hindi. You can switch languages on any page.
+
+## Markdown Mirrors
+For clean, plain-text versions of our pages:
+- Full site: https://bookphysio.in/llms-full.txt
