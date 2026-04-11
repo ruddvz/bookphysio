@@ -10,6 +10,8 @@ import {
   Receipt,
 } from 'lucide-react'
 import TopPillNav, { type NavItem } from '@/components/dashboard/TopPillNav'
+import { DashboardManifest } from '@/components/DashboardManifest'
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
 
 const navItems: NavItem[] = [
   { href: '/provider/dashboard',    label: 'Overview',     icon: LayoutDashboard, exact: true },
@@ -22,15 +24,19 @@ const navItems: NavItem[] = [
 
 export default function ProviderLayout({ children }: { children: ReactNode }) {
   return (
-    <TopPillNav
-      role="provider"
-      items={navItems}
-      notificationsHref="/provider/notifications"
-      messagesHref="/provider/messages"
-      profileHref="/provider/profile"
-      roleLabel="Practitioner"
-    >
-      {children}
-    </TopPillNav>
+    <>
+      <DashboardManifest role="provider" />
+      <TopPillNav
+        role="provider"
+        items={navItems}
+        notificationsHref="/provider/notifications"
+        messagesHref="/provider/messages"
+        profileHref="/provider/profile"
+        roleLabel="Practitioner"
+      >
+        <PWAInstallPrompt role="provider" />
+        {children}
+      </TopPillNav>
+    </>
   )
 }
