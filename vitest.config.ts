@@ -8,6 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      // Provide a deterministic secret so demo-cookie tests can call encodeDemoCookie
+      DEMO_COOKIE_SECRET: 'test-demo-cookie-secret-32-bytes-ok',
+    },
     exclude: [
       '**/node_modules/**',
       '**/e2e/**',
