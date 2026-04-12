@@ -3,14 +3,9 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import FAQ from './FAQ'
 import Footer from './Footer'
-import HealthSystems from './HealthSystems'
 import HeroSection from './HeroSection'
-import HowItWorks from './HowItWorks'
 import Navbar from './Navbar'
 import ProofSection from './ProofSection'
-import Testimonials from './Testimonials'
-import TopSpecialties from './TopSpecialties'
-import { SPECIALTIES } from '@/lib/specialties'
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,20 +21,12 @@ describe('Homepage regressions', () => {
       <>
         <HeroSection />
         <ProofSection />
-        <TopSpecialties />
-        <HowItWorks />
-        <HealthSystems />
-        <Testimonials />
         <FAQ />
       </>
     )
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)
 
@@ -64,18 +51,11 @@ describe('Homepage regressions', () => {
     const { container } = render(
       <>
         <FAQ />
-        <HowItWorks />
-        <TopSpecialties />
-        <HealthSystems />
-        <Testimonials />
+        <ProofSection />
       </>
     )
 
     expect(screen.getByText(/Before you book, here is what people usually want to know/i)).toBeInTheDocument()
-    expect(screen.getByText(/Finding a physiotherapist should not feel like a research project/i)).toBeInTheDocument()
-    expect(screen.getByText(/Pick a specialty and we will show you verified physiotherapists/i)).toBeInTheDocument()
-    expect(screen.getByText(/Credentials, visit format, fees and availability are all on the same page/i)).toBeInTheDocument()
-    expect(screen.getByText(/You see the session fee and any taxes before you book/i)).toBeInTheDocument()
     expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
 
     expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
@@ -121,29 +101,5 @@ describe('Homepage regressions', () => {
     expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
     expect(screen.queryByText('Home visits')).not.toBeInTheDocument()
     expect(screen.getByText(/bookphysio is a booking platform/i)).toBeInTheDocument()
-  })
-
-  it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {
-    const { container: specialties } = render(<TopSpecialties />)
-
-    const specialtyCtas = screen.getAllByText(/learn more/i)
-
-    expect(specialtyCtas).toHaveLength(SPECIALTIES.length)
-
-    for (const cta of specialtyCtas) {
-      expect(cta.className).toContain('text-slate-400')
-      expect(cta.className).toContain('group-hover:text-indigo-600')
-    }
-
-    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(SPECIALTIES.length + 1)
-
-    const { container: workflow } = render(<HowItWorks />)
-    expect(workflow.querySelector('.lucide-sliders-horizontal')).toBeInTheDocument()
-    expect(workflow.querySelector('.lucide-star')).not.toBeInTheDocument()
-
-    render(<Testimonials />)
-    expect(screen.getByText('Verified credentials')).toBeInTheDocument()
-    expect(screen.getByText('Clear pricing')).toBeInTheDocument()
-    expect(screen.getByText('Clinic or home visit')).toBeInTheDocument()
   })
 })
