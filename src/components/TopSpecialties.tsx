@@ -35,7 +35,7 @@ export default function TopSpecialties() {
         {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
-            <div className="bp-kicker mb-4">Browse by specialty</div>
+            <div className="bp-kicker mb-4" style={{ background: 'rgba(0,118,108,0.08)', borderColor: 'rgba(0,118,108,0.2)', color: '#00766C' }}>Browse by specialty</div>
             <h2 className="text-slate-900 mb-3">
               Start from what is bothering you.
             </h2>
@@ -46,7 +46,7 @@ export default function TopSpecialties() {
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-indigo-200 hover:text-indigo-700 transition-all group shrink-0 self-start lg:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-[#00766C]/30 hover:text-[#00766C] transition-all group shrink-0 self-start lg:self-auto"
           >
             View all specialties
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -76,14 +76,14 @@ export default function TopSpecialties() {
 
                 {/* Content */}
                 <div className="flex-1">
-                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-indigo-700', s.tint.text)}>
+                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-[#00766C]', s.tint.text)}>
                     {s.label}
                   </h3>
                   <p className="text-slate-500 text-[13px] leading-relaxed">{s.tagline}</p>
                 </div>
 
                 {/* CTA */}
-                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors">
+                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-[#00766C] transition-colors">
                   Learn more
                   <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -94,7 +94,7 @@ export default function TopSpecialties() {
 
         {/* Trust strip */}
         <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-slate-200">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#E6F4F3] border border-[#00766C]/20 text-[#00766C] text-[12px] font-semibold">
             IAP-verified care
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">

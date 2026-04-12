@@ -6,6 +6,7 @@ import Footer from './Footer'
 import HeroSection from './HeroSection'
 import Navbar from './Navbar'
 import ProofSection from './ProofSection'
+import TopSpecialties from './TopSpecialties'
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,12 +21,14 @@ describe('Homepage regressions', () => {
     render(
       <>
         <HeroSection />
+        <TopSpecialties />
         <ProofSection />
         <FAQ />
       </>
     )
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)

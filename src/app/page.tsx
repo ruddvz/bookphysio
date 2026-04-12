@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/HeroSection'
+import TopSpecialties from '@/components/TopSpecialties'
 import ProofSection from '@/components/ProofSection'
 import ProviderCTA from '@/components/ProviderCTA'
 import FAQ from '@/components/FAQ'
@@ -65,6 +66,7 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
+        <TopSpecialties />
         <ProofSection />
         <ProviderCTA />
         <FAQ />
