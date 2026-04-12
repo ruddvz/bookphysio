@@ -3,14 +3,11 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import FAQ from './FAQ'
 import Footer from './Footer'
-import HealthSystems from './HealthSystems'
 import HeroSection from './HeroSection'
-import HowItWorks from './HowItWorks'
 import Navbar from './Navbar'
 import ProofSection from './ProofSection'
-import Testimonials from './Testimonials'
+import ProviderCTA from './ProviderCTA'
 import TopSpecialties from './TopSpecialties'
-import { SPECIALTIES } from '@/lib/specialties'
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,25 +18,21 @@ vi.mock('next/image', () => ({
 }))
 
 describe('Homepage regressions', () => {
-  it('renders named homepage regions for assistive tech', () => {
+  it('renders the production homepage stack with named regions for assistive tech', () => {
     render(
       <>
         <HeroSection />
-        <ProofSection />
         <TopSpecialties />
-        <HowItWorks />
-        <HealthSystems />
-        <Testimonials />
+        <ProofSection />
+        <ProviderCTA />
         <FAQ />
       </>
     )
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /for providers/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)
 
@@ -60,45 +53,30 @@ describe('Homepage regressions', () => {
     expect(statsRow?.className).not.toContain('opacity-70')
   })
 
-  it('replaces internal design-note copy with patient-facing homepage copy', () => {
+  it('uses token-driven kickers, accurate stars, and the primary FAQ CTA styling', () => {
     const { container } = render(
       <>
-        <FAQ />
-        <HowItWorks />
         <TopSpecialties />
-        <HealthSystems />
-        <Testimonials />
+        <ProofSection />
+        <FAQ />
       </>
     )
 
-    expect(screen.getByText(/Before you book, here is what people usually want to know/i)).toBeInTheDocument()
-    expect(screen.getByText(/Finding a physiotherapist should not feel like a research project/i)).toBeInTheDocument()
-    expect(screen.getByText(/Pick a specialty and we will show you verified physiotherapists/i)).toBeInTheDocument()
-    expect(screen.getByText(/Credentials, visit format, fees and availability are all on the same page/i)).toBeInTheDocument()
-    expect(screen.getByText(/You see the session fee and any taxes before you book/i)).toBeInTheDocument()
-    expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
+    const specialtyKicker = screen.getByText(/browse by specialty/i).closest('.bp-kicker')
+    const proofKicker = screen.getByText(/straightforward booking/i).closest('.bp-kicker')
+    const faqKicker = screen.getByText(/common questions/i).closest('.bp-kicker')
+    const faqCta = screen.getByRole('link', { name: /browse providers/i })
+    const ratingRow = screen.getByText('4.9').parentElement
+    const proofImage = container.querySelector('img[src="/images/physio-female.png"]')
 
-    expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
-    expect(container).not.toHaveTextContent('Search, compare, and confirm should feel like one continuous action.')
-    expect(container).not.toHaveTextContent('The homepage should narrow the decision fast: choose a care lane first')
-    expect(container).not.toHaveTextContent('The home page needs a clear proof layer after the hero')
-    expect(container).not.toHaveTextContent('The tone should stay human and credible.')
-  })
-
-  it('makes FAQ disclosure state explicit and fully hides collapsed answers', () => {
-    render(<FAQ />)
-
-    const openQuestion = screen.getByRole('button', { name: /how do you verify physiotherapists/i })
-    const closedQuestion = screen.getByRole('button', { name: /can i book a home visit/i })
-    const closedAnswer = document.getElementById('faq-a-2')
-
-    expect(openQuestion).toHaveAttribute('aria-expanded', 'true')
-    expect(openQuestion).toHaveAttribute('aria-controls', 'faq-a-1')
-    expect(closedQuestion).toHaveAttribute('aria-expanded', 'false')
-    expect(closedQuestion).toHaveAttribute('aria-controls', 'faq-a-2')
-    expect(closedAnswer).toHaveAttribute('aria-hidden', 'true')
-    expect(closedAnswer?.className).toContain('grid-rows-[0fr]')
-    expect(closedAnswer?.firstElementChild?.className).toContain('pb-0')
+    expect(specialtyKicker).not.toHaveAttribute('style')
+    expect(proofKicker).not.toHaveAttribute('style')
+    expect(faqKicker).not.toHaveAttribute('style')
+    expect(faqCta?.className).toContain('bg-[#FF6B35]')
+    expect(faqCta?.className).toContain('rounded-full')
+    expect(ratingRow?.querySelectorAll('.text-amber-400')).toHaveLength(4)
+    expect(ratingRow?.querySelectorAll('.text-slate-200')).toHaveLength(1)
+    expect(proofImage).toHaveAttribute('sizes', '180px')
   })
 
   it('matches navbar and footer regressions across mobile and desktop chrome', () => {
@@ -107,10 +85,13 @@ describe('Homepage regressions', () => {
     const brandLink = within(screen.getByRole('banner')).getByRole('link', { name: /bookphysio home/i })
     expect(within(brandLink).getByRole('img', { name: 'BookPhysio.in' })).toBeInTheDocument()
     expect(brandLink.querySelector('img[alt="BookPhysio.in"]')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /specialties/i })).toBeInTheDocument()
+    expect(screen.queryByText('Specialities')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }))
-    const mobileMenu = screen.getByText('Specialties').closest('nav')
-    expect(within(mobileMenu as HTMLElement).getByRole('link', { name: /for providers/i })).toHaveAttribute('href', '/doctor-signup')
+    const mobileMenu = screen.getByRole('navigation', { name: /mobile navigation/i })
+    expect(within(mobileMenu).getByText('Specialties')).toBeInTheDocument()
+    expect(within(mobileMenu).getByRole('link', { name: /for providers/i })).toHaveAttribute('href', '/doctor-signup')
 
     expect(container.firstChild).toHaveClass('bg-transparent')
     expect(container.firstChild).toHaveClass('fixed')
@@ -121,29 +102,5 @@ describe('Homepage regressions', () => {
     expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
     expect(screen.queryByText('Home visits')).not.toBeInTheDocument()
     expect(screen.getByText(/bookphysio is a booking platform/i)).toBeInTheDocument()
-  })
-
-  it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {
-    const { container: specialties } = render(<TopSpecialties />)
-
-    const specialtyCtas = screen.getAllByText(/learn more/i)
-
-    expect(specialtyCtas).toHaveLength(SPECIALTIES.length)
-
-    for (const cta of specialtyCtas) {
-      expect(cta.className).toContain('text-slate-400')
-      expect(cta.className).toContain('group-hover:text-indigo-600')
-    }
-
-    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(SPECIALTIES.length + 1)
-
-    const { container: workflow } = render(<HowItWorks />)
-    expect(workflow.querySelector('.lucide-sliders-horizontal')).toBeInTheDocument()
-    expect(workflow.querySelector('.lucide-star')).not.toBeInTheDocument()
-
-    render(<Testimonials />)
-    expect(screen.getByText('Verified credentials')).toBeInTheDocument()
-    expect(screen.getByText('Clear pricing')).toBeInTheDocument()
-    expect(screen.getByText('Clinic or home visit')).toBeInTheDocument()
   })
 })

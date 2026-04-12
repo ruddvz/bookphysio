@@ -31,8 +31,6 @@ export default function TopSpecialties() {
   return (
     <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
       <div className="bp-container">
-
-        {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
             <div className="bp-kicker mb-4">Browse by specialty</div>
@@ -46,14 +44,13 @@ export default function TopSpecialties() {
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-indigo-200 hover:text-indigo-700 transition-all group shrink-0 self-start lg:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-[#00766C]/30 hover:text-[#00766C] transition-all group shrink-0 self-start lg:self-auto"
           >
             View all specialties
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
-        {/* Grid */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {SPECIALTIES.map((s) => {
             const Icon = ICON_MAP[s.icon] ?? Stethoscope
@@ -69,21 +66,18 @@ export default function TopSpecialties() {
                   s.tint.hoverBorder,
                 )}
               >
-                {/* Icon */}
                 <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', s.tint.bg, s.tint.text)}>
                   <Icon size={22} />
                 </div>
 
-                {/* Content */}
                 <div className="flex-1">
-                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-indigo-700', s.tint.text)}>
+                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-[#00766C]', s.tint.text)}>
                     {s.label}
                   </h3>
                   <p className="text-slate-500 text-[13px] leading-relaxed">{s.tagline}</p>
                 </div>
 
-                {/* CTA */}
-                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors">
+                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-[#00766C] transition-colors">
                   Learn more
                   <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -92,9 +86,8 @@ export default function TopSpecialties() {
           })}
         </div>
 
-        {/* Trust strip */}
         <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-slate-200">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#E6F4F3] border border-[#00766C]/20 text-[#00766C] text-[12px] font-semibold">
             IAP-verified care
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
