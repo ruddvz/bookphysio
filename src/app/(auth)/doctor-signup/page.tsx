@@ -31,14 +31,19 @@ interface Step3Data {
   clinicName: string
   address: string
   city: string
+  state: string
   pincode: string
   visitTypes: string[]
 }
 
-interface DayAvailability {
-  enabled: boolean
+interface DayTimeRange {
   startTime: string
   endTime: string
+}
+
+interface DayAvailability {
+  enabled: boolean
+  slots: DayTimeRange[]
 }
 
 interface Step4Data {
@@ -73,6 +78,18 @@ const CITIES = [
   'Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Hyderabad',
   'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
 ]
+const CITY_TO_STATE: Record<string, string> = {
+  Delhi: 'Delhi',
+  Mumbai: 'Maharashtra',
+  Bangalore: 'Karnataka',
+  Chennai: 'Tamil Nadu',
+  Hyderabad: 'Telangana',
+  Pune: 'Maharashtra',
+  Kolkata: 'West Bengal',
+  Ahmedabad: 'Gujarat',
+  Jaipur: 'Rajasthan',
+  Surat: 'Gujarat',
+}
 const VISIT_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
   home_visit: 'Home Visit',
@@ -82,6 +99,15 @@ const FEE_LABELS: Record<string, string> = {
   home_visit: 'Home visit fee',
 }
 const OTP_LENGTH = 6
+const SHORT_DAY_TO_FULL_DAY = {
+  Mon: 'Monday',
+  Tue: 'Tuesday',
+  Wed: 'Wednesday',
+  Thu: 'Thursday',
+  Fri: 'Friday',
+  Sat: 'Saturday',
+  Sun: 'Sunday',
+} as const
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -116,6 +142,7 @@ const step3Schema = z.object({
   clinicName: z.string().min(2, 'Enter clinic name'),
   address: z.string().min(5, 'Enter full address'),
   city: z.string().min(1, 'Select a city'),
+  state: z.string().min(2, 'State is required'),
   pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode'),
   visitTypes: z.array(z.string()).min(1, 'Select at least one visit type'),
 })
@@ -138,11 +165,15 @@ function buildInitialAvailability(): Record<string, DayAvailability> {
   for (const day of DAYS) {
     result[day] = {
       enabled: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(day),
-      startTime: '09:00',
-      endTime: '18:00',
+      slots: [{ startTime: '09:00', endTime: '18:00' }],
     }
   }
   return result
+}
+
+function timeToMinutes(value: string): number {
+  const [hours, minutes] = value.split(':').map(Number)
+  return (hours ?? 0) * 60 + (minutes ?? 0)
 }
 
 function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, string> {
@@ -157,11 +188,41 @@ function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, st
   const anyEnabled = Object.values(data.availability).some((d) => d.enabled)
   if (!anyEnabled) errors.availability = 'Enable at least one day'
   for (const [day, av] of Object.entries(data.availability)) {
-    if (av.enabled && av.endTime <= av.startTime) {
-      errors[`time_${day}`] = `End time must be after start time`
+    if (!av.enabled) {
+      continue
     }
+
+    if (av.slots.length === 0) {
+      errors[`time_${day}`] = 'Add at least one time range'
+      continue
+    }
+
+    const sortedSlots = [...av.slots].sort((left, right) => timeToMinutes(left.startTime) - timeToMinutes(right.startTime))
+    sortedSlots.forEach((slot, index) => {
+      if (timeToMinutes(slot.endTime) <= timeToMinutes(slot.startTime)) {
+        errors[`time_${day}_${index}`] = 'End time must be after start time'
+      }
+
+      const previousSlot = sortedSlots[index - 1]
+      if (previousSlot && timeToMinutes(slot.startTime) < timeToMinutes(previousSlot.endTime)) {
+        errors[`time_${day}`] = 'Time ranges must not overlap'
+      }
+    })
   }
   return errors
+}
+
+function getNextSlotRange(previousSlot?: DayTimeRange): DayTimeRange {
+  if (!previousSlot) {
+    return { startTime: '09:00', endTime: '18:00' }
+  }
+
+  const startMinutes = timeToMinutes(previousSlot.endTime)
+  const endMinutes = Math.min(startMinutes + 60, 23 * 60 + 30)
+  return {
+    startTime: previousSlot.endTime,
+    endTime: `${String(Math.floor(endMinutes / 60)).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`,
+  }
 }
 
 // ─── Shared UI helpers ────────────────────────────────────────────────────────
@@ -663,13 +724,14 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
     const result = step3Schema.safeParse(data)
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors
-      setErrors({
-        clinicName: flat.clinicName?.[0],
-        address: flat.address?.[0],
-        city: flat.city?.[0],
-        pincode: flat.pincode?.[0],
-        visitTypes: flat.visitTypes?.[0],
-      })
+        setErrors({
+          clinicName: flat.clinicName?.[0],
+          address: flat.address?.[0],
+          city: flat.city?.[0],
+          state: flat.state?.[0],
+          pincode: flat.pincode?.[0],
+          visitTypes: flat.visitTypes?.[0],
+        })
       return
     }
     setErrors({})
@@ -726,7 +788,11 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         <Label>City</Label>
         <select
           value={data.city}
-          onChange={(e) => onChange({ ...data, city: e.target.value })}
+          onChange={(e) => onChange({
+            ...data,
+            city: e.target.value,
+            state: CITY_TO_STATE[e.target.value] ?? '',
+          })}
           onFocus={() => setCityFocused(true)}
           onBlur={() => setCityFocused(false)}
           style={{ ...inputStyle, borderColor: cityFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
@@ -737,6 +803,16 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
           ))}
         </select>
         <FieldError msg={errors.city} />
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <Label>State</Label>
+        <FocusableInput
+          value={data.state}
+          onChange={(v) => onChange({ ...data, state: v })}
+          placeholder="Maharashtra"
+        />
+        <FieldError msg={errors.state} />
       </div>
 
       <div style={{ marginBottom: '16px' }}>
@@ -810,12 +886,62 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
     onChange({ ...data, fees: { ...data.fees, [vt]: val.replace(/\D/g, '') } })
   }
 
-  function setDayField(day: string, field: keyof DayAvailability, val: string | boolean) {
+  function setDayEnabled(day: string, enabled: boolean) {
+    const current = data.availability[day]
     onChange({
       ...data,
       availability: {
         ...data.availability,
-        [day]: { ...data.availability[day], [field]: val },
+        [day]: {
+          ...current,
+          enabled,
+          slots: enabled && current.slots.length === 0 ? [{ startTime: '09:00', endTime: '18:00' }] : current.slots,
+        },
+      },
+    })
+  }
+
+  function setDaySlot(day: string, slotIndex: number, field: keyof DayTimeRange, value: string) {
+    onChange({
+      ...data,
+      availability: {
+        ...data.availability,
+        [day]: {
+          ...data.availability[day],
+          slots: data.availability[day].slots.map((slot, index) =>
+            index === slotIndex ? { ...slot, [field]: value } : slot
+          ),
+        },
+      },
+    })
+  }
+
+  function addDaySlot(day: string) {
+    const current = data.availability[day]
+    const nextSlot = getNextSlotRange(current.slots[current.slots.length - 1])
+    onChange({
+      ...data,
+      availability: {
+        ...data.availability,
+        [day]: {
+          ...current,
+          enabled: true,
+          slots: [...current.slots, nextSlot],
+        },
+      },
+    })
+  }
+
+  function removeDaySlot(day: string, slotIndex: number) {
+    const current = data.availability[day]
+    onChange({
+      ...data,
+      availability: {
+        ...data.availability,
+        [day]: {
+          ...current,
+          slots: current.slots.filter((_, index) => index !== slotIndex),
+        },
       },
     })
   }
@@ -896,68 +1022,115 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
       <div style={{ marginBottom: '24px' }}>
         <Label>Weekly Availability</Label>
         <FieldError msg={errors.availability} />
-        <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr 1fr 1fr', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
-          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>Day</span>
-          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>On?</span>
-          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>From</span>
-          <span style={{ fontSize: '12px', color: '#555B6E', fontWeight: 600 }}>To</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
           {DAYS.map((day) => {
             const av = data.availability[day]
             const dim = !av.enabled
             const timeKey = `time_${day}`
-            return [
-              <span key={`${day}-label`} style={{ fontSize: '14px', color: 'var(--color-bp-primary)', fontWeight: 500 }}>{day}</span>,
-              <input
-                key={`${day}-check`}
-                type="checkbox"
-                aria-label={`Enable ${day}`}
-                checked={av.enabled}
-                onChange={(e) => setDayField(day, 'enabled', e.target.checked)}
-                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
-              />,
-              <select
-                key={`${day}-start`}
-                aria-label={`${day} start time`}
-                value={av.startTime}
-                disabled={dim}
-                onChange={(e) => setDayField(day, 'startTime', e.target.value)}
-                onFocus={() => setFocusedTimes(`${day}-start`)}
-                onBlur={() => setFocusedTimes(null)}
+
+            return (
+              <div
+                key={day}
                 style={{
-                  ...inputStyle,
-                  height: '36px',
-                  fontSize: '13px',
-                  padding: '0 8px',
-                  opacity: dim ? 0.4 : 1,
-                  pointerEvents: dim ? 'none' : 'auto',
-                  borderColor: focusedTimes === `${day}-start` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
+                  border: '1px solid var(--color-bp-border)',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  opacity: dim ? 0.72 : 1,
                 }}
               >
-                {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>,
-              <div key={`${day}-end-wrap`}>
-                <select
-                  aria-label={`${day} end time`}
-                  value={av.endTime}
-                  disabled={dim}
-                  onChange={(e) => setDayField(day, 'endTime', e.target.value)}
-                  onFocus={() => setFocusedTimes(`${day}-end`)}
-                  onBlur={() => setFocusedTimes(null)}
-                  style={{
-                    ...inputStyle,
-                    height: '36px',
-                    fontSize: '13px',
-                    padding: '0 8px',
-                    opacity: dim ? 0.4 : 1,
-                    pointerEvents: dim ? 'none' : 'auto',
-                    borderColor: focusedTimes === `${day}-end` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
-                  }}
-                >
-                  {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: av.enabled ? '12px' : '0' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--color-bp-primary)', fontWeight: 600 }}>{day}</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--color-bp-primary)' }}>
+                    <input
+                      type="checkbox"
+                      aria-label={`Enable ${day}`}
+                      checked={av.enabled}
+                      onChange={(e) => setDayEnabled(day, e.target.checked)}
+                      style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
+                    />
+                    Available
+                  </label>
+                </div>
+
+                {av.enabled ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {av.slots.map((slot, slotIndex) => (
+                      <div key={`${day}-${slotIndex}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <select
+                          aria-label={`${day} slot ${slotIndex + 1} start time`}
+                          value={slot.startTime}
+                          onChange={(e) => setDaySlot(day, slotIndex, 'startTime', e.target.value)}
+                          onFocus={() => setFocusedTimes(`${day}-${slotIndex}-start`)}
+                          onBlur={() => setFocusedTimes(null)}
+                          style={{
+                            ...inputStyle,
+                            width: '140px',
+                            height: '36px',
+                            fontSize: '13px',
+                            padding: '0 8px',
+                            borderColor: focusedTimes === `${day}-${slotIndex}-start` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
+                          }}
+                        >
+                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                        <span style={{ fontSize: '13px', color: '#555B6E' }}>to</span>
+                        <select
+                          aria-label={`${day} slot ${slotIndex + 1} end time`}
+                          value={slot.endTime}
+                          onChange={(e) => setDaySlot(day, slotIndex, 'endTime', e.target.value)}
+                          onFocus={() => setFocusedTimes(`${day}-${slotIndex}-end`)}
+                          onBlur={() => setFocusedTimes(null)}
+                          style={{
+                            ...inputStyle,
+                            width: '140px',
+                            height: '36px',
+                            fontSize: '13px',
+                            padding: '0 8px',
+                            borderColor: focusedTimes === `${day}-${slotIndex}-end` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
+                          }}
+                        >
+                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                        {av.slots.length > 1 ? (
+                          <button
+                            type="button"
+                            onClick={() => removeDaySlot(day, slotIndex)}
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              color: '#DC2626',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Remove
+                          </button>
+                        ) : null}
+                        <FieldError msg={errors[`time_${day}_${slotIndex}`]} />
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addDaySlot(day)}
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        color: 'var(--color-bp-primary)',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        padding: 0,
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      + Add another time range
+                    </button>
+                  </div>
+                ) : null}
                 {errors[timeKey] && <FieldError msg={errors[timeKey]} />}
-              </div>,
-            ]
+              </div>
+            )
           })}
         </div>
       </div>
@@ -1156,7 +1329,7 @@ export default function DoctorSignupPage() {
     specialties: [],
   })
   const [step3, setStep3] = useState<Step3Data>({
-    clinicName: '', address: '', city: '', pincode: '', visitTypes: [],
+    clinicName: '', address: '', city: '', state: '', pincode: '', visitTypes: [],
   })
   const [step4, setStep4] = useState<Step4Data>({
     fees: { in_clinic: '', home_visit: '' },
@@ -1206,18 +1379,29 @@ export default function DoctorSignupPage() {
     // Send all data to onboarding API
     setSubmitError('')
     try {
-      const step4Payload = {
-        ...step4,
-        fees: {
-          in_clinic: parseInt(step4.fees.in_clinic, 10) || 0,
-          home_visit: parseInt(step4.fees.home_visit, 10) || 0,
-        },
-      }
+      const availability = Object.fromEntries(
+        Object.entries(step4.availability).map(([day, config]) => [
+          SHORT_DAY_TO_FULL_DAY[day as keyof typeof SHORT_DAY_TO_FULL_DAY],
+          {
+            enabled: config.enabled,
+            slots: config.slots.map((slot) => ({
+              start: slot.startTime,
+              end: slot.endTime,
+            })),
+          },
+        ]),
+      )
       const res = await fetch('/api/providers/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          step1, step2, step3, step4: step4Payload
+          step1,
+          step2,
+          step3,
+          step4: {
+            ...step4,
+            availability,
+          },
         })
       })
       if (res.ok) {

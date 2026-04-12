@@ -101,7 +101,7 @@ Pick **ONE** of these portals. They all do the same thing — pick whichever you
 
 1. Go to your chosen DLT portal
 2. Click **"Register"** or **"Sign Up"**
-3. Select **"Enterprise"** (you are a Content Sender, not a Telemarketeer)
+3. Select **"Enterprise"** (you are a Content Sender, not a Telemarketer)
 4. Fill in the registration form:
 
 | Field | What to Enter |
@@ -451,7 +451,7 @@ Deno.serve(async (req) => {
 
 ### 8.1 Set the Function's Environment Variables (Secrets)
 
-Run these commands one by one. Each one will ask you to paste a value:
+Run these commands one by one. Replace the placeholder values with your actual credentials before running each command:
 
 ```bash
 supabase secrets set MSG91_AUTH_KEY=YOUR_MSG91_AUTH_KEY_HERE
@@ -620,7 +620,7 @@ Vercel doesn't apply new env vars to existing deployments. After adding variable
 
 1. Go to `https://bookphysio.in`
 2. Click **Login** or **Sign Up**
-3. Enter your phone number (with +91 prefix)
+3. Enter your 10-digit Indian mobile number (do not include `+91`; the app adds it automatically)
 4. Click **Send OTP**
 5. Wait for SMS
 6. Enter the OTP code
@@ -761,9 +761,11 @@ Supabase supports test phone numbers that bypass SMS entirely:
 
 The app has a built-in dev bypass (when demo mode is enabled):
 
-- Phone: `+919876500001` → patient role (OTP: `123456`)
-- Phone: `+919876500002` → provider role (OTP: `123456`)
-- Phone: `+919876500003` → admin role (OTP: `123456`)
+Enter only the 10-digit mobile number in the UI; the app automatically prepends `+91`.
+
+- Phone: `9876500001` → patient role (OTP: `123456`)
+- Phone: `9876500002` → provider role (OTP: `123456`)
+- Phone: `9876500003` → admin role (OTP: `123456`)
 
 This only works when `NEXT_PUBLIC_ENABLE_DEMO=true` is set. **Never enable this in production.**
 

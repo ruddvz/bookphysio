@@ -2,6 +2,80 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import {
+  buildAvailabilitySlotsInIndia,
+  type DayName,
+  type ProviderMultiSlotSchedule,
+} from '@/lib/provider-availability'
+
+const daySlotSchema = z.object({
+  start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
+  end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
+})
+
+const onboardingAvailabilityDaySchema = z.union([
+  z.object({
+    enabled: z.boolean(),
+    start: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
+    end: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/),
+  }),
+  z.object({
+    enabled: z.boolean(),
+    slots: z.array(daySlotSchema),
+  }),
+])
+
+const SHORT_DAY_TO_FULL_DAY: Record<string, DayName> = {
+  Mon: 'Monday',
+  Tue: 'Tuesday',
+  Wed: 'Wednesday',
+  Thu: 'Thursday',
+  Fri: 'Friday',
+  Sat: 'Saturday',
+  Sun: 'Sunday',
+}
+
+function slugifyProviderName(name: string, userId: string) {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+
+  return `${base || 'provider'}-${userId.slice(0, 8)}`
+}
+
+function normalizeOnboardingAvailability(
+  availability: Record<string, z.infer<typeof onboardingAvailabilityDaySchema>>,
+): ProviderMultiSlotSchedule {
+  const schedule: ProviderMultiSlotSchedule = {
+    Monday: { enabled: false, slots: [] },
+    Tuesday: { enabled: false, slots: [] },
+    Wednesday: { enabled: false, slots: [] },
+    Thursday: { enabled: false, slots: [] },
+    Friday: { enabled: false, slots: [] },
+    Saturday: { enabled: false, slots: [] },
+    Sunday: { enabled: false, slots: [] },
+  }
+
+  for (const [inputDay, config] of Object.entries(availability)) {
+    const dayName = (SHORT_DAY_TO_FULL_DAY[inputDay] ?? inputDay) as DayName
+    if (!(dayName in schedule)) {
+      continue
+    }
+
+    schedule[dayName] = 'slots' in config
+      ? {
+          enabled: config.enabled,
+          slots: config.slots,
+        }
+      : {
+          enabled: config.enabled,
+          slots: config.enabled ? [{ start: config.start, end: config.end }] : [],
+        }
+  }
+
+  return schedule
+}
 
 const onboardSchema = z.object({
   step1: z.object({
@@ -22,13 +96,14 @@ const onboardSchema = z.object({
     clinicName: z.string().min(2).max(200),
     address: z.string().min(5).max(500),
     city: z.string().min(2).max(100),
+    state: z.string().min(2).max(100),
     pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode'),
     visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
   }),
   step4: z.object({
-    fees: z.record(z.string(), z.string().regex(/^\d{1,6}$/, 'Fee must be a valid number')),
-    slotDuration: z.string().regex(/^\d{1,3}$/, 'Slot duration must be a number'),
-    availability: z.record(z.string(), z.unknown()),
+    fees: z.record(z.string(), z.coerce.number().int().min(0).max(999999)),
+    slotDuration: z.coerce.number().int().min(15).max(120),
+    availability: z.record(z.string(), onboardingAvailabilityDaySchema),
   }),
 })
 
@@ -49,12 +124,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = onboardSchema.parse(body)
     const { step1, step2, step3, step4 } = validated
+    const providerSlug = slugifyProviderName(step1.name, user.id)
 
-    // 1. Update user metadata — role stays 'patient' until admin approves
+    // 1. Activate the user as a provider immediately so they can enter the
+    // provider portal after OTP verification and manage their live profile.
     const { error: userError } = await supabaseAdmin
       .from('users')
       .update({
-        full_name: step1.name
+        full_name: step1.name,
+        role: 'provider',
       })
       .eq('id', user.id)
 
@@ -64,26 +142,41 @@ export async function POST(request: NextRequest) {
       user_metadata: {
         full_name: step1.name,
         phone: step1.phone,
-        provider_pending: true, // Admin must approve before role becomes 'provider'
+        provider_pending: false,
+        role: 'provider',
       },
     })
 
     if (authUserError) throw authUserError
+
+    const { data: existingSpecialties, error: specialtiesError } = await supabaseAdmin
+      .from('specialties')
+      .select('id, name')
+
+    if (specialtiesError) throw specialtiesError
+
+    const selectedIds = (existingSpecialties ?? [])
+      .filter((specialty) => step2.specialties.includes(specialty.name))
+      .map((specialty) => specialty.id)
+
+    const multiSlotSchedule = normalizeOnboardingAvailability(step4.availability)
 
     // 2. Create provider profile
     const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
         id: user.id, // ID matches user ID
+        slug: providerSlug,
         title: step2.degree.includes('Dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
         iap_registration_no: step2.registrationType === 'STATE'
           ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
           : (step2.iapNumber || ''),
-        consultation_fee_inr: parseInt(step4.fees.in_clinic || step4.fees.home_visit || '0'),
-        verified: false,
-        active: false, // Inactive until admin approves
-        onboarding_step: 4
+        specialty_ids: selectedIds,
+        consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
+        verified: true,
+        active: true,
+        onboarding_step: 4,
       })
       .select()
       .single()
@@ -92,38 +185,51 @@ export async function POST(request: NextRequest) {
     providerCreated = true
 
     // 3. Create Location
-    const { error: locError } = await supabaseAdmin
+    const { data: locationRow, error: locError } = await supabaseAdmin
       .from('locations')
       .insert({
         provider_id: user.id,
         name: step3.clinicName,
         address: step3.address,
         city: step3.city,
+        state: step3.state,
         pincode: step3.pincode,
-        visit_type: step3.visitTypes
+        visit_type: step3.visitTypes,
       })
+      .select('id')
+      .single()
 
     if (locError) throw locError
     locationCreated = true
 
     // 4. Link Specialties by name match (best-effort — taxonomy is admin-managed)
-    const { data: existingSpecialties } = await supabaseAdmin
-      .from('specialties')
-      .select('id, name')
+    if (selectedIds.length > 0) {
+      await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', user.id)
+      const { error: linkError } = await supabaseAdmin
+        .from('provider_specialties')
+        .insert(selectedIds.map(sid => ({ provider_id: user.id, specialty_id: sid })))
 
-    if (existingSpecialties) {
-      const selectedIds = existingSpecialties
-        .filter(s => step2.specialties.includes(s.name))
-        .map(s => s.id)
+      if (linkError) throw linkError
+      specialtiesLinked = true
+    }
 
-      if (selectedIds.length > 0) {
-        await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', user.id)
-        const { error: linkError } = await supabaseAdmin
-          .from('provider_specialties')
-          .insert(selectedIds.map(sid => ({ provider_id: user.id, specialty_id: sid })))
+    // 5. Seed recurring availability immediately so the provider becomes bookable.
+    if (locationRow?.id) {
+      const generatedSlots = buildAvailabilitySlotsInIndia({
+        schedule: multiSlotSchedule,
+        durationMinutes: step4.slotDuration,
+        weeks: 4,
+        providerId: user.id,
+        locationId: locationRow.id,
+        bufferMins: 5,
+      })
 
-        if (linkError) throw linkError
-        specialtiesLinked = true
+      if (generatedSlots.length > 0) {
+        const { error: availabilityError } = await supabaseAdmin
+          .from('availabilities')
+          .insert(generatedSlots)
+
+        if (availabilityError) throw availabilityError
       }
     }
 

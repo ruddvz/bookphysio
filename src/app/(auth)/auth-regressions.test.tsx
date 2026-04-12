@@ -6,6 +6,7 @@ import ForgotPasswordPage from './forgot-password/page'
 import LoginPage from './login/page'
 import SignupPage from './signup/page'
 import VerifyOtpPage from './verify-otp/page'
+import DoctorSignupPage from './doctor-signup/page'
 import { metadata as doctorSignupMetadata } from './doctor-signup/layout'
 import { metadata as loginMetadata } from './login/layout'
 import { metadata as signupMetadata } from './signup/layout'
@@ -302,6 +303,66 @@ describe('Auth regressions', () => {
     expect(doctorSignupMetadata.alternates).toEqual({ canonical: '/doctor-signup' })
     expect(updatePasswordMetadata.title).toBe('Set a new password — BookPhysio')
     expect(updatePasswordMetadata.alternates).toEqual({ canonical: '/update-password' })
+  })
+
+  it('advances provider signup to phone verification after availability is completed', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ flowId: 'provider-flow-1' }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<DoctorSignupPage />)
+
+    fireEvent.change(screen.getByPlaceholderText('Dr. Priya Sharma'), {
+      target: { value: 'Dr. Meera Shah' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('98765 43210'), {
+      target: { value: '9876543210' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('priya@clinic.com'), {
+      target: { value: 'meera@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
+
+    fireEvent.change(screen.getByPlaceholderText('e.g. L-12345'), {
+      target: { value: 'IAP-12345' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('5'), {
+      target: { value: '8' },
+    })
+    fireEvent.click(screen.getByLabelText('MPT'))
+    fireEvent.click(screen.getByLabelText('Sports Physio'))
+    fireEvent.click(screen.getByRole('button', { name: /next: practice details/i }))
+
+    fireEvent.change(screen.getByPlaceholderText('Sharma Physiotherapy Centre'), {
+      target: { value: 'Physio Plus' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('Shop 12, Green Park Main Road'), {
+      target: { value: '12 Marine Drive' },
+    })
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'Mumbai' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('110001'), {
+      target: { value: '400001' },
+    })
+    fireEvent.click(screen.getByLabelText('In-clinic'))
+    fireEvent.click(screen.getByRole('button', { name: /next: pricing & availability/i }))
+
+    fireEvent.change(screen.getAllByPlaceholderText('500')[0], {
+      target: { value: '900' },
+    })
+    fireEvent.click(screen.getByLabelText('30 min'))
+    fireEvent.click(screen.getByRole('button', { name: /next: verify phone/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/verify your mobile number/i)).toBeInTheDocument()
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/otp/send', expect.objectContaining({
+      method: 'POST',
+    }))
   })
 
   it('routes phone recovery to the OTP screen after the OTP request succeeds', async () => {

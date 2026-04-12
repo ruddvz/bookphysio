@@ -392,7 +392,7 @@ See BUG-10 above. The `data-scroll-behavior` attribute is non-standard and has n
 *Total tracked items: 38 (original) + 42 (pre-deployment audit) = 80 total*  
 *Currently open per original audit: 1 (BUG-02 final wordmark asset)*  
 *Session 2 fixes: SEC-04, SEC-05, SEC-06, SEC-09, SEC-10, SEC-11, SEC-12, SEC-14 — FIXED*  
-*Session 2 additions: Razorpay archived, subscription model, Textbelt SMS, vercel.json, robots.txt*  
+*Session 2 additions: Razorpay archived, subscription model, MSG91 via Supabase phone auth, vercel.json, robots.txt*  
 *Last updated: 2026-04-02 — Session 2: security hardening + architecture changes*  
 *Security audit: 8 CRITICAL, 11 HIGH, 14 MEDIUM, 2 LOW new findings (some now fixed — see below)*
 
@@ -779,12 +779,12 @@ export default function robots() {
 |---------|--------|--------------|
 | **Supabase** | Needs production project | Create prod project, run migrations, configure RLS, set `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` |
 | **Razorpay** | Needs live mode | Switch from test (`rzp_test_*`) to live keys. Complete KYC on Razorpay dashboard. Set webhook URL to `https://bookphysio.in/api/payments/webhook` |
-| **MSG91** | ~~REMOVED~~ — replaced by Textbelt | MSG91 removed. Use `TEXTBELT_API_KEY`. OTP delivery via Supabase native provider. |
+| **MSG91** | Configured inside Supabase | MSG91 is the SMS backend for Supabase phone auth. Configure Auth Key, Template ID, and Sender ID in Supabase → Auth → Providers → Phone. No app-side env vars needed. |
 | **Razorpay** | ~~ARCHIVED~~ — all routes return 503 | Re-enable when subscription billing is implemented. |
 | **Resend** | Needs domain verification | Verify `bookphysio.in` domain on Resend. Set `RESEND_API_KEY` |
 | **Upstash Redis** | Needs production instance | Create prod Redis DB. Set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` |
 | **Search map** | Removed from scope | No map token required |
-| **Textbelt** | Ready | Set `TEXTBELT_API_KEY=textbelt` for free (1/day) or purchase credits at textbelt.com |
+| **Textbelt** | ~~REMOVED~~ — replaced by MSG91 via Supabase | SMS delivery is now handled by Supabase Auth's native phone provider with MSG91 credentials configured in the Supabase dashboard. |
 | **Domain DNS** | Action needed | Remove GitHub Pages A records, add Vercel DNS (see Session 2 notes below) |
 | **SSL Certificate** | Vercel automatic | Vercel provisions SSL automatically once domain is connected |
 | **OG Image** | Missing | Create 1200x630 branded image at `public/seo/og-image.png` |
@@ -796,7 +796,7 @@ export default function robots() {
 
 1. **Supabase**: Production instance is live on free tier. Run migration `013_provider_subscriptions.sql` against prod.
 2. **Razorpay**: Archived — not needed yet. Will be re-enabled for provider subscription billing.
-3. **MSG91**: Removed — replaced by Textbelt + Supabase native phone auth.
+3. **MSG91**: Configured inside Supabase Auth → Providers → Phone. The app uses `supabase.auth.signInWithOtp()` — no app-side SMS client.
 4. **Resend**: Verify `bookphysio.in` domain on Resend dashboard if not done yet.
 5. **Hosting**: Vercel — `vercel.json` created, deploy via CLI or GitHub integration.
 6. **Logo**: BpLogo rewritten but `/public/logo.png` (used elsewhere) should still be the production wordmark.
@@ -830,12 +830,12 @@ efund |
 | **Subscriptions** | DB migration for provider_subscriptions table + RLS + trigger | supabase/migrations/013_provider_subscriptions.sql |
 | **Subscriptions** | GET/POST /api/subscriptions endpoint | src/app/api/subscriptions/route.ts |
 | **Subscriptions** | <SubscriptionPlans> UI component (Free/Pro ?100/Max ?200) | src/components/SubscriptionPlans.tsx |
-| **SMS** | Removed MSG91 from OTP send; created Textbelt client | src/lib/textbelt.ts |
+| **SMS** | OTP delivery via Supabase native phone provider (MSG91 backend) | Configured in Supabase dashboard, not in app code |
 | **Branding** | BpLogo.tsx rewritten � green shield icon + "BookPhysio.in" text | src/components/BpLogo.tsx |
 | **Branding** | All BpLogo call sites updated to new invert prop API | Footer, Navbar, BpLogo.test, auth pages |
 | **Deploy** | Created ercel.json (Mumbai region bom1, API no-cache headers) | ercel.json |
 | **Deploy** | Removed public/CNAME (GitHub Pages artifact causing 404) | public/CNAME deleted |
-| **Env** | Updated .env.example � removed MSG91/Razorpay vars, added Textbelt, NEXT_PUBLIC_SITE_URL | .env.example |
+| **Env** | Updated .env.example — removed MSG91/Razorpay app-side vars, added NEXT_PUBLIC_SITE_URL, cookie secrets | .env.example |
 
 ### Build Status
 
@@ -854,7 +854,7 @@ pm run build � **PASSES** � full route tree renders, no TypeScript errors bl
    NEXT_PUBLIC_SUPABASE_URL=<your supabase url>
    NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
    SUPABASE_SERVICE_ROLE_KEY=<service role key>
-   TEXTBELT_API_KEY=textbelt
+   OTP_PENDING_COOKIE_SECRET=<generate with: openssl rand -base64 32>
    RESEND_API_KEY=re_4jVW...
    NEXT_PUBLIC_APP_URL=https://bookphysio.in
    NEXT_PUBLIC_SITE_URL=https://bookphysio.in
@@ -870,10 +870,11 @@ pm run build � **PASSES** � full route tree renders, no TypeScript errors bl
 4. **Supabase migration:**
    Run supabase/migrations/013_provider_subscriptions.sql against your production project.
 
-5. **Supabase phone auth:**
-   - Enable Phone provider in Supabase dashboard ? Auth ? Providers
-   - Configure a Twilio account (recommended for India DLT compliance), OR
-   - Use Textbelt as a custom SMTP-style sender (DLT compliance not guaranteed)
+5. **Supabase phone auth (MSG91):**
+   - Enable Phone provider in Supabase dashboard → Auth → Providers → Phone
+   - Choose MSG91 from the SMS provider dropdown
+   - Fill in: **Auth Key** (from MSG91 dashboard), **Template ID** (DLT-approved, must contain `{{otp}}`), **Sender ID** (DLT-approved 6-char header)
+   - Send a test OTP from the Supabase dashboard to confirm SMS arrives on a real +91 number
 
 ### Open Security Issues (Not Fixed This Session)
 - **SEC-01**: Other service clients (supabase/server, upstash) may still have || 'dummy' fallbacks � verify
