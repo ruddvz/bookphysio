@@ -12,6 +12,11 @@ const emailSignupSchema = z.object({
   phone: z.string().regex(/^\+91[6-9]\d{9}$/, 'Enter a valid Indian mobile number (+91XXXXXXXXXX)').optional(),
 })
 
+function isAlreadyRegisteredAuthError(message: string | undefined) {
+  const normalized = message?.toLowerCase() ?? ''
+  return normalized.includes('already registered') || normalized.includes('already been registered')
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
   if (!body || typeof body !== 'object') {
@@ -23,12 +28,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const ip = getRequestIpAddress(request) ?? 'unknown'
+  const ip = getRequestIpAddress(request)
   try {
-    const ipLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
-    if (!ipLimit.success) {
-      return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 })
+    if (ip) {
+      const ipLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
+      if (!ipLimit.success) {
+        return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 })
+      }
     }
+
     const emailLimit = await otpRatelimit.limit(`signup:email:${parsed.data.email.toLowerCase()}`)
     if (!emailLimit.success) {
       return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 })
@@ -51,6 +59,13 @@ export async function POST(request: NextRequest) {
   })
 
   if (error) {
+    if (isAlreadyRegisteredAuthError(error.message)) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists. Please sign in instead.' },
+        { status: 409 },
+      )
+    }
+
     return NextResponse.json({ error: 'Unable to create account. Please try again.' }, { status: 400 })
   }
 

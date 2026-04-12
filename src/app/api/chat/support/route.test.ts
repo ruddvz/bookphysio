@@ -78,4 +78,18 @@ describe('POST /api/chat/support', () => {
     expect(text).toMatch(/home visit/i)
     expect(text).toMatch(/BookPhysio|bookphysio\.in/i)
   })
+
+  it('rate limits before rejecting malformed JSON payloads', async () => {
+    const { POST } = await import('./route')
+    const request = new Request('http://localhost/api/chat/support', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{',
+    })
+
+    const response = await POST(request as never)
+
+    expect(response.status).toBe(400)
+    expect(ratelimitLimitMock).toHaveBeenCalledWith('support:203.0.113.10')
+  })
 })

@@ -17,10 +17,16 @@ function VerifyEmailContent() {
   const [countdown, setCountdown] = useState(0)
 
   useEffect(() => {
-    if (countdown <= 0) return
+    if (countdown <= 0) {
+      if (resendStatus === 'sent') {
+        setResendStatus('idle')
+      }
+      return
+    }
+
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
-  }, [countdown])
+  }, [countdown, resendStatus])
 
   async function handleResend() {
     if (!email || resendStatus === 'loading' || countdown > 0) return

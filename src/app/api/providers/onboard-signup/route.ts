@@ -50,6 +50,32 @@ const onboardSignupSchema = z.object({
     degree: z.string().min(1).max(100),
     experienceYears: z.string().regex(/^\d{1,2}$/, 'Experience years must be a number'),
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
+  }).superRefine((data, context) => {
+    if (data.registrationType === 'IAP' && !data.iapNumber?.trim()) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['iapNumber'],
+        message: 'IAP registration number is required',
+      })
+    }
+
+    if (data.registrationType === 'STATE') {
+      if (!data.stateName?.trim()) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['stateName'],
+          message: 'State council name is required',
+        })
+      }
+
+      if (!data.stateRegistrationNumber?.trim()) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['stateRegistrationNumber'],
+          message: 'State registration number is required',
+        })
+      }
+    }
   }),
   step3: z.object({
     clinicName: z.string().min(2).max(200),
@@ -111,18 +137,40 @@ function normalizeOnboardingAvailability(
   return schedule
 }
 
+function buildScheduleErrorResponse(scheduleErrors: Record<string, string>) {
+  return NextResponse.json(
+    {
+      error: 'Some availability fields are invalid. Please review and try again.',
+      details: {
+        fieldErrors: Object.fromEntries(
+          Object.entries(scheduleErrors).map(([field, message]) => [field, [message]]),
+        ),
+        formErrors: [],
+      },
+    },
+    { status: 400 },
+  )
+}
+
+function isAlreadyRegisteredAuthError(message: string | undefined) {
+  const normalized = message?.toLowerCase() ?? ''
+  return normalized.includes('already registered') || normalized.includes('already been registered')
+}
+
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   // Rate limit by IP to prevent abuse (no auth session required on this endpoint)
-  const ip = getRequestIpAddress(request) ?? 'unknown'
+  const ip = getRequestIpAddress(request)
   try {
-    const ipLimit = await otpRatelimit.limit(`provider-signup:ip:${ip}`)
-    if (!ipLimit.success) {
-      return NextResponse.json(
-        { error: 'Too many signup attempts. Please try again later.' },
-        { status: 429 },
-      )
+    if (ip) {
+      const ipLimit = await otpRatelimit.limit(`provider-signup:ip:${ip}`)
+      if (!ipLimit.success) {
+        return NextResponse.json(
+          { error: 'Too many signup attempts. Please try again later.' },
+          { status: 429 },
+        )
+      }
     }
   } catch {
     // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
@@ -142,6 +190,12 @@ export async function POST(request: NextRequest) {
   }
 
   const { email, password, step1, step2, step3, step4 } = parsed.data
+  const multiSlotSchedule = normalizeOnboardingAvailability(step4.availability)
+  const scheduleErrors = validateProviderSchedule(multiSlotSchedule)
+
+  if (Object.keys(scheduleErrors).length > 0) {
+    return buildScheduleErrorResponse(scheduleErrors)
+  }
 
   // Rate limit by email to prevent duplicate signups
   try {
@@ -181,8 +235,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (authError) {
-      if (authError.message?.toLowerCase().includes('already registered') ||
-          authError.message?.toLowerCase().includes('already been registered')) {
+      if (isAlreadyRegisteredAuthError(authError.message)) {
         return NextResponse.json(
           { error: 'An account with this email already exists. Please sign in instead.' },
           { status: 409 },
@@ -281,24 +334,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 7. Seed recurring availability
-    const multiSlotSchedule = normalizeOnboardingAvailability(step4.availability)
-    const scheduleErrors = validateProviderSchedule(multiSlotSchedule)
-
-    if (Object.keys(scheduleErrors).length > 0) {
-      return NextResponse.json(
-        {
-          error: 'Some availability fields are invalid. Please review and try again.',
-          details: {
-            fieldErrors: Object.fromEntries(
-              Object.entries(scheduleErrors).map(([field, message]) => [field, [message]]),
-            ),
-            formErrors: [],
-          },
-        },
-        { status: 400 },
-      )
-    }
-
     if (locationRow?.id) {
       const { startDateKey, endDateKey } = getProviderAvailabilityWindow(4)
       const seedWindowStart = parseIndiaDate(startDateKey).toISOString()

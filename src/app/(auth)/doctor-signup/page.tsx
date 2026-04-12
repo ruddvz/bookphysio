@@ -1214,10 +1214,16 @@ function Step5({ email, onBack }: Step5Props) {
   const [countdown, setCountdown] = useState(0)
 
   useEffect(() => {
-    if (countdown <= 0) return
+    if (countdown <= 0) {
+      if (resendStatus === 'sent') {
+        setResendStatus('idle')
+      }
+      return
+    }
+
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
-  }, [countdown])
+  }, [countdown, resendStatus])
 
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,

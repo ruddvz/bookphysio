@@ -11,6 +11,17 @@ describe('signupPatientSchema', () => {
     })
     expect(result.success).toBe(true)
   })
+
+  it('accepts patient signup without a phone number', () => {
+    const result = signupPatientSchema.safeParse({
+      full_name: 'Priya Sharma',
+      email: 'priya@example.com',
+      password: 'SecurePass123',
+    })
+
+    expect(result.success).toBe(true)
+  })
+
   it('rejects invalid Indian phone number', () => {
     const result = signupPatientSchema.safeParse({
       full_name: 'Test User',
