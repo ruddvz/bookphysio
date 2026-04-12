@@ -65,6 +65,7 @@ export default function HowItWorks() {
               <Image
                 src="/images/physio-male.png"
                 alt=""
+                aria-hidden="true"
                 width={200}
                 height={280}
                 className="relative z-10 object-contain object-bottom"

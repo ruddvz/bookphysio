@@ -87,6 +87,9 @@ const TRUST_ITEMS = [
   { icon: Home,        title: 'Home visits',  desc: 'Filter by in-clinic or home visit on every search.'          },
 ]
 
+const PATIENT_CHARACTER = '/images/physio-female.png'
+const PROVIDER_CHARACTER = '/images/physio-male.png'
+
 export default function HowItWorksPage() {
   const [activeTab, setActiveTab] = useState<'patient' | 'provider'>('patient')
   const activeSteps = activeTab === 'patient' ? PATIENT_STEPS : PROVIDER_STEPS
@@ -164,7 +167,7 @@ export default function HowItWorksPage() {
                     style={{ background: 'linear-gradient(145deg, #E6F4F3 0%, #B2D8D5 100%)' }}
                   />
                   <Image
-                    src={activeTab === 'patient' ? '/images/physio-female.png' : '/images/physio-male.png'}
+                    src={activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER}
                     alt=""
                     width={220}
                     height={320}
