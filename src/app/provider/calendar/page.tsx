@@ -48,6 +48,8 @@ const EMPTY_NEW_VISIT: NewVisit = {
   fee_inr: '',
 }
 
+const DEFAULT_BOOKING_HOUR = HOURS[1] ?? HOURS[0] ?? 9
+
 export default function ProviderSchedule() {
   const queryClient = useQueryClient()
   const [anchor, setAnchor] = useState<Date>(() => new Date())
@@ -279,7 +281,7 @@ export default function ProviderSchedule() {
                       <p className="text-[13px] font-bold text-slate-400">No sessions scheduled</p>
                       <button
                         type="button"
-                        onClick={() => openModalForCell(mobileSelectedKey, 9)}
+                        onClick={() => openModalForCell(mobileSelectedKey, DEFAULT_BOOKING_HOUR)}
                         className="mt-3 px-5 py-2 text-[12px] font-bold text-[var(--color-pv-primary)] border border-[var(--color-pv-primary)] rounded-full transition-colors hover:bg-[var(--color-pv-primary)] hover:text-white"
                       >
                         + Book session

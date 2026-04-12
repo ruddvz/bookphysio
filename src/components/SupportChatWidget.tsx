@@ -24,6 +24,8 @@ const GENERAL_QUICK_REPLIES = [
   'What are your pricing plans?',
 ]
 
+const SUPPORT_BRAND_NAME = 'BookPhysio.in Support'
+
 function getUIMessageText(message: UIMessage): string {
   return message.parts.reduce((text, part) => {
     return part.type === 'text' ? `${text}${part.text}` : text
@@ -49,8 +51,8 @@ export function SupportChatWidget() {
         {
           type: 'text' as const,
           text: isHomePage
-            ? "Hi! 👋 I'm Bookphysio.in Support. Tell me what condition or pain you're dealing with, and I’ll help you find the right next step on BookPhysio."
-            : "Hi! 👋 I'm Bookphysio.in Support. I can help with booking, sessions, pricing, dashboards, and anything about the BookPhysio platform.",
+            ? `Hi! 👋 I'm ${SUPPORT_BRAND_NAME}. Tell me what condition or pain you're dealing with, and I’ll help you find the right next step on BookPhysio.in.`
+            : `Hi! 👋 I'm ${SUPPORT_BRAND_NAME}. I can help with booking, sessions, pricing, dashboards, and anything about the BookPhysio.in platform.`,
         },
       ],
   }), [isHomePage])
@@ -137,7 +139,7 @@ export function SupportChatWidget() {
                 <Stethoscope size={18} className="text-white" />
               </div>
               <div>
-                <p className="text-[14px] font-bold text-white tracking-tight">Bookphysio.in Support</p>
+                <p className="text-[14px] font-bold text-white tracking-tight">{SUPPORT_BRAND_NAME}</p>
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <p className="text-[11px] text-white/70 font-medium">Online now</p>
