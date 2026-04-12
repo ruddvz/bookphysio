@@ -286,6 +286,28 @@
     text-transform: uppercase;
   }
 
+  .bp-mobile-menu-shell {
+    background: linear-gradient(155deg, #fff6f1 0%, #eef8f7 42%, #f7f8f9 100%);
+  }
+
+  .bp-mobile-menu-blob-top {
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.24) 0%, transparent 70%);
+  }
+
+  .bp-mobile-menu-blob-bottom {
+    background: radial-gradient(circle, rgba(0, 118, 108, 0.22) 0%, transparent 70%);
+  }
+
+  .bp-mobile-menu-dots {
+    background-image: radial-gradient(circle, rgba(0, 118, 108, 0.22) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .bp-mobile-menu-signup {
+    background: linear-gradient(135deg, #ff6b35, #ff8a5b);
+    box-shadow: 0 4px 24px rgba(255, 107, 53, 0.28);
+  }
+
   /* Cards */
   .bp-card {
     background: var(--color-bp-card);

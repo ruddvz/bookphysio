@@ -36,7 +36,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 
 const navLinks = [
   { label: 'How it works', href: '/how-it-works' },
-  { label: 'For doctors', href: '/doctor-signup' },
+  { label: 'For providers', href: '/doctor-signup' },
 ]
 
 export default function Navbar({
@@ -83,7 +83,7 @@ export default function Navbar({
         className={cn(
           'fixed top-0 inset-x-0 z-[100] transition-all duration-300',
           scrolled
-            ? 'bg-white/90 backdrop-blur-xl border-b border-indigo-100/60 shadow-sm shadow-indigo-100/40'
+            ? 'bg-white/90 backdrop-blur-xl border-b border-[#B2D8D5]/60 shadow-sm shadow-[#B2D8D5]/35'
             : 'bg-transparent'
         )}
       >
@@ -112,8 +112,8 @@ export default function Navbar({
                   className={cn(
                     'flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
                     browseOpen
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60'
+                      ? 'bg-[#E6F4F3] text-[#00766C]'
+                      : 'text-slate-600 hover:text-[#00766C] hover:bg-[#E6F4F3]'
                   )}
                 >
                   Browse
@@ -154,7 +154,7 @@ export default function Navbar({
                               <Icon size={18} />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-[13px] font-semibold text-slate-800 group-hover:text-indigo-700 transition-colors leading-tight">
+                              <p className="text-[13px] font-semibold text-slate-800 group-hover:text-[#00766C] transition-colors leading-tight">
                                 {s.label}
                               </p>
                               <p className="text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2">
@@ -169,12 +169,12 @@ export default function Navbar({
                       <Link
                         href={searchHref}
                         onClick={() => setBrowseOpen(false)}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 transition-all group"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-[#E6F4F3] transition-all group"
                       >
-                        <span className="text-[13px] font-semibold text-slate-600 group-hover:text-indigo-700">
+                        <span className="text-[13px] font-semibold text-slate-600 group-hover:text-[#00766C]">
                           Browse all physiotherapists
                         </span>
-                        <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+                        <ArrowRight size={14} className="text-slate-400 group-hover:text-[#00766C] group-hover:translate-x-0.5 transition-all" />
                       </Link>
                     </div>
                   </div>
@@ -186,7 +186,7 @@ export default function Navbar({
                 <Link
                   key={label}
                   href={href === '/how-it-works' ? howItWorksHref : href}
-                  className="px-4 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60 transition-all duration-150"
+                  className="px-4 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:text-[#00766C] hover:bg-[#E6F4F3] transition-all duration-150"
                 >
                   {label}
                 </Link>
@@ -200,13 +200,13 @@ export default function Navbar({
               ) : null}
               <Link
                 href={signupHref}
-                className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-indigo-700 transition-colors"
+                className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-[#00766C] transition-colors"
               >
                 Sign up
               </Link>
               <Link
                 href={loginHref}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#6B7BF5] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#5363D7]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#FF6B35] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#E0552A]"
               >
                 Sign in
                 <ArrowRight size={13} />
@@ -217,7 +217,7 @@ export default function Navbar({
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl border border-indigo-100 bg-white text-slate-600 hover:text-indigo-700 transition-colors"
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl border border-[#B2D8D5] bg-white text-slate-600 hover:text-[#00766C] transition-colors"
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
             >
@@ -230,24 +230,17 @@ export default function Navbar({
       {/* Mobile Menu — Full-screen gradient overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-[99] flex flex-col overflow-hidden animate-fade-in"
-          style={{ background: 'linear-gradient(155deg, #F0EEFF 0%, #E8F8F7 40%, #FFF5F8 75%, #FFF8F0 100%)' }}
+          className="bp-mobile-menu-shell lg:hidden fixed inset-0 z-[99] flex flex-col overflow-hidden animate-fade-in"
         >
           {/* Decorative blobs — mirrors hero */}
           <div
-            className="absolute -top-24 -left-24 w-[400px] h-[400px] rounded-full opacity-40 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #C4B5E8 0%, transparent 70%)' }}
+            className="bp-mobile-menu-blob-top absolute -top-24 -left-24 h-[400px] w-[400px] rounded-full opacity-40 pointer-events-none"
           />
           <div
-            className="absolute -bottom-16 -right-16 w-[320px] h-[320px] rounded-full opacity-30 pointer-events-none"
-            style={{ background: 'radial-gradient(circle, #7DCFC9 0%, transparent 70%)' }}
+            className="bp-mobile-menu-blob-bottom absolute -bottom-16 -right-16 h-[320px] w-[320px] rounded-full opacity-30 pointer-events-none"
           />
           <div
-            className="absolute inset-0 opacity-[0.035] pointer-events-none"
-            style={{
-              backgroundImage: 'radial-gradient(circle, #8B9BD8 1px, transparent 1px)',
-              backgroundSize: '28px 28px',
-            }}
+            className="bp-mobile-menu-dots absolute inset-0 opacity-[0.035] pointer-events-none"
           />
 
           {/* Header */}
@@ -259,7 +252,7 @@ export default function Navbar({
               type="button"
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
-              className="flex items-center justify-center w-10 h-10 rounded-full border border-indigo-100 bg-white/70 backdrop-blur-sm text-slate-600 hover:text-indigo-700 transition-colors"
+              className="flex items-center justify-center w-10 h-10 rounded-full border border-[#B2D8D5] bg-white/70 backdrop-blur-sm text-slate-600 hover:text-[#00766C] transition-colors"
             >
               <X size={18} />
             </button>
@@ -268,7 +261,7 @@ export default function Navbar({
           {/* Scrollable nav body */}
           <nav className="relative z-10 flex-1 overflow-y-auto px-5 pt-2 pb-4" aria-label="Mobile navigation">
             {/* Specialties grid */}
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3 px-1" style={{ color: '#9290B0' }}>
+            <p className="mb-3 px-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">
               Specialties
             </p>
             <div className="grid grid-cols-2 gap-2 mb-5">
@@ -287,7 +280,7 @@ export default function Navbar({
                     <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', s.tint.bg, s.tint.text)}>
                       <Icon size={16} />
                     </div>
-                    <span className="text-[13px] font-semibold text-slate-700 group-hover:text-indigo-700 transition-colors leading-tight">
+                    <span className="text-[13px] font-semibold text-slate-700 group-hover:text-[#00766C] transition-colors leading-tight">
                       {s.label}
                     </span>
                   </Link>
@@ -299,13 +292,13 @@ export default function Navbar({
             <Link
               href={searchHref}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-between px-4 py-3 mb-4 rounded-2xl bg-white/50 border border-indigo-100/60 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-indigo-700 transition-all group"
+              className="group mb-4 flex items-center justify-between rounded-2xl border border-[#B2D8D5]/60 bg-white/50 px-4 py-3 text-[13px] font-semibold text-slate-600 transition-all hover:bg-white/80 hover:text-[#00766C]"
             >
               Browse all physiotherapists
-              <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+              <ArrowRight size={14} className="text-slate-400 group-hover:text-[#00766C] group-hover:translate-x-0.5 transition-all" />
             </Link>
 
-            <div className="h-px bg-indigo-100/50 mb-4" />
+            <div className="mb-4 h-px bg-[#B2D8D5]/50" />
 
             {/* Nav links */}
             <div className="space-y-1.5">
@@ -321,7 +314,7 @@ export default function Navbar({
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
               >
-                <Stethoscope size={16} className="text-indigo-400" />
+                <Stethoscope size={16} className="text-[#00766C]" />
                 For providers
               </Link>
             </div>
@@ -332,11 +325,7 @@ export default function Navbar({
             <Link
               href={signupHref}
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
-              style={{
-                background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
-                boxShadow: '0 4px 24px rgba(139,155,216,0.40)',
-              }}
+              className="bp-mobile-menu-signup w-full flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-[15px] font-bold text-white transition-transform active:scale-[0.98]"
             >
               Sign up
               <ArrowRight size={16} />
@@ -344,7 +333,7 @@ export default function Navbar({
             <Link
               href={loginHref}
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-indigo-200 bg-white/60 text-[15px] font-bold text-slate-700 active:scale-[0.98] transition-transform"
+              className="w-full flex items-center justify-center gap-2 rounded-2xl border border-[#B2D8D5] bg-white/60 px-6 py-4 text-[15px] font-bold text-slate-700 transition-transform active:scale-[0.98]"
             >
               Sign in
               <ArrowRight size={16} />

@@ -1,7 +1,7 @@
 import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/HeroSection'
 import ProofSection from '@/components/ProofSection'
-import TopSpecialties from '@/components/TopSpecialties'
+import { TopSpecialties } from '@/components/TopSpecialties'
 import HowItWorks from '@/components/HowItWorks'
 import HealthSystems from '@/components/HealthSystems'
 import ProviderCTA from '@/components/ProviderCTA'

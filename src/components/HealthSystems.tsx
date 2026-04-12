@@ -6,15 +6,15 @@ const features = [
     icon: BadgeCheck,
     title: 'Verified clinicians',
     desc: 'Each profile shows the provider\u2019s registration number, qualifications and specialties, so you know who you are booking.',
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-50',
+    color: 'text-[#00766C]',
+    bg: 'bg-[#E6F4F3]',
   },
   {
     icon: Home,
     title: 'Clinic or at home',
     desc: 'Providers list both options where they offer them, with separate fees and travel areas for home visits.',
-    color: 'text-violet-600',
-    bg: 'bg-violet-50',
+    color: 'text-[#0F766E]',
+    bg: 'bg-[#EAF7F5]',
   },
   {
     icon: Clock3,
@@ -56,8 +56,8 @@ export default function HealthSystems() {
                 'Mobile-first booking flow',
               ].map(item => (
                 <div key={item} className="flex items-center gap-3 text-[14px] font-medium text-slate-700">
-                  <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                    <ShieldCheck size={12} className="text-indigo-600" />
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E6F4F3]">
+                    <ShieldCheck size={12} className="text-[#00766C]" />
                   </div>
                   {item}
                 </div>
@@ -108,7 +108,7 @@ export default function HealthSystems() {
                   <Link
                     key={city}
                     href={`/search?location=${encodeURIComponent(city)}`}
-                    className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-medium hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-colors"
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-[12px] font-medium text-slate-600 transition-colors hover:border-[#B2D8D5] hover:bg-[#E6F4F3] hover:text-[#00766C]"
                   >
                     {city}
                   </Link>

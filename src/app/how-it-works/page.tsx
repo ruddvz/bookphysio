@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState, type KeyboardEvent } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -15,26 +15,42 @@ import {
   Activity,
 } from 'lucide-react'
 
-const PATIENT_STEPS = [
+type AudienceTab = 'patient' | 'provider'
+
+type StepDefinition = {
+  step: string
+  icon: typeof Search
+  title: string
+  text: string
+  tint: string
+}
+
+const TAB_ORDER: AudienceTab[] = ['patient', 'provider']
+
+const PATIENT_STEPS: StepDefinition[] = [
   {
+    step: '01',
     icon: Search,
     title: 'Search',
     text: 'Enter your condition or a physiotherapist name and select your location.',
     tint: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
+    step: '02',
     icon: UserCheck,
     title: 'Choose Provider',
     text: 'Compare expert physiotherapists by specialty, rating, fees, and distance.',
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
   {
+    step: '03',
     icon: CalendarDays,
     title: 'Pick a Slot',
     text: 'Select your preferred date and time from the live availability of the provider.',
     tint: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
+    step: '04',
     icon: Activity,
     title: 'Book Instantly',
     text: 'Confirm your booking with a quick session request and get expert care.',
@@ -42,26 +58,30 @@ const PATIENT_STEPS = [
   },
 ]
 
-const PROVIDER_STEPS = [
+const PROVIDER_STEPS: StepDefinition[] = [
   {
+    step: '01',
     icon: Building2,
     title: 'Register Practice',
     text: 'Create your professional profile with your credentials and clinic details.',
     tint: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
+    step: '02',
     icon: CalendarRange,
     title: 'Set Availability',
     text: 'Configure your working hours, slot duration, and visit types.',
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
   {
+    step: '03',
     icon: CalendarDays,
     title: 'Accept Bookings',
     text: 'Manage all your incoming appointments from a single dashboard.',
     tint: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
+    step: '04',
     icon: WalletCards,
     title: 'Track Earnings',
     text: 'Monitor your weekly and monthly revenue automatically.',
@@ -69,37 +89,111 @@ const PROVIDER_STEPS = [
   },
 ]
 
+const TAB_CONTENT = {
+  patient: {
+    heroTitle: 'How to book a physiotherapist online in India',
+    heroDescription: 'Book a physio session in 4 clear steps with no calls, no waiting, and no guesswork about who to trust.',
+    primaryCtaHref: '/search',
+    primaryCtaLabel: 'Start searching',
+    ctaTitle: 'Get back to feeling your best.',
+    ctaDescription: 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.',
+    steps: PATIENT_STEPS,
+  },
+  provider: {
+    heroTitle: 'How to join BookPhysio as a verified provider',
+    heroDescription: 'Set up your practice profile, publish real availability, and start accepting patient bookings in one guided flow.',
+    primaryCtaHref: '/doctor-signup',
+    primaryCtaLabel: 'Join as a provider',
+    ctaTitle: "Grow your practice with India's best physio network.",
+    ctaDescription: 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.',
+    steps: PROVIDER_STEPS,
+  },
+} satisfies Record<
+  AudienceTab,
+  {
+    heroTitle: string
+    heroDescription: string
+    primaryCtaHref: string
+    primaryCtaLabel: string
+    ctaTitle: string
+    ctaDescription: string
+    steps: StepDefinition[]
+  }
+>
+
 export default function HowItWorksPage() {
-  const [activeTab, setActiveTab] = useState<'patient' | 'provider'>('patient')
-  const activeSteps = activeTab === 'patient' ? PATIENT_STEPS : PROVIDER_STEPS
-  const primaryCtaHref = activeTab === 'patient' ? '/search' : '/doctor-signup'
-  const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a provider'
+  const [activeTab, setActiveTab] = useState<AudienceTab>('patient')
+  const tabRefs = useRef<Record<AudienceTab, HTMLButtonElement | null>>({
+    patient: null,
+    provider: null,
+  })
+
+  const focusTab = (tab: AudienceTab) => {
+    setActiveTab(tab)
+    tabRefs.current[tab]?.focus()
+  }
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, tab: AudienceTab) => {
+    const currentIndex = TAB_ORDER.indexOf(tab)
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      focusTab(TAB_ORDER[(currentIndex + 1) % TAB_ORDER.length])
+      return
+    }
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      focusTab(TAB_ORDER[(currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length])
+      return
+    }
+
+    if (event.key === 'Home') {
+      event.preventDefault()
+      focusTab(TAB_ORDER[0])
+      return
+    }
+
+    if (event.key === 'End') {
+      event.preventDefault()
+      focusTab(TAB_ORDER[TAB_ORDER.length - 1])
+    }
+  }
 
   return (
     <>
       <Navbar locale="en" localeSwitchPath="/how-it-works" />
 
-      <main className="bg-[#FAFAFA] min-h-screen">
-        {/* Hero */}
-        <section className="bg-white border-b border-slate-200/70">
-          <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+      <main className="min-h-screen bg-[#FAFAFA]">
+        <section className="border-b border-slate-200/70 bg-white">
+          <div className="mx-auto max-w-[1142px] px-6 py-12 text-center lg:py-16">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#E6F4F3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
               How it works
             </div>
-            <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
-              How to book a physiotherapist <br className="hidden sm:inline" />
-              <span className="text-[#00766C]">online in India</span>
+            <h1 className="text-[30px] font-bold leading-tight tracking-tight text-[#1A1C29] lg:text-[40px]">
+              {TAB_CONTENT[activeTab].heroTitle}
             </h1>
-            <p className="mt-4 text-[15px] lg:text-[17px] leading-relaxed max-w-[680px] mx-auto text-slate-600">
-              Book a physio session in 4 clear steps with no calls, no waiting, and no guesswork about who to trust.
+            <p className="mx-auto mt-4 max-w-[680px] text-[15px] leading-relaxed text-slate-600 lg:text-[17px]">
+              {TAB_CONTENT[activeTab].heroDescription}
             </p>
 
-            {/* Tabs */}
-            <div className="mt-8 inline-flex items-center gap-1 rounded-full bg-slate-100 p-1 border border-slate-200">
+            <div
+              className="mt-8 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 p-1"
+              role="tablist"
+              aria-label="How it works audience"
+            >
               <button
+                id="tab-patient"
+                ref={(node) => {
+                  tabRefs.current.patient = node
+                }}
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'patient'}
+                aria-controls="panel-patient"
                 onClick={() => setActiveTab('patient')}
-                className={`py-2 px-5 rounded-full text-[13px] font-semibold transition-colors ${
+                onKeyDown={(event) => handleTabKeyDown(event, 'patient')}
+                className={`rounded-full px-5 py-2 text-[13px] font-semibold transition-colors ${
                   activeTab === 'patient'
                     ? 'bg-white text-[#00766C] shadow-sm'
                     : 'text-slate-500 hover:text-[#1A1C29]'
@@ -108,9 +202,17 @@ export default function HowItWorksPage() {
                 For Patients
               </button>
               <button
+                id="tab-provider"
+                ref={(node) => {
+                  tabRefs.current.provider = node
+                }}
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'provider'}
+                aria-controls="panel-provider"
                 onClick={() => setActiveTab('provider')}
-                className={`py-2 px-5 rounded-full text-[13px] font-semibold transition-colors ${
+                onKeyDown={(event) => handleTabKeyDown(event, 'provider')}
+                className={`rounded-full px-5 py-2 text-[13px] font-semibold transition-colors ${
                   activeTab === 'provider'
                     ? 'bg-white text-[#00766C] shadow-sm'
                     : 'text-slate-500 hover:text-[#1A1C29]'
@@ -122,57 +224,76 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* Steps */}
         <section className="py-12 lg:py-16">
-          <div className="max-w-[1142px] mx-auto px-6">
-            <div className="grid gap-4 lg:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {activeSteps.map((step, idx) => (
+          <div className="mx-auto max-w-[1142px] px-6">
+            {TAB_ORDER.map((tab) => {
+              const content = TAB_CONTENT[tab]
+
+              return (
                 <div
-                  key={step.title}
-                  className="relative rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
+                  key={tab}
+                  id={`panel-${tab}`}
+                  role="tabpanel"
+                  aria-labelledby={`tab-${tab}`}
+                  aria-hidden={activeTab !== tab}
+                  hidden={activeTab !== tab}
                 >
-                  <div className="flex items-start justify-between">
-                    <div
-                      className={`w-11 h-11 rounded-full flex items-center justify-center ${step.tint}`}
-                    >
-                      <step.icon className="w-5 h-5" strokeWidth={2.2} />
-                    </div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Step 0{idx + 1}
-                    </span>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+                    {content.steps.map((step) => (
+                      <div
+                        key={`${tab}-${step.title}`}
+                        className="relative rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:border-[#00766C]/30 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] lg:p-6"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className={`flex h-11 w-11 items-center justify-center rounded-full ${step.tint}`}>
+                            <step.icon className="h-5 w-5" strokeWidth={2.2} />
+                          </div>
+                          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                            Step {step.step}
+                          </span>
+                        </div>
+                        <h3 className="mt-4 text-[16px] font-semibold text-[#1A1C29]">{step.title}</h3>
+                        <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{step.text}</p>
+                      </div>
+                    ))}
                   </div>
-                  <h3 className="mt-4 text-[16px] font-semibold text-[#1A1C29]">{step.title}</h3>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{step.text}</p>
                 </div>
-              ))}
-            </div>
+              )
+            })}
           </div>
         </section>
 
-        {/* CTA */}
         <section className="pb-12 lg:pb-16">
-          <div className="max-w-[1142px] mx-auto px-6">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)] flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="max-w-xl text-center md:text-left">
-                <h2 className="text-[22px] lg:text-[26px] font-bold text-[#1A1C29] tracking-tight leading-tight">
-                  {activeTab === 'patient'
-                    ? 'Get back to feeling your best.'
-                    : "Grow your practice with India's best physio network."}
-                </h2>
-                <p className="mt-2 text-[14px] text-slate-600 leading-relaxed">
-                  {activeTab === 'patient'
-                    ? 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.'
-                    : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
-                </p>
-              </div>
-              <Link
-                href={primaryCtaHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#00766C] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_12px_rgba(0,118,108,0.18)] w-full md:w-auto"
-              >
-                {primaryCtaLabel}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+          <div className="mx-auto max-w-[1142px] px-6">
+            {TAB_ORDER.map((tab) => {
+              const content = TAB_CONTENT[tab]
+
+              return (
+                <div
+                  key={`${tab}-cta`}
+                  aria-hidden={activeTab !== tab}
+                  hidden={activeTab !== tab}
+                >
+                  <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] md:flex-row lg:p-10">
+                    <div className="max-w-xl text-center md:text-left">
+                      <h2 className="text-[22px] font-bold leading-tight tracking-tight text-[#1A1C29] lg:text-[26px]">
+                        {content.ctaTitle}
+                      </h2>
+                      <p className="mt-2 text-[14px] leading-relaxed text-slate-600">
+                        {content.ctaDescription}
+                      </p>
+                    </div>
+                    <Link
+                      href={content.primaryCtaHref}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#FF6B35] px-6 py-3 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(255,107,53,0.22)] transition-colors hover:bg-[#E0552A] md:w-auto"
+                    >
+                      {content.primaryCtaLabel}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </section>
       </main>

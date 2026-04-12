@@ -59,7 +59,7 @@ export default function ProofSection() {
               </div>
               <Link
                 href="/search"
-                className="text-[13px] font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 group"
+                className="group flex items-center gap-1 text-[13px] font-semibold text-[#00766C] hover:text-[#005A52]"
               >
                 Browse all
                 <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
@@ -67,12 +67,14 @@ export default function ProofSection() {
             </div>
 
             {providers.map((p) => (
-              <div
+              <Link
                 key={p.name}
-                className="group flex items-center gap-5 p-5 rounded-2xl border border-emerald-200 bg-emerald-50 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer"
+                href="/search"
+                aria-label={`Browse ${p.name} providers in ${p.city}`}
+                className="group flex items-center gap-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 transition-all duration-200 hover:shadow-lg hover:shadow-[#00766C]/5"
               >
                 {/* Avatar */}
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[16px] font-bold text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors shrink-0">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-[16px] font-bold text-slate-600 transition-colors group-hover:bg-[#E6F4F3] group-hover:text-[#00766C]">
                   {p.initials}
                 </div>
 
@@ -80,13 +82,13 @@ export default function ProofSection() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold text-slate-900 text-[15px]">{p.name}</span>
-                    <ShieldCheck size={14} className="text-indigo-400 shrink-0" />
+                    <ShieldCheck size={14} className="shrink-0 text-[#00766C]" />
                   </div>
                   <div className="text-[13px] text-slate-500">
                     {p.specialty} · {p.city}
                   </div>
                   <div className="flex items-center gap-1 mt-1">
-                    {'★★★★★'.split('').map((s, i) => (
+                    {'★★★★★'.split('').map((_, i) => (
                       <span key={i} className={`text-[11px] ${i < Math.floor(p.rating) ? 'text-amber-400' : 'text-slate-200'}`}>★</span>
                     ))}
                     <span className="text-[12px] text-slate-400 ml-1">{p.rating}</span>
@@ -96,9 +98,9 @@ export default function ProofSection() {
                 {/* Price + slot */}
                 <div className="text-right shrink-0">
                   <div className="text-[17px] font-bold text-slate-900">₹{p.fee}</div>
-                  <div className="text-[12px] font-semibold text-indigo-600 mt-1">{p.slot}</div>
+                  <div className="mt-1 text-[12px] font-semibold text-[#00766C]">{p.slot}</div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -125,7 +127,7 @@ export default function ProofSection() {
 
             <Link
               href="/search"
-              className="mt-4 w-full flex items-center justify-center gap-2 py-4 bg-slate-900 text-white rounded-xl font-semibold text-[15px] hover:bg-slate-800 transition-colors group"
+              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#FF6B35] py-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#E0552A]"
             >
               Search verified physios
               <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />

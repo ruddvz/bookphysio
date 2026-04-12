@@ -51,14 +51,14 @@ export default function FAQ() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-indigo-600 text-white rounded-xl font-semibold text-[14px] hover:bg-indigo-700 transition-colors group w-fit"
+                className="inline-flex w-fit items-center gap-2 rounded-full bg-[#FF6B35] px-5 py-3.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#E0552A] group"
               >
                 Browse providers
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/faq"
-                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-indigo-200 hover:text-indigo-700 transition-colors w-fit"
+                className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 px-5 py-3.5 text-[14px] font-semibold text-slate-700 transition-colors hover:border-[#B2D8D5] hover:text-[#00766C]"
               >
                 View all FAQs
               </Link>
@@ -75,7 +75,7 @@ export default function FAQ() {
                   className={cn(
                     'rounded-xl border transition-all duration-200',
                     isOpen
-                      ? 'border-indigo-200 bg-indigo-50/50'
+                      ? 'border-[#B2D8D5] bg-[#E6F4F3]/50'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   )}
                 >
@@ -87,18 +87,18 @@ export default function FAQ() {
                     aria-controls={`faq-a-${faq.id}`}
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                   >
-                    <span className={cn(
-                      'text-[15px] font-semibold transition-colors',
-                      isOpen ? 'text-indigo-700' : 'text-slate-900'
-                    )}>
+                      <span className={cn(
+                        'text-[15px] font-semibold transition-colors',
+                        isOpen ? 'text-[#00766C]' : 'text-slate-900'
+                      )}>
                       {faq.q}
                     </span>
-                    <span className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-lg border transition-all shrink-0',
-                      isOpen
-                        ? 'border-indigo-200 bg-indigo-100 text-indigo-700'
-                        : 'border-slate-200 bg-white text-slate-400'
-                    )}>
+                      <span className={cn(
+                        'flex h-7 w-7 items-center justify-center rounded-lg border transition-all shrink-0',
+                        isOpen
+                          ? 'border-[#B2D8D5] bg-[#E6F4F3] text-[#00766C]'
+                          : 'border-slate-200 bg-white text-slate-400'
+                      )}>
                       {isOpen ? <Minus size={14} /> : <Plus size={14} />}
                     </span>
                   </button>

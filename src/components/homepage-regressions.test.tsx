@@ -7,9 +7,9 @@ import HealthSystems from './HealthSystems'
 import HeroSection from './HeroSection'
 import HowItWorks from './HowItWorks'
 import Navbar from './Navbar'
-import ProofSection from './ProofSection'
 import Testimonials from './Testimonials'
-import TopSpecialties from './TopSpecialties'
+import { TopSpecialties } from './TopSpecialties'
+import Home from '@/app/page'
 import { SPECIALTIES } from '@/lib/specialties'
 
 vi.mock('next/image', () => ({
@@ -21,26 +21,18 @@ vi.mock('next/image', () => ({
 }))
 
 describe('Homepage regressions', () => {
-  it('renders named homepage regions for assistive tech', () => {
-    render(
-      <>
-        <HeroSection />
-        <ProofSection />
-        <TopSpecialties />
-        <HowItWorks />
-        <HealthSystems />
-        <Testimonials />
-        <FAQ />
-      </>
-    )
+  it('renders the current homepage stack with named regions for assistive tech', () => {
+    render(<Home />)
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /for providers/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /browse physiotherapists by city/i })).toBeInTheDocument()
   }, 15000)
 
   it('keeps the hero above the fold and leaves trust stats readable', () => {
@@ -132,7 +124,7 @@ describe('Homepage regressions', () => {
 
     for (const cta of specialtyCtas) {
       expect(cta.className).toContain('text-slate-400')
-      expect(cta.className).toContain('group-hover:text-indigo-600')
+      expect(cta.className).toContain('group-hover:text-[#00766C]')
     }
 
     expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(SPECIALTIES.length + 1)

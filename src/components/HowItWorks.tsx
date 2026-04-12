@@ -7,28 +7,28 @@ const steps = [
     icon: Search,
     title: 'Search',
     desc: 'Start with your city or what is bothering you, like back pain or a knee injury.',
-    color: 'bg-indigo-50 text-indigo-600',
+    color: 'bg-[#E6F4F3] text-[#00766C]',
   },
   {
     num: '02',
     icon: SlidersHorizontal,
     title: 'Compare',
     desc: 'Check each physiotherapist\u2019s credentials, fees and whether they offer home visits.',
-    color: 'bg-violet-50 text-violet-600',
+    color: 'bg-[#EAF7F5] text-[#0F766E]',
   },
   {
     num: '03',
     icon: CalendarCheck,
     title: 'Book',
     desc: 'Pick a time that works, confirm with a mobile OTP, and get a confirmation message.',
-    color: 'bg-teal-50 text-teal-600',
+    color: 'bg-[#FEE9DD] text-[#C4532A]',
   },
   {
     num: '04',
     icon: HeartPulse,
     title: 'Start your session',
     desc: 'Meet your physiotherapist at the clinic or at home, and focus on getting better.',
-    color: 'bg-rose-50 text-rose-600',
+    color: 'bg-[#FFF1EC] text-[#FF6B35]',
   },
 ]
 
@@ -64,7 +64,7 @@ export default function HowItWorks() {
                 )}
 
                 {/* Step number pill above icon */}
-                <div className="bg-white border-2 border-slate-100 text-slate-400 font-bold text-[11px] px-3 py-1 rounded-full mb-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative z-10 group-hover:border-indigo-200 group-hover:text-indigo-600 transition-colors">
+                <div className="relative z-10 mb-3 rounded-full border-2 border-slate-100 bg-white px-3 py-1 text-[11px] font-bold text-slate-400 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-colors group-hover:border-[#B2D8D5] group-hover:text-[#00766C]">
                   Step {num}
                 </div>
 
@@ -76,7 +76,7 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-slate-900 text-[18px] font-bold mb-3 group-hover:text-indigo-600 transition-colors">
+                <h3 className="mb-3 text-[18px] font-bold text-slate-900 transition-colors group-hover:text-[#00766C]">
                   {title}
                 </h3>
                 <p className="text-slate-500 text-[14px] leading-relaxed max-w-[220px]">{desc}</p>
@@ -88,11 +88,11 @@ export default function HowItWorks() {
         {/* Bottom trust bar */}
         <div className="mt-20 flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-5 rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/20 max-w-5xl mx-auto">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
-            {[
-              { icon: ShieldCheck, text: 'IAP Verified', color: 'text-indigo-600' },
-              { icon: CalendarCheck, text: 'Instant Confirmation', color: 'text-teal-600' },
-              { icon: Search, text: 'No Hidden Fees', color: 'text-slate-500' },
-            ].map(({ icon: Icon, text, color }) => (
+              {[
+                { icon: ShieldCheck, text: 'IAP Verified', color: 'text-[#00766C]' },
+                { icon: CalendarCheck, text: 'Instant Confirmation', color: 'text-[#0F766E]' },
+                { icon: Search, text: 'No Hidden Fees', color: 'text-[#FF6B35]' },
+              ].map(({ icon: Icon, text, color }) => (
               <div key={text} className={`flex items-center gap-2 text-[14px] font-semibold ${color}`}>
                 <Icon size={16} />
                 {text}
@@ -101,7 +101,7 @@ export default function HowItWorks() {
           </div>
           <Link
             href="/search"
-            className="flex items-center justify-center gap-2 px-6 py-3.5 bg-indigo-600 text-white rounded-full text-[14px] font-bold hover:bg-indigo-700 hover:-translate-y-0.5 shadow-lg shadow-indigo-600/30 transition-all group shrink-0 w-full md:w-auto"
+            className="group flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-[#FF6B35] px-6 py-3.5 text-[14px] font-bold text-white shadow-lg shadow-[#FF6B35]/25 transition-all hover:-translate-y-0.5 hover:bg-[#E0552A] md:w-auto"
           >
             Start searching
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
