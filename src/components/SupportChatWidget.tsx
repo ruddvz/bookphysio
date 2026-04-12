@@ -39,7 +39,7 @@ export function SupportChatWidget() {
 
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [lastSeenCount, setLastSeenCount] = useState(0)
+  const [lastSeenCount, setLastSeenCount] = useState(1)
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const inputId = useId()
@@ -157,7 +157,7 @@ export function SupportChatWidget() {
               </Link>
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={handleToggle}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 aria-label="Minimize chat"
               >
