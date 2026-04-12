@@ -52,7 +52,7 @@ export default function FAQ() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-indigo-600 text-white rounded-xl font-semibold text-[14px] hover:bg-indigo-700 transition-colors group w-fit"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-[#00766C] text-white rounded-xl font-semibold text-[14px] hover:bg-[#005A52] transition-colors group w-fit"
               >
                 Browse providers
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -88,7 +88,7 @@ export default function FAQ() {
                   className={cn(
                     'rounded-xl border transition-all duration-200',
                     isOpen
-                      ? 'border-indigo-200 bg-indigo-50/50'
+                      ? 'border-[#00766C]/20 bg-[#E6F4F3]/40'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   )}
                 >
@@ -102,14 +102,14 @@ export default function FAQ() {
                   >
                     <span className={cn(
                       'text-[15px] font-semibold transition-colors',
-                      isOpen ? 'text-indigo-700' : 'text-slate-900'
+                      isOpen ? 'text-[#00766C]' : 'text-slate-900'
                     )}>
                       {faq.q}
                     </span>
                     <span className={cn(
                       'flex h-7 w-7 items-center justify-center rounded-lg border transition-all shrink-0',
                       isOpen
-                        ? 'border-indigo-200 bg-indigo-100 text-indigo-700'
+                        ? 'border-[#00766C]/20 bg-[#E6F4F3] text-[#00766C]'
                         : 'border-slate-200 bg-white text-slate-400'
                     )}>
                       {isOpen ? <Minus size={14} /> : <Plus size={14} />}

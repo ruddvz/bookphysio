@@ -65,38 +65,30 @@ export default function HowItWorks() {
         {/* Steps sequence */}
         <div className="relative mt-8">
           {/* Desktop connecting line — teal gradient */}
-          <div className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-[#E6F4F3] via-[#00766C]/30 to-[#E6F4F3] -z-10" />
+          <div className="hidden lg:block absolute top-[36px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-[#E6F4F3] via-[#00766C]/30 to-[#E6F4F3] -z-10" />
 
           <div className="grid gap-8 lg:gap-4 lg:grid-cols-4">
-            {steps.map(({ num, icon: Icon, title, desc, color, accent }, i) => (
+            {steps.map(({ num, icon: Icon, title, desc, color }) => (
               <div
                 key={num}
-                className="relative group flex flex-col items-center text-center px-2"
+                className="relative group flex flex-col bg-white rounded-2xl border border-slate-200 p-6 hover:border-[#00766C]/30 hover:shadow-lg hover:shadow-[#00766C]/5 transition-all duration-200 overflow-hidden"
               >
-                {/* Desktop arrow */}
-                {i < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-[36px] -right-[12px] z-0 text-[#00766C]/40">
-                    <ArrowRight size={20} />
-                  </div>
-                )}
+                {/* Teal left accent */}
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-[#00766C] opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                {/* Step number pill */}
-                <div className={`bg-white border-2 border-slate-100 text-slate-400 font-bold text-[11px] px-3 py-1 rounded-full mb-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative z-10 transition-colors ${accent}`}>
+                {/* Step number */}
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-300 mb-4 group-hover:text-[#00766C]/60 transition-colors">
                   Step {num}
                 </div>
 
-                {/* Icon circle */}
-                <div className={`w-[88px] h-[88px] rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 relative z-10 bg-white group-hover:-translate-y-1 transition-transform`}>
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center ${color}`}>
-                    <Icon size={24} />
-                  </div>
+                {/* Icon */}
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${color}`}>
+                  <Icon size={22} />
                 </div>
 
                 {/* Content */}
-                <h3 className="text-slate-900 text-[18px] font-bold mb-3 group-hover:text-[#00766C] transition-colors">
-                  {title}
-                </h3>
-                <p className="text-slate-500 text-[14px] leading-relaxed max-w-[220px]">{desc}</p>
+                <h3 className="text-slate-900 text-[17px] font-bold mb-2 group-hover:text-[#00766C] transition-colors">{title}</h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>

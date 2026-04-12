@@ -80,7 +80,7 @@ export default function TopSpecialties() {
 
                 {/* Content */}
                 <div className="flex-1">
-                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-indigo-700', s.tint.text)}>
+                  <h3 className="text-[16px] font-bold mb-1 text-slate-900 group-hover:text-[#00766C] transition-colors">
                     {s.label}
                   </h3>
                   <p className="text-slate-500 text-[13px] leading-relaxed">{s.tagline}</p>

@@ -59,12 +59,12 @@ export default function Testimonials() {
             </div>
 
             {/* Female physio character */}
-            <div className="hidden lg:block absolute -bottom-24 right-4 pointer-events-none select-none">
+            <div className="hidden lg:flex justify-end mt-6 pointer-events-none select-none">
               <Image
                 src="/images/physio-female.png"
                 alt=""
-                width={170}
-                height={260}
+                width={150}
+                height={230}
                 className="object-contain object-bottom"
                 aria-hidden="true"
               />
