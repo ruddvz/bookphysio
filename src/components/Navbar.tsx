@@ -53,6 +53,7 @@ export default function Navbar({
   const effectiveLocale = locale ?? 'en'
   const searchHref = effectiveLocale === 'hi' ? '/hi/search' : '/search'
   const loginHref  = effectiveLocale === 'hi' ? '/hi/login'  : '/login'
+  const signupHref = effectiveLocale === 'hi' ? '/hi/signup' : '/signup'
   const howItWorksHref = locale ? getLocalizedStaticHref(locale, '/how-it-works') : '/how-it-works'
 
   useEffect(() => {
@@ -198,7 +199,7 @@ export default function Navbar({
                 <LocaleSwitcher locale={locale} path={localeSwitchPath} />
               ) : null}
               <Link
-                href="/signup"
+                href={signupHref}
                 className="px-4 py-2 text-[14px] font-medium text-slate-600 hover:text-indigo-700 transition-colors"
               >
                 Sign up
@@ -329,7 +330,7 @@ export default function Navbar({
           {/* Auth CTAs */}
           <div className="relative z-10 shrink-0 px-5 pb-10 pt-3 space-y-3">
             <Link
-              href="/signup"
+              href={signupHref}
               onClick={() => setMobileOpen(false)}
               className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
               style={{

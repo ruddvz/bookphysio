@@ -226,7 +226,8 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
     }
   }
 
-  return {
+  if (variant === 'provider') {
+    return {
     eyebrow: 'Clinical Copilot',
     title: 'Evidence-backed support for physiotherapists.',
     description:
@@ -285,6 +286,7 @@ function getVariantCopy(variant: AIChatVariant): VariantCopy {
     ],
     footerNote: 'Built to look and feel like a premium clinical copilot, not a generic chat widget.',
     contextLabel: 'Clinical decision support and research briefings',
+    }
   }
 
   // PAI variant

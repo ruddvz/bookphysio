@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getDemoAppointments } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import { createAppointmentSchema } from '@/lib/validations/booking'
+import { checkBookingAnomaly } from '@/lib/booking/anomaly-detection'
 import {
   bookingIpRatelimit,
   bookingUserRatelimit,
@@ -326,6 +327,18 @@ export async function POST(request: NextRequest) {
       return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
     }
   }
+
+  // Fire-and-forget anomaly detection — never blocks the response
+  checkBookingAnomaly({
+    appointmentId: appointment.id as string,
+    patientId: user.id,
+    providerId: slot.provider_id as string,
+    feeInr: feeInr,
+    visitType: visit_type,
+    bookedAt: new Date().toISOString(),
+  }).catch(() => {
+    // Intentionally swallowed — anomaly detection must never affect the booking
+  })
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
 }

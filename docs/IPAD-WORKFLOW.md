@@ -84,9 +84,9 @@ Go to your repo → Settings → Secrets and variables → Actions. If you see a
 
 | Trigger | What runs | Result |
 |---------|-----------|--------|
-| Push to `main` | Lint → Type Check → Build → Deploy | Production at bookphysio.in |
-| PR to `main` | Lint → Type Check → Build + Preview Deploy | Preview URL posted on PR |
-| Manual dispatch | Deploy only | Production deploy |
+| Push to `main` | `ci.yml` (lint, type-check, build) and `deploy.yml` (production deploy) | Production at bookphysio.in |
+| PR to `main` | `ci.yml` (lint, type-check, build) and `preview.yml` (preview deploy) | Preview URL posted on PR |
+| Manual dispatch | `deploy.yml` only | Production deploy |
 
 ---
 

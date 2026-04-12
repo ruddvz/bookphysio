@@ -134,32 +134,39 @@ export async function POST(request: NextRequest) {
 
     // Best-effort rollback so a half-onboarded provider doesn't linger.
     // Order matters: child rows (specialties, locations) before parent (providers).
+    // Only delete rows that were created in THIS request (tracked by the boolean flags).
     if (specialtiesLinked) {
-      await supabaseAdmin
+      const { error: specRollbackError } = await supabaseAdmin
         .from('provider_specialties')
         .delete()
         .eq('provider_id', user.id)
-        .then(undefined, (err: unknown) => console.error('Rollback provider_specialties failed:', err))
+      if (specRollbackError) console.error('Rollback provider_specialties failed:', specRollbackError)
     }
     if (locationCreated) {
-      await supabaseAdmin
+      const { error: locRollbackError } = await supabaseAdmin
         .from('locations')
         .delete()
         .eq('provider_id', user.id)
-        .then(undefined, (err: unknown) => console.error('Rollback locations failed:', err))
+      if (locRollbackError) console.error('Rollback locations failed:', locRollbackError)
     }
     if (providerCreated) {
-      await supabaseAdmin
+      const { error: provRollbackError } = await supabaseAdmin
         .from('providers')
         .delete()
         .eq('id', user.id)
-        .then(undefined, (err: unknown) => console.error('Rollback providers failed:', err))
+      if (provRollbackError) console.error('Rollback providers failed:', provRollbackError)
     }
 
-    const message = error instanceof z.ZodError
-      ? 'Some onboarding fields are invalid. Please review and try again.'
-      : 'Onboarding failed. Please try again or contact support.'
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Some onboarding fields are invalid. Please review and try again.' },
+        { status: 400 },
+      )
+    }
 
-    return NextResponse.json({ error: message }, { status: 400 })
+    return NextResponse.json(
+      { error: 'Onboarding failed. Please try again or contact support.' },
+      { status: 500 },
+    )
   }
 }

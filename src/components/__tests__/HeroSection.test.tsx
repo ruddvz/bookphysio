@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import HeroSection from '../HeroSection'
 
 const pushMock = vi.fn()
@@ -9,6 +9,10 @@ vi.mock('next/navigation', () => ({
 }))
 
 describe('HeroSection', () => {
+  beforeEach(() => {
+    pushMock.mockReset()
+  })
+
   it('renders the search bar', () => {
     const { getByPlaceholderText } = render(<HeroSection />)
     // getByPlaceholderText throws if not found — no assertion needed; call itself is the assertion

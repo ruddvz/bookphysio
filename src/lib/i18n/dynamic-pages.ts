@@ -12,7 +12,7 @@ const genericLoginInboxBodyHi: (email: string) => string = () =>
 
 export const SEARCH_COPY = {
   en: {
-    breadcrumbRoot: 'Search',
+    breadcrumbRoot: 'Home',
     headingLoading: 'Sourcing Top Experts',
     headingResults: (total: number) => `${total} Top Experts Found`,
     headingEmpty: 'Search Results',
@@ -35,9 +35,12 @@ export const SEARCH_COPY = {
       '"Connecting with the right therapist is the first step towards pain-free living."',
     demoPreview: 'Demo preview',
     demoPreviewNote: 'These cards show how live results will look once providers match.',
+    suggestedSearchesLabel: 'Try searching for',
+    resultSummary: (shown: number, total: number, location: string) =>
+      `Showing ${shown} of ${total} physiotherapists in ${location}`,
   },
   hi: {
-    breadcrumbRoot: 'खोजें',
+    breadcrumbRoot: 'होम',
     headingLoading: 'शीर्ष विशेषज्ञ खोजे जा रहे हैं',
     headingResults: (total: number) => `${total} शीर्ष विशेषज्ञ मिले`,
     headingEmpty: 'खोज परिणाम',
@@ -59,6 +62,9 @@ export const SEARCH_COPY = {
       '"सही थेरेपिस्ट से जुड़ना दर्द-मुक्त जीवन की पहली सीढ़ी है।"',
     demoPreview: 'डेमो प्रीव्यू',
     demoPreviewNote: 'ये कार्ड दिखाते हैं कि जब प्रदाता मेल खाएंगे तो लाइव परिणाम कैसे दिखेंगे।',
+    suggestedSearchesLabel: 'यह खोजें',
+    resultSummary: (shown: number, total: number, location: string) =>
+      `${location} में ${total} में से ${shown} फिजियोथेरेपिस्ट दिखाए जा रहे हैं`,
   },
 } as const satisfies Record<StaticLocale, {
   breadcrumbRoot: string
@@ -79,6 +85,8 @@ export const SEARCH_COPY = {
   closingQuote: string
   demoPreview: string
   demoPreviewNote: string
+  suggestedSearchesLabel: string
+  resultSummary: (shown: number, total: number, location: string) => string
 }>
 
 // ─── Auth Pages ───────────────────────────────────────────────────────────────

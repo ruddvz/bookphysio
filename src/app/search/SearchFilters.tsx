@@ -75,7 +75,10 @@ function FilterPill({
   return (
     <div className="relative" ref={containerRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className={cn(
           "flex items-center gap-2 h-10 px-4 rounded-full text-[13px] font-semibold transition-all duration-200 whitespace-nowrap border",
           isActive
@@ -89,8 +92,10 @@ function FilterPill({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E7EB] rounded-xl shadow-lg shadow-black/8 z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+        <div role="listbox" aria-label={label} className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E7EB] rounded-xl shadow-lg shadow-black/8 z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
           <button
+            role="option"
+            aria-selected={!value}
             onClick={() => { onChange(''); setIsOpen(false) }}
             className={cn(
               "w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors flex items-center justify-between",
@@ -105,6 +110,8 @@ function FilterPill({
             {options.map((opt) => (
               <button
                 key={opt}
+                role="option"
+                aria-selected={value === opt}
                 onClick={() => { onChange(opt); setIsOpen(false) }}
                 className={cn(
                   "w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors flex items-center justify-between",

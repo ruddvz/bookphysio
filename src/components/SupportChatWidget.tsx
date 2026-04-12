@@ -80,7 +80,9 @@ export function SupportChatWidget() {
 
   function handleToggle() {
     setIsOpen((prev) => {
-      if (!prev) setLastSeenCount(messages.length)
+      // Update lastSeenCount both when opening AND closing, so the badge
+      // only shows for messages that arrive while the chat is closed.
+      setLastSeenCount(messages.length)
       return !prev
     })
   }
@@ -129,6 +131,7 @@ export function SupportChatWidget() {
             <div className="flex items-center gap-2">
               <Link
                 href="/patient/motio"
+                aria-label="Open full AI chat"
                 className="flex h-8 w-8 items-center justify-center rounded-xl text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 title="Open full AI chat"
               >
@@ -271,7 +274,7 @@ export function SupportChatWidget() {
         )}
         {hasNewMessage && !isOpen && (
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-            1
+            {messages.length - lastSeenCount}
           </span>
         )}
       </button>

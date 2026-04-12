@@ -17,6 +17,8 @@ const STATIC_ASSETS = [
   '/manifest-patient.json',
   '/icon-192.png',
   '/icon-512.png',
+  '/icon-192-maskable.png',
+  '/icon-512-maskable.png',
   '/icon-admin-192.png',
   '/icon-admin-512.png',
   '/icon-patient-192.png',
@@ -56,6 +58,9 @@ self.addEventListener('fetch', (event) => {
   // Never intercept API or auth — let the network handle it.
   if (url.pathname.startsWith('/api/')) return
   if (url.pathname.startsWith('/auth/')) return
+
+  // Only handle same-origin requests — never intercept cross-origin fetches.
+  if (url.origin !== self.location.origin) return
 
   // HTML navigations: network-first so deploys take effect immediately.
   if (request.mode === 'navigate') {

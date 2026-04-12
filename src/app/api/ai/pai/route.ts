@@ -26,12 +26,12 @@ const PAI_KNOWLEDGE = `
   EVIDENCE-BASED CLINICAL REFERENCE (2021–2024):
 
   MUSCULOSKELETAL CONDITIONS:
-  [K1] Frozen Shoulder (Adhesive Capsulitis): Staged condition (freezing → frozen → thawing). Physiotherapy: pendulum exercises, passive ROM, joint mobilisation, heat therapy. NSAIDs and corticosteroid injections may be used adjunctively. (BJSM, 2022)
+  [K1] Frozen Shoulder (Adhesive Capsulitis): Staged condition (freezing → frozen → thawing). Physiotherapy: pendulum exercises, passive ROM, joint mobilisation, heat therapy. (BJSM, 2022)
   [K2] Rotator Cuff Tears (Partial): Conservative management preferred for partial tears. Progressive resistance training targeting rotator cuff and scapular stabilisers reduces pain and restores function. (Cochrane, 2023)
   [K3] Low Back Pain (Non-specific): First-line: active exercise, manual therapy, and patient education. Bed rest is NOT recommended. Core stabilisation + McKenzie approach effective for L4-L5 levels. (J. Physical Therapy Science, 2021)
   [K4] Patellofemoral Pain Syndrome: VMO-targeted quad exercises, hip abductor/external rotator strengthening, patellar taping, and gait retraining. (JOSPT, 2023)
   [K5] Achilles Tendinopathy: Eccentric calf loading (Alfredson protocol) is first-line. Heavy slow resistance training is an effective alternative. Avoid complete rest. (BJSM, 2022)
-  [K6] Lateral Epicondylitis (Tennis Elbow): Eccentric wrist extensor exercises, dry needling, and gradual load progression. Avoid cortisone beyond 3 months. (AJSM, 2023)
+  [K6] Lateral Epicondylitis (Tennis Elbow): Eccentric wrist extensor exercises, dry needling, and gradual load progression. (AJSM, 2023)
   [K7] ACL Post-Op Rehabilitation: Phase 1 (0–6 weeks): quad sets, SLR, cryotherapy, ROM. Phase 2 (6–12 weeks): closed kinetic chain (squats, leg press). Phase 3 (3–6 months): sport-specific drills. Return-to-run: minimum 3 months. (JOSPT, 2023)
 
   RED FLAG SYMPTOMS (refer urgently):
