@@ -1,6 +1,6 @@
 # bookphysio.in — Manual Release Checklist
 
-Updated: 2026-04-08
+Updated: 2026-04-12
 
 Only the tasks that require external dashboard access are listed here.
 
@@ -18,14 +18,87 @@ If you want the shortest path, do only the `Required Now` section first.
 
 ## Required Now
 
-### 1. Deploy the latest verified repo state
+### 1. Rotate the OTP cookie secret
+
+Reason: `OTP_PENDING_COOKIE_SECRET` was pasted into chat, so it should be treated as exposed.
+
+How to do it:
+1. Generate a fresh secret:
+   ```bash
+   openssl rand -base64 32
+   ```
+2. In Vercel → **Project Settings** → **Environment Variables**, replace the current `OTP_PENDING_COOKIE_SECRET`.
+3. Save it for **Production** at minimum, and usually **Preview** + **Development** too.
+4. Do not reuse the previously pasted value anywhere else.
+
+### 2. Confirm the Vercel OTP/auth env vars
+
+Reason: `OTP_PENDING_COOKIE_SECRET` alone is not enough for production OTP.
+
+Required for production OTP:
+
+- `OTP_PENDING_COOKIE_SECRET`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_SITE_URL`
+
+Optional, depending on enabled features:
+
+- `DEMO_COOKIE_SECRET` — required anywhere demo mode is enabled
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `ENABLE_PUBLIC_PREVIEW_GATE`
+- `PREVIEW_TOKEN_SECRET`
+- `PREVIEW_PASSWORD`
+
+How to do it:
+1. Open Vercel → **Project Settings** → **Environment Variables**.
+2. Confirm each required variable exists with the correct value.
+3. Confirm each variable is assigned to the right environments:
+   - **Production** required
+   - **Preview** recommended
+   - **Development** recommended
+4. Confirm the Supabase URL, anon key, and service-role key all belong to the same Supabase project.
+5. Confirm `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_SITE_URL` both match the live production origin.
+
+### 3. Configure Supabase phone auth with MSG91
+
+Reason: the repo sends OTPs through Supabase Auth (`supabase.auth.signInWithOtp()`). The Next.js app does **not** talk to MSG91 directly — Supabase handles SMS delivery using the MSG91 credentials you configure in the dashboard.
+
+**Step-by-step MSG91 setup in Supabase:**
+
+1. Open Supabase → **Authentication** → **Providers** → **Phone**
+2. Toggle **Enable Phone provider** to ON
+3. Under **SMS Provider**, select **MSG91** from the dropdown
+4. Fill in these three fields:
+   - **Auth Key** — get this from [MSG91 Dashboard](https://msg91.com/) → API Keys
+   - **Template ID** — your DLT-approved OTP template ID (must contain `{{otp}}` placeholder)
+   - **Sender ID** — your DLT-approved 6-character sender header (e.g., `BKPHYS`)
+5. Click **Save**
+6. Click **Send test OTP** — enter a real `+91` number and confirm the SMS arrives
+7. Open **Authentication** → **URL Configuration**:
+   - **Site URL**: `https://bookphysio.in`
+   - **Redirect URLs**: add `https://bookphysio.in/**`
+
+> **DLT compliance (India):** All SMS templates must be pre-registered with TRAI via your telecom operator's DLT portal. The template must have `{{otp}}` exactly matching Supabase's placeholder format. MSG91 handles the DLT header/template verification automatically if your account is DLT-compliant.
+
+> **Important:** If OTP SMS is not arriving in production, the fix is in the Supabase dashboard (Auth → Providers → Phone), not in the repo code. The app never sees MSG91 credentials.
+
+### 4. Deploy the latest verified repo state
 
 Reason: the local repo now contains the latest preview hardening, OTP phone-privacy changes, and the next deploy fix for the empty-state demo-session `204` response. Those are verified locally but are not live until the latest commit is pushed.
 
 Before pushing, confirm these Vercel environment settings:
 
-- `DEMO_COOKIE_SECRET` is set
 - `OTP_PENDING_COOKIE_SECRET` is set
+- `NEXT_PUBLIC_SUPABASE_URL` is set
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` is set
+- `SUPABASE_SERVICE_ROLE_KEY` is set
+- `NEXT_PUBLIC_APP_URL` is set
+- `NEXT_PUBLIC_SITE_URL` is set
+- `DEMO_COOKIE_SECRET` is set if demo mode is enabled
 - `ENABLE_PUBLIC_PREVIEW_GATE` is left unset unless you intentionally want `/preview` reachable on production
 - `PREVIEW_TOKEN_SECRET` is only required if you intentionally enable public preview access
 
@@ -41,7 +114,8 @@ How to do it:
 2. Commit them.
 3. Push the branch that should trigger production deploy.
 4. Watch the Vercel production deployment until it finishes successfully.
-5. Confirm the live apex site reflects the new auth/privacy behavior.
+5. Trigger a fresh production redeploy after any Vercel env change so the running deployment picks up the new values.
+6. Confirm the live apex site reflects the new auth/privacy behavior.
 
 If the deploy fails:
 
@@ -49,7 +123,7 @@ If the deploy fails:
 - Copy the exact Vercel error.
 - Bring it back here and I can help you fix it.
 
-### 2. Add real production provider data
+### 5. Add real production provider data
 
 Reason: the site is technically live, but it is not functionally useful if `/api/providers` still returns zero real providers.
 
@@ -68,7 +142,7 @@ Minimum outcome needed before launch:
 
 Do not run the current `supabase/seed.sql` on production unless you explicitly want mock/demo-like records there.
 
-### 3. Run a production smoke pass
+### 6. Run a production smoke pass
 
 Reason: after the deploy and provider data update, you need one short live validation pass on the apex domain.
 
@@ -83,6 +157,13 @@ Check these exact flows:
 7. Provider dashboard loads for a real provider account
 8. `/preview` stays blocked unless you intentionally enabled it
 
+If the OTP flow fails, classify it before changing anything:
+
+- `503` immediately on send or verify → missing env/config, stale deploy, or missing OTP cookie secret
+- OTP request succeeds but no SMS arrives → Supabase phone-provider or SMS setup issue
+- SMS arrives but verify fails → cookie/session/domain mismatch, or wrong Supabase project keys
+- Works locally but not on production → Vercel env scope or redeploy issue
+
 If any of those fail:
 
 - Stop at the first failing step.
@@ -93,7 +174,7 @@ If any of those fail:
 
 ## Optional But Recommended After Release
 
-### 4. Enable notification cleanup cron
+### 7. Enable notification cleanup cron
 
 Migration `027` is already applied, so this can be done any time after launch.
 
@@ -106,7 +187,7 @@ If `pg_cron` is not enabled yet:
 2. Enable `pg_cron`
 3. Re-run the SQL above
 
-### 5. Add a JWT role custom claim hook
+### 8. Add a JWT role custom claim hook
 
 Reason: removes one DB round-trip on authenticated requests.
 
@@ -121,7 +202,7 @@ This is a performance improvement, not a release blocker.
 
 ## External Follow-Up
 
-### 6. Add the `www` DNS record
+### 9. Add the `www` DNS record
 
 At your domain registrar, add:
 
@@ -136,7 +217,100 @@ Or move DNS fully to Vercel nameservers if you want Vercel to manage this.
 ## Fastest Real-World Order
 
 1. Confirm the required Vercel env vars for the new auth/privacy deploy.
-2. Deploy the latest verified repo state.
-3. Add real production provider data.
-4. Run the production smoke pass.
-5. Do notification cleanup cron, JWT role claims, and `www` DNS later.
+2. Confirm Supabase phone auth (MSG91) is live and tested in the dashboard.
+3. Deploy the latest verified repo state.
+4. Add real production provider data.
+5. Run the production smoke pass.
+6. Do notification cleanup cron, JWT role claims, and `www` DNS later.
+
+---
+
+## Appendix A: How to Generate Cookie Secrets
+
+All three cookie secrets use the same generation command but serve different purposes. **Each must be unique — never reuse the same value for multiple secrets.**
+
+### OTP Pending Cookie Secret (`OTP_PENDING_COOKIE_SECRET`)
+
+**Purpose:** Encrypts the phone number in a server-side cookie during OTP verification flows, keeping raw mobile numbers out of client-side storage.
+
+**How the code uses it:** `src/lib/auth/pending-otp-cookie.ts` derives an AES-256-GCM key from this secret and encrypts/decrypts the pending OTP payload (phone, flow, flowId, name, returnTo).
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `OTP_PENDING_COOKIE_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** If unset, the code falls back to `DEMO_COOKIE_SECRET`. If both are unset in production, OTP send returns `503 "OTP configuration is unavailable"`.
+
+---
+
+### Demo Cookie Secret (`DEMO_COOKIE_SECRET`)
+
+**Purpose:** Signs demo session cookies with HMAC-SHA256. Required whenever demo mode (`NEXT_PUBLIC_ENABLE_DEMO=true`) is active.
+
+**How the code uses it:** `src/lib/demo/session.ts` uses this as the HMAC signing key for the `bp-demo-session` cookie. The cookie contains role/userId/session metadata signed to prevent tampering.
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `DEMO_COOKIE_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** If unset, demo cookie signing fails gracefully — demo sessions will not work but the app continues to function for real auth.
+
+---
+
+### Preview Token Secret (`PREVIEW_TOKEN_SECRET`)
+
+**Purpose:** Signs the preview access token cookie with HMAC-SHA256. Only needed if you enable the public preview gate (`ENABLE_PUBLIC_PREVIEW_GATE=true`).
+
+**How the code uses it:** `src/lib/preview/token.ts` signs a timestamp-based preview token. The signed cookie (`preview_token`) grants access to preview-gated routes for 30 days.
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `PREVIEW_TOKEN_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** Falls back to `DEMO_COOKIE_SECRET` if set. If neither is available, preview token validation always returns false and preview access is denied.
+
+**Related env var:** You also need `PREVIEW_PASSWORD` (the shared password testers enter on the `/preview` page) and `ENABLE_PUBLIC_PREVIEW_GATE=true` to activate the gate.
+
+---
+
+### Quick Reference: All Cookie Secrets at a Glance
+
+```bash
+# Generate all three in one go (run each line, copy each output separately):
+echo "OTP_PENDING_COOKIE_SECRET=$(openssl rand -base64 32)"
+echo "DEMO_COOKIE_SECRET=$(openssl rand -base64 32)"
+echo "PREVIEW_TOKEN_SECRET=$(openssl rand -base64 32)"
+```
+
+| Variable | Required | Purpose | Fallback |
+|----------|----------|---------|----------|
+| `OTP_PENDING_COOKIE_SECRET` | ✅ Always | Encrypts phone number in OTP flow cookie | `DEMO_COOKIE_SECRET` → `local-otp-cookie-secret` (dev only) |
+| `DEMO_COOKIE_SECRET` | Only if demo mode is on | Signs demo session cookies | None — demo fails gracefully |
+| `PREVIEW_TOKEN_SECRET` | Only if preview gate is on | Signs preview access tokens | `DEMO_COOKIE_SECRET` |
+| `PREVIEW_PASSWORD` | Only if preview gate is on | Shared password for `/preview` page | None |
+
+> **Security:** Never reuse the same value for different secrets. Never commit secrets to the repo. If a secret was ever pasted in chat or a public place, rotate it immediately using the generation commands above.

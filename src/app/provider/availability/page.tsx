@@ -12,17 +12,17 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
-  cloneProviderSchedule,
-  DEFAULT_PROVIDER_SCHEDULE,
+  cloneProviderMultiSlotSchedule,
+  DEFAULT_PROVIDER_MULTI_SLOT_SCHEDULE,
   type DayName,
-  deriveProviderScheduleFromSlots,
-  getAmbiguousProviderScheduleDays,
+  deriveProviderMultiSlotScheduleFromSlots,
   getProviderAvailabilityWindow,
   PROVIDER_AVAILABILITY_DAYS,
   PROVIDER_SLOT_DURATIONS,
   type ProviderAvailabilitySlot,
-  type ProviderSchedule,
+  type ProviderMultiSlotSchedule,
   timeToMinutes,
+  validateProviderSchedule,
 } from '@/lib/provider-availability'
 import {
   PageHeader,
@@ -32,73 +32,6 @@ import {
 
 const AVAILABILITY_WEEKS = 4
 
-interface TimeSlot {
-  start: string
-  end: string
-}
-
-type MultiSlotSchedule = Record<DayName, { enabled: boolean; slots: TimeSlot[] }>
-
-function scheduleToMultiSlot(schedule: ProviderSchedule): MultiSlotSchedule {
-  return PROVIDER_AVAILABILITY_DAYS.reduce((acc, day) => {
-    const config = schedule[day]
-    return {
-      ...acc,
-      [day]: {
-        enabled: config.enabled,
-        slots: [{ start: config.start, end: config.end }],
-      },
-    }
-  }, {} as MultiSlotSchedule)
-}
-
-function multiSlotToSchedule(multi: MultiSlotSchedule): ProviderSchedule {
-  return PROVIDER_AVAILABILITY_DAYS.reduce((acc, day) => {
-    const config = multi[day]
-    const firstSlot = config.slots[0] ?? { start: '09:00', end: '18:00' }
-    const allStart = config.slots.reduce(
-      (min, s) => (timeToMinutes(s.start) < timeToMinutes(min) ? s.start : min),
-      firstSlot.start,
-    )
-    const allEnd = config.slots.reduce(
-      (max, s) => (timeToMinutes(s.end) > timeToMinutes(max) ? s.end : max),
-      firstSlot.end,
-    )
-    return {
-      ...acc,
-      [day]: { enabled: config.enabled, start: allStart, end: allEnd },
-    }
-  }, {} as ProviderSchedule)
-}
-
-function validateMultiSlotSchedule(schedule: MultiSlotSchedule): Record<string, string> {
-  const errors: Record<string, string> = {}
-
-  for (const day of PROVIDER_AVAILABILITY_DAYS) {
-    const config = schedule[day]
-    if (!config.enabled) continue
-
-    for (let i = 0; i < config.slots.length; i++) {
-      const slot = config.slots[i]
-      if (timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
-        errors[`${day}-${i}`] = 'End time must be after start time'
-      }
-    }
-
-    const sorted = [...config.slots].sort(
-      (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
-    )
-    for (let i = 1; i < sorted.length; i++) {
-      if (timeToMinutes(sorted[i].start) < timeToMinutes(sorted[i - 1].end)) {
-        errors[day] = 'Slots must not overlap'
-        break
-      }
-    }
-  }
-
-  return errors
-}
-
 async function fetchExistingAvailability(startDateKey: string, endDateKey: string) {
   const response = await fetch(`/api/provider/availability?start=${startDateKey}&end=${endDateKey}`)
   if (!response.ok) throw new Error('Failed to load current availability')
@@ -106,8 +39,8 @@ async function fetchExistingAvailability(startDateKey: string, endDateKey: strin
 }
 
 export default function ProviderAvailability() {
-  const [schedule, setSchedule] = useState<MultiSlotSchedule>(() =>
-    scheduleToMultiSlot(cloneProviderSchedule(DEFAULT_PROVIDER_SCHEDULE)),
+  const [schedule, setSchedule] = useState<ProviderMultiSlotSchedule>(() =>
+    cloneProviderMultiSlotSchedule(DEFAULT_PROVIDER_MULTI_SLOT_SCHEDULE),
   )
   const [duration, setDuration] = useState('30')
   const [saved, setSaved] = useState(false)
@@ -127,17 +60,17 @@ export default function ProviderAvailability() {
       setSaveError(null)
       setInferenceError(null)
 
-      try {
-        const data = await fetchExistingAvailability(startDateKey, endDateKey)
-        if (cancelled) return
+        try {
+          const data = await fetchExistingAvailability(startDateKey, endDateKey)
+          if (cancelled) return
 
-        const existingSlots = data.slots ?? []
-        const derived = deriveProviderScheduleFromSlots(existingSlots)
-        const ambiguousDays = getAmbiguousProviderScheduleDays(existingSlots)
-        setSchedule(scheduleToMultiSlot(derived.schedule))
-        setDuration(derived.duration)
-        setErrors({})
-        setHasChanges(false)
+          const existingSlots = data.slots ?? []
+          const derived = deriveProviderMultiSlotScheduleFromSlots(existingSlots)
+          const ambiguousDays = derived.ambiguousDays
+          setSchedule(derived.schedule)
+          setDuration(derived.duration)
+          setErrors({})
+          setHasChanges(false)
 
         if (ambiguousDays.length > 0) {
           setInferenceError(
@@ -158,7 +91,13 @@ export default function ProviderAvailability() {
   function toggleDay(day: DayName) {
     setSchedule((prev) => ({
       ...prev,
-      [day]: { ...prev[day], enabled: !prev[day].enabled },
+      [day]: {
+        ...prev[day],
+        enabled: !prev[day].enabled,
+        slots: !prev[day].enabled && prev[day].slots.length === 0
+          ? [{ start: '09:00', end: '18:00' }]
+          : prev[day].slots,
+      },
     }))
     setErrors((prev) => {
       const next = { ...prev }
@@ -190,8 +129,45 @@ export default function ProviderAvailability() {
     setHasChanges(true)
   }
 
+  function addSlot(day: DayName) {
+    setSchedule((prev) => {
+      const existingSlots = prev[day].slots
+      const lastSlot = existingSlots[existingSlots.length - 1] ?? { start: '09:00', end: '18:00' }
+      const nextStart = lastSlot.end
+      const nextEndMinutes = Math.min(timeToMinutes(nextStart) + 60, 23 * 60 + 30)
+      return {
+        ...prev,
+        [day]: {
+          ...prev[day],
+          enabled: true,
+          slots: [...existingSlots, { start: nextStart, end: `${String(Math.floor(nextEndMinutes / 60)).padStart(2, '0')}:${String(nextEndMinutes % 60).padStart(2, '0')}` }],
+        },
+      }
+    })
+    setSaved(false)
+    setHasChanges(true)
+  }
+
+  function removeSlot(day: DayName, slotIndex: number) {
+    setSchedule((prev) => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        slots: prev[day].slots.filter((_, index) => index !== slotIndex),
+      },
+    }))
+    setErrors((prev) => {
+      const next = { ...prev }
+      delete next[day]
+      delete next[`${day}-${slotIndex}`]
+      return next
+    })
+    setSaved(false)
+    setHasChanges(true)
+  }
+
   async function handleSave() {
-    const newErrors = validateMultiSlotSchedule(schedule)
+    const newErrors = validateProviderSchedule(schedule)
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -202,11 +178,10 @@ export default function ProviderAvailability() {
     setSaved(false)
 
     try {
-      const flatSchedule = multiSlotToSchedule(schedule)
       const res = await fetch('/api/provider/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule: flatSchedule, duration: parseInt(duration, 10), weeks: AVAILABILITY_WEEKS }),
+        body: JSON.stringify({ schedule, duration: parseInt(duration, 10), weeks: AVAILABILITY_WEEKS }),
       })
       if (!res.ok) {
         setSaveError('Failed to deploy availability registry.')
@@ -309,11 +284,7 @@ export default function ProviderAvailability() {
             <div className="space-y-4">
               {PROVIDER_AVAILABILITY_DAYS.map((day) => {
                 const { enabled, slots } = schedule[day]
-                const slot = slots[0] ?? { start: '09:00', end: '18:00' }
                 const dayError = errors[day]
-                const slotErrors = slots
-                  .map((_, idx) => errors[`${day}-${idx}`])
-                  .filter((message): message is string => Boolean(message))
                 return (
                   <div key={day} className="group">
                     <div className={cn(
@@ -341,31 +312,51 @@ export default function ProviderAvailability() {
                       </div>
 
                       {enabled && (
-                        <div className="flex flex-wrap items-center gap-3">
-                          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
-                            <input
-                              type="time"
-                              value={slot.start}
-                              disabled={disableEditing}
-                              onChange={(e) => updateSlotTime(day, 0, 'start', e.target.value)}
-                              className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
-                            />
-                            <span className="text-slate-300 font-bold">→</span>
-                            <input
-                              type="time"
-                              value={slot.end}
-                              disabled={disableEditing}
-                              onChange={(e) => updateSlotTime(day, 0, 'end', e.target.value)}
-                              className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
-                            />
-                          </div>
+                        <div className="flex flex-col gap-3 w-full sm:w-auto">
+                          {slots.map((slot, slotIndex) => (
+                            <div key={`${day}-${slotIndex}`} className="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                              <input
+                                type="time"
+                                value={slot.start}
+                                disabled={disableEditing}
+                                onChange={(e) => updateSlotTime(day, slotIndex, 'start', e.target.value)}
+                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
+                              />
+                              <span className="text-slate-300 font-bold">→</span>
+                              <input
+                                type="time"
+                                value={slot.end}
+                                disabled={disableEditing}
+                                onChange={(e) => updateSlotTime(day, slotIndex, 'end', e.target.value)}
+                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
+                              />
+                              {slots.length > 1 ? (
+                                <button
+                                  type="button"
+                                  disabled={disableEditing}
+                                  onClick={() => removeSlot(day, slotIndex)}
+                                  className="text-[12px] font-bold text-rose-600 disabled:text-slate-300"
+                                >
+                                  Remove
+                                </button>
+                              ) : null}
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            disabled={disableEditing}
+                            onClick={() => addSlot(day)}
+                            className="text-[12px] font-bold text-[var(--color-pv-primary)] disabled:text-slate-300"
+                          >
+                            + Add range
+                          </button>
                         </div>
                       )}
                     </div>
-                    {(dayError || slotErrors.length > 0) && (
+                    {(dayError || slots.some((_, idx) => Boolean(errors[`${day}-${idx}`]))) && (
                       <div className="mt-2 ml-14 space-y-1">
                         {dayError ? <p className="text-[11px] text-rose-600 font-bold uppercase">{dayError}</p> : null}
-                        {slotErrors.map((message, idx) => (
+                        {slots.map((_, idx) => errors[`${day}-${idx}`]).filter(Boolean).map((message, idx) => (
                           <p key={`${day}-error-${idx}`} className="text-[11px] text-rose-600 font-bold uppercase">
                             {message}
                           </p>

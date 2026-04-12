@@ -19,6 +19,16 @@ export interface DayConfig {
   end: string
 }
 
+export interface ProviderTimeWindow {
+  start: string
+  end: string
+}
+
+export interface MultiSlotDayConfig {
+  enabled: boolean
+  slots: ProviderTimeWindow[]
+}
+
 export const PROVIDER_AVAILABILITY_DAYS = [
   'Monday',
   'Tuesday',
@@ -31,6 +41,8 @@ export const PROVIDER_AVAILABILITY_DAYS = [
 
 export type DayName = (typeof PROVIDER_AVAILABILITY_DAYS)[number]
 export type ProviderSchedule = Record<DayName, DayConfig>
+export type ProviderMultiSlotSchedule = Record<DayName, MultiSlotDayConfig>
+export type ProviderScheduleLike = ProviderSchedule | ProviderMultiSlotSchedule
 
 export interface ProviderAvailabilitySlot {
   starts_at: string
@@ -56,6 +68,16 @@ export const DEFAULT_PROVIDER_SCHEDULE: ProviderSchedule = {
   Sunday: { enabled: false, start: '10:00', end: '14:00' },
 }
 
+export const DEFAULT_PROVIDER_MULTI_SLOT_SCHEDULE: ProviderMultiSlotSchedule =
+  PROVIDER_AVAILABILITY_DAYS.reduce((nextSchedule, dayName) => {
+    const config = DEFAULT_PROVIDER_SCHEDULE[dayName]
+    nextSchedule[dayName] = {
+      enabled: config.enabled,
+      slots: [{ start: config.start, end: config.end }],
+    }
+    return nextSchedule
+  }, {} as ProviderMultiSlotSchedule)
+
 export const PROVIDER_SLOT_DURATIONS = ['30', '45', '60'] as const
 
 export function getDisabledProviderSchedule(): ProviderSchedule {
@@ -77,6 +99,56 @@ export function cloneProviderSchedule(
   }, {} as ProviderSchedule)
 }
 
+export function getDisabledProviderMultiSlotSchedule(): ProviderMultiSlotSchedule {
+  return PROVIDER_AVAILABILITY_DAYS.reduce((nextSchedule, dayName) => {
+    nextSchedule[dayName] = {
+      enabled: false,
+      slots: [],
+    }
+    return nextSchedule
+  }, {} as ProviderMultiSlotSchedule)
+}
+
+export function cloneProviderMultiSlotSchedule(
+  schedule: ProviderMultiSlotSchedule = DEFAULT_PROVIDER_MULTI_SLOT_SCHEDULE,
+): ProviderMultiSlotSchedule {
+  return PROVIDER_AVAILABILITY_DAYS.reduce((nextSchedule, dayName) => {
+    const config = schedule[dayName]
+    nextSchedule[dayName] = {
+      enabled: config.enabled,
+      slots: config.slots.map((slot) => ({ ...slot })),
+    }
+    return nextSchedule
+  }, {} as ProviderMultiSlotSchedule)
+}
+
+function isMultiSlotDayConfig(config: DayConfig | MultiSlotDayConfig): config is MultiSlotDayConfig {
+  return 'slots' in config
+}
+
+export function normalizeProviderSchedule(
+  schedule: ProviderScheduleLike,
+): ProviderMultiSlotSchedule {
+  return PROVIDER_AVAILABILITY_DAYS.reduce((nextSchedule, dayName) => {
+    const config = schedule[dayName]
+
+    if (isMultiSlotDayConfig(config)) {
+      nextSchedule[dayName] = {
+        enabled: config.enabled,
+        slots: config.slots.map((slot) => ({ ...slot })),
+      }
+      return nextSchedule
+    }
+
+    nextSchedule[dayName] = {
+      enabled: config.enabled,
+      slots: config.enabled ? [{ start: config.start, end: config.end }] : [],
+    }
+
+    return nextSchedule
+  }, {} as ProviderMultiSlotSchedule)
+}
+
 export function timeToMinutes(value: string): number {
   const [hours, minutes] = value.split(':').map(Number)
   return (hours ?? 0) * 60 + (minutes ?? 0)
@@ -88,18 +160,41 @@ export function minutesToTimeInput(value: number): string {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
-export function validateProviderSchedule(schedule: ProviderSchedule): Record<string, string> {
+export function validateProviderSchedule(schedule: ProviderScheduleLike): Record<string, string> {
+  const normalizedSchedule = normalizeProviderSchedule(schedule)
+
   return PROVIDER_AVAILABILITY_DAYS.reduce<Record<string, string>>((errors, dayName) => {
-    const dayConfig = schedule[dayName]
+    const dayConfig = normalizedSchedule[dayName]
 
     if (!dayConfig.enabled) {
       return errors
     }
 
-    if (timeToMinutes(dayConfig.end) <= timeToMinutes(dayConfig.start)) {
+    if (dayConfig.slots.length === 0) {
       return {
         ...errors,
-        [dayName]: 'End time must be after start time',
+        [dayName]: 'Add at least one time range',
+      }
+    }
+
+    const sortedSlots = [...dayConfig.slots].sort((left, right) => timeToMinutes(left.start) - timeToMinutes(right.start))
+
+    for (let index = 0; index < sortedSlots.length; index += 1) {
+      const slot = sortedSlots[index]
+
+      if (timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
+        return {
+          ...errors,
+          [`${dayName}-${index}`]: 'End time must be after start time',
+        }
+      }
+
+      const previousSlot = sortedSlots[index - 1]
+      if (previousSlot && timeToMinutes(slot.start) < timeToMinutes(previousSlot.end)) {
+        return {
+          ...errors,
+          [dayName]: 'Time ranges must not overlap',
+        }
       }
     }
 
@@ -156,17 +251,91 @@ export function deriveProviderScheduleFromSlots(slots: ProviderAvailabilitySlot[
   schedule: ProviderSchedule
   duration: string
 } {
-  const nextSchedule = cloneProviderSchedule()
+  const derived = deriveProviderMultiSlotScheduleFromSlots(slots)
+
+  const schedule = PROVIDER_AVAILABILITY_DAYS.reduce((nextSchedule, dayName) => {
+    const dayConfig = derived.schedule[dayName]
+
+    if (!dayConfig.enabled || dayConfig.slots.length === 0) {
+      nextSchedule[dayName] = {
+        ...DEFAULT_PROVIDER_SCHEDULE[dayName],
+        enabled: false,
+      }
+      return nextSchedule
+    }
+
+    const start = dayConfig.slots.reduce(
+      (minimum, slot) => (timeToMinutes(slot.start) < timeToMinutes(minimum) ? slot.start : minimum),
+      dayConfig.slots[0]?.start ?? DEFAULT_PROVIDER_SCHEDULE[dayName].start,
+    )
+    const end = dayConfig.slots.reduce(
+      (maximum, slot) => (timeToMinutes(slot.end) > timeToMinutes(maximum) ? slot.end : maximum),
+      dayConfig.slots[0]?.end ?? DEFAULT_PROVIDER_SCHEDULE[dayName].end,
+    )
+
+    nextSchedule[dayName] = {
+      enabled: true,
+      start,
+      end,
+    }
+    return nextSchedule
+  }, {} as ProviderSchedule)
+
+  return { schedule, duration: derived.duration }
+}
+
+function buildDaySlotRanges(slots: ProviderAvailabilitySlot[]): ProviderTimeWindow[] {
+  if (slots.length === 0) {
+    return []
+  }
+
+  const sortedSlots = [...slots]
+    .map((slot) => ({
+      startMinutes: timeToMinutes(getIndiaTimeInput(slot.starts_at)),
+      endMinutes: timeToMinutes(getIndiaTimeInput(slot.ends_at)),
+    }))
+    .sort((left, right) => left.startMinutes - right.startMinutes)
+
+  const ranges: Array<{ startMinutes: number; endMinutes: number }> = []
+
+  for (const slot of sortedSlots) {
+    const previousRange = ranges[ranges.length - 1]
+
+    if (!previousRange || slot.startMinutes > previousRange.endMinutes) {
+      ranges.push({ ...slot })
+      continue
+    }
+
+    previousRange.endMinutes = Math.max(previousRange.endMinutes, slot.endMinutes)
+  }
+
+  return ranges.map((range) => ({
+    start: minutesToTimeInput(range.startMinutes),
+    end: minutesToTimeInput(range.endMinutes),
+  }))
+}
+
+function buildWindowSignature(windows: ProviderTimeWindow[]): string {
+  return windows.map((window) => `${window.start}-${window.end}`).join('|')
+}
+
+export function deriveProviderMultiSlotScheduleFromSlots(slots: ProviderAvailabilitySlot[]): {
+  schedule: ProviderMultiSlotSchedule
+  duration: string
+  ambiguousDays: DayName[]
+} {
+  const nextSchedule = getDisabledProviderMultiSlotSchedule()
   const openSlots = slots.filter((slot) => !slot.is_booked && !slot.is_blocked)
 
   if (openSlots.length === 0) {
     return {
-      schedule: getDisabledProviderSchedule(),
+      schedule: nextSchedule,
       duration: PROVIDER_SLOT_DURATIONS[0],
+      ambiguousDays: getAmbiguousProviderScheduleDays(slots),
     }
   }
 
-  const boundsByDay = new Map<DayName, { startMinutes: number; endMinutes: number }>()
+  const slotsByDayAndDate = new Map<DayName, Map<string, ProviderAvailabilitySlot[]>>()
   const durations: number[] = []
 
   for (const slot of [...openSlots].sort((left, right) => Date.parse(left.starts_at) - Date.parse(right.starts_at))) {
@@ -176,54 +345,55 @@ export function deriveProviderScheduleFromSlots(slots: ProviderAvailabilitySlot[
       continue
     }
 
-    const startMinutes = timeToMinutes(getIndiaTimeInput(slot.starts_at))
-    const endMinutes = timeToMinutes(getIndiaTimeInput(slot.ends_at))
-    const existingBounds = boundsByDay.get(dayName)
+    const dateKey = formatIndiaDateInput(slot.starts_at)
+    const slotsByDate = slotsByDayAndDate.get(dayName) ?? new Map<string, ProviderAvailabilitySlot[]>()
+    const dateSlots = slotsByDate.get(dateKey) ?? []
+    dateSlots.push(slot)
+    slotsByDate.set(dateKey, dateSlots)
+    slotsByDayAndDate.set(dayName, slotsByDate)
 
-    boundsByDay.set(dayName, {
-      startMinutes: existingBounds ? Math.min(existingBounds.startMinutes, startMinutes) : startMinutes,
-      endMinutes: existingBounds ? Math.max(existingBounds.endMinutes, endMinutes) : endMinutes,
-    })
-
-    if (endMinutes > startMinutes) {
-      durations.push(endMinutes - startMinutes)
+    const durationMinutes = timeToMinutes(getIndiaTimeInput(slot.ends_at)) - timeToMinutes(getIndiaTimeInput(slot.starts_at))
+    if (durationMinutes > 0) {
+      durations.push(durationMinutes)
     }
   }
 
-  if (boundsByDay.size === 0) {
-    return {
-      schedule: nextSchedule,
-      duration: PROVIDER_SLOT_DURATIONS[0],
-    }
-  }
+  const ambiguousDays = new Set<DayName>()
 
   for (const dayName of PROVIDER_AVAILABILITY_DAYS) {
-    const bounds = boundsByDay.get(dayName)
-
-    if (bounds) {
-      nextSchedule[dayName] = {
-        enabled: true,
-        start: minutesToTimeInput(bounds.startMinutes),
-        end: minutesToTimeInput(bounds.endMinutes),
-      }
+    const slotsByDate = slotsByDayAndDate.get(dayName)
+    if (!slotsByDate || slotsByDate.size === 0) {
       continue
     }
 
-    nextSchedule[dayName] = {
-      ...nextSchedule[dayName],
-      enabled: false,
+    const patterns = [...slotsByDate.values()].map((dateSlots) => buildDaySlotRanges(dateSlots))
+    const firstPattern = patterns[0] ?? []
+    const firstSignature = buildWindowSignature(firstPattern)
+
+    if (patterns.some((pattern) => buildWindowSignature(pattern) !== firstSignature)) {
+      ambiguousDays.add(dayName)
     }
+
+    nextSchedule[dayName] = {
+      enabled: firstPattern.length > 0,
+      slots: firstPattern,
+    }
+  }
+
+  for (const dayName of getAmbiguousProviderScheduleDays(slots)) {
+    ambiguousDays.add(dayName)
   }
 
   return {
     schedule: nextSchedule,
     duration: getMostCommonDuration(durations),
+    ambiguousDays: PROVIDER_AVAILABILITY_DAYS.filter((dayName) => ambiguousDays.has(dayName)),
   }
 }
 
 export function getAmbiguousProviderScheduleDays(slots: ProviderAvailabilitySlot[]): DayName[] {
   const openDays = new Set<DayName>()
-  const ambiguousDays = new Set<DayName>()
+  const protectedOnlyDays = new Set<DayName>()
 
   for (const slot of slots) {
     const dayName = getIndiaWeekday(slot.starts_at)
@@ -234,16 +404,16 @@ export function getAmbiguousProviderScheduleDays(slots: ProviderAvailabilitySlot
 
     if (!slot.is_booked && !slot.is_blocked) {
       openDays.add(dayName)
-      ambiguousDays.delete(dayName)
+      protectedOnlyDays.delete(dayName)
       continue
     }
 
     if (!openDays.has(dayName)) {
-      ambiguousDays.add(dayName)
+      protectedOnlyDays.add(dayName)
     }
   }
 
-  return PROVIDER_AVAILABILITY_DAYS.filter((dayName) => ambiguousDays.has(dayName))
+  return PROVIDER_AVAILABILITY_DAYS.filter((dayName) => protectedOnlyDays.has(dayName))
 }
 
 export function buildIndiaUtcDateFromDateKey(dateKey: string, totalMinutes: number): Date {
@@ -277,7 +447,7 @@ export function getProviderAvailabilityWindow(weeks: number, referenceDate: Date
 }
 
 export function buildAvailabilitySlotsInIndia(input: {
-  schedule: ProviderSchedule
+  schedule: ProviderScheduleLike
   durationMinutes: number
   weeks: number
   providerId: string
@@ -286,36 +456,39 @@ export function buildAvailabilitySlotsInIndia(input: {
   referenceDate?: Date
 }): GeneratedAvailabilitySlot[] {
   const slots: GeneratedAvailabilitySlot[] = []
+  const normalizedSchedule = normalizeProviderSchedule(input.schedule)
 
   for (const dateKey of getUpcomingIndiaDateKeys(input.weeks, input.referenceDate)) {
     const dayName = getIndiaWeekday(parseIndiaDate(dateKey))
-    const dayConfig = dayName ? input.schedule[dayName] : null
+    const dayConfig = dayName ? normalizedSchedule[dayName] : null
 
-    if (!dayConfig?.enabled) {
+    if (!dayConfig?.enabled || dayConfig.slots.length === 0) {
       continue
     }
 
-    const startMinutes = timeToMinutes(dayConfig.start)
-    const endMinutes = timeToMinutes(dayConfig.end)
+    for (const window of dayConfig.slots) {
+      const startMinutes = timeToMinutes(window.start)
+      const endMinutes = timeToMinutes(window.end)
 
-    for (
-      let minutes = startMinutes;
-      minutes + input.durationMinutes <= endMinutes;
-      minutes += input.durationMinutes
-    ) {
-      const slotStart = buildIndiaUtcDateFromDateKey(dateKey, minutes)
-      const slotEnd = new Date(slotStart.getTime() + input.durationMinutes * 60 * 1000)
+      for (
+        let minutes = startMinutes;
+        minutes + input.durationMinutes <= endMinutes;
+        minutes += input.durationMinutes
+      ) {
+        const slotStart = buildIndiaUtcDateFromDateKey(dateKey, minutes)
+        const slotEnd = new Date(slotStart.getTime() + input.durationMinutes * 60 * 1000)
 
-      slots.push({
-        provider_id: input.providerId,
-        location_id: input.locationId,
-        starts_at: slotStart.toISOString(),
-        ends_at: slotEnd.toISOString(),
-        slot_duration_mins: input.durationMinutes,
-        buffer_mins: input.bufferMins,
-        is_booked: false,
-        is_blocked: false,
-      })
+        slots.push({
+          provider_id: input.providerId,
+          location_id: input.locationId,
+          starts_at: slotStart.toISOString(),
+          ends_at: slotEnd.toISOString(),
+          slot_duration_mins: input.durationMinutes,
+          buffer_mins: input.bufferMins,
+          is_booked: false,
+          is_blocked: false,
+        })
+      }
     }
   }
 
