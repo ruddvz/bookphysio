@@ -1,6 +1,6 @@
 # bookphysio.in — Manual Release Checklist
 
-Updated: 2026-04-08
+Updated: 2026-04-12
 
 Only the tasks that require external dashboard access are listed here.
 
