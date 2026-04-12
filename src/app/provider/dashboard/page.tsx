@@ -25,6 +25,7 @@ import {
   SectionCard,
   ListRow,
   EmptyState,
+  DashCard,
 } from '@/components/dashboard/primitives'
 import {
   countRemainingVisitsToday,
@@ -378,8 +379,11 @@ export default function ProviderDashboardHome() {
         </div>
 
         <aside className="space-y-6">
-           <SectionCard role="provider" title="Quick Actions">
-              <div className="space-y-2">
+           <DashCard role="provider">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
+                Quick actions
+              </div>
+              <div className="space-y-1">
                  {[
                    { label: 'New invoice', href: '/provider/bills/new', icon: Receipt },
                    { label: 'Block time', href: '/provider/availability', icon: Clock },
@@ -389,21 +393,22 @@ export default function ProviderDashboardHome() {
                    <Link
                      key={href}
                      href={href}
-                     className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition-all group"
+                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-pv-border-soft)] transition-colors group"
                    >
-                     <Icon size={16} className="text-[var(--color-pv-primary)] group-hover:scale-110 transition-transform" />
-                     <span className="text-[13px] font-bold text-slate-600 group-hover:text-[var(--color-pv-ink)]">{label}</span>
+                     <Icon size={16} className="text-[var(--color-pv-primary)]" />
+                     <span className="flex-1 text-[13px] font-medium text-[var(--color-pv-ink)]">{label}</span>
+                     <ArrowRight size={13} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
                    </Link>
                  ))}
               </div>
-           </SectionCard>
+           </DashCard>
 
               <SectionCard role="provider" title="Operational pulse">
-              <div className="space-y-4">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between text-[13px]">
                     <span className="text-slate-500">Patients tracked</span>
                     <span className="font-bold text-[var(--color-pv-ink)]">{patients.length}</span>
-                 </div>
+                  </div>
                   <div className="flex items-center justify-between text-[13px]">
                     <span className="text-slate-500">Week sessions</span>
                     <span className="font-bold text-[var(--color-pv-ink)]">{weekSessions}</span>
@@ -414,12 +419,16 @@ export default function ProviderDashboardHome() {
                   </div>
                   <div className="rounded-2xl bg-[var(--color-pv-track-bg)] p-4 text-[12px] font-bold text-slate-600">
                     Scheduled this week: ₹{scheduledFeesThisWeek.toLocaleString('en-IN')}
-                 </div>
-                 <Link href="/provider/earnings" className="w-full py-3.5 bg-[var(--color-pv-ink)] text-white text-[12px] font-black uppercase tracking-widest rounded-xl hover:bg-[var(--color-pv-primary)] transition-all flex items-center justify-center gap-2">
-                    Open Hub <ArrowRight size={14} />
-                 </Link>
-              </div>
-           </SectionCard>
+                  </div>
+                  <Link
+                    href="/provider/earnings"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-pv-primary)] px-5 py-3 text-[13px] font-bold text-white shadow-md transition-opacity hover:opacity-90"
+                  >
+                    Earnings Hub
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </SectionCard>
         </aside>
       </div>
     </div>

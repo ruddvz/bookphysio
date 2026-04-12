@@ -18,6 +18,7 @@ import {
   Activity,
   Loader2,
   Globe,
+  ArrowRight,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/Skeleton'
 import {
@@ -545,12 +546,13 @@ export default function AdminDashboardHome() {
                 <Link
                   key={label}
                   href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors group"
                 >
                   <Icon size={16} className="text-[var(--color-ad-primary)]" />
                   <span className="flex-1 text-[13px] font-medium text-[var(--color-ad-ink)]">
                     {label}
                   </span>
+                  <ArrowRight size={13} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
                 </Link>
               ))}
             </div>
