@@ -46,13 +46,13 @@ export function SupportChatWidget() {
     id: 'support-intro',
     role: 'assistant' as const,
     parts: [
-      {
-        type: 'text' as const,
-        text: isHomePage
-          ? "Hi! 👋 I'm your BookPhysio assistant. Tell me — what condition or pain are you dealing with? I'll help you find the right physiotherapist."
-          : "Hi! 👋 I'm the BookPhysio support assistant. I can help with booking, sessions, pricing, and anything about our platform.",
-      },
-    ],
+        {
+          type: 'text' as const,
+          text: isHomePage
+            ? "Hi! 👋 I'm Bookphysio.in Support. Tell me what condition or pain you're dealing with, and I’ll help you find the right next step on BookPhysio."
+            : "Hi! 👋 I'm Bookphysio.in Support. I can help with booking, sessions, pricing, dashboards, and anything about the BookPhysio platform.",
+        },
+      ],
   }), [isHomePage])
 
   const transport = useMemo(
@@ -72,13 +72,12 @@ export function SupportChatWidget() {
     []
   )
 
-  const { messages, sendMessage, status, error } = useChat<UIMessage>({
+  const { messages, sendMessage, status } = useChat<UIMessage>({
     messages: [initialMessage],
     transport,
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'
-  const hasError = status === 'error'
   const hasNewMessage = !isOpen && messages.length > lastSeenCount
 
   useEffect(() => {
@@ -222,18 +221,6 @@ export function SupportChatWidget() {
               </div>
             )}
 
-            {hasError && (
-              <div className="flex items-end gap-2">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-500">
-                  <Stethoscope size={13} />
-                </div>
-                <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-rose-700 shadow-sm">
-                  {error?.message?.includes('429') || error?.message?.includes('Too many')
-                    ? 'Too many requests — please wait a moment and try again.'
-                    : 'Sorry, I couldn\'t process that. Please try again or email support@bookphysio.in for help.'}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Quick actions — condition chips on home, general quick replies elsewhere */}

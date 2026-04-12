@@ -1,10 +1,11 @@
 import { patientModels } from '@/lib/ai-config'
-import { streamText } from 'ai'
+import { generateText } from 'ai'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
+import { buildSupportFallbackReply } from '@/lib/support-chat'
 
 const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -60,6 +61,8 @@ const SUPPORT_SYSTEM_PROMPT = `
 `
 
 export async function POST(req: NextRequest) {
+  let latestUserMessage = ''
+
   try {
     if (ratelimit) {
       const ip = getRequestIpAddress(req) ?? 'unknown'
@@ -78,8 +81,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { messages } = parsed.data
+    latestUserMessage = [...messages]
+      .reverse()
+      .find((message) => message.role === 'user')
+      ?.content ?? ''
 
-    const result = streamText({
+    const result = await generateText({
       model: patientModels,
       system: SUPPORT_SYSTEM_PROMPT,
       messages,
@@ -87,11 +94,28 @@ export async function POST(req: NextRequest) {
       maxOutputTokens: 512,
     })
 
-    return result.toTextStreamResponse()
+    const text = result.text.trim()
+
+    return new NextResponse(
+      text.length > 0
+        ? text
+        : buildSupportFallbackReply(latestUserMessage),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      },
+    )
   } catch (error: unknown) {
     console.error('Support chat error:', error)
-    return new NextResponse('Something went wrong. Please try again.', {
-      status: 500,
+    return new NextResponse(buildSupportFallbackReply(latestUserMessage), {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+      },
     })
   }
 }

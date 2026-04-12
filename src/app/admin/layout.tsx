@@ -1,31 +1,29 @@
-'use client'
-
 import { ReactNode } from 'react'
-import { LayoutDashboard, ShieldCheck, Users, BarChart3 } from 'lucide-react'
-import TopPillNav, { type NavItem } from '@/components/dashboard/TopPillNav'
-import { DashboardManifest } from '@/components/DashboardManifest'
-import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
+import type { Metadata, Viewport } from 'next'
+import { DashboardShell } from '@/components/dashboard/DashboardShell'
 
-const navItems: NavItem[] = [
-  { href: '/admin',           label: 'Overview',  icon: LayoutDashboard, exact: true },
-  { href: '/admin/listings',  label: 'Approvals', icon: ShieldCheck },
-  { href: '/admin/users',     label: 'Users',     icon: Users },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-]
+export const metadata: Metadata = {
+  title: {
+    default: 'BookPhysio Admin',
+    template: '%s | BookPhysio Admin',
+  },
+  manifest: '/manifest-admin.json',
+  appleWebApp: {
+    title: 'BookPhysio Admin',
+    capable: true,
+    statusBarStyle: 'default',
+  },
+  icons: {
+    apple: '/icon-admin-192.png?v=20260411',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#1a1a2e',
+}
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <DashboardManifest role="admin" />
-      <TopPillNav
-        role="admin"
-        items={navItems}
-        profileHref="/admin"
-        roleLabel="Administrator"
-      >
-        <PWAInstallPrompt role="admin" />
-        {children}
-      </TopPillNav>
-    </>
+    <DashboardShell role="admin">{children}</DashboardShell>
   )
 }
