@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
@@ -183,6 +184,19 @@ export default function HeroSection() {
             backgroundSize: '32px 32px',
           }}
         />
+
+        {/* Female physio character — desktop only, right-side decorative float */}
+        <div className="hidden lg:block absolute right-0 bottom-0 w-[340px] z-[5] select-none">
+          <Image
+            src="/images/physio-female.png"
+            alt=""
+            width={340}
+            height={520}
+            priority
+            className="object-contain object-bottom"
+            aria-hidden="true"
+          />
+        </div>
       </div>
 
       {/* Content */}

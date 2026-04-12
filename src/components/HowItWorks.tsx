@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Search, SlidersHorizontal, CalendarCheck, HeartPulse, ArrowRight, ShieldCheck } from 'lucide-react'
 
@@ -37,12 +38,24 @@ export default function HowItWorks() {
     <section className="py-24 md:py-32 relative" aria-label="How booking works">
       <div className="bp-container z-10 relative">
         {/* Header */}
-        <div className="max-w-2xl mb-16 mx-auto text-center">
+        <div className="max-w-2xl mb-16 mx-auto text-center relative">
           <div className="bp-kicker mb-4 mx-auto">How it works</div>
           <h2 className="text-slate-900 mb-4 tracking-tight">Four steps from search to session.</h2>
           <p className="text-slate-500 text-[17px] leading-relaxed">
             Finding a physiotherapist should not feel like a research project. On BookPhysio, most people go from their first search to a confirmed booking in under a minute.
           </p>
+
+          {/* Male physio — desktop only, anchors the header visually */}
+          <div className="hidden lg:block absolute -right-48 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+            <Image
+              src="/images/physio-male.png"
+              alt=""
+              width={160}
+              height={240}
+              className="object-contain drop-shadow-xl"
+              aria-hidden="true"
+            />
+          </div>
         </div>
 
         {/* Steps sequence */}

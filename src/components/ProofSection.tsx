@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -72,9 +73,21 @@ export default function ProofSection() {
                 className="group flex items-center gap-5 p-5 rounded-2xl border border-emerald-200 bg-emerald-50 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer"
               >
                 {/* Avatar */}
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[16px] font-bold text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors shrink-0">
-                  {p.initials}
-                </div>
+                {p.initials === 'SP' ? (
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white shrink-0">
+                    <Image
+                      src="/images/physio-female.png"
+                      alt={p.name}
+                      width={56}
+                      height={56}
+                      className="object-cover object-top w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[16px] font-bold text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors shrink-0">
+                    {p.initials}
+                  </div>
+                )}
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from 'lucide-react'
 
@@ -28,6 +29,18 @@ export default function ProviderCTA() {
             <div className="relative group">
               {/* Glow ring */}
               <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+
+              {/* Female physio — floating above dashboard, desktop only */}
+              <div className="hidden lg:block absolute -top-16 right-6 z-10 pointer-events-none select-none">
+                <Image
+                  src="/images/physio-female.png"
+                  alt=""
+                  width={160}
+                  height={240}
+                  className="object-contain object-bottom drop-shadow-2xl"
+                  aria-hidden="true"
+                />
+              </div>
 
               <div className="relative bg-slate-900 rounded-2xl border border-white/8 overflow-hidden shadow-2xl">
                 {/* Mock header */}
