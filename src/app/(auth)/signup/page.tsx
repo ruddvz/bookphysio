@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
-import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
@@ -15,7 +14,7 @@ const signupSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number').optional().or(z.literal('')),
 })
 
 interface SignupForm {
@@ -88,40 +87,28 @@ export default function SignupPage() {
 
     setLoading(true)
     const rawPhone = form.phone.replace(/\D/g, '')
-    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : `+91${rawPhone}`
-    const returnTo = sanitizeReturnPath(new URLSearchParams(window.location.search).get('return'))
-    const flowId = crypto.randomUUID()
+    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : undefined
 
     try {
-      const res = await fetch('/api/auth/otp/send', {
+      const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: cleanPhone,
-          flow: 'signup',
-          flow_id: flowId,
           full_name: result.data.name.trim(),
-          return_to: returnTo,
+          email: result.data.email,
+          password: result.data.password,
+          phone: cleanPhone,
         }),
       })
 
       if (!res.ok) {
-        setErrors({ general: 'Could not send the verification code. Please try again.' })
+        const data = await res.json().catch(() => ({})) as { error?: unknown }
+        const msg = typeof data.error === 'string' ? data.error : 'Could not create your account. Please try again.'
+        setErrors({ general: msg })
         return
       }
 
-      // Store credentials in sessionStorage — used after OTP to link email+password
-      try {
-        sessionStorage.setItem('bp-pending-credentials', JSON.stringify({
-          email: result.data.email,
-          password: result.data.password,
-        }))
-      } catch {
-        // sessionStorage unavailable — credentials will be skipped, user can set via forgot-password
-      }
-
-      savePendingOtp({ flow: 'signup', flowId, returnTo })
-      router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch {
       setErrors({ general: 'Network error. Please try again.' })
     } finally {
@@ -153,7 +140,7 @@ export default function SignupPage() {
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
             Create your account
           </h1>
-          <p className="text-sm text-gray-500">Your phone number will be verified via OTP</p>
+          <p className="text-sm text-gray-500">We&apos;ll send a confirmation link to your email</p>
         </div>
 
         <div>
@@ -248,10 +235,10 @@ export default function SignupPage() {
               {errors.password && <p className="text-xs font-medium text-red-500">{errors.password}</p>}
             </div>
 
-            {/* Phone */}
+            {/* Phone (optional — data capture for future OTP rollout) */}
             <div className="space-y-1.5">
               <label htmlFor={phoneId} className="block text-sm font-medium text-gray-700">
-                Mobile number <span className="font-normal text-gray-400">(OTP verification)</span>
+                Mobile number <span className="font-normal text-gray-400">(optional)</span>
               </label>
               <div className={fieldWrap('phone', !!errors.phone)}>
                 <span className="flex shrink-0 items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-medium text-gray-600">
@@ -274,7 +261,7 @@ export default function SignupPage() {
               </div>
               {errors.phone
                 ? <p className="text-xs font-medium text-red-500">{errors.phone}</p>
-                : <p className="text-xs text-gray-400">We&apos;ll send a one-time code to verify your number.</p>
+                : <p className="text-xs text-gray-400">Add your number for faster future verification.</p>
               }
             </div>
 
@@ -287,11 +274,11 @@ export default function SignupPage() {
               {loading ? (
                 <>
                   <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  <span>Sending code…</span>
+                  <span>Creating account…</span>
                 </>
               ) : (
                 <>
-                  Continue — verify phone
+                  Create account
                   <ArrowRight size={15} />
                 </>
               )}

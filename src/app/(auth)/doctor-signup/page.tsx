@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowLeft, ArrowRight, Camera, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Check, Eye, EyeOff, Mail } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
-import OtpInput from '@/components/OtpInput'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -15,6 +14,7 @@ interface Step1Data {
   name: string
   phone: string
   email: string
+  password: string
 }
 
 interface Step2Data {
@@ -56,14 +56,14 @@ interface Step4Data {
 }
 
 interface Step5Data {
-  otp: string[]
+  submitted: boolean
 }
 
 type StepNumber = 1 | 2 | 3 | 4 | 5
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STEP_LABELS = ['Personal', 'Professional', 'Practice', 'Pricing', 'Verify']
+const STEP_LABELS = ['Personal', 'Professional', 'Practice', 'Pricing', 'Confirm']
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const SPECIALTIES = [
   'Sports Physio',
@@ -98,7 +98,6 @@ const FEE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic consultation fee',
   home_visit: 'Home visit fee',
 }
-const OTP_LENGTH = 6
 const SHORT_DAY_TO_FULL_DAY = {
   Mon: 'Monday',
   Tue: 'Tuesday',
@@ -114,7 +113,8 @@ const SHORT_DAY_TO_FULL_DAY = {
 const step1Schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
-  email: z.string().email('Enter a valid email').or(z.literal('')),
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 const step2Schema = z.object({
@@ -383,6 +383,7 @@ interface Step1Props {
 function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1Props) {
   const [errors, setErrors] = useState<Partial<Record<keyof Step1Data, string>>>({})
   const [phoneFocused, setPhoneFocused] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement>(null)
 
   function handleAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -401,6 +402,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
         name: flat.name?.[0],
         phone: flat.phone?.[0],
         email: flat.email?.[0],
+        password: flat.password?.[0],
       })
       return
     }
@@ -510,8 +512,8 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
         <FieldError msg={errors.phone} />
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
-        <Label>Email <span style={{ fontWeight: 400, color: '#555B6E' }}>(optional)</span></Label>
+      <div style={{ marginBottom: '16px' }}>
+        <Label>Email address</Label>
         <FocusableInput
           value={data.email}
           onChange={(v) => onChange({ ...data, email: v })}
@@ -519,6 +521,41 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
           type="email"
         />
         <FieldError msg={errors.email} />
+      </div>
+
+      <div style={{ marginBottom: '24px' }}>
+        <Label>Password</Label>
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            value={data.password}
+            onChange={(e) => onChange({ ...data, password: e.target.value })}
+            placeholder="Min. 8 characters"
+            autoComplete="new-password"
+            style={{ ...inputStyle, paddingRight: '44px' }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              color: '#555B6E',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {showPassword ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
+          </button>
+        </div>
+        <FieldError msg={errors.password} />
       </div>
 
       <PrimaryButton onClick={handleNext}>
@@ -1150,9 +1187,9 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
       </div>
 
       <PrimaryButton onClick={handleNext} disabled={otpLoading}>
-        {otpLoading ? 'Sending code…' : (
+        {otpLoading ? 'Submitting…' : (
           <>
-            Next: Verify Phone
+            Complete Registration
             <ArrowRight className="w-4 h-4" />
           </>
         )}
@@ -1168,146 +1205,32 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
 // ─── Step 5 ───────────────────────────────────────────────────────────────────
 
 interface Step5Props {
-  data: Step5Data
-  flowId: string | null
-  phone: string
-  onChange: (d: Step5Data) => void
-  onSubmit: () => void
+  email: string
   onBack: () => void
-  submitError?: string
-  onClearSubmitError?: () => void
 }
 
-function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError, onClearSubmitError }: Step5Props) {
-  const [countdown, setCountdown] = useState(45)
-  const [canResend, setCanResend] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (countdown <= 0) {
-      setCanResend(true)
-      return
-    }
-    const id = setTimeout(() => setCountdown((c) => c - 1), 1000)
-    return () => clearTimeout(id)
-  }, [countdown])
-
-  async function sendProviderSignupOtp() {
-    if (!flowId) {
-      return { ok: false, error: 'Your verification session expired. Please request a fresh code.' }
-    }
-
-    const rawPhone = phone.replace(/\D/g, '')
-    const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
-
-    const response = await fetch('/api/auth/otp/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup', flow_id: flowId }),
-    })
-
-    const payload = await response.json().catch(() => ({})) as { error?: string }
-    return { ok: response.ok, error: payload.error }
-  }
-
-  async function handleResend() {
-    setError('')
-    onClearSubmitError?.()
-    setCanResend(false)
-    setCountdown(45)
-    onChange({ otp: Array(OTP_LENGTH).fill('') })
-
-    try {
-      const result = await sendProviderSignupOtp()
-      if (!result.ok) {
-        setError(result.error ?? 'Unable to resend the verification code right now.')
-        setCanResend(true)
-        setCountdown(0)
-      }
-    } catch {
-      setError('Unable to resend the verification code right now.')
-      setCanResend(true)
-      setCountdown(0)
-    }
-  }
-
-  async function handleSubmitOtp() {
-    if (data.otp.some((d) => !d)) {
-      setError('Enter all 6 digits')
-      return
-    }
-    if (!flowId) {
-      setError('Your verification session expired. Please request a fresh code.')
-      return
-    }
-    setError('')
-    setLoading(true)
-    try {
-      const res = await fetch('/api/auth/otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ otp: data.otp.join(''), flow_id: flowId }),
-      })
-      if (!res.ok) {
-        const d = await res.json()
-        setError(d.error || 'Invalid OTP')
-        return
-      }
-      onSubmit()
-    } catch {
-      setError('Verification failed')
-    } finally {
-      setLoading(false)
-    }
-  }
+function Step5({ email, onBack }: Step5Props) {
+  const maskedEmail = email.replace(
+    /^(.{2})(.*)(@.*)$/,
+    (_m, a, b, c) => `${a}${'•'.repeat(Math.min(b.length, 6))}${c}`,
+  )
 
   return (
     <div className="text-center">
-      <h2 className="text-[22px] font-bold text-bp-primary mb-2">Almost there!</h2>
-      <p className="text-[15px] text-bp-primary mb-1">Verify your mobile number</p>
-      <p className="text-[14px] text-gray-600 mb-7">
-        We sent a 6-digit code to your mobile number.
-      </p>
-
-      <div className="mb-4">
-        <OtpInput
-          value={data.otp}
-          onChange={(otp) => { onChange({ otp }); onClearSubmitError?.() }}
-          onComplete={handleSubmitOtp}
-          disabled={loading}
-          error={!!error}
-        />
+      <div className="flex justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-bp-primary/10 flex items-center justify-center">
+          <Mail className="w-8 h-8 text-bp-primary" />
+        </div>
       </div>
-
-      {error && (
-        <p className="text-[12px] text-[#DC2626] mb-3">{error}</p>
-      )}
-      {submitError && !error && (
-        <p className="text-[12px] text-[#DC2626] mb-3">{submitError}</p>
-      )}
-
-      <p className="text-[14px] text-gray-600 mb-5">
-        {canResend ? (
-          <button
-            onClick={handleResend}
-            className="bg-transparent border-none text-bp-primary cursor-pointer text-[14px] font-semibold hover:text-bp-primary transition-colors outline-none"
-          >
-            Resend code
-          </button>
-        ) : (
-          <>Resend in <strong>{countdown}s</strong></>
-        )}
+      <h2 className="text-[22px] font-bold text-bp-primary mb-2">Check your email!</h2>
+      <p className="text-[14px] text-gray-600 mb-1">
+        We&apos;ve sent a confirmation link to
       </p>
-
-      <PrimaryButton onClick={() => handleSubmitOtp()} disabled={loading}>
-        {loading ? 'Submitting…' : (
-          <>
-            Complete Registration
-            <ArrowRight className="w-4 h-4" />
-          </>
-        )}
-      </PrimaryButton>
+      <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
+      <p className="text-[13px] text-gray-500 mb-8 leading-relaxed">
+        Click the link in the email to activate your account and access your provider dashboard.
+        Check your spam folder if you don&apos;t see it within a few minutes.
+      </p>
       <div className="flex justify-center">
         <BackLink onClick={onBack} />
       </div>
@@ -1320,10 +1243,8 @@ function Step5({ data, flowId, phone, onChange, onSubmit, onBack, submitError, o
 export default function DoctorSignupPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<StepNumber>(1)
-  const [providerOtpFlowId, setProviderOtpFlowId] = useState<string | null>(null)
-  const [otpRequestError, setOtpRequestError] = useState('')
-  const [otpRequestLoading, setOtpRequestLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [submitLoading, setSubmitLoading] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const pendingAvatarRef = useRef<{ dataUrl: string; mimeType: string; fileName: string } | null>(null)
 
@@ -1332,7 +1253,7 @@ export default function DoctorSignupPage() {
     pendingAvatarRef.current = { dataUrl, mimeType, fileName }
   }
 
-  const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '' })
+  const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '', password: '' })
   const [step2, setStep2] = useState<Step2Data>({
     registrationType: 'IAP',
     iapNumber: '',
@@ -1350,98 +1271,81 @@ export default function DoctorSignupPage() {
     slotDuration: '',
     availability: buildInitialAvailability(),
   })
-  const [step5, setStep5] = useState<Step5Data>({ otp: Array(OTP_LENGTH).fill('') })
 
   async function goNext() {
     if (currentStep === 4) {
-      // Robust phone formatting: strip all non-digits, then add +91
-      const rawPhone = step1.phone.replace(/\D/g, '')
-      const cleanPhone = rawPhone.length === 10 ? `+91${rawPhone}` : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
-      const flowId = crypto.randomUUID()
-
-      setOtpRequestError('')
-      setOtpRequestLoading(true)
+      // Submit everything to the onboard-signup API (creates user + runs onboarding)
+      setSubmitError('')
+      setSubmitLoading(true)
 
       try {
-        const response = await fetch('/api/auth/otp/send', {
+        const rawPhone = step1.phone.replace(/\D/g, '')
+        const cleanPhone = rawPhone.length === 10
+          ? `+91${rawPhone}`
+          : (rawPhone.startsWith('91') && rawPhone.length === 12 ? `+${rawPhone}` : `+91${rawPhone}`)
+
+        const availability = Object.fromEntries(
+          Object.entries(step4.availability).map(([day, config]) => [
+            SHORT_DAY_TO_FULL_DAY[day as keyof typeof SHORT_DAY_TO_FULL_DAY],
+            {
+              enabled: config.enabled,
+              slots: config.slots.map((slot) => ({
+                start: slot.startTime,
+                end: slot.endTime,
+              })),
+            },
+          ]),
+        )
+
+        const res = await fetch('/api/providers/onboard-signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone, flow: 'provider_signup', flow_id: flowId }),
+          body: JSON.stringify({
+            email: step1.email,
+            password: step1.password,
+            step1: { name: step1.name, phone: cleanPhone, email: step1.email },
+            step2,
+            step3,
+            step4: { ...step4, availability },
+          }),
         })
 
-        const payload = await response.json().catch(() => ({})) as { error?: string }
-        if (!response.ok) {
-          setOtpRequestError(payload.error ?? 'Unable to send the verification code right now.')
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({})) as { error?: string }
+          setSubmitError(payload.error ?? 'Registration failed. Please try again.')
           return
         }
 
-        setProviderOtpFlowId(flowId)
+        // Upload professional photo (best-effort — provider can update later)
+        if (pendingAvatarRef.current) {
+          try {
+            // We don't have a session yet (email not confirmed), so skip avatar upload.
+            // Provider can add photo from dashboard after email confirmation.
+          } catch {
+            // Non-fatal
+          }
+        }
+
+        // Advance to the confirmation screen
+        setCurrentStep(5)
       } catch {
-        setOtpRequestError('Unable to send the verification code right now.')
-        return
+        setSubmitError('Network error. Please check your connection and try again.')
       } finally {
-        setOtpRequestLoading(false)
+        setSubmitLoading(false)
       }
+      return
     }
 
     setCurrentStep((s) => Math.min(s + 1, 5) as StepNumber)
   }
+
   function goBack() {
     setCurrentStep((s) => Math.max(s - 1, 1) as StepNumber)
   }
-  async function handleSubmit() {
-    // Send all data to onboarding API
-    setSubmitError('')
-    try {
-      const availability = Object.fromEntries(
-        Object.entries(step4.availability).map(([day, config]) => [
-          SHORT_DAY_TO_FULL_DAY[day as keyof typeof SHORT_DAY_TO_FULL_DAY],
-          {
-            enabled: config.enabled,
-            slots: config.slots.map((slot) => ({
-              start: slot.startTime,
-              end: slot.endTime,
-            })),
-          },
-        ]),
-      )
-      const res = await fetch('/api/providers/onboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          step1,
-          step2,
-          step3,
-          step4: {
-            ...step4,
-            availability,
-          },
-        })
-      })
-      if (res.ok) {
-        // Upload professional photo if one was selected (best-effort)
-        if (pendingAvatarRef.current) {
-          try {
-            const { dataUrl, mimeType, fileName } = pendingAvatarRef.current
-            const byteString = atob(dataUrl.split(',')[1])
-            const bytes = new Uint8Array(byteString.length)
-            for (let i = 0; i < byteString.length; i++) bytes[i] = byteString.charCodeAt(i)
-            const avatarFile = new File([bytes], fileName, { type: mimeType })
-            const fd = new FormData()
-            fd.append('file', avatarFile)
-            await fetch('/api/auth/avatar', { method: 'POST', body: fd })
-          } catch {
-            // Non-fatal — provider can update photo from their profile later
-          }
-        }
-        router.push('/provider/dashboard')
-      } else {
-        const payload = (await res.json().catch(() => ({}))) as { error?: string }
-        setSubmitError(payload.error ?? 'Onboarding failed. Please contact support.')
-      }
-    } catch {
-      setSubmitError('Network error. Please check your connection and try again.')
-    }
+
+  // Redirect to login from Step 5 (user must confirm email first)
+  function handleLoginRedirect() {
+    router.push('/login')
   }
 
   return (
@@ -1467,21 +1371,29 @@ export default function DoctorSignupPage() {
           onChange={setStep4}
           onNext={goNext}
           onBack={goBack}
-          otpError={otpRequestError}
-          otpLoading={otpRequestLoading}
+          otpError={submitError}
+          otpLoading={submitLoading}
         />
       )}
       {currentStep === 5 && (
         <Step5
-          data={step5}
-          flowId={providerOtpFlowId}
-          phone={step1.phone}
-          onChange={setStep5}
-          onSubmit={handleSubmit}
-          onBack={goBack}
-          submitError={submitError}
-          onClearSubmitError={() => setSubmitError('')}
+          email={step1.email}
+          onBack={() => router.push('/login')}
         />
+      )}
+
+      {/* Show login redirect hint in Step 5 */}
+      {currentStep === 5 && (
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Already confirmed?{' '}
+          <button
+            type="button"
+            onClick={handleLoginRedirect}
+            className="font-semibold text-bp-primary hover:text-bp-primary-dark transition-colors bg-transparent border-none cursor-pointer p-0"
+          >
+            Sign in
+          </button>
+        </p>
       )}
     </div>
   )

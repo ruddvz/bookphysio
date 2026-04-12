@@ -1,8 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { createClient } from '@/lib/supabase/server'
-import { signupPatientSchema, signupProviderSchema } from '@/lib/validations/auth'
 import { otpRatelimit } from '@/lib/upstash'
+import { z } from 'zod'
+
+const emailSignupSchema = z.object({
+  full_name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone: z.string().regex(/^\+91[6-9]\d{9}$/).optional(),
+})
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
@@ -10,36 +17,43 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
-  const role = body.role === 'provider' ? 'provider' : 'patient'
-  const schema = role === 'provider' ? signupProviderSchema : signupPatientSchema
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
-
-  const ip = getRequestIpAddress(request) ?? 'unknown'
-  const sourceLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
-  if (!sourceLimit.success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
-
-  const rateLimitKey = `signup:${parsed.data.phone.trim().toLowerCase()}`
-  const { success } = await otpRatelimit.limit(rateLimitKey)
-  if (!success) return NextResponse.json({ error: 'Too many signup attempts' }, { status: 429 })
-
-  const supabase = await createClient()
-  const { email, password, full_name, phone, ...meta } = parsed.data as {
-    email: string; password: string; full_name: string; phone: string; [key: string]: unknown
+  const parsed = emailSignupSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  const ip = getRequestIpAddress(request) ?? 'unknown'
+  try {
+    const ipLimit = await otpRatelimit.limit(`signup:ip:${ip}`)
+    if (!ipLimit.success) {
+      return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 })
+    }
+    const emailLimit = await otpRatelimit.limit(`signup:email:${parsed.data.email.toLowerCase()}`)
+    if (!emailLimit.success) {
+      return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable (e.g. no Upstash in dev) — allow through
+  }
+
+  const supabase = await createClient()
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    phone,
+    email: parsed.data.email,
+    password: parsed.data.password,
     options: {
-      data: { role, full_name, phone, ...meta },
+      data: {
+        full_name: parsed.data.full_name,
+        phone: parsed.data.phone,
+        role: 'patient',
+      },
     },
   })
 
-  if (error) return NextResponse.json({ error: 'Unable to complete signup' }, { status: 400 })
+  if (error) {
+    return NextResponse.json({ error: 'Unable to create account. Please try again.' }, { status: 400 })
+  }
 
   return NextResponse.json({
-    user: { id: data.user?.id, email: data.user?.email, phone: data.user?.phone },
+    user: { id: data.user?.id, email: data.user?.email },
   }, { status: 201 })
 }
