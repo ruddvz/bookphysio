@@ -25,7 +25,7 @@ describe('How It Works page regressions', () => {
   it('switches to the provider flow and keeps the provider CTA adjacent to the content', () => {
     render(<HowItWorksPage />)
 
-    fireEvent.click(screen.getByRole('button', { name: /for providers/i }))
+    fireEvent.click(screen.getByRole('button', { name: /for physiotherapists/i }))
 
     expect(screen.getByRole('heading', { name: /register practice/i })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: /choose provider/i })).not.toBeInTheDocument()
