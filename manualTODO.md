@@ -63,16 +63,28 @@ How to do it:
 4. Confirm the Supabase URL, anon key, and service-role key all belong to the same Supabase project.
 5. Confirm `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_SITE_URL` both match the live production origin.
 
-### 3. Confirm Supabase phone auth is configured
+### 3. Configure Supabase phone auth with MSG91
 
-Reason: the repo sends OTPs through Supabase Auth. The Next.js app does not talk to MSG91 directly.
+Reason: the repo sends OTPs through Supabase Auth (`supabase.auth.signInWithOtp()`). The Next.js app does **not** talk to MSG91 directly — Supabase handles SMS delivery using the MSG91 credentials you configure in the dashboard.
 
-How to do it:
-1. Open Supabase → **Authentication** → **Providers** → **Phone**.
-2. Enable the Phone provider.
-3. Configure the SMS provider there.
-4. Use Supabase's test/send flow to confirm a real +91 number receives an OTP before retrying the app flow.
-5. Confirm **Authentication** → **Settings** includes the live production domain.
+**Step-by-step MSG91 setup in Supabase:**
+
+1. Open Supabase → **Authentication** → **Providers** → **Phone**
+2. Toggle **Enable Phone provider** to ON
+3. Under **SMS Provider**, select **MSG91** from the dropdown
+4. Fill in these three fields:
+   - **Auth Key** — get this from [MSG91 Dashboard](https://msg91.com/) → API Keys
+   - **Template ID** — your DLT-approved OTP template ID (must contain `{{otp}}` placeholder)
+   - **Sender ID** — your DLT-approved 6-character sender header (e.g., `BKPHYS`)
+5. Click **Save**
+6. Click **Send test OTP** — enter a real `+91` number and confirm the SMS arrives
+7. Open **Authentication** → **URL Configuration**:
+   - **Site URL**: `https://bookphysio.in`
+   - **Redirect URLs**: add `https://bookphysio.in/**`
+
+> **DLT compliance (India):** All SMS templates must be pre-registered with TRAI via your telecom operator's DLT portal. The template must have `{{otp}}` exactly matching Supabase's placeholder format. MSG91 handles the DLT header/template verification automatically if your account is DLT-compliant.
+
+> **Important:** If OTP SMS is not arriving in production, the fix is in the Supabase dashboard (Auth → Providers → Phone), not in the repo code. The app never sees MSG91 credentials.
 
 ### 4. Deploy the latest verified repo state
 
@@ -205,8 +217,100 @@ Or move DNS fully to Vercel nameservers if you want Vercel to manage this.
 ## Fastest Real-World Order
 
 1. Confirm the required Vercel env vars for the new auth/privacy deploy.
-2. Confirm Supabase phone auth is live and tested in the dashboard.
+2. Confirm Supabase phone auth (MSG91) is live and tested in the dashboard.
 3. Deploy the latest verified repo state.
 4. Add real production provider data.
 5. Run the production smoke pass.
 6. Do notification cleanup cron, JWT role claims, and `www` DNS later.
+
+---
+
+## Appendix A: How to Generate Cookie Secrets
+
+All three cookie secrets use the same generation command but serve different purposes. **Each must be unique — never reuse the same value for multiple secrets.**
+
+### OTP Pending Cookie Secret (`OTP_PENDING_COOKIE_SECRET`)
+
+**Purpose:** Encrypts the phone number in a server-side cookie during OTP verification flows, keeping raw mobile numbers out of client-side storage.
+
+**How the code uses it:** `src/lib/auth/pending-otp-cookie.ts` derives an AES-256-GCM key from this secret and encrypts/decrypts the pending OTP payload (phone, flow, flowId, name, returnTo).
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `OTP_PENDING_COOKIE_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** If unset, the code falls back to `DEMO_COOKIE_SECRET`. If both are unset in production, OTP send returns `503 "OTP configuration is unavailable"`.
+
+---
+
+### Demo Cookie Secret (`DEMO_COOKIE_SECRET`)
+
+**Purpose:** Signs demo session cookies with HMAC-SHA256. Required whenever demo mode (`NEXT_PUBLIC_ENABLE_DEMO=true`) is active.
+
+**How the code uses it:** `src/lib/demo/session.ts` uses this as the HMAC signing key for the `bp-demo-session` cookie. The cookie contains role/userId/session metadata signed to prevent tampering.
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `DEMO_COOKIE_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** If unset, demo cookie signing fails gracefully — demo sessions will not work but the app continues to function for real auth.
+
+---
+
+### Preview Token Secret (`PREVIEW_TOKEN_SECRET`)
+
+**Purpose:** Signs the preview access token cookie with HMAC-SHA256. Only needed if you enable the public preview gate (`ENABLE_PUBLIC_PREVIEW_GATE=true`).
+
+**How the code uses it:** `src/lib/preview/token.ts` signs a timestamp-based preview token. The signed cookie (`preview_token`) grants access to preview-gated routes for 30 days.
+
+**Generate:**
+```bash
+openssl rand -base64 32
+```
+
+**Set in Vercel:**
+1. Go to **Vercel → Project Settings → Environment Variables**
+2. Name: `PREVIEW_TOKEN_SECRET`
+3. Value: paste the output of the command above
+4. Environments: ✅ Production, ✅ Preview, ✅ Development
+5. Click **Save**
+
+**Fallback behavior:** Falls back to `DEMO_COOKIE_SECRET` if set. If neither is available, preview token validation always returns false and preview access is denied.
+
+**Related env var:** You also need `PREVIEW_PASSWORD` (the shared password testers enter on the `/preview` page) and `ENABLE_PUBLIC_PREVIEW_GATE=true` to activate the gate.
+
+---
+
+### Quick Reference: All Cookie Secrets at a Glance
+
+```bash
+# Generate all three in one go (run each line, copy each output separately):
+echo "OTP_PENDING_COOKIE_SECRET=$(openssl rand -base64 32)"
+echo "DEMO_COOKIE_SECRET=$(openssl rand -base64 32)"
+echo "PREVIEW_TOKEN_SECRET=$(openssl rand -base64 32)"
+```
+
+| Variable | Required | Purpose | Fallback |
+|----------|----------|---------|----------|
+| `OTP_PENDING_COOKIE_SECRET` | ✅ Always | Encrypts phone number in OTP flow cookie | `DEMO_COOKIE_SECRET` → `local-otp-cookie-secret` (dev only) |
+| `DEMO_COOKIE_SECRET` | Only if demo mode is on | Signs demo session cookies | None — demo fails gracefully |
+| `PREVIEW_TOKEN_SECRET` | Only if preview gate is on | Signs preview access tokens | `DEMO_COOKIE_SECRET` |
+| `PREVIEW_PASSWORD` | Only if preview gate is on | Shared password for `/preview` page | None |
+
+> **Security:** Never reuse the same value for different secrets. Never commit secrets to the repo. If a secret was ever pasted in chat or a public place, rotate it immediately using the generation commands above.
