@@ -189,11 +189,14 @@ A Sender ID is the 6-character name that appears as the SMS sender on the user's
 | **Template Content** | Copy-paste the exact text below ↓ |
 
 **Template text to paste:**
+
+> ⚠️ **Before pasting:** Check your DLT portal's documentation for the correct variable placeholder syntax. Different portals use different formats (`{#var#}`, `##VAR##`, `{var}`, etc.). The example below uses `{#var#}` — **replace it with your portal's format.**
+
 ```
 Your BookPhysio verification code is {#var#}. Do not share this code. It expires in 10 minutes.
 ```
 
-> ⚠️ **IMPORTANT:** The `{#var#}` is the DLT variable placeholder. Some portals use `{#var#}`, others use `##VAR##` or `{var}` — **use whatever your portal's format is.** This is where the OTP number will go.
+> This is where the OTP number will go. The rest of the text (everything except the placeholder) must stay **character-for-character identical** to avoid DLT rejection.
 
 4. Submit for approval
 5. **Wait 1–3 business days** for approval
@@ -241,12 +244,12 @@ Your BookPhysio verification code is {#var#}. Do not share this code. It expires
 | **DLT Template ID** | Paste your DLT Template ID from Step 4 (e.g., `1107161234567890`) |
 | **Template Body** | See below ↓ |
 
-**Template body to paste (must match DLT template exactly, but with MSG91 variables):**
+**Template body to paste (must match your DLT template character-for-character, except the variable placeholder which becomes `{{otp}}` in MSG91):**
 ```
 Your BookPhysio verification code is {{otp}}. Do not share this code. It expires in 10 minutes.
 ```
 
-> **KEY DIFFERENCE:** In MSG91, you use `{{otp}}` instead of `{#var#}`. MSG91 automatically maps `{{otp}}` to the DLT variable.
+> **KEY DIFFERENCE:** In MSG91, you use `{{otp}}` instead of `{#var#}` (or your DLT portal's placeholder). MSG91 automatically maps `{{otp}}` to the DLT variable. **Everything else in the text must be identical** to your DLT-approved template — even spaces and punctuation.
 
 4. Set **OTP Length** to `6`
 5. Set **OTP Expiry** to `600` seconds (10 minutes) — or `300` (5 minutes) if you prefer shorter
@@ -352,6 +355,7 @@ Deno.serve(async (req) => {
   const msg91SenderId = Deno.env.get("MSG91_SENDER_ID");
 
   // Validate all required env vars are present
+  // (msg91SenderId is optional — some MSG91 setups don't require it)
   if (!hookSecret || !msg91AuthKey || !msg91TemplateId) {
     console.error("Missing required environment variables");
     return new Response(
@@ -384,6 +388,7 @@ Deno.serve(async (req) => {
 
   // Clean the phone number — MSG91 expects country code + number without "+"
   // e.g., "+919876543210" → "919876543210"
+  // Supabase Auth already validates E.164 format, so we only strip the "+" prefix
   const cleanPhone = phoneNumber.replace(/^\+/, "");
 
   console.log(`Sending OTP to ${cleanPhone.slice(0, 4)}****${cleanPhone.slice(-2)}`);
