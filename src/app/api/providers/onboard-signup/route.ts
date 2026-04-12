@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
+import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { parseIndiaDate } from '@/lib/india-date'
@@ -162,23 +163,26 @@ export async function POST(request: NextRequest) {
   let specialtiesLinked = false
 
   try {
-    // 1. Create the Supabase auth user via admin API.
-    //    email_confirm: false causes Supabase to send a confirmation email.
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    // 1. Create the Supabase auth user via the anon client's signUp().
+    //    This automatically sends the confirmation email when email confirmation
+    //    is enabled in the Supabase dashboard. We don't use admin.createUser()
+    //    because it does NOT send confirmation emails.
+    const supabase = await createClient()
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      email_confirm: false,
-      user_metadata: {
-        full_name: step1.name,
-        phone: step1.phone,
-        role: 'provider',
+      options: {
+        data: {
+          full_name: step1.name,
+          phone: step1.phone,
+          role: 'provider',
+        },
       },
     })
 
-    if (authError || !authData.user) {
-      if (authError?.message?.toLowerCase().includes('already registered') ||
-          authError?.message?.toLowerCase().includes('already been registered') ||
-          authError?.code === 'email_exists') {
+    if (authError) {
+      if (authError.message?.toLowerCase().includes('already registered') ||
+          authError.message?.toLowerCase().includes('already been registered')) {
         return NextResponse.json(
           { error: 'An account with this email already exists. Please sign in instead.' },
           { status: 409 },
@@ -191,14 +195,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // signUp() with an already-confirmed email returns a user with empty identities
+    if (!authData.user || (authData.user.identities?.length === 0)) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists. Please sign in instead.' },
+        { status: 409 },
+      )
+    }
+
     userId = authData.user.id
 
     // 2. The handle_new_user DB trigger fires on auth.users INSERT and creates
     //    the users row with role='provider' (from user_metadata.role).
-    //    Update additional fields that the trigger doesn't set.
+    //    The trigger sets NEW.phone (null for email signups), so we also store
+    //    the phone from the form data.
     const { error: userError } = await supabaseAdmin
       .from('users')
-      .update({ full_name: step1.name, role: 'provider' })
+      .update({ full_name: step1.name, role: 'provider', phone: step1.phone ?? null })
       .eq('id', userId)
 
     if (userError) throw userError
@@ -215,7 +228,6 @@ export async function POST(request: NextRequest) {
       .map((s: { id: string; name: string }) => s.id)
 
     // 4. Create provider profile
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const providerSlug = slugifyProviderName(step1.name, userId!)
     const { error: providerError } = await supabaseAdmin
       .from('providers')
@@ -309,7 +321,6 @@ export async function POST(request: NextRequest) {
         schedule: multiSlotSchedule,
         durationMinutes: step4.slotDuration,
         weeks: 4,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         providerId: userId!,
         locationId: locationRow.id,
         bufferMins: 5,

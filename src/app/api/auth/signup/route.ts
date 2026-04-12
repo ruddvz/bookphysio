@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { z } from 'zod'
 
@@ -51,6 +52,27 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     return NextResponse.json({ error: 'Unable to create account. Please try again.' }, { status: 400 })
+  }
+
+  // signUp() with an already-confirmed email returns a user with empty identities
+  if (!data.user || (data.user.identities?.length === 0)) {
+    return NextResponse.json(
+      { error: 'An account with this email already exists. Please sign in instead.' },
+      { status: 409 },
+    )
+  }
+
+  // The handle_new_user trigger creates the users row but sets phone from
+  // auth.users.phone which is NULL for email-based signups. Store the phone
+  // from the form data in the users table via admin client.
+  if (parsed.data.phone && data.user.id) {
+    await supabaseAdmin
+      .from('users')
+      .update({ phone: parsed.data.phone })
+      .eq('id', data.user.id)
+      .then(({ error: phoneErr }) => {
+        if (phoneErr) console.error('Failed to store phone in users table:', phoneErr)
+      })
   }
 
   return NextResponse.json({

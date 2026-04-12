@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod'
-import { ArrowLeft, ArrowRight, Camera, Check, Eye, EyeOff, Mail } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
+import { createClient } from '@/lib/supabase/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -53,10 +54,6 @@ interface Step4Data {
   }
   slotDuration: '30' | '45' | '60' | ''
   availability: Record<string, DayAvailability>
-}
-
-interface Step5Data {
-  submitted: boolean
 }
 
 type StepNumber = 1 | 2 | 3 | 4 | 5
@@ -1204,16 +1201,48 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
 
 // ─── Step 5 ───────────────────────────────────────────────────────────────────
 
+const RESEND_COOLDOWN_SECONDS = 60
+
 interface Step5Props {
   email: string
   onBack: () => void
 }
 
 function Step5({ email, onBack }: Step5Props) {
+  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle')
+  const [resendError, setResendError] = useState('')
+  const [countdown, setCountdown] = useState(0)
+
+  useEffect(() => {
+    if (countdown <= 0) return
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [countdown])
+
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,
     (_m, a, b, c) => `${a}${'•'.repeat(Math.min(Math.max(b.length, 1), 6))}${c}`,
   )
+
+  async function handleResend() {
+    if (!email || resendStatus === 'loading' || countdown > 0) return
+    setResendStatus('loading')
+    setResendError('')
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.resend({ type: 'signup', email })
+      if (error) {
+        setResendError('Unable to resend the email right now. Please try again.')
+        setResendStatus('error')
+        return
+      }
+      setResendStatus('sent')
+      setCountdown(RESEND_COOLDOWN_SECONDS)
+    } catch {
+      setResendError('Network error. Please try again.')
+      setResendStatus('error')
+    }
+  }
 
   return (
     <div className="text-center">
@@ -1227,10 +1256,58 @@ function Step5({ email, onBack }: Step5Props) {
         We&apos;ve sent a confirmation link to
       </p>
       <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
-      <p className="text-[13px] text-gray-500 mb-8 leading-relaxed">
+      <p className="text-[13px] text-gray-500 mb-6 leading-relaxed">
         Click the link in the email to activate your account and access your provider dashboard.
         Check your spam folder if you don&apos;t see it within a few minutes.
       </p>
+
+      {/* Resend section */}
+      <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
+        <p className="text-sm text-gray-500">
+          Didn&apos;t receive it? Check your spam folder or resend below.
+        </p>
+
+        {resendStatus === 'sent' ? (
+          <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-600">
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Email resent!</span>
+            {countdown > 0 && (
+              <span className="text-gray-400 font-normal">
+                (resend again in {countdown}s)
+              </span>
+            )}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resendStatus === 'loading' || countdown > 0}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {resendStatus === 'loading' ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Resending…
+              </>
+            ) : countdown > 0 ? (
+              <>
+                <RefreshCw className="h-4 w-4" />
+                Resend in {countdown}s
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4" />
+                Resend confirmation email
+              </>
+            )}
+          </button>
+        )}
+
+        {resendStatus === 'error' && resendError && (
+          <p className="text-xs font-medium text-red-500">{resendError}</p>
+        )}
+      </div>
+
       <div className="flex justify-center">
         <BackLink onClick={onBack} />
       </div>

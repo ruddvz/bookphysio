@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, RefreshCw, CheckCircle2 } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
@@ -8,16 +9,12 @@ import { createClient } from '@/lib/supabase/client'
 
 const RESEND_COOLDOWN_SECONDS = 60
 
-export default function VerifyEmailPage() {
-  const [email, setEmail] = useState<string | null>(null)
+function VerifyEmailContent() {
+  const searchParams = useSearchParams()
+  const email = searchParams.get('email')
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle')
   const [resendError, setResendError] = useState<string>('')
   const [countdown, setCountdown] = useState(0)
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    setEmail(params.get('email'))
-  }, [])
 
   useEffect(() => {
     if (countdown <= 0) return
@@ -142,5 +139,21 @@ export default function VerifyEmailPage() {
 
       </div>
     </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className="h-10 w-[200px] bg-gray-100 rounded animate-pulse" />
+          <div className="h-16 w-16 rounded-full bg-gray-100 animate-pulse" />
+          <div className="h-6 w-48 bg-gray-100 rounded animate-pulse" />
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
