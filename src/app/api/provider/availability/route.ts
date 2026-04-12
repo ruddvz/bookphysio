@@ -5,7 +5,7 @@ import {
   buildAvailabilitySlotsInIndia,
   DEFAULT_PROVIDER_SCHEDULE,
   getProviderAvailabilityWindow,
-  type ProviderSchedule,
+  type ProviderScheduleLike,
   validateProviderSchedule,
 } from '@/lib/provider-availability'
 import { parseIndiaDate } from '@/lib/india-date'
@@ -25,14 +25,22 @@ const dayConfigSchema = z.object({
   end: timeSchema,
 })
 
+const multiSlotDayConfigSchema = z.object({
+  enabled: z.boolean(),
+  slots: z.array(z.object({
+    start: timeSchema,
+    end: timeSchema,
+  })),
+})
+
 const scheduleSchema = z.object({
-  Monday: dayConfigSchema,
-  Tuesday: dayConfigSchema,
-  Wednesday: dayConfigSchema,
-  Thursday: dayConfigSchema,
-  Friday: dayConfigSchema,
-  Saturday: dayConfigSchema,
-  Sunday: dayConfigSchema,
+  Monday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Tuesday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Wednesday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Thursday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Friday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Saturday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
+  Sunday: z.union([dayConfigSchema, multiSlotDayConfigSchema]),
 })
 
 const saveSchema = z.object({
@@ -262,7 +270,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { schedule, duration, weeks } = parsed.data
-  const scheduleErrors = validateProviderSchedule(schedule)
+  const scheduleErrors = validateProviderSchedule(schedule as unknown as ProviderScheduleLike)
 
   if (Object.keys(scheduleErrors).length > 0) {
     return NextResponse.json({
@@ -278,7 +286,7 @@ export async function POST(request: NextRequest) {
 
   if (!user && demoSession?.role === 'provider') {
     const generatedSlots = buildAvailabilitySlotsInIndia({
-      schedule,
+      schedule: schedule as unknown as ProviderScheduleLike,
       durationMinutes: duration,
       weeks,
       providerId: demoSession.userId,
@@ -365,7 +373,7 @@ export async function POST(request: NextRequest) {
 
     const bufferMins = existingOpenSlots?.[0]?.buffer_mins ?? DEFAULT_BUFFER_MINS
     const newSlots = buildAvailabilitySlotsInIndia({
-      schedule: schedule as ProviderSchedule,
+      schedule: schedule as unknown as ProviderScheduleLike,
       durationMinutes: duration,
       weeks,
       providerId: user.id,
