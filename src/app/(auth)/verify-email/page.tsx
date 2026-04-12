@@ -51,7 +51,11 @@ function VerifyEmailContent() {
   }
 
   const maskedEmail = email
-    ? email.replace(/^(.)(.*)(@.*)$/, (_m, a, b, c) => `${a}${'•'.repeat(Math.min(Math.max(b.length, 1), 6))}${c}`)
+    ? email.replace(
+        /^(.)(.*)(@.*)$/,
+        (_match, firstChar, localPart, domainPart) =>
+          `${firstChar}${'•'.repeat(Math.min(Math.max(localPart.length, 1), 6))}${domainPart}`,
+      )
     : null
 
   return (

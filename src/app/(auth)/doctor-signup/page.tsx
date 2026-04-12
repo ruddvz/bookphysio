@@ -1222,7 +1222,8 @@ function Step5({ email, onBack }: Step5Props) {
 
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,
-    (_m, a, b, c) => `${a}${'•'.repeat(Math.min(Math.max(b.length, 1), 6))}${c}`,
+    (_match, firstChar, localPart, domainPart) =>
+      `${firstChar}${'•'.repeat(Math.min(Math.max(localPart.length, 1), 6))}${domainPart}`,
   )
 
   async function handleResend() {
