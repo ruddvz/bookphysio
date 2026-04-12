@@ -72,12 +72,13 @@ export function SupportChatWidget() {
     []
   )
 
-  const { messages, sendMessage, status } = useChat<UIMessage>({
+  const { messages, sendMessage, status, error } = useChat<UIMessage>({
     messages: [initialMessage],
     transport,
   })
 
   const isLoading = status === 'submitted' || status === 'streaming'
+  const hasError = status === 'error'
   const hasNewMessage = !isOpen && messages.length > lastSeenCount
 
   useEffect(() => {
@@ -137,7 +138,7 @@ export function SupportChatWidget() {
                 <Stethoscope size={18} className="text-white" />
               </div>
               <div>
-                <p className="text-[14px] font-bold text-white tracking-tight">BookPhysio</p>
+                <p className="text-[14px] font-bold text-white tracking-tight">Bookphysio.in Support</p>
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <p className="text-[11px] text-white/70 font-medium">Online now</p>
@@ -217,6 +218,19 @@ export function SupportChatWidget() {
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)] [animation-delay:120ms]" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)] [animation-delay:240ms]" />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {hasError && (
+              <div className="flex items-end gap-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-500">
+                  <Stethoscope size={13} />
+                </div>
+                <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-rose-700 shadow-sm">
+                  {error?.message?.includes('429')
+                    ? 'Too many requests — please wait a moment and try again.'
+                    : 'Sorry, I couldn\'t process that. Please try again or email support@bookphysio.in for help.'}
                 </div>
               </div>
             )}

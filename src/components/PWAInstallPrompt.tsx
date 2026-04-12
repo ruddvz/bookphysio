@@ -15,7 +15,6 @@ import {
   Layout,
   Clock,
 } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
 
 type DashboardRole = 'patient' | 'provider' | 'admin'
 
@@ -97,7 +96,6 @@ const WHY_INSTALL_ITEMS = [
 ]
 
 export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
-  const { user } = useAuth()
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null)
   const [showBanner, setShowBanner] = useState(false)
@@ -109,10 +107,6 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
   const dismissKey = `${DISMISS_KEY_PREFIX}${role}`
 
   useEffect(() => {
-    // Only show PWA prompt when logged in — ensures the role-specific manifest
-    // (e.g. manifest-patient.json) is active, so the installed PWA gets the
-    // correct name/icon instead of the generic "BookPhysio.in" default manifest.
-    if (!user) return
     if (isStandalone()) return
 
     try {
@@ -141,7 +135,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall)
       clearTimeout(timer)
     }
-  }, [dismissKey, user])
+  }, [dismissKey])
 
   const handleInstall = useCallback(async () => {
     if (deferredPrompt) {
@@ -167,7 +161,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
 
   const config = ROLE_CONFIG[role]
 
-  if (!showBanner || isStandalone() || !user) return null
+  if (!showBanner || isStandalone()) return null
 
   return (
     <>
@@ -239,30 +233,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
             </div>
 
             <div className="p-5 space-y-6">
-              {/* Why install section — redesigned as icon cards */}
-              <div>
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
-                  Why install?
-                </h3>
-                <div className="grid grid-cols-2 gap-2.5">
-                  {WHY_INSTALL_ITEMS.map(({ icon: Icon, title, description }) => (
-                    <div
-                      key={title}
-                      className={`rounded-xl border border-slate-100 p-3 ${config.accentLight}`}
-                    >
-                      <Icon size={18} className={`${config.accentText} mb-2`} />
-                      <p className="text-[12px] font-bold text-slate-800 leading-tight">
-                        {title}
-                      </p>
-                      <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">
-                        {description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Platform tabs */}
+              {/* Platform tabs — instructions first */}
               <div>
                 <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
                   How to install
@@ -382,6 +353,29 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                   )}
                 </div>
               )}
+
+              {/* Why install — at the bottom */}
+              <div>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
+                  Why install?
+                </h3>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {WHY_INSTALL_ITEMS.map(({ icon: Icon, title, description }) => (
+                    <div
+                      key={title}
+                      className={`rounded-xl border border-slate-100 p-3 ${config.accentLight}`}
+                    >
+                      <Icon size={18} className={`${config.accentText} mb-2`} />
+                      <p className="text-[12px] font-bold text-slate-800 leading-tight">
+                        {title}
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">
+                        {description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
