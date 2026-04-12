@@ -197,17 +197,25 @@ function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, st
       continue
     }
 
-    const sortedSlots = [...av.slots].sort((left, right) => timeToMinutes(left.startTime) - timeToMinutes(right.startTime))
-    sortedSlots.forEach((slot, index) => {
+    av.slots.forEach((slot, index) => {
       if (timeToMinutes(slot.endTime) <= timeToMinutes(slot.startTime)) {
         errors[`time_${day}_${index}`] = 'End time must be after start time'
       }
+    })
 
+    const sortedSlots = av.slots
+      .map((slot, index) => ({ ...slot, originalIndex: index }))
+      .sort((left, right) => timeToMinutes(left.startTime) - timeToMinutes(right.startTime))
+
+    for (let index = 1; index < sortedSlots.length; index += 1) {
+      const slot = sortedSlots[index]
       const previousSlot = sortedSlots[index - 1]
+
       if (previousSlot && timeToMinutes(slot.startTime) < timeToMinutes(previousSlot.endTime)) {
         errors[`time_${day}`] = 'Time ranges must not overlap'
+        break
       }
-    })
+    }
   }
   return errors
 }

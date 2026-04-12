@@ -6,6 +6,7 @@ import {
   DEFAULT_PROVIDER_SCHEDULE,
   deriveProviderMultiSlotScheduleFromSlots,
   deriveProviderScheduleFromSlots,
+  validateProviderSchedule,
 } from './provider-availability'
 
 describe('provider availability helpers', () => {
@@ -132,6 +133,27 @@ describe('provider availability helpers', () => {
         { start: '09:00', end: '10:00' },
         { start: '14:00', end: '15:00' },
       ],
+    })
+  })
+
+  it('keeps per-slot validation errors mapped to the original slot index', () => {
+    const schedule = cloneProviderMultiSlotSchedule()
+    schedule.Monday = {
+      enabled: true,
+      slots: [
+        { start: '14:00', end: '15:00' },
+        { start: '18:00', end: '09:00' },
+      ],
+    }
+    schedule.Tuesday.enabled = false
+    schedule.Wednesday.enabled = false
+    schedule.Thursday.enabled = false
+    schedule.Friday.enabled = false
+    schedule.Saturday.enabled = false
+    schedule.Sunday.enabled = false
+
+    expect(validateProviderSchedule(schedule)).toEqual({
+      'Monday-1': 'End time must be after start time',
     })
   })
 })

@@ -42,7 +42,7 @@ export const PROVIDER_AVAILABILITY_DAYS = [
 export type DayName = (typeof PROVIDER_AVAILABILITY_DAYS)[number]
 export type ProviderSchedule = Record<DayName, DayConfig>
 export type ProviderMultiSlotSchedule = Record<DayName, MultiSlotDayConfig>
-export type ProviderScheduleLike = ProviderSchedule | ProviderMultiSlotSchedule
+export type ProviderScheduleLike = Record<DayName, DayConfig | MultiSlotDayConfig>
 
 export interface ProviderAvailabilitySlot {
   starts_at: string
@@ -177,20 +177,30 @@ export function validateProviderSchedule(schedule: ProviderScheduleLike): Record
       }
     }
 
-    const sortedSlots = [...dayConfig.slots].sort((left, right) => timeToMinutes(left.start) - timeToMinutes(right.start))
+    for (let index = 0; index < dayConfig.slots.length; index += 1) {
+      const slot = dayConfig.slots[index]
 
-    for (let index = 0; index < sortedSlots.length; index += 1) {
-      const slot = sortedSlots[index]
-
-      if (timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
+      if (slot && timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
         return {
           ...errors,
           [`${dayName}-${index}`]: 'End time must be after start time',
         }
       }
+    }
 
-      const previousSlot = sortedSlots[index - 1]
-      if (previousSlot && timeToMinutes(slot.start) < timeToMinutes(previousSlot.end)) {
+    const sortedSlots = dayConfig.slots
+      .map((slot, index) => ({ slot, index }))
+      .sort((left, right) => timeToMinutes(left.slot.start) - timeToMinutes(right.slot.start))
+
+    for (let index = 1; index < sortedSlots.length; index += 1) {
+      const currentSlot = sortedSlots[index]?.slot
+      const previousSlot = sortedSlots[index - 1]?.slot
+
+      if (
+        currentSlot &&
+        previousSlot &&
+        timeToMinutes(currentSlot.start) < timeToMinutes(previousSlot.end)
+      ) {
         return {
           ...errors,
           [dayName]: 'Time ranges must not overlap',
