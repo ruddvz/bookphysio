@@ -63,6 +63,13 @@ const SUPPORT_SYSTEM_PROMPT = `
 export async function POST(req: NextRequest) {
   let latestUserMessage = ''
 
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return new NextResponse('Invalid request.', { status: 400 })
+  }
+
   try {
     if (ratelimit) {
       const ip = getRequestIpAddress(req) ?? 'unknown'
@@ -75,7 +82,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const parsed = aiChatRequestSchema.safeParse(await req.json())
+    const parsed = aiChatRequestSchema.safeParse(body)
     if (!parsed.success) {
       return new NextResponse('Invalid request.', { status: 400 })
     }

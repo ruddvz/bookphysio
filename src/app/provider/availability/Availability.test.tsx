@@ -93,7 +93,7 @@ describe('ProviderAvailability', () => {
 
     expect(await screen.findByText(/End time must be after start time/i)).toBeInTheDocument()
 
-    fireEvent.click(screen.getAllByRole('button', { name: /Remove/i })[0]!)
+    fireEvent.click(screen.getAllByRole('button', { name: /Remove/i })[1]!)
 
     await waitFor(() => {
       expect(screen.queryByText(/End time must be after start time/i)).not.toBeInTheDocument()

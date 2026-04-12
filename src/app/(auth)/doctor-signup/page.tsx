@@ -203,9 +203,9 @@ function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, st
       }
     })
 
-    const sortedSlots = av.slots
-      .map((slot, index) => ({ ...slot, originalIndex: index }))
-      .sort((left, right) => timeToMinutes(left.startTime) - timeToMinutes(right.startTime))
+    const sortedSlots = [...av.slots].sort(
+      (left, right) => timeToMinutes(left.startTime) - timeToMinutes(right.startTime)
+    )
 
     for (let index = 1; index < sortedSlots.length; index += 1) {
       const slot = sortedSlots[index]
