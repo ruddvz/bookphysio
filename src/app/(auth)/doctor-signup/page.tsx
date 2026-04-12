@@ -1211,8 +1211,8 @@ interface Step5Props {
 
 function Step5({ email, onBack }: Step5Props) {
   const maskedEmail = email.replace(
-    /^(.{2})(.*)(@.*)$/,
-    (_m, a, b, c) => `${a}${'•'.repeat(Math.min(b.length, 6))}${c}`,
+    /^(.)(.*)(@.*)$/,
+    (_m, a, b, c) => `${a}${'•'.repeat(Math.min(Math.max(b.length, 1), 6))}${c}`,
   )
 
   return (
@@ -1316,15 +1316,8 @@ export default function DoctorSignupPage() {
           return
         }
 
-        // Upload professional photo (best-effort — provider can update later)
-        if (pendingAvatarRef.current) {
-          try {
-            // We don't have a session yet (email not confirmed), so skip avatar upload.
-            // Provider can add photo from dashboard after email confirmation.
-          } catch {
-            // Non-fatal
-          }
-        }
+        // Avatar upload is skipped here — provider has no session yet (email not confirmed).
+        // Provider can add their photo from the dashboard after confirming their email.
 
         // Advance to the confirmation screen
         setCurrentStep(5)

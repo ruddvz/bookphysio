@@ -8,7 +8,7 @@ const emailSignupSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  phone: z.string().regex(/^\+91[6-9]\d{9}$/).optional(),
+  phone: z.string().regex(/^\+91[6-9]\d{9}$/, 'Enter a valid Indian mobile number (+91XXXXXXXXXX)').optional(),
 })
 
 export async function POST(request: NextRequest) {

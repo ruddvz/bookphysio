@@ -53,7 +53,7 @@ export default function VerifyEmailPage() {
   }
 
   const maskedEmail = email
-    ? email.replace(/^(.{2})(.*)(@.*)$/, (_m, a, b, c) => `${a}${'•'.repeat(Math.min(b.length, 6))}${c}`)
+    ? email.replace(/^(.)(.*)(@.*)$/, (_m, a, b, c) => `${a}${'•'.repeat(Math.min(Math.max(b.length, 1), 6))}${c}`)
     : null
 
   return (

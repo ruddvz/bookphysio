@@ -14,7 +14,7 @@ const signupSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number').optional().or(z.literal('')),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number').or(z.literal('')).optional(),
 })
 
 interface SignupForm {

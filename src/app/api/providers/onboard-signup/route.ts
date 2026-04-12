@@ -192,7 +192,6 @@ export async function POST(request: NextRequest) {
     }
 
     userId = authData.user.id
-    const currentUserId: string = authData.user.id
 
     // 2. The handle_new_user DB trigger fires on auth.users INSERT and creates
     //    the users row with role='provider' (from user_metadata.role).
@@ -200,7 +199,7 @@ export async function POST(request: NextRequest) {
     const { error: userError } = await supabaseAdmin
       .from('users')
       .update({ full_name: step1.name, role: 'provider' })
-      .eq('id', currentUserId)
+      .eq('id', userId)
 
     if (userError) throw userError
 
@@ -216,11 +215,12 @@ export async function POST(request: NextRequest) {
       .map((s: { id: string; name: string }) => s.id)
 
     // 4. Create provider profile
-    const providerSlug = slugifyProviderName(step1.name, currentUserId)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const providerSlug = slugifyProviderName(step1.name, userId!)
     const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
-        id: currentUserId,
+        id: userId,
         slug: providerSlug,
         title: step2.degree.toLowerCase().includes('dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
     const { data: locationRow, error: locError } = await supabaseAdmin
       .from('locations')
       .insert({
-        provider_id: currentUserId,
+        provider_id: userId,
         name: step3.clinicName,
         address: step3.address,
         city: step3.city,
@@ -259,10 +259,10 @@ export async function POST(request: NextRequest) {
 
     // 6. Link specialties
     if (selectedIds.length > 0) {
-      await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', currentUserId)
+      await supabaseAdmin.from('provider_specialties').delete().eq('provider_id', userId)
       const { error: linkError } = await supabaseAdmin
         .from('provider_specialties')
-        .insert(selectedIds.map((sid: string) => ({ provider_id: currentUserId, specialty_id: sid })))
+        .insert(selectedIds.map((sid: string) => ({ provider_id: userId, specialty_id: sid })))
 
       if (linkError) throw linkError
       specialtiesLinked = true
@@ -297,7 +297,7 @@ export async function POST(request: NextRequest) {
       const { error: deleteAvailabilityError } = await supabaseAdmin
         .from('availabilities')
         .delete()
-        .eq('provider_id', currentUserId)
+        .eq('provider_id', userId)
         .eq('is_booked', false)
         .eq('is_blocked', false)
         .gte('starts_at', seedWindowStart)
@@ -309,7 +309,8 @@ export async function POST(request: NextRequest) {
         schedule: multiSlotSchedule,
         durationMinutes: step4.slotDuration,
         weeks: 4,
-        providerId: currentUserId,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        providerId: userId!,
         locationId: locationRow.id,
         bufferMins: 5,
       })
@@ -342,7 +343,9 @@ export async function POST(request: NextRequest) {
         const { error: provRollbackError } = await supabaseAdmin.from('providers').delete().eq('id', userId)
         if (provRollbackError) console.error('Rollback providers failed:', provRollbackError)
       }
-      // Delete the auth user to allow re-signup with the same email
+      // Delete the auth user to allow re-signup with the same email.
+      // The handle_new_user trigger creates a users row when the auth user is created;
+      // deleting the auth user cascades to the users row via ON DELETE CASCADE on the FK.
       const { error: userRollbackError } = await supabaseAdmin.auth.admin.deleteUser(userId)
       if (userRollbackError) console.error('Rollback auth user failed:', userRollbackError)
     }
