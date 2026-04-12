@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from 'lucide-react'
 
@@ -28,6 +29,18 @@ export default function ProviderCTA() {
             <div className="relative group">
               {/* Glow ring */}
               <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+
+              {/* Female physio — floating above dashboard, desktop only */}
+              <div className="hidden lg:block absolute -top-20 right-4 z-10 pointer-events-none select-none">
+                <Image
+                  src="/images/physio-female.png"
+                  alt=""
+                  width={160}
+                  height={240}
+                  className="object-contain object-bottom drop-shadow-2xl"
+                  aria-hidden="true"
+                />
+              </div>
 
               <div className="relative bg-slate-900 rounded-2xl border border-white/8 overflow-hidden shadow-2xl">
                 {/* Mock header */}
@@ -84,9 +97,7 @@ export default function ProviderCTA() {
 
           {/* Copy column */}
           <div className="order-1 lg:order-2 space-y-8">
-            <div className="bp-kicker" style={{ background: 'rgba(139,155,216,0.1)', borderColor: 'rgba(139,155,216,0.2)', color: '#C7CEEF' }}>
-              For Physiotherapists
-            </div>
+            <div className="bp-kicker border-white/15 bg-white/5 text-[#C7CEEF]">For Physiotherapists</div>
 
             <div>
               <h2 className="text-white text-[36px] md:text-[48px] font-extrabold tracking-tight leading-[1.05] mb-4">

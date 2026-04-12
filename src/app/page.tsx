@@ -2,8 +2,12 @@ import Navbar from '@/components/Navbar'
 import HeroSection from '@/components/HeroSection'
 import TopSpecialties from '@/components/TopSpecialties'
 import ProofSection from '@/components/ProofSection'
+import HowItWorks from '@/components/HowItWorks'
+import HealthSystems from '@/components/HealthSystems'
 import ProviderCTA from '@/components/ProviderCTA'
+import Testimonials from '@/components/Testimonials'
 import FAQ from '@/components/FAQ'
+import CityLinks from '@/components/CityLinks'
 import Footer from '@/components/Footer'
 
 const organizationSchema = {
@@ -13,7 +17,7 @@ const organizationSchema = {
   name: 'BookPhysio',
   url: 'https://bookphysio.in',
   logo: 'https://bookphysio.in/logo.png',
-  description: 'India\'s first physiotherapy-only booking platform connecting patients with IAP-verified physiotherapists for in-clinic and home visit sessions.',
+  description: 'India's first physiotherapy-only booking platform connecting patients with IAP-verified physiotherapists for in-clinic and home visit sessions.',
   foundingDate: '2024-01-01',
   areaServed: {
     '@type': 'Country',
@@ -68,8 +72,12 @@ export default function Home() {
         <HeroSection />
         <TopSpecialties />
         <ProofSection />
+        <HowItWorks />
+        <HealthSystems />
         <ProviderCTA />
+        <Testimonials />
         <FAQ />
+        <CityLinks />
       </main>
       <Footer />
     </>

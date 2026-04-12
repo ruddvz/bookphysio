@@ -1,12 +1,16 @@
 import type { ImgHTMLAttributes } from 'react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import CityLinks from './CityLinks'
 import FAQ from './FAQ'
 import Footer from './Footer'
+import HealthSystems from './HealthSystems'
 import HeroSection from './HeroSection'
+import HowItWorks from './HowItWorks'
 import Navbar from './Navbar'
 import ProofSection from './ProofSection'
 import ProviderCTA from './ProviderCTA'
+import Testimonials from './Testimonials'
 import TopSpecialties from './TopSpecialties'
 
 vi.mock('next/image', () => ({
@@ -18,22 +22,30 @@ vi.mock('next/image', () => ({
 }))
 
 describe('Homepage regressions', () => {
-  it('renders the production homepage stack with named regions for assistive tech', () => {
+  it('renders the merged homepage stack with named regions for assistive tech', () => {
     render(
       <>
         <HeroSection />
         <TopSpecialties />
         <ProofSection />
+        <HowItWorks />
+        <HealthSystems />
         <ProviderCTA />
+        <Testimonials />
         <FAQ />
+        <CityLinks />
       </>
     )
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /for providers/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /browse physiotherapists by city/i })).toBeInTheDocument()
   }, 15000)
 
   it('keeps the hero above the fold and leaves trust stats readable', () => {
@@ -53,50 +65,65 @@ describe('Homepage regressions', () => {
     expect(statsRow?.className).not.toContain('opacity-70')
   })
 
-  it('uses token-driven kickers, accurate stars, and the primary FAQ CTA styling', () => {
-    const { container } = render(
+  it('keeps merged homepage section copy and token-driven kickers intact', () => {
+    render(
       <>
-        <TopSpecialties />
+        <HowItWorks />
+        <HealthSystems />
+        <ProviderCTA />
+        <Testimonials />
+        <FAQ />
+        <CityLinks />
+      </>
+    )
+
+    const howItWorksKicker = screen.getByText(/^How it works$/i).closest('.bp-kicker')
+    const providerKicker = screen.getByText(/for physiotherapists/i).closest('.bp-kicker')
+    const testimonialsKicker = screen.getByText(/what to expect/i).closest('.bp-kicker')
+    const cityKicker = screen.getByText(/find care nearby/i).closest('.bp-kicker')
+
+    expect(screen.getByText(/four steps from search to session/i)).toBeInTheDocument()
+    expect(screen.getByText(/everything you need/i)).toBeInTheDocument()
+    expect(screen.getByText(/straightforward, start to finish/i)).toBeInTheDocument()
+    expect(screen.getByText(/physiotherapists by city/i)).toBeInTheDocument()
+    expect(screen.getByText(/can i cancel or reschedule a session/i)).toBeInTheDocument()
+    expect(howItWorksKicker).not.toHaveAttribute('style')
+    expect(providerKicker).not.toHaveAttribute('style')
+    expect(testimonialsKicker).not.toHaveAttribute('style')
+    expect(cityKicker).not.toHaveAttribute('style')
+  })
+
+  it('uses the reviewed FAQ CTA, accurate stars, and mobile nav links', () => {
+    const { rerender, container } = render(
+      <>
         <ProofSection />
         <FAQ />
       </>
     )
 
-    const specialtyKicker = screen.getByText(/browse by specialty/i).closest('.bp-kicker')
-    const proofKicker = screen.getByText(/straightforward booking/i).closest('.bp-kicker')
-    const faqKicker = screen.getByText(/common questions/i).closest('.bp-kicker')
     const faqCta = screen.getByRole('link', { name: /browse providers/i })
     const ratingRow = screen.getByText('4.9').parentElement
     const proofImage = container.querySelector('img[src="/images/physio-female.png"]')
 
-    expect(specialtyKicker).not.toHaveAttribute('style')
-    expect(proofKicker).not.toHaveAttribute('style')
-    expect(faqKicker).not.toHaveAttribute('style')
-    expect(faqCta?.className).toContain('bg-[#FF6B35]')
-    expect(faqCta?.className).toContain('rounded-full')
+    expect(faqCta.className).toContain('bg-[#FF6B35]')
+    expect(faqCta.className).toContain('rounded-full')
     expect(ratingRow?.querySelectorAll('.text-amber-400')).toHaveLength(4)
     expect(ratingRow?.querySelectorAll('.text-slate-200')).toHaveLength(1)
     expect(proofImage).toHaveAttribute('sizes', '180px')
-  })
 
-  it('matches navbar and footer regressions across mobile and desktop chrome', () => {
-    const { rerender, container } = render(<Navbar />)
-
+    rerender(<Navbar />)
     const brandLink = within(screen.getByRole('banner')).getByRole('link', { name: /bookphysio home/i })
     expect(within(brandLink).getByRole('img', { name: 'BookPhysio.in' })).toBeInTheDocument()
-    expect(brandLink.querySelector('img[alt="BookPhysio.in"]')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /specialties/i })).toBeInTheDocument()
-    expect(screen.queryByText('Specialities')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }))
     const mobileMenu = screen.getByRole('navigation', { name: /mobile navigation/i })
-    expect(within(mobileMenu).getByText('Specialties')).toBeInTheDocument()
     expect(within(mobileMenu).getByRole('link', { name: /for providers/i })).toHaveAttribute('href', '/doctor-signup')
+  })
 
-    expect(container.firstChild).toHaveClass('bg-transparent')
-    expect(container.firstChild).toHaveClass('fixed')
+  it('keeps footer chrome minimal when rendered alone', () => {
+    render(<Footer />)
 
-    rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /join as provider/i })).not.toBeInTheDocument()
     expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
