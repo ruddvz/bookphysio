@@ -36,17 +36,20 @@ This inserts specialties needed for the app to function.
 
 ## 4. Configure Authentication
 
-### Phone Auth (Supabase native, MSG91 backend)
+### Phone Auth (MSG91 via Supabase Send SMS Hook)
+
+MSG91 is **not** a built-in Supabase SMS provider dropdown. Instead, it requires a **Send SMS Hook** backed by a Supabase Edge Function. For the complete setup walkthrough, see [`docs/MSG91-SETUP-GUIDE.md`](./MSG91-SETUP-GUIDE.md).
+
+**High-level steps:**
 1. Go to **Authentication > Providers > Phone**
 2. Enable Phone provider
-3. Set **SMS Provider**: choose `MSG91` from the dropdown and fill in:
-   - **Auth Key** — from MSG91 dashboard
-   - **Template ID** — DLT-approved OTP template (must contain `{{otp}}` placeholder per Supabase contract)
-   - **Sender ID** — DLT-approved 6-character header
-4. Save and click **Send test OTP** to confirm an SMS arrives on a real +91 number before going live
-5. Disable email confirmations if phone-first auth is preferred
+3. Deploy the `send-sms` Supabase Edge Function (see MSG91 Setup Guide, Steps 7–8)
+4. Configure the **Send SMS Hook** in **Authentication > Hooks** to point to the Edge Function
+5. Set Edge Function secrets: `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, `MSG91_SENDER_ID`
+6. Test with a real +91 number to confirm SMS arrives before going live
+7. Disable email confirmations if phone-first auth is preferred
 
-> **Important:** the app does NOT include an MSG91 client. `app/api/auth/otp/send` calls `supabase.auth.signInWithOtp({ phone })` and `app/api/auth/otp/verify` calls `supabase.auth.verifyOtp(...)`. All SMS delivery happens server-side inside Supabase using the credentials configured above. If OTP SMS is not arriving in production, the fix is in this dashboard, not in the repo.
+> **Important:** the app does NOT include an MSG91 client. `app/api/auth/otp/send` calls `supabase.auth.signInWithOtp({ phone })` and `app/api/auth/otp/verify` calls `supabase.auth.verifyOtp(...)`. All SMS delivery happens server-side inside Supabase via the Send SMS Hook → Edge Function → MSG91 Flow API. If OTP SMS is not arriving in production, check the Edge Function logs and Hook configuration, not the repo code.
 
 ### Auth Settings
 1. **Authentication > Settings**:
@@ -114,7 +117,7 @@ Go to **Vercel > Project Settings > Environment Variables** and add:
 | `NEXT_PUBLIC_SITE_URL` | `https://bookphysio.in` |
 | `OTP_PENDING_COOKIE_SECRET` | Generate with `openssl rand -base64 32` |
 
-> MSG91 keys are configured **inside Supabase Auth → Providers → Phone**, not as repo secrets. The Next.js app never sees them.
+> MSG91 keys are configured as **Edge Function secrets** (via `supabase secrets set`), not as repo secrets or Supabase Auth provider fields. The Next.js app never sees them. See [`docs/MSG91-SETUP-GUIDE.md`](./MSG91-SETUP-GUIDE.md) for details.
 
 ### Optional Secrets (can add later)
 | Variable | Purpose |
