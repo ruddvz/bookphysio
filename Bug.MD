@@ -779,12 +779,12 @@ export default function robots() {
 |---------|--------|--------------|
 | **Supabase** | Needs production project | Create prod project, run migrations, configure RLS, set `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` |
 | **Razorpay** | Needs live mode | Switch from test (`rzp_test_*`) to live keys. Complete KYC on Razorpay dashboard. Set webhook URL to `https://bookphysio.in/api/payments/webhook` |
-| **MSG91** | Configured inside Supabase | MSG91 is the SMS backend for Supabase phone auth. Configure Auth Key, Template ID, and Sender ID in Supabase → Auth → Providers → Phone. No app-side env vars needed. |
+| **MSG91** | Configured inside Supabase Hooks | MSG91 is the SMS backend for Supabase phone auth. Configure the Send SMS Hook to call the repo's Supabase Edge Function, then set `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, and `MSG91_SENDER_ID` as Edge Function secrets. No app-side env vars needed. |
 | **Razorpay** | ~~ARCHIVED~~ — all routes return 503 | Re-enable when subscription billing is implemented. |
 | **Resend** | Needs domain verification | Verify `bookphysio.in` domain on Resend. Set `RESEND_API_KEY` |
 | **Upstash Redis** | Needs production instance | Create prod Redis DB. Set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` |
 | **Search map** | Removed from scope | No map token required |
-| **Textbelt** | ~~REMOVED~~ — replaced by MSG91 via Supabase | SMS delivery is now handled by Supabase Auth's native phone provider with MSG91 credentials configured in the Supabase dashboard. |
+| **Textbelt** | ~~REMOVED~~ — replaced by MSG91 via Supabase Hook | SMS delivery is now handled by Supabase Auth's Send SMS Hook calling the repo's Supabase Edge Function, which forwards OTPs to MSG91. |
 | **Domain DNS** | Action needed | Remove GitHub Pages A records, add Vercel DNS (see Session 2 notes below) |
 | **SSL Certificate** | Vercel automatic | Vercel provisions SSL automatically once domain is connected |
 | **OG Image** | Missing | Create 1200x630 branded image at `public/seo/og-image.png` |
@@ -796,7 +796,7 @@ export default function robots() {
 
 1. **Supabase**: Production instance is live on free tier. Run migration `013_provider_subscriptions.sql` against prod.
 2. **Razorpay**: Archived — not needed yet. Will be re-enabled for provider subscription billing.
-3. **MSG91**: Configured inside Supabase Auth → Providers → Phone. The app uses `supabase.auth.signInWithOtp()` — no app-side SMS client.
+3. **MSG91**: Configure Supabase Auth → Hooks → Send SMS to call the repo's `send-sms` Edge Function. The app uses `supabase.auth.signInWithOtp()` — no app-side SMS client.
 4. **Resend**: Verify `bookphysio.in` domain on Resend dashboard if not done yet.
 5. **Hosting**: Vercel — `vercel.json` created, deploy via CLI or GitHub integration.
 6. **Logo**: BpLogo rewritten but `/public/logo.png` (used elsewhere) should still be the production wordmark.

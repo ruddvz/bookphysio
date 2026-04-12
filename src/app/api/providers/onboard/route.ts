@@ -1,11 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { parseIndiaDate } from '@/lib/india-date'
 import { z } from 'zod'
 import {
   buildAvailabilitySlotsInIndia,
   type DayName,
+  getProviderAvailabilityWindow,
   type ProviderMultiSlotSchedule,
+  validateProviderSchedule,
 } from '@/lib/provider-availability'
 
 const daySlotSchema = z.object({
@@ -125,6 +128,23 @@ export async function POST(request: NextRequest) {
     const validated = onboardSchema.parse(body)
     const { step1, step2, step3, step4 } = validated
     const providerSlug = slugifyProviderName(step1.name, user.id)
+    const multiSlotSchedule = normalizeOnboardingAvailability(step4.availability)
+    const scheduleErrors = validateProviderSchedule(multiSlotSchedule)
+
+    if (Object.keys(scheduleErrors).length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Some onboarding fields are invalid. Please review and try again.',
+          details: {
+            fieldErrors: Object.fromEntries(
+              Object.entries(scheduleErrors).map(([field, message]) => [field, [message]]),
+            ),
+            formErrors: [],
+          },
+        },
+        { status: 400 },
+      )
+    }
 
     // 1. Activate the user as a provider immediately so they can enter the
     // provider portal after OTP verification and manage their live profile.
@@ -139,13 +159,13 @@ export async function POST(request: NextRequest) {
     if (userError) throw userError
 
     const { error: authUserError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
-      user_metadata: {
-        full_name: step1.name,
-        phone: step1.phone,
-        provider_pending: false,
-        role: 'provider',
-      },
-    })
+        user_metadata: {
+          full_name: step1.name,
+          phone: step1.phone,
+          provider_pending: true,
+          role: 'provider',
+        },
+      })
 
     if (authUserError) throw authUserError
 
@@ -158,8 +178,6 @@ export async function POST(request: NextRequest) {
     const selectedIds = (existingSpecialties ?? [])
       .filter((specialty) => step2.specialties.includes(specialty.name))
       .map((specialty) => specialty.id)
-
-    const multiSlotSchedule = normalizeOnboardingAvailability(step4.availability)
 
     // 2. Create provider profile
     const { error: providerError } = await supabaseAdmin
@@ -174,8 +192,8 @@ export async function POST(request: NextRequest) {
           : (step2.iapNumber || ''),
         specialty_ids: selectedIds,
         consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
-        verified: true,
-        active: true,
+        verified: false,
+        active: false,
         onboarding_step: 4,
       })
       .select()
@@ -215,6 +233,23 @@ export async function POST(request: NextRequest) {
 
     // 5. Seed recurring availability immediately so the provider becomes bookable.
     if (locationRow?.id) {
+      const { startDateKey, endDateKey } = getProviderAvailabilityWindow(4)
+      const seedWindowStart = parseIndiaDate(startDateKey).toISOString()
+      const seedWindowEnd = new Date(
+        parseIndiaDate(endDateKey).getTime() + 24 * 60 * 60 * 1000 - 1,
+      ).toISOString()
+
+      const { error: deleteAvailabilityError } = await supabaseAdmin
+        .from('availabilities')
+        .delete()
+        .eq('provider_id', user.id)
+        .eq('is_booked', false)
+        .eq('is_blocked', false)
+        .gte('starts_at', seedWindowStart)
+        .lte('starts_at', seedWindowEnd)
+
+      if (deleteAvailabilityError) throw deleteAvailabilityError
+
       const generatedSlots = buildAvailabilitySlotsInIndia({
         schedule: multiSlotSchedule,
         durationMinutes: step4.slotDuration,

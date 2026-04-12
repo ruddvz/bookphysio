@@ -65,26 +65,24 @@ How to do it:
 
 ### 3. Configure Supabase phone auth with MSG91
 
-Reason: the repo sends OTPs through Supabase Auth (`supabase.auth.signInWithOtp()`). The Next.js app does **not** talk to MSG91 directly — Supabase handles SMS delivery using the MSG91 credentials you configure in the dashboard.
+Reason: the repo sends OTPs through Supabase Auth (`supabase.auth.signInWithOtp()`). The Next.js app does **not** talk to MSG91 directly — Supabase handles SMS delivery through a **Send SMS Hook** wired to the repo's Supabase Edge Function.
 
 **Step-by-step MSG91 setup in Supabase:**
 
 1. Open Supabase → **Authentication** → **Providers** → **Phone**
 2. Toggle **Enable Phone provider** to ON
-3. Under **SMS Provider**, select **MSG91** from the dropdown
-4. Fill in these three fields:
-   - **Auth Key** — get this from [MSG91 Dashboard](https://msg91.com/) → API Keys
-   - **Template ID** — your DLT-approved OTP template ID (must contain `{{otp}}` placeholder)
-   - **Sender ID** — your DLT-approved 6-character sender header (e.g., `BKPHYS`)
-5. Click **Save**
-6. Click **Send test OTP** — enter a real `+91` number and confirm the SMS arrives
-7. Open **Authentication** → **URL Configuration**:
-   - **Site URL**: `https://bookphysio.in`
-   - **Redirect URLs**: add `https://bookphysio.in/**`
+3. Save the Phone provider settings
+4. Deploy the repo's `send-sms` Supabase Edge Function and set its `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, and `MSG91_SENDER_ID` secrets
+5. Open Supabase → **Authentication** → **Hooks**
+6. Configure the **Send SMS** hook to call the deployed Edge Function
+7. Click **Send test OTP** — enter a real `+91` number and confirm the SMS arrives
+8. Open **Authentication** → **URL Configuration**:
+    - **Site URL**: `https://bookphysio.in`
+    - **Redirect URLs**: add `https://bookphysio.in/**`
 
-> **DLT compliance (India):** All SMS templates must be pre-registered with TRAI via your telecom operator's DLT portal. The template must have `{{otp}}` exactly matching Supabase's placeholder format. MSG91 handles the DLT header/template verification automatically if your account is DLT-compliant.
+> **DLT compliance (India):** All SMS templates must be pre-registered with TRAI via your telecom operator's DLT portal. Ensure the MSG91 template configured in the Edge Function secrets is DLT-approved and matches the OTP payload used by the hook.
 
-> **Important:** If OTP SMS is not arriving in production, the fix is in the Supabase dashboard (Auth → Providers → Phone), not in the repo code. The app never sees MSG91 credentials.
+> **Important:** Do **not** configure MSG91 through a Supabase Auth SMS provider dropdown for this repo. If OTP SMS is not arriving in production, check the Supabase **Send SMS Hook**, the deployed Edge Function, and the MSG91 secrets used by that function.
 
 ### 4. Deploy the latest verified repo state
 

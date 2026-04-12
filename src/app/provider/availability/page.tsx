@@ -158,8 +158,11 @@ export default function ProviderAvailability() {
     }))
     setErrors((prev) => {
       const next = { ...prev }
-      delete next[day]
-      delete next[`${day}-${slotIndex}`]
+      for (const key of Object.keys(next)) {
+        if (key === day || key.startsWith(`${day}-`)) {
+          delete next[key]
+        }
+      }
       return next
     })
     setSaved(false)

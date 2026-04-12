@@ -79,6 +79,27 @@ describe('ProviderAvailability', () => {
     expect(await screen.findByText(/End time must be after start time/i, {}, { timeout: 10000 })).toBeInTheDocument()
   }, 15000)
 
+  it('clears stale day slot errors after removing an invalid extra range', async () => {
+    const { container } = render(<ProviderAvailability />)
+    await waitForAvailabilityEditor()
+
+    fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
+
+    const timeInputs = getTimeInputs(container)
+    fireEvent.change(timeInputs[2]!, { target: { value: '18:00' } })
+    fireEvent.change(timeInputs[3]!, { target: { value: '09:00' } })
+
+    fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
+
+    expect(await screen.findByText(/End time must be after start time/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Remove/i })[0]!)
+
+    await waitFor(() => {
+      expect(screen.queryByText(/End time must be after start time/i)).not.toBeInTheDocument()
+    })
+  })
+
   it('disables save button when no changes are made', async () => {
     render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
