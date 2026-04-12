@@ -92,7 +92,6 @@ export default function HealthSystems() {
               width={240}
               height={360}
               className="object-contain drop-shadow-2xl pointer-events-none select-none"
-              aria-hidden="true"
             />
           </div>
 

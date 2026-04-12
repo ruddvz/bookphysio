@@ -17,7 +17,7 @@ const organizationSchema = {
   name: 'BookPhysio',
   url: 'https://bookphysio.in',
   logo: 'https://bookphysio.in/logo.png',
-  description: 'India's first physiotherapy-only booking platform connecting patients with IAP-verified physiotherapists for in-clinic and home visit sessions.',
+  description: 'India\'s first physiotherapy-only booking platform connecting patients with IAP-verified physiotherapists for in-clinic and home visit sessions.',
   foundingDate: '2024-01-01',
   areaServed: {
     '@type': 'Country',

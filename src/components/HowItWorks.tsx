@@ -51,7 +51,6 @@ export default function HowItWorks() {
               width={160}
               height={240}
               className="object-contain drop-shadow-xl"
-              aria-hidden="true"
             />
           </div>
         </div>
