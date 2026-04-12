@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
       .map((s: { id: string; name: string }) => s.id)
 
     // 4. Create provider profile
-    const providerSlug = slugifyProviderName(step1.name, userId!)
+    const providerSlug = slugifyProviderName(step1.name, userId as string)
     const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
@@ -321,7 +321,7 @@ export async function POST(request: NextRequest) {
         schedule: multiSlotSchedule,
         durationMinutes: step4.slotDuration,
         weeks: 4,
-        providerId: userId!,
+        providerId: userId as string,
         locationId: locationRow.id,
         bufferMins: 5,
       })
