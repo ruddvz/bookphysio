@@ -181,7 +181,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
               Install App
             </p>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-              Add to your home screen for<br />quick access
+              Add to your home screen for quick access
             </p>
           </div>
           <button

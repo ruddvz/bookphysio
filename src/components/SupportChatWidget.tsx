@@ -228,7 +228,7 @@ export function SupportChatWidget() {
                   <Stethoscope size={13} />
                 </div>
                 <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-rose-100 bg-rose-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-rose-700 shadow-sm">
-                  {error?.message?.includes('429')
+                  {error?.message?.includes('429') || error?.message?.includes('Too many')
                     ? 'Too many requests — please wait a moment and try again.'
                     : 'Sorry, I couldn\'t process that. Please try again or email support@bookphysio.in for help.'}
                 </div>
