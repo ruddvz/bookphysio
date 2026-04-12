@@ -84,10 +84,7 @@ describe('POST /api/providers/onboard', () => {
     const providerSpecialtiesDeleteChain = {
       eq: vi.fn(() => providerSpecialtiesDeleteChain),
       in: providerSpecialtiesDeleteInMock,
-      then: (
-        onFulfilled: ((value: { error: null }) => unknown) | undefined,
-        onRejected?: ((reason: unknown) => unknown) | undefined,
-      ) => Promise.resolve({ error: null }).then(onFulfilled, onRejected),
+      error: null,
     }
 
     adminFromMock.mockImplementation((table: string) => {
@@ -183,7 +180,7 @@ describe('POST /api/providers/onboard', () => {
     expect(providerSpecialtiesInsertMock).toHaveBeenCalledWith([
       { provider_id: providerId, specialty_id: 'specialty-selected' },
     ])
-    expect(providerSpecialtiesDeleteInMock).toHaveBeenCalledWith('specialty_id', ['specialty-selected'])
+    expect(providerSpecialtiesDeleteInMock).not.toHaveBeenCalled()
     expect(providerSpecialtiesUpsertMock).toHaveBeenCalledWith(
       [{ provider_id: providerId, specialty_id: 'specialty-previous' }],
       { onConflict: 'provider_id,specialty_id' },

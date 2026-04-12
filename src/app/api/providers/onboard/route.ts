@@ -38,8 +38,8 @@ interface RollbackState {
   providerCreated: boolean
   createdLocationIds: string[]
   previousSpecialtyIds: string[]
-  selectedSpecialtyIds: string[]
-  specialtiesReplaced: boolean
+  insertedSpecialtyIds: string[]
+  specialtyLinksDeleted: boolean
 }
 
 async function validatePayload(request: NextRequest): Promise<OnboardPayload> {
@@ -163,8 +163,6 @@ async function linkSpecialties(
   }
 
   rollbackState.previousSpecialtyIds = (existingLinks ?? []).map((link) => link.specialty_id as string)
-  rollbackState.selectedSpecialtyIds = selectedSpecialtyIds
-  rollbackState.specialtiesReplaced = true
 
   const { error: deleteError } = await supabaseAdmin
     .from('provider_specialties')
@@ -175,6 +173,8 @@ async function linkSpecialties(
     throw deleteError
   }
 
+  rollbackState.specialtyLinksDeleted = true
+
   const { error: insertError } = await supabaseAdmin
     .from('provider_specialties')
     .insert(selectedSpecialtyIds.map((specialtyId) => ({ provider_id: userId, specialty_id: specialtyId })))
@@ -182,16 +182,18 @@ async function linkSpecialties(
   if (insertError) {
     throw insertError
   }
+
+  rollbackState.insertedSpecialtyIds = selectedSpecialtyIds
 }
 
 async function rollbackOnboard(userId: string, state: RollbackState): Promise<void> {
-  if (state.specialtiesReplaced) {
-    if (state.selectedSpecialtyIds.length > 0) {
+  if (state.specialtyLinksDeleted) {
+    if (state.insertedSpecialtyIds.length > 0) {
       const { error: cleanupNewSpecialtiesError } = await supabaseAdmin
         .from('provider_specialties')
         .delete()
         .eq('provider_id', userId)
-        .in('specialty_id', state.selectedSpecialtyIds)
+        .in('specialty_id', state.insertedSpecialtyIds)
 
       if (cleanupNewSpecialtiesError) {
         console.error('Rollback provider_specialties cleanup failed:', cleanupNewSpecialtiesError)
@@ -250,8 +252,8 @@ export async function POST(request: NextRequest) {
     providerCreated: false,
     createdLocationIds: [],
     previousSpecialtyIds: [],
-    selectedSpecialtyIds: [],
-    specialtiesReplaced: false,
+    insertedSpecialtyIds: [],
+    specialtyLinksDeleted: false,
   }
 
   try {
