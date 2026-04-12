@@ -109,7 +109,9 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
   const dismissKey = `${DISMISS_KEY_PREFIX}${role}`
 
   useEffect(() => {
-    // Only show PWA prompt when logged in
+    // Only show PWA prompt when logged in — ensures the role-specific manifest
+    // (e.g. manifest-patient.json) is active, so the installed PWA gets the
+    // correct name/icon instead of the generic "BookPhysio.in" default manifest.
     if (!user) return
     if (isStandalone()) return
 

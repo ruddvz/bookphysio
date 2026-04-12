@@ -32,6 +32,7 @@ function getUIMessageText(message: UIMessage): string {
 
 export function SupportChatWidget() {
   const pathname = usePathname()
+  // /hi is the Hindi landing page — show condition picker there too
   const isHomePage = pathname === '/' || pathname === '/hi'
 
   const [isOpen, setIsOpen] = useState(false)
