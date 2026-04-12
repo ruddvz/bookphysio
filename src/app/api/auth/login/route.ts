@@ -43,11 +43,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 })
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('role')
     .eq('id', data.user.id)
     .single()
+
+  if (profileError) {
+    console.error('[login] Failed to fetch user profile:', profileError)
+  }
 
   const role = profile?.role ?? 'patient'
   const returnTo = sanitizeReturnPath(typeof body.return_to === 'string' ? body.return_to : null)
