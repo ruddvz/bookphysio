@@ -85,6 +85,7 @@ export default function ProofSection() {
                     {p.specialty} · {p.city}
                   </div>
                   <div className="flex items-center gap-1 mt-1">
+                    {/* Math.round: ratings cluster 4.8–5.0; rounding up shows accurate stars (4.9→5★) */}
                     {'★★★★★'.split('').map((s, i) => (
                       <span key={i} className={`text-[11px] ${i < Math.round(p.rating) ? 'text-amber-400' : 'text-slate-200'}`}>★</span>
                     ))}

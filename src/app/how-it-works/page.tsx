@@ -104,7 +104,6 @@ export default function HowItWorksPage() {
   const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a provider'
   const trust = activeTab === 'patient' ? PATIENT_TRUST : PROVIDER_TRUST
   const character = activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER
-  const characterAlt = activeTab === 'patient' ? 'Female physiotherapist' : 'Male physiotherapist'
 
   return (
     <>
@@ -169,13 +168,14 @@ export default function HowItWorksPage() {
                 </div>
               </div>
 
-              {/* Right: physio character */}
+              {/* Right: physio character — decorative, context communicated by tab labels */}
               <div className="hidden lg:flex justify-center items-end">
                 <div className="relative">
                   <div className="w-[220px] h-[220px] rounded-full bg-[#E6F4F3]" aria-hidden="true" />
                   <Image
                     src={character}
-                    alt={characterAlt}
+                    alt=""
+                    aria-hidden="true"
                     width={200}
                     height={300}
                     className="absolute bottom-0 left-1/2 -translate-x-1/2 object-contain object-bottom"
