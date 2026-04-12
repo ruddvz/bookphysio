@@ -10,7 +10,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     env: {
       // Provide a deterministic secret so demo-cookie tests can call encodeDemoCookie
-      // (value is 36 ASCII chars — only needs to be stable, not a specific byte length)
+      // (deterministic test value; exact length is not important)
       DEMO_COOKIE_SECRET: 'test-demo-cookie-secret-32-bytes-ok',
     },
     exclude: [

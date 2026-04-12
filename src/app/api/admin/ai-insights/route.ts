@@ -6,12 +6,22 @@ import { patientModels } from '@/lib/ai-config'
 import { apiRatelimit } from '@/lib/upstash'
 
 const NO_STORE = { 'Cache-Control': 'no-store' }
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
 
 function jsonNoStore(body: unknown, init?: ResponseInit) {
   return NextResponse.json(body, {
     ...init,
     headers: { ...NO_STORE, ...(init?.headers ?? {}) },
   })
+}
+
+function getIstBoundaryIso(now: Date, boundary: 'day' | 'month'): string {
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS)
+  const istBoundary = boundary === 'day'
+    ? new Date(istNow.getFullYear(), istNow.getMonth(), istNow.getDate())
+    : new Date(istNow.getFullYear(), istNow.getMonth(), 1)
+
+  return new Date(istBoundary.getTime() - IST_OFFSET_MS).toISOString()
 }
 
 interface PlatformSnapshot {
@@ -31,9 +41,9 @@ interface PlatformSnapshot {
 
 async function gatherPlatformData(): Promise<PlatformSnapshot> {
   const now = new Date()
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+  const todayStart = getIstBoundaryIso(now, 'day')
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const monthStart = getIstBoundaryIso(now, 'month')
 
   const [
     { data: todayAppts },

@@ -16,17 +16,24 @@ import { patientModels } from '@/lib/ai-config'
  */
 
 function isAuthorizedCron(request: NextRequest): boolean {
-  const vercelCronHeader = request.headers.get('x-vercel-cron')
-  if (vercelCronHeader) {
+  const cronSecret = process.env.CRON_SECRET
+  const authorizationHeader = request.headers.get('authorization')
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  if (isProduction) {
+    if (!cronSecret) {
+      return false
+    }
+
+    return authorizationHeader === `Bearer ${cronSecret}`
+  }
+
+  if (!cronSecret) {
+    // In development, allow through without a secret
     return true
   }
 
-  const cronSecret = process.env.CRON_SECRET
-  if (!cronSecret) {
-    // In development, allow through without a secret
-    return process.env.NODE_ENV !== 'production'
-  }
-  return request.headers.get('authorization') === `Bearer ${cronSecret}`
+  return authorizationHeader === `Bearer ${cronSecret}`
 }
 
 interface DailyMetrics {
@@ -196,7 +203,7 @@ async function storeSummary(
       ai_summary: aiResponse,
       health_score: typeof aiResponse.healthScore === 'number' ? aiResponse.healthScore : null,
       alerts: Array.isArray(aiResponse.alerts) ? aiResponse.alerts : [],
-      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }, {
       onConflict: 'summary_date',
     })

@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { after, NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getDemoAppointments } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
@@ -328,17 +328,25 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Fire-and-forget anomaly detection — never blocks the response
-  checkBookingAnomaly({
+  const anomalyContext = {
     appointmentId: appointment.id as string,
     patientId: user.id,
     providerId: slot.provider_id as string,
     feeInr: feeInr,
     visitType: visit_type,
     bookedAt: new Date().toISOString(),
-  }).catch(() => {
-    // Intentionally swallowed — anomaly detection must never affect the booking
-  })
+  }
+
+  try {
+    after(async () => {
+      await checkBookingAnomaly(anomalyContext)
+    })
+  } catch {
+    console.warn('[api/appointments] after() unavailable, running anomaly detection without blocking response')
+    void checkBookingAnomaly(anomalyContext).catch((error) => {
+      console.error('[api/appointments] Fallback anomaly detection failed:', error)
+    })
+  }
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
 }

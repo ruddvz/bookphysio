@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { getDemoRedirectPath, getDemoSessionFromCookies, resolvePostAuthRedirect } from '@/lib/demo/session'
 import { canRoleAccessPath, isPatientPath, isProviderPath } from '@/lib/auth/access'
+import { getDemoRedirectPath, getDemoSessionFromCookies, resolvePostAuthRedirect } from '@/lib/demo/session'
 import { getPublicSupabaseEnv } from '@/lib/supabase/env'
 
 const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
@@ -29,9 +29,49 @@ const cspHeader = [
   "frame-ancestors 'none'",
 ].join('; ')
 
-export default async function middleware(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers)
+function withCsp(response: NextResponse): NextResponse {
+  response.headers.set('Content-Security-Policy', cspHeader)
+  return response
+}
 
+function redirectWithCsp(url: URL): NextResponse {
+  return withCsp(NextResponse.redirect(url))
+}
+
+function rewriteWithCsp(url: URL): NextResponse {
+  return withCsp(NextResponse.rewrite(url))
+}
+
+function resolveRewrittenPathname(hostname: string, pathname: string): string {
+  const normalizedHostname = hostname.split(':')[0]
+
+  if (normalizedHostname === 'ai.bookphysio.in' && (pathname === '/' || pathname === '/index')) {
+    return '/patient/dashboard'
+  }
+
+  if (normalizedHostname === 'motio.bookphysio.in' && (pathname === '/' || pathname === '/index')) {
+    return '/provider/dashboard'
+  }
+
+  return pathname
+}
+
+function buildLoginRedirect(request: NextRequest, returnTo: string): NextResponse {
+  const url = request.nextUrl.clone()
+  url.pathname = '/login'
+  url.search = ''
+  url.searchParams.set('return', returnTo)
+  return redirectWithCsp(url)
+}
+
+function buildServerErrorResponse(): NextResponse {
+  return withCsp(new NextResponse('Internal Server Error', {
+    status: 500,
+    headers: { 'Cache-Control': 'no-store' },
+  }))
+}
+
+function initSupabase(request: NextRequest, requestHeaders: Headers) {
   let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
   const supabaseEnv = getPublicSupabaseEnv()
   const supabase = supabaseEnv
@@ -40,7 +80,9 @@ export default async function middleware(request: NextRequest) {
         supabaseEnv.anonKey,
         {
           cookies: {
-            getAll() { return request.cookies.getAll() },
+            getAll() {
+              return request.cookies.getAll()
+            },
             setAll(cookiesToSet) {
               cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
               supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
@@ -53,17 +95,64 @@ export default async function middleware(request: NextRequest) {
       )
     : null
 
+  return { supabase, supabaseResponse }
+}
+
+function handleDemoRequest(
+  request: NextRequest,
+  requestHeaders: Headers,
+  pathname: string,
+  rewrittenPathname: string,
+  role: 'patient' | 'provider' | 'admin',
+): NextResponse {
+  if (!canRoleAccessPath(role, rewrittenPathname)) {
+    return redirectWithCsp(new URL(getDemoRedirectPath(role), request.url))
+  }
+
+  if (rewrittenPathname !== pathname) {
+    const url = request.nextUrl.clone()
+    url.pathname = rewrittenPathname
+    return rewriteWithCsp(url)
+  }
+
+  return withCsp(NextResponse.next({ request: { headers: requestHeaders } }))
+}
+
+async function verifyUserRoleAccess(
+  request: NextRequest,
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string,
+  rewrittenPathname: string,
+): Promise<NextResponse | null> {
+  const { data: profile, error: profileError } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', userId)
+    .single()
+
+  if (profileError) {
+    console.error('[middleware] Failed to verify user role:', profileError)
+    return buildServerErrorResponse()
+  }
+
+  if (!canRoleAccessPath(profile?.role, rewrittenPathname)) {
+    return redirectWithCsp(new URL(resolvePostAuthRedirect(profile?.role, null), request.url))
+  }
+
+  return null
+}
+
+export default async function middleware(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers)
+  const { supabase, supabaseResponse } = initSupabase(request, requestHeaders)
+
   const { data: { user } } = supabase
     ? await supabase.auth.getUser()
     : { data: { user: null } }
   const demoSession = user ? null : await getDemoSessionFromCookies(request.cookies)
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
-  const rewrittenPathname = hostname.includes('ai.bookphysio.in') && (pathname === '/' || pathname === '/index')
-    ? '/patient/dashboard'
-    : hostname.includes('motio.bookphysio.in') && (pathname === '/' || pathname === '/index')
-      ? '/provider/dashboard'
-      : pathname
+  const rewrittenPathname = resolveRewrittenPathname(hostname, pathname)
   const returnTo = `${rewrittenPathname}${request.nextUrl.search}`
 
   const isProtected = PROTECTED_PREFIXES.some((prefix) => rewrittenPathname.startsWith(prefix))
@@ -72,72 +161,27 @@ export default async function middleware(request: NextRequest) {
   const isPatientRoute = isPatientPath(rewrittenPathname)
 
   if (!user && !demoSession && (isProtected || isAdmin)) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.search = ''
-    url.searchParams.set('return', returnTo)
-    const redirectResponse = NextResponse.redirect(url)
-    redirectResponse.headers.set('Content-Security-Policy', cspHeader)
-    return redirectResponse
+    return buildLoginRedirect(request, returnTo)
   }
 
   if (!user && demoSession) {
-    if (!canRoleAccessPath(demoSession.role, rewrittenPathname)) {
-      return NextResponse.redirect(new URL(getDemoRedirectPath(demoSession.role), request.url))
-    }
-
-    if (rewrittenPathname !== pathname) {
-      const url = request.nextUrl.clone()
-      url.pathname = rewrittenPathname
-      const demoRewrite = NextResponse.rewrite(url)
-      demoRewrite.headers.set('Content-Security-Policy', cspHeader)
-      return demoRewrite
-    }
-
-    const demoNext = NextResponse.next({ request: { headers: requestHeaders } })
-    demoNext.headers.set('Content-Security-Policy', cspHeader)
-    return demoNext
+    return handleDemoRequest(request, requestHeaders, pathname, rewrittenPathname, demoSession.role)
   }
 
   if (user && supabase && (isProviderRoute || isPatientRoute || isAdmin)) {
-    // Defense-in-depth: admin API routes independently enforce requireAdmin() server-side.
-    // This middleware redirect prevents unnecessary round-trips for non-admin UI users.
-    const { data: profile, error: profileError } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError) {
-      console.error('[middleware] Failed to verify user role:', profileError)
-      return new NextResponse('Internal Server Error', {
-        status: 500,
-        headers: {
-          'Cache-Control': 'no-store',
-          'Content-Security-Policy': cspHeader,
-        },
-      })
-    }
-
-    const roleHomeUrl = new URL(resolvePostAuthRedirect(profile?.role, null), request.url)
-
-    if (!canRoleAccessPath(profile?.role, rewrittenPathname)) {
-      const roleRedirect = NextResponse.redirect(roleHomeUrl)
-      roleRedirect.headers.set('Content-Security-Policy', cspHeader)
-      return roleRedirect
+    const deniedResponse = await verifyUserRoleAccess(request, supabase, user.id, rewrittenPathname)
+    if (deniedResponse) {
+      return deniedResponse
     }
   }
 
   if (rewrittenPathname !== pathname) {
     const url = request.nextUrl.clone()
     url.pathname = rewrittenPathname
-    const rewriteResponse = NextResponse.rewrite(url)
-    rewriteResponse.headers.set('Content-Security-Policy', cspHeader)
-    return rewriteResponse
+    return rewriteWithCsp(url)
   }
 
-  supabaseResponse.headers.set('Content-Security-Policy', cspHeader)
-  return supabaseResponse
+  return withCsp(supabaseResponse)
 }
 
 export const config = {

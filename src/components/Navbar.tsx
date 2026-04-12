@@ -53,7 +53,8 @@ export default function Navbar({
   const effectiveLocale = locale ?? 'en'
   const searchHref = effectiveLocale === 'hi' ? '/hi/search' : '/search'
   const loginHref  = effectiveLocale === 'hi' ? '/hi/login'  : '/login'
-  const signupHref = effectiveLocale === 'hi' ? '/hi/signup' : '/signup'
+  // Hindi signup still redirects to the English flow, so link directly to /signup.
+  const signupHref = '/signup'
   const howItWorksHref = locale ? getLocalizedStaticHref(locale, '/how-it-works') : '/how-it-works'
 
   useEffect(() => {
@@ -332,11 +333,7 @@ export default function Navbar({
             <Link
               href={signupHref}
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
-              style={{
-                background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
-                boxShadow: '0 4px 24px rgba(139,155,216,0.40)',
-              }}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#8B9BD8,#7DCFC9)] px-6 py-4 text-[15px] font-bold text-white shadow-[0_4px_24px_rgba(139,155,216,0.40)] transition-transform active:scale-[0.98]"
             >
               Sign up
               <ArrowRight size={16} />

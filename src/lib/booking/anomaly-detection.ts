@@ -91,7 +91,7 @@ async function getPatientBookingHistory(patientId: string): Promise<PatientBooki
 async function getProviderContext(providerId: string): Promise<ProviderContext> {
   const admin = await getAdminClient()
   const [
-    { data: provider },
+    { data: provider, error: providerError },
     { count: bookingCount },
   ] = await Promise.all([
     admin
@@ -106,11 +106,15 @@ async function getProviderContext(providerId: string): Promise<ProviderContext> 
       .eq('provider_id', providerId),
   ])
 
+  if (providerError || !provider) {
+    throw providerError ?? new Error(`Provider ${providerId} not found for anomaly detection`)
+  }
+
   return {
-    standardFee: (provider?.consultation_fee_inr as number) ?? 0,
+    standardFee: (provider.consultation_fee_inr as number) ?? 0,
     totalBookings: bookingCount ?? 0,
-    verified: (provider?.verified as boolean) ?? false,
-    userId: (provider?.user_id as string) ?? null,
+    verified: (provider.verified as boolean) ?? false,
+    userId: (provider.user_id as string) ?? null,
   }
 }
 

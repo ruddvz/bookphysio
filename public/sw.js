@@ -48,69 +48,63 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+function isSameOriginGetRequest(request) {
+  if (request.method !== 'GET') return false
+  return new URL(request.url).origin === self.location.origin
+}
+
+function isBypassedPath(url) {
+  return url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')
+}
+
+function cacheResponse(request, response) {
+  if (!response || response.status !== 200) return response
+  if (response.type !== 'basic' && response.type !== 'cors') return response
+
+  const clone = response.clone()
+  caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+  return response
+}
+
+function handleNavigation(request) {
+  return fetch(request).catch(async () => {
+    const cached = await caches.match(OFFLINE_URL)
+    return cached || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } })
+  })
+}
+
+function handleHashedStatic(request) {
+  return caches.match(request).then((cached) => {
+    if (cached) return cached
+    return fetch(request).then((response) => cacheResponse(request, response))
+  })
+}
+
+function handleCacheFirstWithRefresh(request) {
+  return caches.match(request).then((cached) => {
+    const fetchPromise = fetch(request)
+      .then((response) => cacheResponse(request, response))
+      .catch(() => cached)
+    return cached || fetchPromise
+  })
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
-
-  if (request.method !== 'GET') return
+  if (!isSameOriginGetRequest(request)) return
 
   const url = new URL(request.url)
+  if (isBypassedPath(url)) return
 
-  // Never intercept API or auth — let the network handle it.
-  if (url.pathname.startsWith('/api/')) return
-  if (url.pathname.startsWith('/auth/')) return
-
-  // Only handle same-origin requests — never intercept cross-origin fetches.
-  if (url.origin !== self.location.origin) return
-
-  // HTML navigations: network-first so deploys take effect immediately.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Don't cache navigations — we never want to serve stale HTML again.
-          return response
-        })
-        .catch(async () => {
-          // Offline fallback only.
-          const cached = await caches.match(OFFLINE_URL)
-          return cached || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } })
-        })
-    )
+    event.respondWith(handleNavigation(request))
     return
   }
 
-  // Hashed Next.js static assets are immutable — cache-first is safe and fast.
-  const isHashedStatic = url.pathname.startsWith('/_next/static/')
-
-  if (isHashedStatic) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached
-        return fetch(request).then((response) => {
-          if (response && response.status === 200 && (response.type === 'basic' || response.type === 'cors')) {
-            const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-          }
-          return response
-        })
-      })
-    )
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(handleHashedStatic(request))
     return
   }
 
-  // Other same-origin GETs (icons, manifests, fonts): cache-first with refresh.
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request)
-        .then((response) => {
-          if (response && response.status === 200 && (response.type === 'basic' || response.type === 'cors')) {
-            const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-          }
-          return response
-        })
-        .catch(() => cached)
-      return cached || fetchPromise
-    })
-  )
+  event.respondWith(handleCacheFirstWithRefresh(request))
 })

@@ -8,7 +8,7 @@
 
 - Access to your Supabase project dashboard
 - The project URL follows this pattern:
-  ```
+  ```text
   https://supabase.com/dashboard/project/<your-project-ref>
   ```
 
