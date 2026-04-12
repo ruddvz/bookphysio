@@ -46,7 +46,7 @@ export default function HowItWorks() {
           </p>
 
           {/* Male physio — desktop only, anchors the header visually */}
-          <div className="hidden lg:block absolute -right-48 top-1/2 -translate-y-1/2 pointer-events-none select-none">
+          <div className="hidden lg:block absolute -right-36 top-1/2 -translate-y-1/2 pointer-events-none select-none">
             <Image
               src="/images/physio-male.png"
               alt=""

@@ -31,7 +31,7 @@ export default function ProviderCTA() {
               <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
 
               {/* Female physio — floating above dashboard, desktop only */}
-              <div className="hidden lg:block absolute -top-16 right-6 z-10 pointer-events-none select-none">
+              <div className="hidden lg:block absolute -top-20 right-4 z-10 pointer-events-none select-none">
                 <Image
                   src="/images/physio-female.png"
                   alt=""
