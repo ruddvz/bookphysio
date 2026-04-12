@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Plus, Minus, ArrowRight } from 'lucide-react'
@@ -58,10 +59,22 @@ export default function FAQ() {
               </Link>
               <Link
                 href="/faq"
-                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-indigo-200 hover:text-indigo-700 transition-colors w-fit"
+                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-[#00766C]/30 hover:text-[#00766C] transition-colors w-fit"
               >
                 View all FAQs
               </Link>
+            </div>
+
+            {/* Male physio — decorative, desktop only */}
+            <div className="hidden lg:block relative mt-6 h-[240px] overflow-hidden">
+              <Image
+                src="/images/physio-male.png"
+                alt=""
+                width={160}
+                height={240}
+                className="object-contain object-bottom absolute bottom-0 left-0 pointer-events-none select-none"
+                aria-hidden="true"
+              />
             </div>
           </div>
 
