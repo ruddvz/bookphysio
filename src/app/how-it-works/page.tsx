@@ -190,13 +190,13 @@ export default function HowItWorksPage() {
                   </div>
                 </div>
 
-                <div className="hidden lg:flex justify-center items-end" aria-hidden="true">
+                <div className="hidden lg:flex justify-center items-end">
                   <div className="relative">
                     <div className="w-[220px] h-[220px] rounded-full bg-[#E6F4F3]" />
                     <Image
                       src={content.character}
                       alt=""
-                      aria-hidden="true"
+                     
                       width={200}
                       height={300}
                       className="absolute bottom-0 left-1/2 -translate-x-1/2 object-contain object-bottom"
@@ -238,7 +238,7 @@ export default function HowItWorksPage() {
           <section className="pb-12 lg:pb-16">
             <div className="max-w-[1142px] mx-auto px-6">
               <div className="rounded-2xl bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" />
 
                 <div className="max-w-xl text-center md:text-left relative z-10">
                   <h2 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight">

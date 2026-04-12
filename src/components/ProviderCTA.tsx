@@ -38,7 +38,6 @@ export default function ProviderCTA() {
                   width={160}
                   height={240}
                   className="object-contain object-bottom drop-shadow-2xl"
-                  aria-hidden="true"
                 />
               </div>
 

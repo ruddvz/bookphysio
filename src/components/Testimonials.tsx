@@ -61,7 +61,6 @@ export default function Testimonials() {
                 width={150}
                 height={230}
                 className="object-contain object-bottom"
-                aria-hidden="true"
               />
             </div>
           </div>

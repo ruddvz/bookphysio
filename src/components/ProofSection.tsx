@@ -97,7 +97,6 @@ export default function ProofSection() {
               <Image
                 src={PROOF_CHARACTER}
                 alt=""
-                aria-hidden="true"
                 width={180}
                 height={240}
                 className="object-contain object-bottom"

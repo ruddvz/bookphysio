@@ -193,7 +193,7 @@ export default function HeroSection() {
             width={240}
             height={360}
             className="object-contain"
-            aria-hidden="true"
+           
           />
         </div>
 
@@ -205,7 +205,7 @@ export default function HeroSection() {
             width={260}
             height={400}
             className="object-contain"
-            aria-hidden="true"
+           
           />
         </div>
       </div>
