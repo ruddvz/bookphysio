@@ -160,6 +160,51 @@ describe('ProviderAvailability', () => {
     expect(await screen.findByRole('button', { name: /Commit Changes/i }, { timeout: 10000 })).toBeEnabled()
   }, 15000)
 
+  it('allows multiple time ranges for the same day and saves them', async () => {
+    const fetchMock = vi.fn((input: string, init?: RequestInit) => {
+      if (!init?.method || init.method === 'GET') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ slots: buildDefaultOpenSlots() }),
+        })
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ success: true, created: 42 }),
+      })
+    })
+
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<ProviderAvailability />)
+    await waitForAvailabilityEditor()
+
+    fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
+
+    const mondayCard = screen.getByLabelText(/Monday/i).closest('.group')
+    const mondayTimeInputs = mondayCard
+      ? Array.from(mondayCard.querySelectorAll('input[type="time"]'))
+      : []
+
+    expect(mondayTimeInputs).toHaveLength(4)
+
+    fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/provider/availability',
+        expect.objectContaining({
+          method: 'POST',
+        }),
+      )
+    })
+
+    const postCall = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')
+    const payload = JSON.parse(String(postCall?.[1]?.body))
+    expect(payload.schedule.Monday.slots).toHaveLength(2)
+  })
+
   it('keeps the editor interactive when the initial registry sync fails', async () => {
     vi.stubGlobal(
       'fetch',

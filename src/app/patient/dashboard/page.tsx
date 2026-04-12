@@ -199,23 +199,23 @@ export default function PatientDashboardHome() {
         <div className="flex-1 space-y-6">
           <SectionCard role="patient" title="Upcoming appointment">
             {nextAppointment ? (
-              <div className="rounded-2xl border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-5 sm:p-6">
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-4">
+              <div className="rounded-2xl border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-4 sm:p-5 md:p-6">
+                <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pt-primary)] shadow-sm">
                       {getPatientAppointmentVisitLabel(nextAppointment)}
                     </div>
 
                     <div>
-                      <h3 className="text-[24px] font-black tracking-tight text-[var(--color-pt-ink)]">
+                      <h3 className="text-[20px] sm:text-[24px] font-black tracking-tight text-[var(--color-pt-ink)]">
                         {getPatientAppointmentProviderName(nextAppointment)}
                       </h3>
-                      <p className="mt-2 text-[14px] font-medium text-slate-500">
+                      <p className="mt-1.5 sm:mt-2 text-[13px] sm:text-[14px] font-medium text-slate-500">
                         {formatAppointmentDateTime(nextAppointment.availabilities?.starts_at ?? '')}
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium text-slate-500">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-[12px] font-medium text-slate-500">
                       <span className="rounded-full bg-white px-3 py-1 shadow-sm">
                         {nextAppointment.locations?.city ?? 'Location to be confirmed'}
                       </span>
@@ -230,7 +230,7 @@ export default function PatientDashboardHome() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 sm:min-w-[220px]">
+                  <div className="flex flex-col gap-3 sm:min-w-[200px]">
                     <Link
                       href={`/patient/appointments/${nextAppointment.id}`}
                       className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-pt-primary)] px-5 py-3 text-[13px] font-bold text-white shadow-md transition-opacity hover:opacity-90"

@@ -1064,7 +1064,10 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                           onBlur={() => setFocusedTimes(null)}
                           style={{
                             ...inputStyle,
-                            width: '140px',
+                            width: '120px',
+                            minWidth: '100px',
+                            flex: '1 1 100px',
+                            maxWidth: '140px',
                             height: '36px',
                             fontSize: '13px',
                             padding: '0 8px',
@@ -1082,7 +1085,10 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
                           onBlur={() => setFocusedTimes(null)}
                           style={{
                             ...inputStyle,
-                            width: '140px',
+                            width: '120px',
+                            minWidth: '100px',
+                            flex: '1 1 100px',
+                            maxWidth: '140px',
                             height: '36px',
                             fontSize: '13px',
                             padding: '0 8px',

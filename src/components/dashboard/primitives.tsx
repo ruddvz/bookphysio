@@ -72,7 +72,7 @@ export function StatTile({
 }: StatTileProps) {
   return (
     <div
-      className="rounded-2xl border bg-white p-5 transition-all duration-200"
+      className="rounded-2xl border bg-white p-4 sm:p-5 transition-all duration-200"
       style={{
         borderColor: v(role, 'border'),
         boxShadow: cardShadow,
@@ -80,17 +80,18 @@ export function StatTile({
     >
       <div className="flex items-start justify-between">
         <div
-          className="w-11 h-11 rounded-full flex items-center justify-center"
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center"
           style={{
             background: v(role, `tile-${tone}-bg`),
             color: v(role, `tile-${tone}-fg`),
           }}
         >
-          <Icon size={20} strokeWidth={2.2} />
+          <Icon size={18} strokeWidth={2.2} className="sm:hidden" />
+          <Icon size={20} strokeWidth={2.2} className="hidden sm:block" />
         </div>
         {delta ? (
           <span
-            className={`text-[11px] font-semibold ${
+            className={`text-[10px] sm:text-[11px] font-semibold ${
               delta.positive ? 'text-emerald-600' : 'text-rose-500'
             }`}
           >
@@ -98,11 +99,11 @@ export function StatTile({
           </span>
         ) : null}
       </div>
-      <div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+      <div className="mt-3 sm:mt-4 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400">
         {label}
       </div>
       <div
-        className="mt-1 text-[26px] font-bold tabular-nums"
+        className="mt-0.5 sm:mt-1 text-[20px] sm:text-[26px] font-bold tabular-nums truncate"
         style={{ color: v(role, 'ink') }}
       >
         {value}
@@ -168,13 +169,13 @@ export function PageHeader({
           </div>
         ) : null}
         <h1
-          className="text-[28px] lg:text-[34px] font-black tracking-tight leading-tight"
+          className="text-[22px] sm:text-[28px] lg:text-[34px] font-black tracking-tight leading-tight"
           style={{ color: v(role, 'ink') }}
         >
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1 text-[15px] font-medium text-slate-500">{subtitle}</p>
+          <p className="mt-1 text-[13px] sm:text-[15px] font-medium text-slate-500">{subtitle}</p>
         ) : null}
       </div>
       {action ? (
@@ -242,7 +243,7 @@ export function SectionCard({
   return (
     <DashCard role={role} className={`p-0 ${className}`.trim()}>
       {hasHeader ? (
-        <div className="px-5 lg:px-6 pt-5 lg:pt-6 pb-5 flex items-start justify-between gap-4">
+        <div className="px-4 sm:px-5 lg:px-6 pt-4 sm:pt-5 lg:pt-6 pb-4 sm:pb-5 flex items-start justify-between gap-3 sm:gap-4">
           <div>
             {kicker ? (
               <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1">
@@ -286,8 +287,8 @@ export function SectionCard({
           noPadding
             ? ''
             : hasHeader
-              ? 'px-5 lg:px-6 pb-5 lg:pb-6'
-              : 'p-5 lg:p-6'
+              ? 'px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5 lg:pb-6'
+              : 'p-4 sm:p-5 lg:p-6'
         }
       >
         {children}
@@ -333,7 +334,7 @@ export function ListRow({
             IconOrElement
           ) : (
              <div
-               className="w-11 h-11 rounded-2xl flex items-center justify-center"
+               className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center"
                style={{
                  background: v(role, `tile-${tone}-bg`),
                  color: v(role, `tile-${tone}-fg`),
@@ -341,7 +342,7 @@ export function ListRow({
              >
                {(() => {
                  const Icon = IconOrElement as LucideIcon;
-                 return <Icon size={20} strokeWidth={2.2} />;
+                 return <Icon size={18} strokeWidth={2.2} />;
                })()}
              </div>
           )}
@@ -349,13 +350,13 @@ export function ListRow({
       ) : null}
       <div className="flex-1 min-w-0">
         <div
-          className="text-[14px] font-bold truncate tracking-tight"
+          className="text-[13px] sm:text-[14px] font-bold truncate tracking-tight"
           style={{ color: v(role, 'ink') }}
         >
           {primary}
         </div>
         {secondary ? (
-          <div className="text-[12px] font-medium text-slate-500 truncate mt-0.5">{secondary}</div>
+          <div className="text-[11px] sm:text-[12px] font-medium text-slate-500 truncate mt-0.5">{secondary}</div>
         ) : null}
       </div>
       {right ? (

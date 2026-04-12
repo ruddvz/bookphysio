@@ -1,29 +1,30 @@
 'use client'
 
 import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { usePathname } from 'next/navigation'
 import { useChat } from '@ai-sdk/react'
 import { TextStreamChatTransport, type UIMessage } from 'ai'
-import { MessageCircle, X, Send, Bot, Users, Minimize2, ExternalLink } from 'lucide-react'
+import { MessageCircle, X, Send, User, Minimize2, ExternalLink, Stethoscope, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-const QUICK_REPLIES = [
+/* ── Condition quick-picks shown on homepage ── */
+const CONDITION_CHIPS = [
+  { label: 'Back pain', emoji: '🦴' },
+  { label: 'Knee injury', emoji: '🦵' },
+  { label: 'Neck stiffness', emoji: '🧏' },
+  { label: 'Sports injury', emoji: '⚽' },
+  { label: 'Post-surgery rehab', emoji: '🏥' },
+  { label: 'Shoulder pain', emoji: '💪' },
+]
+
+const GENERAL_QUICK_REPLIES = [
   'How do I book a session?',
-  'What does a physio session involve?',
   'Do you offer home visits?',
   'What are your pricing plans?',
 ]
 
-const INITIAL_MESSAGE: UIMessage = {
-  id: 'support-intro',
-  role: 'assistant',
-  parts: [
-    {
-      type: 'text',
-      text: "Hi! 👋 I'm the BookPhysio support assistant. I can help you with booking, sessions, pricing, and anything else about our platform. What can I help you with?",
-    },
-  ],
-}
+const SUPPORT_BRAND_NAME = 'BookPhysio.in Support'
 
 function getUIMessageText(message: UIMessage): string {
   return message.parts.reduce((text, part) => {
@@ -32,14 +33,29 @@ function getUIMessageText(message: UIMessage): string {
 }
 
 export function SupportChatWidget() {
+  const pathname = usePathname()
+  // /hi is the Hindi landing page — show condition picker there too
+  const isHomePage = pathname === '/' || pathname === '/hi'
+
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  // Tracks how many messages were visible when chat was last opened;
-  // badge shows when new messages arrive while chat is closed.
-  const [lastSeenCount, setLastSeenCount] = useState(1) // 1 = INITIAL_MESSAGE
+  const [lastSeenCount, setLastSeenCount] = useState(0)
   const chatRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const inputId = useId()
+
+  const initialMessage = useMemo<UIMessage>(() => ({
+    id: 'support-intro',
+    role: 'assistant' as const,
+    parts: [
+        {
+          type: 'text' as const,
+          text: isHomePage
+            ? `Hi! 👋 I'm ${SUPPORT_BRAND_NAME}. Tell me what condition or pain you're dealing with, and I’ll help you find the right next step on BookPhysio.in.`
+            : `Hi! 👋 I'm ${SUPPORT_BRAND_NAME}. I can help with booking, sessions, pricing, dashboards, and anything about the BookPhysio.in platform.`,
+        },
+      ],
+  }), [isHomePage])
 
   const transport = useMemo(
     () =>
@@ -59,7 +75,7 @@ export function SupportChatWidget() {
   )
 
   const { messages, sendMessage, status } = useChat<UIMessage>({
-    messages: [INITIAL_MESSAGE],
+    messages: [initialMessage],
     transport,
   })
 
@@ -80,12 +96,11 @@ export function SupportChatWidget() {
 
   function handleToggle() {
     setIsOpen((prev) => {
-      // Update lastSeenCount both when opening AND closing, so the badge
-      // only shows for messages that arrive while the chat is closed.
       setLastSeenCount(messages.length)
       return !prev
     })
   }
+
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setInput(event.target.value)
   }
@@ -105,7 +120,7 @@ export function SupportChatWidget() {
     void sendMessage({ text: reply }).catch(() => {})
   }
 
-  const showQuickReplies = messages.length === 1
+  const showQuickActions = messages.length === 1
 
   return (
     <>
@@ -114,36 +129,39 @@ export function SupportChatWidget() {
         <div
           role="dialog"
           aria-label="BookPhysio support chat"
-          className="fixed bottom-24 right-4 z-50 flex w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-bp-border bg-white shadow-[0_32px_80px_-20px_rgba(0,0,0,0.35)] sm:right-6 animate-in slide-in-from-bottom-4 duration-300"
-          style={{ maxHeight: 'min(560px, calc(100vh - 7rem))' }}
+          className="fixed bottom-20 right-3 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-[var(--color-bp-border)] bg-white shadow-[0_25px_60px_-12px_rgba(0,0,0,0.25)] sm:right-5"
+          style={{ maxHeight: 'min(600px, calc(100vh - 6rem))' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-bp-border bg-bp-primary px-5 py-4">
+          <div className="relative flex items-center justify-between bg-gradient-to-r from-[var(--color-bp-primary)] to-[var(--color-bp-primary-dark)] px-4 py-3.5">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
-                <Bot size={18} className="text-white" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 ring-2 ring-white/20">
+                <Stethoscope size={18} className="text-white" />
               </div>
               <div>
-                <p className="text-[14px] font-bold text-white">BookPhysio Support</p>
-                <p className="text-[11px] text-white/60">Replies instantly</p>
+                <p className="text-[14px] font-bold text-white tracking-tight">{SUPPORT_BRAND_NAME}</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <p className="text-[11px] text-white/70 font-medium">Online now</p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Link
                 href="/patient/motio"
                 aria-label="Open full AI chat"
-                className="flex h-8 w-8 items-center justify-center rounded-xl text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 title="Open full AI chat"
               >
-                <ExternalLink size={15} />
+                <ExternalLink size={14} />
               </Link>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-xl text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-                aria-label="Close support chat"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                aria-label="Minimize chat"
               >
-                <Minimize2 size={15} />
+                <Minimize2 size={14} />
               </button>
             </div>
           </div>
@@ -151,7 +169,7 @@ export function SupportChatWidget() {
           {/* Messages */}
           <div
             ref={chatRef}
-            className="flex-1 space-y-4 overflow-y-auto px-5 py-5"
+            className="flex-1 space-y-3 overflow-y-auto bg-[var(--color-bp-surface)] px-4 py-4"
           >
             {messages.map((message) => {
               const isUser = message.role === 'user'
@@ -167,21 +185,21 @@ export function SupportChatWidget() {
                   )}
                 >
                   {!isUser && (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bp-accent/10 text-bp-accent">
-                      <Bot size={14} />
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-bp-primary-light)] text-[var(--color-bp-primary)]">
+                      <Stethoscope size={13} />
                     </div>
                   )}
                   {isUser && (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bp-primary text-white">
-                      <Users size={14} />
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-bp-primary)] text-white">
+                      <User size={13} />
                     </div>
                   )}
                   <div
                     className={cn(
-                      'max-w-[82%] rounded-2xl px-4 py-3 text-[14px] font-medium leading-relaxed',
+                      'max-w-[80%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed',
                       isUser
-                        ? 'rounded-br-none bg-bp-accent text-white'
-                        : 'rounded-bl-none border border-bp-border bg-[#fafbfc] text-bp-primary'
+                        ? 'rounded-br-sm bg-[var(--color-bp-primary)] text-white font-medium'
+                        : 'rounded-bl-sm border border-[var(--color-bp-border-soft)] bg-white text-[var(--color-bp-body)] shadow-sm'
                     )}
                   >
                     {text}
@@ -192,66 +210,92 @@ export function SupportChatWidget() {
 
             {isLoading && (
               <div className="flex items-end gap-2">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bp-accent/10 text-bp-accent">
-                  <Bot size={14} className="animate-pulse" />
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-bp-primary-light)] text-[var(--color-bp-primary)]">
+                  <Stethoscope size={13} className="animate-pulse" />
                 </div>
-                <div className="rounded-2xl rounded-bl-none border border-bp-border bg-[#fafbfc] px-4 py-3">
+                <div className="rounded-2xl rounded-bl-sm border border-[var(--color-bp-border-soft)] bg-white px-3.5 py-3 shadow-sm">
                   <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-bp-accent" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-bp-accent [animation-delay:120ms]" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-bp-accent [animation-delay:240ms]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)] [animation-delay:120ms]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)] [animation-delay:240ms]" />
                   </div>
                 </div>
               </div>
             )}
+
           </div>
 
-          {/* Quick replies */}
-          {showQuickReplies && (
-            <div className="flex flex-wrap gap-2 border-t border-bp-border px-5 py-3">
-              {QUICK_REPLIES.map((reply) => (
-                <button
-                  key={reply}
-                  type="button"
-                  onClick={() => handleQuickReply(reply)}
-                  disabled={isLoading}
-                  className="rounded-full border border-bp-border bg-white px-3 py-1.5 text-[11px] font-bold text-bp-primary transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {reply}
-                </button>
-              ))}
+          {/* Quick actions — condition chips on home, general quick replies elsewhere */}
+          {showQuickActions && (
+            <div className="border-t border-[var(--color-bp-border-soft)] bg-white px-4 py-3">
+              {isHomePage ? (
+                <>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-bp-muted)] mb-2">
+                    Select your condition
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {CONDITION_CHIPS.map(({ label, emoji }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => handleQuickReply(`I have ${label.toLowerCase()}`)}
+                        disabled={isLoading}
+                        className="flex items-center gap-2 rounded-xl border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3 py-2 text-[12px] font-medium text-[var(--color-bp-body)] transition-all hover:border-[var(--color-bp-primary-muted)] hover:bg-[var(--color-bp-primary-light)] hover:text-[var(--color-bp-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <span>{emoji}</span>
+                        <span className="truncate">{label}</span>
+                        <ChevronRight size={12} className="ml-auto shrink-0 text-[var(--color-bp-muted)]" />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {GENERAL_QUICK_REPLIES.map((reply) => (
+                    <button
+                      key={reply}
+                      type="button"
+                      onClick={() => handleQuickReply(reply)}
+                      disabled={isLoading}
+                      className="rounded-full border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-bp-body)] transition-all hover:border-[var(--color-bp-primary-muted)] hover:text-[var(--color-bp-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {reply}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {/* Input */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 border-t border-bp-border bg-[#fafbfc] px-4 py-3"
+            className="flex items-center gap-2 border-t border-[var(--color-bp-border-soft)] bg-white px-3 py-2.5"
           >
             <label htmlFor={inputId} className="sr-only">
-              Ask a support question
+              {isHomePage ? 'Describe your condition…' : 'Ask a question…'}
             </label>
             <input
               id={inputId}
               ref={inputRef}
               value={input}
               onChange={handleInputChange}
-              placeholder="Ask a question..."
+              placeholder={isHomePage ? 'Describe your condition…' : 'Ask a question…'}
               disabled={isLoading}
-              className="min-w-0 flex-1 rounded-full border border-bp-border bg-white px-4 py-2.5 text-[14px] font-medium text-bp-primary outline-none placeholder:text-bp-body/40 focus:border-bp-accent/30"
+              className="min-w-0 flex-1 rounded-xl border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3.5 py-2.5 text-[13px] text-[var(--color-bp-body)] outline-none placeholder:text-[var(--color-bp-muted)]/60 focus:border-[var(--color-bp-primary-muted)] focus:ring-1 focus:ring-[var(--color-bp-primary-muted)] transition-all"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
               aria-label="Send message"
               className={cn(
-                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all',
+                'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all',
                 input.trim() && !isLoading
-                  ? 'bg-bp-primary text-white hover:bg-bp-accent active:scale-95'
-                  : 'cursor-not-allowed bg-gray-200 text-gray-400'
+                  ? 'bg-[var(--color-bp-primary)] text-white hover:bg-[var(--color-bp-primary-dark)] active:scale-95 shadow-sm'
+                  : 'cursor-not-allowed bg-[var(--color-bp-border-soft)] text-[var(--color-bp-muted)]'
               )}
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           </form>
         </div>
@@ -263,17 +307,19 @@ export function SupportChatWidget() {
         onClick={handleToggle}
         aria-label={isOpen ? 'Close support chat' : 'Open support chat'}
         className={cn(
-          'fixed bottom-6 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_32px_-8px_rgba(0,118,108,0.6)] transition-all sm:right-6',
-          isOpen ? 'bg-bp-primary hover:bg-bp-primary/90' : 'bg-bp-accent hover:bg-bp-primary'
+          'fixed bottom-5 right-3 z-50 flex items-center justify-center rounded-full transition-all duration-200 sm:right-5',
+          isOpen
+            ? 'h-12 w-12 bg-[var(--color-bp-primary)] hover:bg-[var(--color-bp-primary-dark)] shadow-lg'
+            : 'h-14 w-14 bg-[var(--color-bp-accent)] hover:bg-[var(--color-bp-primary)] shadow-[0_6px_24px_-4px_rgba(255,107,53,0.5)]'
         )}
       >
         {isOpen ? (
-          <X size={22} className="text-white" />
+          <X size={20} className="text-white" />
         ) : (
           <MessageCircle size={22} className="text-white" />
         )}
         {hasNewMessage && !isOpen && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
             {messages.length - lastSeenCount}
           </span>
         )}

@@ -18,6 +18,7 @@ import {
   Activity,
   Loader2,
   Globe,
+  ArrowRight,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/Skeleton'
 import {
@@ -412,22 +413,22 @@ export default function AdminDashboardHome() {
             action={{ label: 'Open queue', href: '/admin/listings' }}
           >
             {stats.pendingApprovals > 0 ? (
-              <div className="flex items-center gap-5 rounded-xl border border-[var(--color-ad-tile-4-fg)] bg-[var(--color-ad-tile-4-bg)] p-5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--color-ad-tile-4-fg)]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-xl border border-[var(--color-ad-tile-4-fg)] bg-[var(--color-ad-tile-4-bg)] p-4 sm:p-5">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--color-ad-tile-4-fg)]">
                   <ShieldCheck size={22} />
                 </div>
                 <div className="flex-1">
-                  <div className="text-[22px] font-bold leading-none text-[var(--color-ad-ink)]">
+                  <div className="text-[18px] sm:text-[22px] font-bold leading-none text-[var(--color-ad-ink)]">
                     {stats.pendingApprovals} provider
                     {stats.pendingApprovals !== 1 ? 's' : ''}
                   </div>
-                  <div className="mt-1 text-[13px] text-[var(--color-ad-tile-4-fg)]">
+                  <div className="mt-1 text-[12px] sm:text-[13px] text-[var(--color-ad-tile-4-fg)]">
                     Waiting for verification review
                   </div>
                 </div>
                 <Link
                   href="/admin/listings"
-                  className="rounded-full bg-[var(--color-ad-primary)] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+                  className="rounded-full bg-[var(--color-ad-primary)] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-opacity hover:opacity-90 w-full sm:w-auto text-center"
                 >
                   Review now
                 </Link>
@@ -442,12 +443,12 @@ export default function AdminDashboardHome() {
             )}
 
             {/* Mini summary */}
-            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-[var(--color-ad-border-soft)] pt-5">
+            <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-4 border-t border-[var(--color-ad-border-soft)] pt-5">
               <div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Active
                 </div>
-                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                <div className="text-[16px] sm:text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
                   {stats.activeProviders}
                 </div>
               </div>
@@ -455,7 +456,7 @@ export default function AdminDashboardHome() {
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Patients
                 </div>
-                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                <div className="text-[16px] sm:text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
                   {stats.totalPatients}
                 </div>
               </div>
@@ -463,7 +464,7 @@ export default function AdminDashboardHome() {
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Completed GMV
                 </div>
-                <div className="text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)]">
+                <div className="text-[16px] sm:text-[20px] font-bold tabular-nums text-[var(--color-ad-ink)] truncate">
                   {gmvFormatted}
                 </div>
               </div>
@@ -545,12 +546,13 @@ export default function AdminDashboardHome() {
                 <Link
                   key={label}
                   href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors group"
                 >
                   <Icon size={16} className="text-[var(--color-ad-primary)]" />
                   <span className="flex-1 text-[13px] font-medium text-[var(--color-ad-ink)]">
                     {label}
                   </span>
+                  <ArrowRight size={13} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
                 </Link>
               ))}
             </div>
