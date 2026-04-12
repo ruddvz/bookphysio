@@ -342,8 +342,10 @@ export async function POST(request: NextRequest) {
       await checkBookingAnomaly(anomalyContext)
     })
   } catch {
-    console.warn('[api/appointments] after() unavailable, running anomaly detection inline')
-    await checkBookingAnomaly(anomalyContext)
+    console.warn('[api/appointments] after() unavailable, running anomaly detection without blocking response')
+    void checkBookingAnomaly(anomalyContext).catch((error) => {
+      console.error('[api/appointments] Fallback anomaly detection failed:', error)
+    })
   }
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
