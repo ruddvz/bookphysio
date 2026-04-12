@@ -5,6 +5,7 @@ import { metadata as forgotPasswordMetadata } from './forgot-password/layout'
 import ForgotPasswordPage from './forgot-password/page'
 import LoginPage from './login/page'
 import SignupPage from './signup/page'
+import { metadata as verifyEmailMetadata } from './verify-email/layout'
 import VerifyOtpPage from './verify-otp/page'
 import DoctorSignupPage from './doctor-signup/page'
 import { metadata as doctorSignupMetadata } from './doctor-signup/layout'
@@ -41,6 +42,7 @@ vi.mock('@/components/OtpInput', () => ({
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
+      resend: vi.fn().mockResolvedValue({ error: null }),
       resetPasswordForEmail: vi.fn(),
       signInWithOAuth: vi.fn(),
       signInWithPassword: vi.fn().mockResolvedValue({ data: {}, error: null }),
@@ -149,7 +151,7 @@ describe('Auth regressions', () => {
     expect(screen.queryByText(/provider-only failure detail/i)).not.toBeInTheDocument()
   })
 
-  it('stores signup OTP state in session storage and avoids leaking name in the URL', async () => {
+  it('redirects signup to email verification without creating OTP session state', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -173,27 +175,23 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue — verify phone/i }))
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
+      expect(push).toHaveBeenCalledWith('/verify-email?email=rahul%40example.com')
     })
 
-    expect(readPendingOtp()).toEqual({
-      flow: 'signup',
-      flowId: expect.any(String),
-      returnTo: null,
-    })
-
-    expect(window.sessionStorage.getItem('bp-pending-otp')).not.toContain('9876543210')
+    expect(readPendingOtp()).toBeNull()
   })
 
-  it('masks signup OTP failures behind generic UI copy', async () => {
+  it('shows the API error returned by signup when account creation fails', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
         ok: false,
-        json: vi.fn().mockResolvedValue({ error: 'User already exists in shard 2' }),
+        json: vi.fn().mockResolvedValue({
+          error: 'An account with this email already exists. Please sign in instead.',
+        }),
       })
     )
 
@@ -212,13 +210,11 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /continue — verify phone/i }))
+    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/could not send the verification code/i)).toBeInTheDocument()
+      expect(screen.getByText(/an account with this email already exists/i)).toBeInTheDocument()
     })
-
-    expect(screen.queryByText(/user already exists in shard 2/i)).not.toBeInTheDocument()
   })
 
   it('shows generic error copy on login network failure without leaking server details', async () => {
@@ -295,6 +291,8 @@ describe('Auth regressions', () => {
     expect(loginMetadata.alternates).toEqual({ canonical: '/login' })
     expect(signupMetadata.title).toBe('Create your BookPhysio account')
     expect(signupMetadata.alternates).toEqual({ canonical: '/signup' })
+    expect(verifyEmailMetadata.title).toBe('Check your email — BookPhysio')
+    expect(verifyEmailMetadata.alternates).toEqual({ canonical: '/verify-email' })
     expect(verifyOtpMetadata.title).toBe('Verify your mobile number — BookPhysio')
     expect(verifyOtpMetadata.alternates).toEqual({ canonical: '/verify-otp' })
     expect(forgotPasswordMetadata.title).toBe('Recover access to BookPhysio')
@@ -305,10 +303,10 @@ describe('Auth regressions', () => {
     expect(updatePasswordMetadata.alternates).toEqual({ canonical: '/update-password' })
   })
 
-  it('advances provider signup to phone verification after availability is completed', async () => {
+  it('advances provider signup to email confirmation after availability is completed', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue({ flowId: 'provider-flow-1' }),
+      json: vi.fn().mockResolvedValue({ success: true }),
     })
     vi.stubGlobal('fetch', fetchMock)
 
@@ -322,6 +320,9 @@ describe('Auth regressions', () => {
     })
     fireEvent.change(screen.getByPlaceholderText('priya@clinic.com'), {
       target: { value: 'meera@example.com' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('Min. 8 characters'), {
+      target: { value: 'SecurePass123' },
     })
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
 
@@ -354,13 +355,13 @@ describe('Auth regressions', () => {
       target: { value: '900' },
     })
     fireEvent.click(screen.getByLabelText('30 min'))
-    fireEvent.click(screen.getByRole('button', { name: /next: verify phone/i }))
+    fireEvent.click(screen.getByRole('button', { name: /complete registration/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/verify your mobile number/i)).toBeInTheDocument()
+      expect(screen.getByText(/check your email!/i)).toBeInTheDocument()
     })
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/otp/send', expect.objectContaining({
+    expect(fetchMock).toHaveBeenCalledWith('/api/providers/onboard-signup', expect.objectContaining({
       method: 'POST',
     }))
   })

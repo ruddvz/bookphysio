@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
       specialtiesLinked = true
     }
 
-    // 5. Seed recurring availability immediately so the provider becomes bookable.
+    // 5. Seed recurring availability during onboarding so it is ready for later activation after approval.
     if (locationRow?.id) {
       const { startDateKey, endDateKey } = getProviderAvailabilityWindow(4)
       const seedWindowStart = parseIndiaDate(startDateKey).toISOString()
