@@ -215,7 +215,7 @@ export default function ProviderAvailability() {
       />
 
       {/* Registry KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
         <StatTile
           role="provider"
           tone={1}
@@ -288,7 +288,7 @@ export default function ProviderAvailability() {
                 return (
                   <div key={day} className="group">
                     <div className={cn(
-                      "flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border transition-all",
+                      "flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-5 rounded-2xl border transition-all",
                       enabled ? "bg-white border-slate-200 shadow-sm" : "bg-slate-50/50 border-slate-100 opacity-60"
                     )}>
                       <div className="flex items-center gap-4">

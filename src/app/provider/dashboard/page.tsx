@@ -245,23 +245,23 @@ export default function ProviderDashboardHome() {
         <div className="space-y-6">
            <SectionCard role="provider" title="Next consult">
              {nextVisit ? (
-               <div className="rounded-2xl border border-[var(--color-pv-border-soft)] bg-[var(--color-pv-track-bg)]/70 p-5 sm:p-6">
-                 <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                   <div className="space-y-4">
+               <div className="rounded-2xl border border-[var(--color-pv-border-soft)] bg-[var(--color-pv-track-bg)]/70 p-4 sm:p-5 md:p-6">
+                 <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
+                   <div className="space-y-3 sm:space-y-4">
                      <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pv-primary)] shadow-sm">
                        Up next
                      </div>
 
                      <div>
-                       <h3 className="text-[24px] font-black tracking-tight text-[var(--color-pv-ink)]">
+                       <h3 className="text-[20px] sm:text-[24px] font-black tracking-tight text-[var(--color-pv-ink)]">
                          {nextVisit.patient_name}
                        </h3>
-                       <p className="mt-2 text-[14px] font-medium text-slate-500">
+                       <p className="mt-1.5 sm:mt-2 text-[13px] sm:text-[14px] font-medium text-slate-500">
                          {formatNextVisitLabel(nextVisit, todayKey)}
                        </p>
                      </div>
 
-                     <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium text-slate-500">
+                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-[12px] font-medium text-slate-500">
                        <span className="rounded-full bg-white px-3 py-1 shadow-sm">
                          Visit #{nextVisit.visit_number}
                        </span>
@@ -274,7 +274,7 @@ export default function ProviderDashboardHome() {
                      </div>
                    </div>
 
-                   <div className="flex flex-col gap-3 sm:min-w-[220px]">
+                   <div className="flex flex-col gap-3 sm:min-w-[200px]">
                      <Link
                        href={`/provider/calendar?id=${nextVisit.visit_id}`}
                        className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-pv-primary)] px-5 py-3 text-[13px] font-bold text-white shadow-md transition-opacity hover:opacity-90"
