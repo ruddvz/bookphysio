@@ -17,16 +17,11 @@ function VerifyEmailContent() {
   const [countdown, setCountdown] = useState(0)
 
   useEffect(() => {
-    if (countdown <= 0) {
-      if (resendStatus === 'sent') {
-        setResendStatus('idle')
-      }
-      return
-    }
+    if (countdown <= 0) return
 
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
-  }, [countdown, resendStatus])
+  }, [countdown])
 
   async function handleResend() {
     if (!email || resendStatus === 'loading' || countdown > 0) return
@@ -94,15 +89,13 @@ function VerifyEmailContent() {
             Didn&apos;t receive it? Check your spam folder or resend below.
           </p>
 
-          {resendStatus === 'sent' ? (
+          {resendStatus === 'sent' && countdown > 0 ? (
             <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-600">
               <CheckCircle2 className="h-4 w-4" />
               <span>Email resent!</span>
-              {countdown > 0 && (
-                <span className="text-gray-400 font-normal">
-                  (resend again in {countdown}s)
-                </span>
-              )}
+              <span className="text-gray-400 font-normal">
+                (resend again in {countdown}s)
+              </span>
             </div>
           ) : (
             <button

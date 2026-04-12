@@ -1,6 +1,6 @@
 'use client'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import VerifyEmailPage from './page'
 
@@ -26,24 +26,33 @@ vi.mock('@/lib/supabase/client', () => ({
 describe('VerifyEmailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
     useSearchParamsMock.mockReturnValue(new URLSearchParams('email=meera@example.com'))
     resendMock.mockResolvedValue({ error: null })
   })
 
   it('re-enables resend after the cooldown expires', async () => {
-    render(<VerifyEmailPage />)
+    vi.useFakeTimers()
 
-    fireEvent.click(screen.getByRole('button', { name: /resend confirmation email/i }))
+    try {
+      render(<VerifyEmailPage />)
 
-    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: /resend confirmation email/i }))
+
+      await act(async () => {
+        await Promise.resolve()
+      })
+
       expect(screen.getByText(/email resent/i)).toBeInTheDocument()
-    })
 
-    vi.advanceTimersByTime(60_000)
+      for (let index = 0; index < 60; index += 1) {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1_000)
+        })
+      }
 
-    await waitFor(() => {
       expect(screen.getByRole('button', { name: /resend confirmation email/i })).toBeInTheDocument()
-    })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

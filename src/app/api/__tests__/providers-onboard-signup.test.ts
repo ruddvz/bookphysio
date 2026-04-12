@@ -86,6 +86,8 @@ function buildValidPayload() {
     step2: {
       registrationType: 'IAP',
       iapNumber: 'IAP-12345',
+      stateRegistrationNumber: '',
+      stateName: '',
       degree: 'MPT',
       experienceYears: '8',
       specialties: ['Sports Physio'],
@@ -176,4 +178,4 @@ describe('POST /api/providers/onboard-signup', () => {
     expect(signUpMock).not.toHaveBeenCalled()
     expect(providerUpsertMock).not.toHaveBeenCalled()
   })
-}
+})

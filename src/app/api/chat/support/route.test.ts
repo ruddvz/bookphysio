@@ -35,6 +35,9 @@ vi.mock('@/lib/server/runtime', () => ({
 describe('POST /api/chat/support', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.resetModules()
+    process.env.UPSTASH_REDIS_REST_URL = 'https://example.com'
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'token'
     ratelimitLimitMock.mockResolvedValue({ success: true })
     getRequestIpAddressMock.mockReturnValue('203.0.113.10')
   })

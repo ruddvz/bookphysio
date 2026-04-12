@@ -104,4 +104,4 @@ describe('POST /api/auth/signup', () => {
     expect(otpLimitMock).toHaveBeenCalledTimes(1)
     expect(otpLimitMock).toHaveBeenCalledWith('signup:email:priya@example.com')
   })
-}
+})
