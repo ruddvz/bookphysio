@@ -100,6 +100,9 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
   const todayDay = availability.find((day) => day.label === 'Today')
   const slotsRemainingToday = todayDay?.slots.length ?? 0
 
+  // Show earliest time from the availability grid (not doctor.nextSlot which may contain a full date).
+  const firstSlotTime = firstDayWithSlots?.slots[0] ?? null
+
   const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -220,7 +223,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                   )}
                 </div>
                 <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">
-                  {nextAvailableLabel}{doctor.nextSlot ? ` at ${doctor.nextSlot}` : ''}
+                  {nextAvailableLabel}{firstSlotTime ? ` at ${firstSlotTime}` : ''}
                 </p>
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">
                   {todayDay && slotsRemainingToday > 0

@@ -77,7 +77,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <noscript>You need JavaScript enabled to use BookPhysio.</noscript>
-        <Providers>{children}</Providers>
+        <Providers><main id="main-content">{children}</main></Providers>
         <CookieConsent />
         <PublicAnalytics />
         <ServiceWorkerRegistration />

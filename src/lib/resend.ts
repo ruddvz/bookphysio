@@ -19,6 +19,11 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#39;')
 }
 
+/** Sanitize a string for use in email subject lines (strip CR/LF to prevent header injection). */
+function sanitizeSubject(str: string): string {
+  return str.replace(/[\r\n]+/g, ' ').trim()
+}
+
 export async function sendBookingConfirmation({
   to,
   patientName,
@@ -39,10 +44,11 @@ export async function sendBookingConfirmation({
   if (!process.env.RESEND_FROM_EMAIL) {
     throw new Error('RESEND_FROM_EMAIL is required to send emails')
   }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
   return resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
-    subject: `Appointment Confirmed — ${escapeHtml(providerName)}`,
+    subject: `Appointment Confirmed — ${sanitizeSubject(providerName)}`,
     html: `
       <h2>Appointment Confirmed</h2>
       <p>Hi ${escapeHtml(patientName)},</p>
@@ -53,7 +59,7 @@ export async function sendBookingConfirmation({
         <li><strong>Type:</strong> ${escapeHtml(visitType)}</li>
         <li><strong>Fee:</strong> ₹${amountInr}</li>
       </ul>
-      <p>You can manage your appointment at <a href="${process.env.NEXT_PUBLIC_APP_URL}/appointments">bookphysio.in</a></p>
+      <p>You can manage your appointment at <a href="${appUrl}/appointments">bookphysio.in</a></p>
     `,
   })
 }
@@ -82,7 +88,7 @@ export async function sendAppointmentReminder({
   return resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
-    subject: `Reminder: Appointment with ${escapeHtml(providerName)} tomorrow`,
+    subject: `Reminder: Appointment with ${sanitizeSubject(providerName)} tomorrow`,
     html: `
       <h2>Appointment Reminder</h2>
       <p>Hi ${escapeHtml(patientName)},</p>
@@ -115,7 +121,7 @@ export async function sendReviewPrompt({
   return resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
-    subject: `How was your session with ${escapeHtml(providerName)}?`,
+    subject: `How was your session with ${sanitizeSubject(providerName)}?`,
     html: `
       <h2>Share Your Experience</h2>
       <p>Hi ${escapeHtml(patientName)},</p>
