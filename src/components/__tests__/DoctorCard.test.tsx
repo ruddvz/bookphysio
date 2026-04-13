@@ -71,34 +71,46 @@ describe('DoctorCard', () => {
 
   describe('next-availability label', () => {
     it('shows "Today at <time>" when slots are available today', () => {
-      const todayIso = new Date().toISOString().slice(0, 10)
-      const doctor: Doctor = {
-        ...baseDoctor,
-        nextSlot: 'Sun, Apr 13, 10:00 AM', // full date string — should NOT appear verbatim
-        availabilityPreview: [
-          { date: todayIso, slots: ['10:00 AM', '11:00 AM'] },
-          { date: '2099-12-31', slots: ['02:00 PM'] },
-        ],
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-04-13T12:00:00+05:30'))
+
+      try {
+        const todayIso = '2026-04-13'
+        const doctor: Doctor = {
+          ...baseDoctor,
+          nextSlot: 'Sun, Apr 13, 10:00 AM', // full date string — should NOT appear verbatim
+          availabilityPreview: [
+            { date: todayIso, slots: ['10:00 AM', '11:00 AM'] },
+            { date: '2099-12-31', slots: ['02:00 PM'] },
+          ],
+        }
+        const { getByText, queryByText } = render(<DoctorCard doctor={doctor} />)
+        expect(getByText(/Today at 10:00 AM/)).toBeTruthy()
+        // Should NOT show full date string in the label
+        expect(queryByText(/Today at Sun/)).toBeNull()
+      } finally {
+        vi.useRealTimers()
       }
-      const { getByText, queryByText } = render(<DoctorCard doctor={doctor} />)
-      expect(getByText(/Today at 10:00 AM/)).toBeTruthy()
-      // Should NOT show full date string in the label
-      expect(queryByText(/Today at Sun/)).toBeNull()
     })
 
     it('shows "Tomorrow at <time>" when no slots today', () => {
-      const tomorrow = new Date()
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      const tomorrowIso = tomorrow.toISOString().slice(0, 10)
-      const doctor: Doctor = {
-        ...baseDoctor,
-        nextSlot: 'Mon, Apr 14, 09:00 AM',
-        availabilityPreview: [
-          { date: tomorrowIso, slots: ['09:00 AM'] },
-        ],
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-04-13T12:00:00+05:30'))
+
+      try {
+        const tomorrowIso = '2026-04-14'
+        const doctor: Doctor = {
+          ...baseDoctor,
+          nextSlot: 'Mon, Apr 14, 09:00 AM',
+          availabilityPreview: [
+            { date: tomorrowIso, slots: ['09:00 AM'] },
+          ],
+        }
+        const { getByText } = render(<DoctorCard doctor={doctor} />)
+        expect(getByText(/Tomorrow at 09:00 AM/)).toBeTruthy()
+      } finally {
+        vi.useRealTimers()
       }
-      const { getByText } = render(<DoctorCard doctor={doctor} />)
-      expect(getByText(/Tomorrow at 09:00 AM/)).toBeTruthy()
     })
 
     it('shows "No slots" when no availability days have slots', () => {
