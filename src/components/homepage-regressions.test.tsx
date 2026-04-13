@@ -114,6 +114,7 @@ describe('Homepage regressions', () => {
 
     expect(container.firstChild).toHaveClass('bg-transparent')
     expect(container.firstChild).toHaveClass('fixed')
+    expect(screen.getByRole('link', { name: /sports sciences/i })).toHaveAttribute('href', '/specialty/sports')
 
     rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()
@@ -121,6 +122,7 @@ describe('Homepage regressions', () => {
     expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
     expect(screen.queryByText('Home visits')).not.toBeInTheDocument()
     expect(screen.getByText(/bookphysio is a booking platform/i)).toBeInTheDocument()
+    expect(screen.getByText(`© ${new Date().getFullYear()} BookPhysio.in`)).toBeInTheDocument()
   })
 
   it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {

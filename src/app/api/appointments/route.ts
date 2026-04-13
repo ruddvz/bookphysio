@@ -268,6 +268,8 @@ export async function POST(request: NextRequest) {
 
   const baseFeeInr = (slot.providers as unknown as { consultation_fee_inr: number }).consultation_fee_inr
   const feeInr = getVisitTypeConsultationFee(baseFeeInr, visit_type)
+  const gstAmountInr = Math.round(feeInr * 0.18)
+  const totalAmountInr = feeInr + gstAmountInr
   const appointmentNotes = buildAppointmentNotes({
     visitType: visit_type,
     notes,
@@ -298,6 +300,29 @@ export async function POST(request: NextRequest) {
 
     console.error('[api/appointments] Insert error:', error)
     return jsonNoStore({ error: 'Failed to create appointment' }, { status: 500 })
+  }
+
+  const { error: paymentError } = await supabaseAdmin
+    .from('payments')
+    .insert({
+      appointment_id: appointment.id,
+      amount_inr: totalAmountInr,
+      gst_amount_inr: gstAmountInr,
+      status: 'created',
+    })
+    .select('id')
+    .single()
+
+  if (paymentError) {
+    await supabaseAdmin.from('appointments').delete().eq('id', appointment.id)
+    await supabaseAdmin
+      .from('availabilities')
+      .update({ is_booked: false })
+      .eq('id', availability_id)
+    await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+
+    console.error('[api/appointments] Payment insert error:', paymentError)
+    return jsonNoStore({ error: 'Failed to create payment record' }, { status: 500 })
   }
 
   if (activeIpHoldKey && provisionalHoldToken) {

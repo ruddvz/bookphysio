@@ -225,13 +225,14 @@ export async function POST(request: NextRequest) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: step1.name,
-          phone: step1.phone,
-          role: 'provider',
+        options: {
+          data: {
+            full_name: step1.name,
+            phone: step1.phone,
+            role: 'provider_pending',
+            provider_pending: true,
+          },
         },
-      },
     })
 
     if (authError) {
@@ -264,7 +265,7 @@ export async function POST(request: NextRequest) {
     //    the phone from the form data.
     const { error: userError } = await supabaseAdmin
       .from('users')
-      .update({ full_name: step1.name, role: 'provider', phone: step1.phone ?? null })
+      .update({ full_name: step1.name, role: 'provider_pending', phone: step1.phone ?? null })
       .eq('id', userId)
 
     if (userError) throw userError

@@ -138,7 +138,7 @@ describe('POST /api/providers/onboard', () => {
     availabilitiesDeleteLteMock.mockReset()
   })
 
-  it('activates provider access, search visibility, and generated availability during onboarding', async () => {
+  it('keeps new providers pending approval while seeding their hidden profile and availability', async () => {
     const { POST } = await import('../providers/onboard/route')
     const response = await POST(new NextRequest('http://localhost/api/providers/onboard', {
       method: 'POST',
@@ -194,14 +194,14 @@ describe('POST /api/providers/onboard', () => {
     expect(response.status).toBe(200)
     expect(usersUpdateMock).toHaveBeenCalledWith({
       full_name: 'Dr. Meera Shah',
-      role: 'provider',
+      role: 'provider_pending',
     })
     expect(adminUpdateUserByIdMock).toHaveBeenCalledWith('provider-user-1', {
       user_metadata: expect.objectContaining({
         full_name: 'Dr. Meera Shah',
         phone: '+919876543210',
         provider_pending: true,
-        role: 'provider',
+        role: 'provider_pending',
       }),
     })
     expect(providerUpsertMock).toHaveBeenCalledWith(expect.objectContaining({

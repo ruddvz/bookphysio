@@ -12,6 +12,7 @@ const redisDelMock = vi.fn()
 const hasPublicSupabaseEnvMock = vi.fn()
 let adminAppointmentInsertHandler: ((payload: unknown) => void) | undefined
 let adminExistingBookings: unknown[] | undefined
+let adminPaymentInsertHandler: ((payload: unknown) => void) | undefined
 let redisState = new Map<string, string>()
 
 vi.mock('@/lib/supabase/server', () => ({
@@ -156,6 +157,26 @@ function createAdminAppointmentsChain() {
   }
 }
 
+function createAdminPaymentsChain() {
+  const insertSelectChain = {
+    select: vi.fn(() => insertSelectChain),
+    single: vi.fn().mockResolvedValue({
+      data: {
+        id: 'payment-123456',
+        status: 'created',
+      },
+      error: null,
+    }),
+  }
+
+  return {
+    insert: vi.fn((payload: unknown) => {
+      adminPaymentInsertHandler?.(payload)
+      return insertSelectChain
+    }),
+  }
+}
+
 function createAdminAvailabilityChain() {
   const chain = {
     update: vi.fn(() => chain),
@@ -220,6 +241,7 @@ describe('POST /api/appointments', () => {
     vi.clearAllMocks()
     adminAppointmentInsertHandler = undefined
     adminExistingBookings = undefined
+    adminPaymentInsertHandler = undefined
     redisState = new Map()
     hasPublicSupabaseEnvMock.mockReturnValue(true)
     bookingIpRateLimitMock.mockResolvedValue({ success: true })
@@ -247,6 +269,10 @@ describe('POST /api/appointments', () => {
 
       if (table === 'appointments') {
         return createAdminAppointmentsChain()
+      }
+
+      if (table === 'payments') {
+        return createAdminPaymentsChain()
       }
 
       throw new Error(`Unhandled admin table: ${table}`)
@@ -491,12 +517,16 @@ describe('POST /api/appointments', () => {
 
   it('applies home-visit pricing and stores booking metadata without mixing it into provider notes', async () => {
     let insertedPayload: Record<string, unknown> | undefined
+    let insertedPaymentPayload: Record<string, unknown> | undefined
     createClientMock.mockResolvedValue(buildSupabaseClient({
       role: 'patient',
       onInsert: (payload) => {
         insertedPayload = payload as Record<string, unknown>
       },
     }))
+    adminPaymentInsertHandler = (payload) => {
+      insertedPaymentPayload = payload as Record<string, unknown>
+    }
 
     const { POST } = await import('../appointments/route')
     const response = await POST(new NextRequest('http://localhost/api/appointments', {
@@ -525,6 +555,12 @@ describe('POST /api/appointments', () => {
       patient_id: '00000000-0000-4000-8000-000000000010',
       status: 'confirmed',
       visit_type: 'home_visit',
+    })
+    expect(insertedPaymentPayload).toMatchObject({
+      appointment_id: 'appt-123456',
+      amount_inr: 1841,
+      gst_amount_inr: 281,
+      status: 'created',
     })
     expect(redisSetMock).toHaveBeenCalled()
   })
