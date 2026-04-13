@@ -48,6 +48,12 @@ BEGIN
 
   old_availability_id := target_appointment.availability_id;
 
+  -- Ensure the appointment has an availability slot to release
+  IF old_availability_id IS NULL THEN
+    RAISE EXCEPTION 'Appointment has no availability slot to release'
+      USING ERRCODE = 'P0008';
+  END IF;
+
   -- Verify the new slot exists, belongs to the same provider, and is available
   SELECT id, provider_id, is_booked, is_blocked, starts_at
   INTO new_avail
@@ -83,7 +89,13 @@ BEGIN
   -- Release the old slot
   UPDATE availabilities
   SET is_booked = false
-  WHERE id = old_availability_id;
+  WHERE id = old_availability_id
+    AND is_booked = true;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Old availability slot not found or already released'
+      USING ERRCODE = 'P0009';
+  END IF;
 
   -- Book the new slot
   UPDATE availabilities
@@ -97,7 +109,7 @@ BEGIN
         (SELECT location_id FROM availabilities WHERE id = p_new_availability_id),
         target_appointment.location_id
       ),
-      status = 'confirmed'
+      status = target_appointment.status
   WHERE id = target_appointment.id
   RETURNING * INTO target_appointment;
 

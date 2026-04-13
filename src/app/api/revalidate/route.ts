@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const revalidateSchema = z.object({
+  paths: z.array(z.string().startsWith('/')).nonempty('At least one path is required'),
+})
 
 /**
  * POST /api/revalidate
@@ -7,7 +12,7 @@ import { revalidatePath } from 'next/cache'
  * On-demand ISR revalidation endpoint.
  * Revalidates specific paths when content changes (e.g., new review, profile update).
  *
- * Protected by CRON_SECRET or a shared revalidation token.
+ * Protected by CRON_SECRET bearer token.
  *
  * Body: { paths: string[] }
  * Example: { "paths": ["/doctor/abc-123", "/search"] }
@@ -16,26 +21,22 @@ export async function POST(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET
   const authHeader = request.headers.get('authorization')
 
-  // Allow Vercel cron header or Bearer token
-  const isVercelCron = !!request.headers.get('x-vercel-cron')
-  const isAuthorized = isVercelCron || (cronSecret && authHeader === `Bearer ${cronSecret}`)
-
-  if (!isAuthorized) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body = await request.json().catch(() => null) as { paths?: string[] } | null
+  const body = await request.json().catch(() => ({}))
+  const parsed = revalidateSchema.safeParse(body)
 
-  if (!body?.paths || !Array.isArray(body.paths) || body.paths.length === 0) {
-    return NextResponse.json({ error: 'Missing or empty paths array' }, { status: 400 })
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid request body' }, { status: 400 })
   }
 
   // Limit to 20 paths per request to prevent abuse
-  const pathsToRevalidate = body.paths.slice(0, 20)
+  const pathsToRevalidate = parsed.data.paths.slice(0, 20)
   const revalidated: string[] = []
 
   for (const path of pathsToRevalidate) {
-    if (typeof path !== 'string' || !path.startsWith('/')) continue
     try {
       revalidatePath(path)
       revalidated.push(path)

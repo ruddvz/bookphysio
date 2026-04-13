@@ -137,33 +137,40 @@ export async function POST(request: NextRequest) {
         const date = startsAt ? new Date(startsAt).toLocaleDateString('en-IN', { dateStyle: 'long' }) : 'TBD'
         const time = startsAt ? new Date(startsAt).toLocaleTimeString('en-IN', { timeStyle: 'short' }) : 'TBD'
 
-        await sendBookingConfirmation({
-          to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
-          patientName: patient.full_name,
-          providerName: provider.full_name,
-          appointmentDate: date,
-          appointmentTime: time,
-          visitType: appt.visit_type,
-          amountInr: appt.fee_inr,
-        })
-
-        // Send SMS + WhatsApp confirmation (best-effort, non-blocking)
-        if (patient.phone) {
-          sendBookingConfirmationSms({
-            phone: patient.phone,
+        // Send email (awaited, independent error handling)
+        try {
+          await sendBookingConfirmation({
+            to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
             patientName: patient.full_name,
             providerName: provider.full_name,
             appointmentDate: date,
             appointmentTime: time,
-            feeInr: appt.fee_inr,
-          }).catch((smsErr) => {
-            console.error('[webhook] SMS confirmation failed (non-fatal):', smsErr)
+            visitType: appt.visit_type,
+            amountInr: appt.fee_inr,
           })
+        } catch (emailError) {
+          console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+        }
+
+        // Send SMS + WhatsApp (awaited separately, independent error handling)
+        if (patient.phone) {
+          try {
+            await sendBookingConfirmationSms({
+              phone: patient.phone,
+              patientName: patient.full_name,
+              providerName: provider.full_name,
+              appointmentDate: date,
+              appointmentTime: time,
+              feeInr: appt.fee_inr,
+            })
+          } catch (smsErr) {
+            console.error('[webhook] SMS confirmation failed (non-fatal):', smsErr)
+          }
         }
       }
     }
-  } catch (emailError) {
-    console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+  } catch (lookupError) {
+    console.error('[webhook] Notification data lookup failed (non-fatal):', lookupError)
   }
 
   return NextResponse.json({ received: true })

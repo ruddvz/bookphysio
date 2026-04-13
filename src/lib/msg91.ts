@@ -16,6 +16,7 @@
  */
 
 const MSG91_BASE_URL = 'https://control.msg91.com/api/v5'
+const MSG91_TIMEOUT_MS = 10_000
 
 function getAuthKey(): string {
   const key = process.env.MSG91_AUTH_KEY
@@ -27,14 +28,14 @@ function getAuthKey(): string {
 
 /**
  * Normalize phone to 91XXXXXXXXXX format (no + prefix) required by MSG91.
+ * Throws on unrecognized formats to prevent routing messages to wrong recipients.
  */
 function toMsg91Phone(phone: string): string {
   const digits = phone.replace(/\D/g, '')
-  if (digits.length === 10) return `91${digits}`
+  if (digits.length === 10 && /^[6-9]/.test(digits)) return `91${digits}`
   if (digits.length === 12 && digits.startsWith('91')) return digits
   if (digits.length === 13 && digits.startsWith('091')) return digits.slice(1)
-  console.warn(`[msg91] Unexpected phone format: ${digits.length} digits. Passing through as-is.`)
-  return digits
+  throw new Error(`[msg91] Invalid Indian phone number: expected 10/12/13 digits, got ${digits.length}`)
 }
 
 // ---------------------------------------------------------------------------
@@ -63,23 +64,38 @@ export async function sendSms({ phone, templateId, variables }: SendSmsOptions):
     ...variables,
   }
 
-  const response = await fetch(`${MSG91_BASE_URL}/flow/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      authkey: authKey,
-    },
-    body: JSON.stringify(payload),
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), MSG91_TIMEOUT_MS)
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => 'Unknown error')
-    console.error('[msg91] SMS send failed:', response.status, text)
+  try {
+    const response = await fetch(`${MSG91_BASE_URL}/flow/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authkey: authKey,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => 'Unknown error')
+      console.error('[msg91] SMS send failed:', response.status, text)
+      return { success: false }
+    }
+
+    const data = await response.json().catch(() => ({})) as Record<string, unknown>
+    return { success: true, requestId: typeof data.request_id === 'string' ? data.request_id : undefined }
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.error(`[msg91] SMS send timed out after ${MSG91_TIMEOUT_MS}ms`)
+    } else {
+      throw err
+    }
     return { success: false }
+  } finally {
+    clearTimeout(timeoutId)
   }
-
-  const data = await response.json().catch(() => ({})) as Record<string, unknown>
-  return { success: true, requestId: typeof data.request_id === 'string' ? data.request_id : undefined }
 }
 
 // ---------------------------------------------------------------------------
@@ -97,7 +113,6 @@ interface SendWhatsAppOptions {
  * Requires pre-approved WhatsApp Business template.
  */
 export async function sendWhatsApp({ phone, templateName, variables }: SendWhatsAppOptions): Promise<{ success: boolean }> {
-  const authKey = getAuthKey()
   const integratedNumber = process.env.MSG91_WHATSAPP_INTEGRATED_NUMBER
 
   if (!integratedNumber) {
@@ -108,6 +123,8 @@ export async function sendWhatsApp({ phone, templateName, variables }: SendWhats
     console.warn('[msg91] MSG91_WHATSAPP_INTEGRATED_NUMBER not set')
     return { success: false }
   }
+
+  const authKey = getAuthKey()
 
   const payload = {
     integrated_number: integratedNumber,
@@ -128,22 +145,37 @@ export async function sendWhatsApp({ phone, templateName, variables }: SendWhats
     },
   }
 
-  const response = await fetch(`${MSG91_BASE_URL}/whatsapp/whatsapp/outbound/send/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      authkey: authKey,
-    },
-    body: JSON.stringify(payload),
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), MSG91_TIMEOUT_MS)
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => 'Unknown error')
-    console.error('[msg91] WhatsApp send failed:', response.status, text)
+  try {
+    const response = await fetch(`${MSG91_BASE_URL}/whatsapp/whatsapp/outbound/send/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authkey: authKey,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => 'Unknown error')
+      console.error('[msg91] WhatsApp send failed:', response.status, text)
+      return { success: false }
+    }
+
+    return { success: true }
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.error(`[msg91] WhatsApp send timed out after ${MSG91_TIMEOUT_MS}ms`)
+    } else {
+      throw err
+    }
     return { success: false }
+  } finally {
+    clearTimeout(timeoutId)
   }
-
-  return { success: true }
 }
 
 // ---------------------------------------------------------------------------

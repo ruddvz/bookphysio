@@ -4,7 +4,7 @@ import { sendAppointmentReminderSms } from '@/lib/msg91'
 import { formatIndiaDateTime } from '@/lib/india-date'
 
 /** Reminder window boundaries: look for appointments starting this many hours from now. */
-const REMINDER_WINDOW_START_HOURS = 23
+const REMINDER_WINDOW_START_HOURS = 0
 const REMINDER_WINDOW_END_HOURS = 24
 
 /**
@@ -22,15 +22,16 @@ function extractStartsAt(availabilities: unknown): string | null {
 /**
  * POST /api/cron/appointment-reminders
  *
- * Sends 24-hour advance reminders for upcoming appointments.
- * Designed to be called once per hour by a cron scheduler.
- * Protected by CRON_SECRET env var.
+ * Sends daily reminders for upcoming appointments within the next 24 hours.
+ * Designed to be called once per day by Vercel Cron (8 AM IST / 2:30 AM UTC).
+ * Protected by x-vercel-cron header or CRON_SECRET bearer token.
  */
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
+  const isVercelCron = !!request.headers.get('x-vercel-cron')
 
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!isVercelCron && (!cronSecret || authHeader !== `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

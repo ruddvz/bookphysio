@@ -138,18 +138,82 @@ interface ReviewHighlight {
   detail: string
 }
 
+interface SentimentCategory {
+  emoji: string
+  label: string
+  keywords: string[]
+  detail: string
+}
+
+const SENTIMENT_CATEGORIES: SentimentCategory[] = [
+  {
+    emoji: '🤝', label: 'Caring & Attentive',
+    keywords: ['caring', 'attentive', 'patient', 'listened', 'understanding', 'empathetic', 'kind', 'gentle', 'compassionate'],
+    detail: 'Patients praise the personal attention',
+  },
+  {
+    emoji: '✅', label: 'Effective Treatment',
+    keywords: ['effective', 'helped', 'improved', 'better', 'relief', 'recovered', 'cured', 'healed', 'pain free', 'pain-free', 'results'],
+    detail: 'Patients report positive treatment outcomes',
+  },
+  {
+    emoji: '📋', label: 'Clear Communication',
+    keywords: ['explained', 'clear', 'thorough', 'detailed', 'informative', 'transparent', 'plan', 'answered'],
+    detail: 'Takes time to explain the treatment plan',
+  },
+  {
+    emoji: '⏰', label: 'Punctual & Professional',
+    keywords: ['on time', 'punctual', 'professional', 'organized', 'prompt', 'efficient', 'well-organized'],
+    detail: 'Patients appreciate the punctuality',
+  },
+  {
+    emoji: '🏡', label: 'Great Home Visits',
+    keywords: ['home visit', 'came home', 'visited home', 'home session', 'at home', 'doorstep'],
+    detail: 'Praised for convenient home visit service',
+  },
+  {
+    emoji: '💪', label: 'Expert Techniques',
+    keywords: ['technique', 'skilled', 'expert', 'knowledgeable', 'experienced', 'specialized', 'exercise', 'stretching'],
+    detail: 'Patients value the clinical expertise',
+  },
+]
+
+function computeAverageRating(ratedReviews: ProviderReview[]): number {
+  if (ratedReviews.length === 0) return 0
+  return ratedReviews.reduce((sum, r) => sum + r.rating, 0) / ratedReviews.length
+}
+
+function extractNormalizedComments(reviews: ProviderReview[]): string[] {
+  return reviews
+    .map((r) => (r.comment ?? '').toLowerCase())
+    .filter((c) => c.length > 10)
+}
+
+function matchSentimentCategories(comments: string[], categories: SentimentCategory[]): Map<SentimentCategory, number> {
+  const matches = new Map<SentimentCategory, number>()
+  const threshold = comments.length <= 3 ? 1 : 2
+
+  for (const category of categories) {
+    const matchCount = comments.filter((c) =>
+      category.keywords.some((kw) => c.includes(kw)),
+    ).length
+    if (matchCount >= threshold) {
+      matches.set(category, matchCount)
+    }
+  }
+  return matches
+}
+
 function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderProfile): ReviewHighlight[] {
   if (reviews.length < 2) return []
 
   const highlights: ReviewHighlight[] = []
   const ratedReviews = reviews.filter((r) => r.rating > 0)
-  const comments = reviews
-    .map((r) => (r.comment ?? '').toLowerCase())
-    .filter((c) => c.length > 10)
+  const comments = extractNormalizedComments(reviews)
 
   // High average rating
   if (ratedReviews.length >= 2) {
-    const avg = ratedReviews.reduce((sum, r) => sum + r.rating, 0) / ratedReviews.length
+    const avg = computeAverageRating(ratedReviews)
     if (avg >= 4.5) {
       highlights.push({ emoji: '⭐', label: 'Highly Rated', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} reviews` })
     } else if (avg >= 4.0) {
@@ -162,73 +226,20 @@ function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderPro
     highlights.push({ emoji: '🏥', label: 'Experienced', detail: `${provider.experience_years}+ years of practice` })
   }
 
-  // Structured review sentiment analysis
-  const sentimentCategories = [
-    {
-      emoji: '🤝',
-      label: 'Caring & Attentive',
-      keywords: ['caring', 'attentive', 'patient', 'listened', 'understanding', 'empathetic', 'kind', 'gentle', 'compassionate'],
-      detail: 'Patients praise the personal attention',
-    },
-    {
-      emoji: '✅',
-      label: 'Effective Treatment',
-      keywords: ['effective', 'helped', 'improved', 'better', 'relief', 'recovered', 'cured', 'healed', 'pain free', 'pain-free', 'results'],
-      detail: 'Patients report positive treatment outcomes',
-    },
-    {
-      emoji: '📋',
-      label: 'Clear Communication',
-      keywords: ['explained', 'clear', 'thorough', 'detailed', 'informative', 'transparent', 'plan', 'answered'],
-      detail: 'Takes time to explain the treatment plan',
-    },
-    {
-      emoji: '⏰',
-      label: 'Punctual & Professional',
-      keywords: ['on time', 'punctual', 'professional', 'organized', 'prompt', 'efficient', 'well-organized'],
-      detail: 'Patients appreciate the punctuality',
-    },
-    {
-      emoji: '🏡',
-      label: 'Great Home Visits',
-      keywords: ['home visit', 'came home', 'visited home', 'home session', 'at home', 'doorstep'],
-      detail: 'Praised for convenient home visit service',
-    },
-    {
-      emoji: '💪',
-      label: 'Expert Techniques',
-      keywords: ['technique', 'skilled', 'expert', 'knowledgeable', 'experienced', 'specialized', 'exercise', 'stretching'],
-      detail: 'Patients value the clinical expertise',
-    },
-  ]
-
-  for (const category of sentimentCategories) {
+  // Sentiment-based highlights
+  const sentimentMatches = matchSentimentCategories(comments, SENTIMENT_CATEGORIES)
+  for (const [category] of sentimentMatches) {
     if (highlights.length >= 6) break
-    const matchCount = comments.filter((c) =>
-      category.keywords.some((kw) => c.includes(kw)),
-    ).length
-    // Require at least 2 reviews mentioning the category, or 1 if only 2-3 reviews total
-    const threshold = comments.length <= 3 ? 1 : 2
-    if (matchCount >= threshold) {
-      highlights.push({
-        emoji: category.emoji,
-        label: category.label,
-        detail: category.detail,
-      })
-    }
+    highlights.push({ emoji: category.emoji, label: category.label, detail: category.detail })
   }
 
-  // Multiple specialties (fallback if no sentiment matches)
+  // Fallbacks
   if (provider.specialties.length >= 2 && highlights.length < 4) {
     highlights.push({ emoji: '🎯', label: 'Multi-Specialist', detail: `${provider.specialties.length} areas of expertise` })
   }
-
-  // Consistent positive feedback (all reviews ≥ 4 stars)
   if (ratedReviews.length >= 3 && ratedReviews.every((r) => r.rating >= 4) && highlights.length < 6) {
     highlights.push({ emoji: '🔄', label: 'Consistently Excellent', detail: 'All patients rate 4+ stars' })
   }
-
-  // Detailed comments (shows engagement)
   const commentedReviews = reviews.filter((r) => r.comment && r.comment.length > 30)
   if (commentedReviews.length >= 3 && highlights.length < 6) {
     highlights.push({ emoji: '💬', label: 'Detailed Feedback', detail: `${commentedReviews.length} patients wrote detailed reviews` })

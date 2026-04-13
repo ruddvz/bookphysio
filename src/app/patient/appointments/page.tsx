@@ -160,7 +160,7 @@ function PatientAppointmentsContent() {
                   secondary={`${appt.availabilities?.starts_at ? formatApptDate(appt.availabilities.starts_at) : 'Pending date'} · ${appt.visit_type === 'home_visit' ? 'Home session' : 'Clinic visit'}`}
                   right={
                     <div className="flex items-center gap-3">
-                      {tab === 'upcoming' && canPatientCancelAppointment(appt.status, appt.availabilities?.starts_at) && (
+                      {tab === 'upcoming' && appt.payment_status !== 'paid' && canPatientCancelAppointment(appt.status, appt.availabilities?.starts_at) && (
                         <Link
                           href={`/patient/appointments/${appt.id}?reschedule=true`}
                           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-bp-accent border border-bp-accent/20 rounded-full hover:bg-bp-accent/5 transition-colors"

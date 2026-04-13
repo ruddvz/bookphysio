@@ -214,7 +214,10 @@ export async function PATCH(
   // Handle reschedule action
   if (body.action === 'reschedule') {
     const parsed = rescheduleAppointmentSchema.safeParse(body)
-    if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
+    if (!parsed.success) {
+      const message = parsed.error.issues[0]?.message ?? 'Invalid reschedule request'
+      return jsonNoStore({ error: message }, { status: 400 })
+    }
 
     const { supabaseAdmin } = await import('@/lib/supabase/admin')
 
@@ -257,21 +260,15 @@ export async function PATCH(
 
     // Send reschedule confirmation SMS/WhatsApp (best-effort, non-blocking)
     try {
-      const { data: patient } = await supabaseAdmin
-        .from('users')
-        .select('full_name, phone')
-        .eq('id', user.id)
-        .single()
-      const { data: provider } = await supabaseAdmin
-        .from('users')
-        .select('full_name')
-        .eq('id', apptCheck.provider_id)
-        .single()
-      const { data: newAvailability } = await supabaseAdmin
-        .from('availabilities')
-        .select('starts_at')
-        .eq('id', parsed.data.new_availability_id)
-        .single()
+      const [
+        { data: patient },
+        { data: provider },
+        { data: newAvailability },
+      ] = await Promise.all([
+        supabaseAdmin.from('users').select('full_name, phone').eq('id', user.id).single(),
+        supabaseAdmin.from('users').select('full_name').eq('id', apptCheck.provider_id).single(),
+        supabaseAdmin.from('availabilities').select('starts_at').eq('id', parsed.data.new_availability_id).single(),
+      ])
 
       if (patient?.phone && provider?.full_name && newAvailability?.starts_at) {
         sendRescheduleConfirmationSms({

@@ -77,6 +77,11 @@ export default function PatientAppointmentDetail() {
     },
   })
 
+  // Compute reschedule eligibility — gate modal rendering behind this
+  const canReschedule = appt
+    ? appt.payment_status !== 'paid' && canPatientCancelAppointment(appt.status, appt.availabilities.starts_at)
+    : false
+
   if (isLoading) {
     return (
       <div className="max-w-[800px] mx-auto px-6 py-12 flex items-center justify-center min-h-[300px]">
@@ -107,8 +112,7 @@ export default function PatientAppointmentDetail() {
   })
   const refCode = `BP-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const status = STATUS_CONFIG[appt.status]
-  const canCancel = appt.payment_status !== 'paid'
-    && canPatientCancelAppointment(appt.status, appt.availabilities.starts_at)
+  const canCancel = canReschedule
   const gst = appt.payment_gst_amount_inr ?? Math.round(appt.fee_inr * 0.18)
   const totalDue = appt.payment_amount_inr ?? (appt.fee_inr + gst)
   const paymentStatus = appt.payment_status
@@ -316,7 +320,7 @@ export default function PatientAppointmentDetail() {
       )}
 
       {/* Reschedule modal */}
-      {showReschedule && (
+      {showReschedule && canCancel && (
         <RescheduleModal
           appointmentId={appt.id}
           providerId={appt.provider_id}

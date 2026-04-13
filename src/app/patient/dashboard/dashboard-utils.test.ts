@@ -5,6 +5,7 @@ import {
   getPatientAppointmentProviderName,
   getPatientAppointmentVisitLabel,
 } from './dashboard-utils'
+import type { AppointmentItem } from '../appointments/appointments-utils'
 
 const inTwoHours = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
 const tomorrow = new Date(Date.now() + 26 * 60 * 60 * 1000).toISOString()
@@ -18,6 +19,7 @@ describe('patient dashboard next appointment helpers', () => {
         status: 'completed',
         visit_type: 'in_clinic',
         fee_inr: 800,
+        payment_status: null,
         availabilities: { starts_at: yesterday },
         providers: { users: { full_name: 'Dr. Meera Iyer' }, specialties: [] },
         locations: { city: 'Mumbai' },
@@ -27,6 +29,7 @@ describe('patient dashboard next appointment helpers', () => {
         status: 'pending',
         visit_type: 'home_visit',
         fee_inr: 1100,
+        payment_status: null,
         availabilities: { starts_at: tomorrow },
         providers: { users: { full_name: 'Dr. Meera Iyer' }, specialties: [] },
         locations: { city: 'Mumbai' },
@@ -36,6 +39,7 @@ describe('patient dashboard next appointment helpers', () => {
         status: 'confirmed',
         visit_type: 'in_clinic',
         fee_inr: 950,
+        payment_status: null,
         availabilities: { starts_at: inTwoHours },
         providers: { users: { full_name: 'Meera Iyer' }, specialties: [] },
         locations: { city: 'Mumbai' },
@@ -53,6 +57,7 @@ describe('patient dashboard next appointment helpers', () => {
           status: 'completed',
           visit_type: 'in_clinic',
           fee_inr: 800,
+          payment_status: null,
           availabilities: { starts_at: yesterday },
           providers: { users: { full_name: 'Dr. Meera Iyer' }, specialties: [] },
           locations: { city: 'Mumbai' },
@@ -67,6 +72,7 @@ describe('patient dashboard next appointment helpers', () => {
       status: 'confirmed',
       visit_type: 'home_visit',
       fee_inr: 900,
+      payment_status: null as AppointmentItem['payment_status'],
       availabilities: { starts_at: inTwoHours },
       providers: { users: { full_name: 'Meera Iyer' }, specialties: [] },
       locations: { city: 'Mumbai' },

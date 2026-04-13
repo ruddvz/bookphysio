@@ -14,6 +14,7 @@ export interface AppointmentItem {
   status: AppointmentStatus | string
   visit_type: VisitType | string
   fee_inr: number
+  payment_status: 'created' | 'paid' | 'failed' | 'refunded' | null
   availabilities: { starts_at: string } | null
   providers: {
     users: { full_name: string } | null

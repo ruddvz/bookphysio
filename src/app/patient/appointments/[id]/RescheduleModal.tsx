@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, Clock, X, Loader2, ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatIndiaDateTime } from '@/lib/india-date'
+import { formatIndiaDateTime, formatIndiaDateInput } from '@/lib/india-date'
 
 interface AvailabilitySlot {
   id: string
@@ -24,7 +24,8 @@ interface RescheduleModalProps {
 }
 
 /**
- * Produces an ISO date string offset by `days` from `base`, using India timezone.
+ * Produces a UTC ISO date string offset by `days` from `base`.
+ * Used for computing the display range; actual IST formatting is handled by formatIndiaDateTime.
  */
 function indiaDateOffset(base: Date, days: number): string {
   const d = new Date(base.getTime() + days * 86_400_000)
@@ -51,6 +52,21 @@ export default function RescheduleModal({
   const [weekOffset, setWeekOffset] = useState(0)
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null)
   const [step, setStep] = useState<'select' | 'confirm'>('select')
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [onClose])
+
+  // Reset selected slot when switching weeks
+  useEffect(() => {
+    setSelectedSlotId(null)
+    setStep('select')
+  }, [weekOffset])
 
   // Refresh `now` when step changes to avoid stale time after long modal sessions
   // eslint-disable-next-line react-hooks/exhaustive-deps -- step+weekOffset are intentional deps to refresh the timestamp
@@ -83,7 +99,7 @@ export default function RescheduleModal({
   const slotsByDate = useMemo(() => {
     const grouped = new Map<string, AvailabilitySlot[]>()
     for (const slot of slots) {
-      const dateKey = slot.starts_at.slice(0, 10)
+      const dateKey = formatIndiaDateInput(slot.starts_at)
       const existing = grouped.get(dateKey) ?? []
       existing.push(slot)
       grouped.set(dateKey, existing)
@@ -215,7 +231,7 @@ export default function RescheduleModal({
             )}
 
             {/* Continue button */}
-            {selectedSlotId && (
+            {selectedSlot && (
               <button
                 type="button"
                 onClick={() => setStep('confirm')}
