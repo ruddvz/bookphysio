@@ -38,7 +38,7 @@ describe('StepPayment', () => {
           reason: 'Knee pain',
           homeVisitAddress: '',
           painLocation: '',
-          painSeverity: -1,
+          painSeverity: undefined,
           painDuration: '',
         }}
         onBack={() => {}}
@@ -122,7 +122,7 @@ describe('StepPayment', () => {
           reason: '   ',
           homeVisitAddress: '',
           painLocation: '',
-          painSeverity: -1,
+          painSeverity: undefined,
           painDuration: '',
         }}
         onBack={() => {}}

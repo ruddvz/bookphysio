@@ -12,7 +12,7 @@ interface PatientDetails {
   reason: string
   homeVisitAddress: string
   painLocation: string
-  painSeverity: number
+  painSeverity?: number
   painDuration: string
 }
 
@@ -57,7 +57,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
       reason,
       homeVisitAddress,
       painLocation,
-      painSeverity: painSeverityTouched ? painSeverity : -1,
+      painSeverity: painSeverityTouched ? painSeverity : undefined,
       painDuration,
     })
   }
