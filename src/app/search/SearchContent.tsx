@@ -66,6 +66,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     fee: p.consultation_fee_inr ?? 0,
     avatarUrl: p.avatar_url,
     icpVerified: p.verified,
+    availabilityPreview: p.availability_preview,
   }
 }
 
@@ -153,6 +154,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const specialty = searchParams.get('specialty') ?? conditionFilters.specialty
   const visit_type = searchParams.get('visit_type') ?? conditionFilters.visitType
   const max_fee = searchParams.get('max_fee')
+  const sort = searchParams.get('sort')
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
 
@@ -162,11 +164,12 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     if (specialty) apiParams.specialty_id = specialty
     if (conditionFilters.query) apiParams.query = conditionFilters.query
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
+    if (sort) apiParams.sort = sort
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, specialty, conditionFilters.query, visit_type, max_fee, lat, lng])
+  }, [city, specialty, conditionFilters.query, visit_type, sort, max_fee, lat, lng])
 
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
     fetchUrl,

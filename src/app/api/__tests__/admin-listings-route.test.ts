@@ -61,7 +61,7 @@ describe('admin listings route', () => {
     apiRateLimitMock.mockResolvedValueOnce({ success: false })
 
     const { GET } = await import('../admin/listings/route')
-    const response = await GET(new NextRequest('http://localhost/api/admin/listings'))
+    const response = await GET()
 
     expect(response.status).toBe(429)
     expect(supabaseAdminFromMock).not.toHaveBeenCalled()

@@ -1,13 +1,11 @@
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 
-type RedisClient = Pick<Redis, 'get' | 'set' | 'del' | 'createScript'>
-
 const upstashUrl = process.env.UPSTASH_REDIS_REST_URL
 const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
 const hasUpstashCredentials = Boolean(upstashUrl && upstashToken)
 
-function createMissingRedisClient(): RedisClient {
+function createMissingRedisClient(): Redis {
   const unavailable = async () => {
     throw new Error('Upstash Redis is not configured.')
   }
@@ -16,10 +14,12 @@ function createMissingRedisClient(): RedisClient {
     get: unavailable,
     set: unavailable,
     del: unavailable,
+    eval: unavailable,
+    evalsha: unavailable,
     createScript: () => ({
       eval: unavailable,
     }),
-  } as RedisClient
+  } as unknown as Redis
 }
 
 // Warn loudly at module init if Upstash credentials are missing in production.
@@ -42,7 +42,7 @@ const configuredRedis = hasUpstashCredentials
     })
   : null
 
-export const redisClient: RedisClient = (configuredRedis as RedisClient | null) ?? createMissingRedisClient()
+export const redisClient: Redis = configuredRedis ?? createMissingRedisClient()
 export const redis = redisClient
 
 export const apiRatelimit = new Ratelimit({

@@ -112,6 +112,7 @@ Latest Session Work (2026-04-01):
 
 ## Completed Work This Session
 
+- [x] Launch hardening pass: provider onboarding now stays `provider_pending` until admin approval, approving a listing promotes the user role, pay-at-clinic bookings create pending payment records, homepage proof/reviews now pull live data, and search now supports sorting with real availability previews
 - [x] Deployed fix: skip Vercel workflow (GitHub Pages only)
 - [x] Deployed fix: Vitest configuration + mock setup
 - [x] Deployed feature: Map city selection flow + provider highlighting
