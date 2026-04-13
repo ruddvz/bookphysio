@@ -1,7 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
-import { Quote, Star } from 'lucide-react'
+import { Quote, Star, ShieldCheck, Clock, UserCheck } from 'lucide-react'
 
 type ReviewResponse = {
   reviews: Array<{
@@ -35,7 +35,43 @@ export default function Testimonials() {
   const reviews = (data?.reviews ?? []).filter((review) => Boolean(review.comment?.trim()))
 
   if (error || reviews.length === 0) {
-    return null
+    return (
+      <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Why patients trust BookPhysio">
+        <div className="bp-container">
+          <div className="max-w-xl mb-12">
+            <div className="bp-kicker mb-4">Why BookPhysio</div>
+            <h2 className="text-slate-900 mb-3">Trusted physiotherapy, simplified.</h2>
+            <p className="text-slate-500 text-[16px] leading-relaxed">
+              Every provider on our platform is verified, and every review comes from a completed appointment.
+            </p>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            <div className="flex flex-col p-7 bg-white rounded-2xl border border-slate-200">
+              <ShieldCheck size={28} className="text-[#00766C] mb-4" />
+              <h3 className="text-slate-900 text-[17px] font-semibold mb-2">Verified providers</h3>
+              <p className="text-slate-500 text-[15px] leading-relaxed">
+                All physiotherapists are credentialed and reviewed before joining the platform.
+              </p>
+            </div>
+            <div className="flex flex-col p-7 bg-white rounded-2xl border border-slate-200">
+              <Clock size={28} className="text-[#00766C] mb-4" />
+              <h3 className="text-slate-900 text-[17px] font-semibold mb-2">Book in minutes</h3>
+              <p className="text-slate-500 text-[15px] leading-relaxed">
+                Find available slots, compare providers, and confirm your appointment online.
+              </p>
+            </div>
+            <div className="flex flex-col p-7 bg-white rounded-2xl border border-slate-200">
+              <UserCheck size={28} className="text-[#00766C] mb-4" />
+              <h3 className="text-slate-900 text-[17px] font-semibold mb-2">Real patient feedback</h3>
+              <p className="text-slate-500 text-[15px] leading-relaxed">
+                Reviews are published only after completed visits — no fake testimonials.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (

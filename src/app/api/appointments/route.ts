@@ -87,7 +87,14 @@ async function rollbackAppointmentCreation(args: {
     releaseBookingHoldIfOwned(args.activeIpHoldKey, args.provisionalHoldToken),
   ])
 
-  const cleanupFailures = cleanupResults.filter((result) => result.status === 'rejected')
+  const cleanupFailures = cleanupResults.filter((result) => {
+    if (result.status === 'rejected') {
+      return true
+    }
+
+    const value = result.value
+    return typeof value === 'object' && value !== null && 'error' in value && Boolean(value.error)
+  })
   if (cleanupFailures.length > 0) {
     console.error('[api/appointments] Failed rollback after payment insert error:', cleanupFailures)
   }
