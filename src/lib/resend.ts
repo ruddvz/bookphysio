@@ -1,5 +1,11 @@
 import { Resend } from 'resend'
 
+if (!process.env.RESEND_API_KEY && process.env.NODE_ENV === 'production') {
+  throw new Error(
+    '[resend] RESEND_API_KEY must be set in production.'
+  )
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY || 'placeholder-resend-key')
 
 export async function sendBookingConfirmation({

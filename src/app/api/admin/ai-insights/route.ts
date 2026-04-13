@@ -55,32 +55,32 @@ async function gatherPlatformData(): Promise<PlatformSnapshot> {
     // New patient signups this week
     supabaseAdmin
       .from('users')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('role', 'patient')
       .gte('created_at', weekAgo),
 
     // New provider signups this week
     supabaseAdmin
       .from('providers')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .gte('created_at', weekAgo),
 
     // Active verified providers
     supabaseAdmin
       .from('providers')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('verified', true),
 
     // Pending approvals
     supabaseAdmin
       .from('providers')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('verified', false),
 
     // Total patients
     supabaseAdmin
       .from('users')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('role', 'patient'),
 
     // All-time completed GMV

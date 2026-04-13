@@ -249,6 +249,12 @@ describe('POST /api/appointments', () => {
         return createAdminAppointmentsChain()
       }
 
+      if (table === 'payments') {
+        return {
+          insert: vi.fn().mockResolvedValue({ data: { id: 'pay-mock' }, error: null }),
+        }
+      }
+
       throw new Error(`Unhandled admin table: ${table}`)
     })
   })

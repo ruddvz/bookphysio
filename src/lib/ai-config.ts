@@ -1,12 +1,14 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 
 if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY && process.env.NODE_ENV === 'production') {
-  console.warn('WARNING: GOOGLE_GENERATIVE_AI_API_KEY is not set. AI features may fail.');
+  throw new Error(
+    '[ai-config] GOOGLE_GENERATIVE_AI_API_KEY must be set in production.'
+  )
 }
 
 // 1. Initialize API Providers securely
 const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || 'missing-key-google',
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || 'placeholder-ai-key',
 })
 
 // 2. Define High-Speed Triage Models (Patient App)

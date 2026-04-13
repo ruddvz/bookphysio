@@ -1,22 +1,20 @@
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 
-// Warn loudly at module init if Upstash credentials are missing in production.
-// Missing credentials disable all rate limiting, but request behavior on rate-limit
-// failures depends on each call site: some handlers may allow through, while others
-// may fail closed and return an error instead.
-if (process.env.NODE_ENV === 'production' &&
-  (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)) {
-  console.error(
-    '[upstash] CRITICAL: UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is not set. ' +
-    'All rate limiting (OTP, login, booking, uploads, messaging, AI) is DISABLED. ' +
-    'Set both environment variables immediately.'
+// In production, hard-fail when Redis credentials are missing so the app
+// never silently falls back to a dummy connection string.
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+
+if (process.env.NODE_ENV === 'production' && (!redisUrl || !redisToken)) {
+  throw new Error(
+    '[upstash] UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set in production.'
   )
 }
 
 export const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || 'https://dummy.redis.com',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || 'dummy_token',
+  url: redisUrl || 'https://placeholder.upstash.io',
+  token: redisToken || 'placeholder_token',
 })
 
 export const apiRatelimit = new Ratelimit({
