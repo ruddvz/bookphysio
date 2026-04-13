@@ -2,8 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { sendReviewPrompt } from '@/lib/resend'
 
 /** Window boundaries for finding recently-completed appointments (hours ago). */
-const REVIEW_WINDOW_START_HOURS = 28
-const REVIEW_WINDOW_END_HOURS = 20
+const REVIEW_WINDOW_OLDEST_HOURS_AGO = 28
+const REVIEW_WINDOW_NEWEST_HOURS_AGO = 20
 
 /**
  * POST /api/cron/review-prompts
@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
 
   // Find appointments that ended 20-28 hours ago (based on availability ends_at)
   const now = new Date()
-  const windowStart = new Date(now.getTime() - REVIEW_WINDOW_START_HOURS * 60 * 60 * 1000)
-  const windowEnd = new Date(now.getTime() - REVIEW_WINDOW_END_HOURS * 60 * 60 * 1000)
+  const windowStart = new Date(now.getTime() - REVIEW_WINDOW_OLDEST_HOURS_AGO * 60 * 60 * 1000)
+  const windowEnd = new Date(now.getTime() - REVIEW_WINDOW_NEWEST_HOURS_AGO * 60 * 60 * 1000)
 
   const { data: appointments, error } = await supabaseAdmin
     .from('appointments')
