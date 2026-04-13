@@ -212,6 +212,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                 placeholder="Enter the patient's full address for the home visit"
                 rows={3}
                 maxLength={250}
+                aria-invalid={!!errors.homeVisitAddress}
                 className={cn(
                   'w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none placeholder:text-gray-200 leading-[1.7]',
                   errors.homeVisitAddress
@@ -256,7 +257,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
           {/* Pain Severity */}
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
-              <label id="severity-label" className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block">Pain severity (1–10)</label>
+              <label id="severity-label" className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block">Pain severity (0–10)</label>
               <span className="text-[14px] font-bold text-bp-accent">{painSeverity > 0 ? painSeverity : '—'}</span>
             </div>
             <input
