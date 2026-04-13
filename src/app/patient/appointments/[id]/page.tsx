@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft, Loader2, CalendarPlus } from 'lucide-react'
@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { formatIndiaDateTime } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
+import RescheduleModal from './RescheduleModal'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -44,8 +45,11 @@ const SECTION_CARD_CLS = "bg-white rounded-[32px] border border-bp-border shadow
 
 export default function PatientAppointmentDetail() {
   const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
   const queryClient = useQueryClient()
+  const rescheduleParam = searchParams.get('reschedule') === 'true'
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [showReschedule, setShowReschedule] = useState(rescheduleParam)
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
     queryKey: ['appointment', 'patient', id],
@@ -72,6 +76,11 @@ export default function PatientAppointmentDetail() {
       setConfirmCancel(false)
     },
   })
+
+  // Compute reschedule eligibility — gate modal rendering behind this
+  const canReschedule = appt
+    ? appt.payment_status !== 'paid' && canPatientCancelAppointment(appt.status, appt.availabilities.starts_at)
+    : false
 
   if (isLoading) {
     return (
@@ -103,8 +112,7 @@ export default function PatientAppointmentDetail() {
   })
   const refCode = `BP-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const status = STATUS_CONFIG[appt.status]
-  const canCancel = appt.payment_status !== 'paid'
-    && canPatientCancelAppointment(appt.status, appt.availabilities.starts_at)
+  const canCancel = canReschedule
   const gst = appt.payment_gst_amount_inr ?? Math.round(appt.fee_inr * 0.18)
   const totalDue = appt.payment_amount_inr ?? (appt.fee_inr + gst)
   const paymentStatus = appt.payment_status
@@ -252,13 +260,14 @@ export default function PatientAppointmentDetail() {
         <div className="flex flex-col sm:flex-row gap-4 mt-12">
           {!confirmCancel ? (
             <>
-              <Link
-                href={`/book/${appt.provider_id}`}
+              <button
+                type="button"
+                onClick={() => setShowReschedule(true)}
                 className="flex-[2] flex items-center justify-center gap-2 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-bold tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5 cursor-pointer outline-none"
               >
                 <RefreshCw className="w-5 h-5" />
                 Reschedule with {doctorName}
-              </Link>
+              </button>
               <button
                 type="button"
                 onClick={() => setConfirmCancel(true)}
@@ -308,6 +317,18 @@ export default function PatientAppointmentDetail() {
             Book follow-up with {doctorName}
           </Link>
         </div>
+      )}
+
+      {/* Reschedule modal */}
+      {showReschedule && canCancel && (
+        <RescheduleModal
+          appointmentId={appt.id}
+          providerId={appt.provider_id}
+          providerName={doctorName}
+          currentSlotDate={appt.availabilities.starts_at}
+          onClose={() => setShowReschedule(false)}
+          onSuccess={() => setShowReschedule(false)}
+        />
       )}
     </div>
   )

@@ -4,6 +4,9 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import SearchContent from './SearchContent'
 
+// ISR — Revalidate search page shell every 5 minutes
+export const revalidate = 300
+
 interface SearchPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }

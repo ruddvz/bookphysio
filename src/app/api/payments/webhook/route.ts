@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { verifyWebhookSignature } from '@/lib/razorpay'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendBookingConfirmation } from '@/lib/resend'
+import { sendBookingConfirmationSms } from '@/lib/msg91'
 
 // NOTE: The create-order and verify endpoints are intentionally disabled (503) while
 // the payment flow is being re-architected. This webhook remains active to handle
@@ -136,19 +137,40 @@ export async function POST(request: NextRequest) {
         const date = startsAt ? new Date(startsAt).toLocaleDateString('en-IN', { dateStyle: 'long' }) : 'TBD'
         const time = startsAt ? new Date(startsAt).toLocaleTimeString('en-IN', { timeStyle: 'short' }) : 'TBD'
 
-        await sendBookingConfirmation({
-          to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
-          patientName: patient.full_name,
-          providerName: provider.full_name,
-          appointmentDate: date,
-          appointmentTime: time,
-          visitType: appt.visit_type,
-          amountInr: appt.fee_inr,
-        })
+        // Send email (awaited, independent error handling)
+        try {
+          await sendBookingConfirmation({
+            to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
+            patientName: patient.full_name,
+            providerName: provider.full_name,
+            appointmentDate: date,
+            appointmentTime: time,
+            visitType: appt.visit_type,
+            amountInr: appt.fee_inr,
+          })
+        } catch (emailError) {
+          console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+        }
+
+        // Send SMS + WhatsApp (awaited separately, independent error handling)
+        if (patient.phone) {
+          try {
+            await sendBookingConfirmationSms({
+              phone: patient.phone,
+              patientName: patient.full_name,
+              providerName: provider.full_name,
+              appointmentDate: date,
+              appointmentTime: time,
+              feeInr: appt.fee_inr,
+            })
+          } catch (smsErr) {
+            console.error('[webhook] SMS confirmation failed (non-fatal):', smsErr)
+          }
+        }
       }
     }
-  } catch (emailError) {
-    console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+  } catch (lookupError) {
+    console.error('[webhook] Notification data lookup failed (non-fatal):', lookupError)
   }
 
   return NextResponse.json({ received: true })

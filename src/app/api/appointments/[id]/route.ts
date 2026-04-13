@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { cancelAppointmentSchema, updateNotesSchema } from '@/lib/validations/booking'
+import { cancelAppointmentSchema, rescheduleAppointmentSchema, updateNotesSchema } from '@/lib/validations/booking'
 import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/booking/policy'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
@@ -8,6 +8,8 @@ import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { getActiveBookingAppointmentHoldKey, mutationRatelimit, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
+import { sendRescheduleConfirmationSms } from '@/lib/msg91'
+import { formatIndiaDateTime } from '@/lib/india-date'
 
 type PaymentRecord = {
   status: 'created' | 'paid' | 'failed' | 'refunded'
@@ -65,6 +67,22 @@ function withAppointmentDetailNotes<T extends { notes: string | null }>(
     payment_amount_inr: latestPayment?.amount_inr ?? null,
     payment_gst_amount_inr: latestPayment?.gst_amount_inr ?? null,
   }
+}
+
+/** Extract starts_at from a Supabase availability join (may be object or array). */
+function extractStartsAt(availabilities: unknown): string | null {
+  const row = Array.isArray(availabilities) ? availabilities[0] : availabilities
+  if (row && typeof row === 'object' && 'starts_at' in row) {
+    return (row as { starts_at: string }).starts_at
+  }
+  return null
+}
+
+/** Normalize a payments join into an array. */
+function normalizePayments(payments: unknown): PaymentRecord[] {
+  if (Array.isArray(payments)) return payments as PaymentRecord[]
+  if (payments) return [payments as PaymentRecord]
+  return []
 }
 
 export async function GET(
@@ -193,7 +211,93 @@ export async function PATCH(
     return jsonNoStore(withAppointmentDetailNotes(updated, { includeProviderNotes: true, includeLegacyNotes: true }))
   }
 
-  // Only cancellation is supported via PATCH
+  // Handle reschedule action
+  if (body.action === 'reschedule') {
+    const parsed = rescheduleAppointmentSchema.safeParse(body)
+    if (!parsed.success) {
+      const message = parsed.error.issues[0]?.message ?? 'Invalid reschedule request'
+      return jsonNoStore({ error: message }, { status: 400 })
+    }
+
+    const { supabaseAdmin } = await import('@/lib/supabase/admin')
+
+    // Check the appointment can be rescheduled (same rules as cancel — 4h notice)
+    const { data: apptCheck } = await supabaseAdmin
+      .from('appointments')
+      .select('id, status, patient_id, provider_id, availability_id, availabilities (starts_at), payments (status)')
+      .eq('id', id)
+      .eq('patient_id', user.id)
+      .single()
+
+    if (!apptCheck) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
+
+    const startsAt = extractStartsAt(apptCheck.availabilities)
+    const paymentRecords = normalizePayments((apptCheck as Record<string, unknown>).payments)
+
+    if (paymentRecords.some((payment) => payment.status === 'paid')) {
+      return jsonNoStore({ error: 'Appointments paid online cannot be rescheduled automatically. Please contact support.' }, { status: 409 })
+    }
+
+    if (!canPatientCancelAppointment(apptCheck.status as string, startsAt)) {
+      return jsonNoStore({ error: 'Appointment cannot be rescheduled (too close to start time or invalid status)' }, { status: 409 })
+    }
+
+    const { data, error: rpcError } = await supabaseAdmin.rpc('reschedule_appointment_atomic', {
+      p_appointment_id: id,
+      p_patient_id: user.id,
+      p_new_availability_id: parsed.data.new_availability_id,
+    })
+
+    if (rpcError) {
+      const message = rpcError.message ?? 'Failed to reschedule appointment'
+      console.error('[api/appointments/[id]] Reschedule failed:', rpcError)
+      return jsonNoStore({ error: message }, { status: 409 })
+    }
+
+    if (!data) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
+
+    await clearActiveBookingHold(id)
+
+    // Send reschedule confirmation SMS/WhatsApp (best-effort, non-blocking)
+    try {
+      const [
+        { data: patient },
+        { data: provider },
+        { data: newAvailability },
+      ] = await Promise.all([
+        supabaseAdmin.from('users').select('full_name, phone').eq('id', user.id).single(),
+        supabaseAdmin.from('users').select('full_name').eq('id', apptCheck.provider_id).single(),
+        supabaseAdmin.from('availabilities').select('starts_at').eq('id', parsed.data.new_availability_id).single(),
+      ])
+
+      if (patient?.phone && provider?.full_name && newAvailability?.starts_at) {
+        sendRescheduleConfirmationSms({
+          phone: patient.phone,
+          patientName: patient.full_name ?? 'there',
+          providerName: provider.full_name,
+          newDate: formatIndiaDateTime(newAvailability.starts_at, {
+            weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+          }),
+          newTime: formatIndiaDateTime(newAvailability.starts_at, {
+            hour: '2-digit', minute: '2-digit',
+          }),
+        }).catch((err) => {
+          console.error('[api/appointments/[id]] Reschedule SMS failed (non-fatal):', err)
+        })
+      }
+    } catch {
+      // SMS notification failure is non-fatal
+    }
+
+    return jsonNoStore(
+      withAppointmentDetailNotes(data, {
+        includeProviderNotes: false,
+        includeLegacyNotes: false,
+      }),
+    )
+  }
+
+  // Only cancellation is supported via PATCH beyond this point
   const parsed = cancelAppointmentSchema.safeParse(body)
   if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
 
@@ -207,12 +311,8 @@ export async function PATCH(
     .single()
 
   if (!appt) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
-  const availability = Array.isArray(appt.availabilities) ? appt.availabilities[0] : appt.availabilities
-  const startsAt = availability && typeof availability === 'object' && 'starts_at' in availability
-    ? availability.starts_at as string | null | undefined
-    : null
-  const payments = ('payments' in appt ? appt.payments : null) as PaymentRecord[] | PaymentRecord | null | undefined
-  const paymentRecords = Array.isArray(payments) ? payments : payments ? [payments] : []
+  const startsAt = extractStartsAt(appt.availabilities)
+  const paymentRecords = normalizePayments((appt as Record<string, unknown>).payments)
 
   if (paymentRecords.some((payment) => payment.status === 'paid')) {
     return jsonNoStore({ error: 'Appointments paid online cannot be cancelled automatically right now. Please contact support.' }, { status: 409 })
