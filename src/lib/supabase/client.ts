@@ -5,12 +5,14 @@ export function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-    // Return a mock-like client or handle gracefully for static export/build
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required')
+    }
     console.warn('Supabase credentials missing. Auth features will be disabled.')
   }
 
   return createBrowserClient(
-    url || 'https://placeholder.supabase.co',
-    key || 'placeholder-anon-key'
+    url ?? 'https://placeholder.supabase.co',
+    key ?? ''
   )
 }
