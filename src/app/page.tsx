@@ -10,6 +10,7 @@ import FAQ from '@/components/FAQ'
 import CityQuickSearch from '@/components/CityQuickSearch'
 import CityLinks from '@/components/CityLinks'
 import Footer from '@/components/Footer'
+import SectionErrorBoundary from '@/components/SectionErrorBoundary'
 
 const organizationSchema = {
   '@context': 'https://schema.org',
@@ -71,12 +72,20 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
-        <ProofSection />
-        <TopSpecialties />
+        <SectionErrorBoundary fallbackTitle="Couldn't load the provider showcase">
+          <ProofSection />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary fallbackTitle="Couldn't load specialties">
+          <TopSpecialties />
+        </SectionErrorBoundary>
         <HowItWorks />
-        <HealthSystems />
+        <SectionErrorBoundary fallbackTitle="Couldn't load health systems">
+          <HealthSystems />
+        </SectionErrorBoundary>
         <ProviderCTA />
-        <Testimonials />
+        <SectionErrorBoundary fallbackTitle="Couldn't load testimonials">
+          <Testimonials />
+        </SectionErrorBoundary>
         <FAQ />
         <CityQuickSearch />
         <CityLinks />

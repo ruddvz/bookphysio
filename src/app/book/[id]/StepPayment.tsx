@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight } from 'lucide-react'
+import { useRouter, usePathname, useSearchParams as useBookingSearchParams } from 'next/navigation'
+import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight, LogIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -46,6 +47,10 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
   const [method, setMethod] = useState<PaymentMethod>('pay_at_clinic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const bookingSearch = useBookingSearchParams()
 
   const gstAmount = Math.round(feeInr * 0.18)
   const total = feeInr + gstAmount
@@ -111,6 +116,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
       if (!apptRes.ok) {
         const data = await apptRes.json() as { error?: unknown }
         if (apptRes.status === 401) {
+          setNeedsAuth(true)
           setError('Please sign in to confirm this booking.')
           return
         }
@@ -222,7 +228,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
           })}
         </div>
 
-        {error && (
+        {error && !needsAuth && (
           <div className="p-6 bg-red-50 border border-red-100 rounded-[32px] flex gap-4 mt-8 animate-in shake-in-50 duration-500">
             <div className="p-2 bg-red-100 rounded-2xl h-fit">
                <X className="w-5 h-5 text-red-500" strokeWidth={3} />
@@ -230,6 +236,38 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
             <div>
               <p className="text-[15px] font-bold text-red-600">Booking could not be completed</p>
                <p className="text-[13px] font-bold text-red-400 mt-1">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {needsAuth && (
+          <div className="p-8 bg-bp-surface border-2 border-bp-accent/20 rounded-[32px] mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
+                <LogIn size={28} />
+              </div>
+              <div>
+                <p className="text-[18px] font-bold text-bp-primary mb-1">Sign in to complete your booking</p>
+                <p className="text-[14px] text-bp-body/60 max-w-sm">
+                  Please sign in to confirm this booking. Your slot selection is saved.
+                </p>
+              </div>
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => router.push(`/login?return=${encodeURIComponent(`${pathname}?${bookingSearch.toString()}`)}`)}
+                  className="px-8 py-3.5 bg-bp-accent text-white rounded-full text-[15px] font-bold hover:bg-bp-primary transition-colors"
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push(`/signup?return=${encodeURIComponent(`${pathname}?${bookingSearch.toString()}`)}`)}
+                  className="px-8 py-3.5 bg-white text-bp-primary border-2 border-bp-border rounded-full text-[15px] font-bold hover:bg-bp-surface transition-colors"
+                >
+                  Create Account
+                </button>
+              </div>
             </div>
           </div>
         )}

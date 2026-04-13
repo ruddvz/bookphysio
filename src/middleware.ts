@@ -4,7 +4,7 @@ import { getDemoRedirectPath, getDemoSessionFromCookies, resolvePostAuthRedirect
 import { canRoleAccessPath, isPatientPath, isProviderPath } from '@/lib/auth/access'
 import { getPublicSupabaseEnv } from '@/lib/supabase/env'
 
-const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/book', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
+const PROTECTED_PREFIXES = ['/patient', '/provider', '/dashboard', '/appointments', '/profile', '/notifications', '/schedule', '/patients', '/reviews', '/settings', '/onboarding']
 const ADMIN_PREFIX = '/admin'
 
 // Nonce-based CSP requires every page to be dynamically rendered (no static

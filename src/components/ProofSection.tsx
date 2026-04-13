@@ -1,7 +1,21 @@
 'use client'
 
-import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
+import { ShieldCheck, Clock, Home, ArrowRight, Users, Calendar, Star as StarIcon, MapPin as MapPinIcon } from 'lucide-react'
 import Link from 'next/link'
+import useSWR from 'swr'
+
+interface PlatformStats {
+  providers: number
+  cities: number
+  appointments: number
+  avgRating: number
+}
+
+async function fetchStats(url: string): Promise<PlatformStats> {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed')
+  return res.json() as Promise<PlatformStats>
+}
 
 const providers = [
   { initials: 'SP', name: 'Sports Physio',      specialty: 'ACL · Runner rehab',   city: 'Mumbai',    fee: 800,  slot: 'Same-day slots',     rating: 4.9 },
@@ -34,16 +48,40 @@ const features = [
 ]
 
 export default function ProofSection() {
+  const { data: stats } = useSWR<PlatformStats>('/api/stats', fetchStats, { revalidateOnFocus: false })
+
+  const trustStats = [
+    { icon: Users,     value: stats ? `${stats.providers}+` : 'IAP',  label: 'Verified providers'   },
+    { icon: MapPinIcon, value: stats ? `${stats.cities}+` : '10+',    label: 'Cities supported'     },
+    { icon: Calendar,  value: stats ? `${stats.appointments.toLocaleString('en-IN')}+` : 'Free', label: stats ? 'Appointments booked' : 'To list your practice' },
+    { icon: StarIcon,  value: stats ? `${stats.avgRating}★` : '60s',  label: stats ? 'Average rating' : 'To book a session' },
+  ]
+
   return (
     <section className="bg-[#F8F7FF] py-24 md:py-32" aria-label="Network transparency">
       <div className="bp-container">
         {/* Section header */}
-        <div className="max-w-2xl mb-16">
+        <div className="max-w-2xl mb-10">
           <div className="bp-kicker mb-4">Straightforward booking</div>
           <h2 className="text-slate-900 mb-4">Real availability, no guesswork</h2>
           <p className="text-slate-500 text-[17px] leading-relaxed">
             Every slot on a provider page is a slot the physiotherapist has actually opened up. Fees, timings and credentials are shown upfront, so there are no surprises at the session.
           </p>
+        </div>
+
+        {/* Dynamic trust stats bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+          {trustStats.map((stat) => (
+            <div key={stat.label} className="flex items-center gap-3 rounded-2xl border border-indigo-100 bg-white/60 px-5 py-4">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+                <stat.icon size={18} className="text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-[20px] font-bold text-slate-900 leading-none">{stat.value}</p>
+                <p className="text-[11px] font-semibold text-slate-500 mt-0.5">{stat.label}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[1fr_400px] items-start">

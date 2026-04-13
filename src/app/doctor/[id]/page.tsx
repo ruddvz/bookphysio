@@ -7,6 +7,8 @@ import ProfileHero from './ProfileHero'
 import BioSection from './BioSection'
 import CredentialsSection from './CredentialsSection'
 import ReviewsSection from './ReviewsSection'
+import SimilarProviders from './SimilarProviders'
+import SectionErrorBoundary from '@/components/SectionErrorBoundary'
 import { Activity } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 import type { Metadata } from 'next'
@@ -223,7 +225,9 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               {provider.bio && <BioSection bio={provider.bio} />}
 
               {/* Clinic Gallery */}
-              <ClinicGallery images={provider.gallery_images ?? []} />
+              <SectionErrorBoundary fallbackTitle="Couldn't load clinic gallery">
+                <ClinicGallery images={provider.gallery_images ?? []} />
+              </SectionErrorBoundary>
 
               {/* Specializations & Credentials */}
               <CredentialsSection
@@ -233,7 +237,18 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
               />
 
               {/* Patient Reviews */}
-              <ReviewsSection provider={provider} nameWithTitle={nameWithTitle} />
+              <SectionErrorBoundary fallbackTitle="Couldn't load reviews">
+                <ReviewsSection provider={provider} nameWithTitle={nameWithTitle} />
+              </SectionErrorBoundary>
+
+              {/* Similar Providers */}
+              <SectionErrorBoundary fallbackTitle="Couldn't load similar providers">
+                <SimilarProviders
+                  currentProviderId={id}
+                  specialty={specialty}
+                  city={provider.city ?? ''}
+                />
+              </SectionErrorBoundary>
             </div>
 
             <div id="booking-card-section" className="xl:hidden mt-10" aria-label="Book a session">
