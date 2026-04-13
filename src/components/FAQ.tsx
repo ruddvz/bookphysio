@@ -29,15 +29,32 @@ const faqs = [
   {
     id: 5,
     q: 'Can I cancel or reschedule a session?',
-    a: 'Yes. You can cancel or reschedule free of charge up to four hours before the session from your Patient Dashboard. Cancellations inside the four-hour window may be charged in full at the provider\u2019s discretion.',
+    a: 'You can cancel or reschedule free of charge up to four hours before the session from your Patient Dashboard. Cancellations inside the four-hour window may be charged in full at the provider\u2019s discretion.',
   },
 ]
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.a,
+    },
+  })),
+}
 
 export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
     <section className="bg-white py-24 md:py-32" aria-label="Frequently asked questions">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="bp-container">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr] items-start">
 

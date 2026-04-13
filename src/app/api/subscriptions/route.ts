@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { mutationRatelimit } from '@/lib/upstash'
+import { z } from 'zod'
 
 const SUBSCRIPTION_PLANS = {
   free: {
@@ -42,6 +44,10 @@ const SUBSCRIPTION_PLANS = {
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_PLANS
 
+const subscriptionTierSchema = z.object({
+  tier: z.enum(['free', 'pro', 'max']),
+})
+
 /** GET /api/subscriptions — returns current provider subscription + plan details */
 export async function GET() {
   const supabase = await createClient()
@@ -79,13 +85,23 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json().catch(() => null)
-  const tier = body?.tier as SubscriptionTier | undefined
+  try {
+    const { success } = await mutationRatelimit.limit(`subscription:${user.id}`)
+    if (!success) {
+      return NextResponse.json({ error: 'Too many requests. Please wait before trying again.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
+  }
 
-  if (!tier || !SUBSCRIPTION_PLANS[tier]) {
+  const body = await request.json().catch(() => null)
+  const parsed = subscriptionTierSchema.safeParse(body)
+
+  if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid subscription tier' }, { status: 400 })
   }
 
+  const { tier } = parsed.data
   const plan = SUBSCRIPTION_PLANS[tier]
 
   if (plan.price_inr > 0) {

@@ -11,6 +11,8 @@ interface PatientDetails {
   email: string
   reason: string
   homeVisitAddress: string
+  painLocation: string
+  painDuration: string
 }
 
 interface StepConfirmProps {
@@ -27,6 +29,8 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
   const [email, setEmail] = useState('')
   const [reason, setReason] = useState('')
   const [homeVisitAddress, setHomeVisitAddress] = useState('')
+  const [painLocation, setPainLocation] = useState('')
+  const [painDuration, setPainDuration] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const requiresHomeVisitAddress = booking?.visitType === 'home_visit'
 
@@ -43,7 +47,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-    onNext({ fullName, phone: `+91${phone}`, email, reason, homeVisitAddress })
+    onNext({ fullName, phone: `+91${phone}`, email, reason, homeVisitAddress, painLocation, painDuration })
   }
 
   return (
@@ -218,6 +222,60 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               rows={4}
               className="w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)] placeholder:text-gray-200 leading-[1.8]"
             />
+          </div>
+        </div>
+
+        {/* Pre-visit Questionnaire */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-3 group">
+            <div className="flex items-center justify-between px-1">
+              <label htmlFor="pain-location" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+                Pain / Condition Area
+              </label>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+            </div>
+            <select
+              id="pain-location"
+              value={painLocation}
+              onChange={(e) => setPainLocation(e.target.value)}
+              className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
+            >
+              <option value="">Select area</option>
+              <option value="neck">Neck</option>
+              <option value="shoulder">Shoulder</option>
+              <option value="upper_back">Upper Back</option>
+              <option value="lower_back">Lower Back</option>
+              <option value="hip">Hip</option>
+              <option value="knee">Knee</option>
+              <option value="ankle_foot">Ankle / Foot</option>
+              <option value="wrist_hand">Wrist / Hand</option>
+              <option value="elbow">Elbow</option>
+              <option value="full_body">Full Body / General</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div className="space-y-3 group">
+            <div className="flex items-center justify-between px-1">
+              <label htmlFor="pain-duration" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+                How Long Have You Had This?
+              </label>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+            </div>
+            <select
+              id="pain-duration"
+              value={painDuration}
+              onChange={(e) => setPainDuration(e.target.value)}
+              className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
+            >
+              <option value="">Select duration</option>
+              <option value="less_than_week">Less than a week</option>
+              <option value="1_4_weeks">1–4 weeks</option>
+              <option value="1_3_months">1–3 months</option>
+              <option value="3_6_months">3–6 months</option>
+              <option value="6_plus_months">6+ months</option>
+              <option value="recurring">Recurring / On and off</option>
+            </select>
           </div>
         </div>
 

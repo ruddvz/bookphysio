@@ -5,7 +5,7 @@ import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/boo
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
-import { getActiveBookingAppointmentHoldKey, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
+import { getActiveBookingAppointmentHoldKey, mutationRatelimit, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
 
@@ -126,6 +126,17 @@ export async function PATCH(
   const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    try {
+      const { success } = await mutationRatelimit.limit(`appointment:${user.id}`)
+      if (!success) {
+        return jsonNoStore({ error: 'Too many requests. Please wait before trying again.' }, { status: 429 })
+      }
+    } catch {
+      // Rate limiter unavailable — allow through
+    }
+  }
 
   const body = await request.json().catch(() => null)
   if (!body || typeof body !== 'object' || Array.isArray(body)) {

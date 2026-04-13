@@ -94,6 +94,20 @@ export const reviewsRatelimit = new Ratelimit({
   prefix: 'bp:reviews',
 })
 
+/** General rate limiter for authenticated write operations (profile update, availability save, etc.) */
+export const mutationRatelimit = new Ratelimit({
+  redis: redisClient,
+  limiter: Ratelimit.slidingWindow(30, '1 m'),
+  prefix: 'bp:mutation',
+})
+
+/** Rate limiter for payment-related endpoints */
+export const paymentRatelimit = new Ratelimit({
+  redis: redisClient,
+  limiter: Ratelimit.slidingWindow(10, '5 m'),
+  prefix: 'bp:payment',
+})
+
 const releaseOwnedLockScript = redisClient.createScript<number>([
   'local current = redis.call("GET", KEYS[1])',
   'if current == ARGV[1] then',

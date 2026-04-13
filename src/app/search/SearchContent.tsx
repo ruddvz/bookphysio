@@ -145,6 +145,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const searchParams = useSearchParams()
   const router = useRouter()
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'price_low' | 'price_high'>('relevance')
 
   const location = searchParams.get('location')
   const city = searchParams.get('city') ?? location
@@ -182,6 +183,19 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   )
 
   const doctors = useMemo(() => data?.providers.map(providerToDoctor) ?? [], [data])
+  const sortedDoctors = useMemo(() => {
+    const list = [...doctors]
+    switch (sortBy) {
+      case 'rating':
+        return list.sort((a, b) => b.rating - a.rating)
+      case 'price_low':
+        return list.sort((a, b) => a.fee - b.fee)
+      case 'price_high':
+        return list.sort((a, b) => b.fee - a.fee)
+      default:
+        return list
+    }
+  }, [doctors, sortBy])
   const total = data?.total ?? 0
   const loading = swrLoading && !data
   const error = Boolean(swrError)
@@ -207,13 +221,28 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
             )}
           </nav>
 
-          {/* Title row */}
-          <div className="flex items-center gap-3 mb-4">
-            <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#333] tracking-tight leading-tight">
-              {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
-            </h1>
-            {loading && (
-              <div className="w-5 h-5 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin shrink-0" />
+          {/* Title row + sort */}
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#333] tracking-tight leading-tight">
+                {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
+              </h1>
+              {loading && (
+                <div className="w-5 h-5 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin shrink-0" />
+              )}
+            </div>
+            {!loading && total > 0 && (
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                aria-label="Sort results"
+                className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
+              >
+                <option value="relevance">Sort: Relevance</option>
+                <option value="rating">Highest Rated</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+              </select>
             )}
           </div>
 
@@ -309,11 +338,11 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               <div className="flex items-center gap-2">
                 <Sparkles size={14} className="text-[#00766C]" />
                 <span className="text-[13px] font-medium text-[#666]">
-                  Showing {doctors.length} of {total} physiotherapists in <span className="text-[#333] font-semibold">{displayLocation}</span>
+                  Showing {sortedDoctors.length} of {total} physiotherapists in <span className="text-[#333] font-semibold">{displayLocation}</span>
                 </span>
               </div>
 
-              {doctors.map((doctor) => (
+              {sortedDoctors.map((doctor) => (
                 <div key={doctor.id} id={`doctor-${doctor.id}`}>
                   <DoctorCard
                     doctor={doctor}

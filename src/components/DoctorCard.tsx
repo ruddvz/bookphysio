@@ -88,6 +88,18 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
   const initials = getProviderInitials(doctor.name)
 
+  // Compute "Next available" label and urgency signals
+  const firstDayWithSlots = availability.find((day) => day.slots.length > 0)
+  const nextAvailableLabel = firstDayWithSlots?.label === 'Today'
+    ? 'Today'
+    : firstDayWithSlots?.label === 'Tomorrow'
+      ? 'Tomorrow'
+      : firstDayWithSlots
+        ? `${firstDayWithSlots.label}, ${firstDayWithSlots.dateLabel}`
+        : 'No slots'
+  const todayDay = availability.find((day) => day.label === 'Today')
+  const slotsRemainingToday = todayDay?.slots.length ?? 0
+
   const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -195,7 +207,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-bp-body/40">
                     <Clock3 size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next slot</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next available</span>
                   </div>
                   {doctor.isLive && (
                     <div className="flex items-center gap-1">
@@ -207,8 +219,14 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">{doctor.nextSlot}</p>
-                <p className="mt-1 text-[13px] font-medium text-bp-body/60">Fast-filling slot</p>
+                <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">
+                  {nextAvailableLabel}{doctor.nextSlot ? ` at ${doctor.nextSlot}` : ''}
+                </p>
+                <p className="mt-1 text-[13px] font-medium text-bp-body/60">
+                  {todayDay && slotsRemainingToday > 0
+                    ? `Only ${slotsRemainingToday} slot${slotsRemainingToday > 1 ? 's' : ''} left today`
+                    : 'Check available slots'}
+                </p>
               </div>
             </div>
 
@@ -216,6 +234,11 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Consult fee</p>
                 <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">₹{doctor.fee}</p>
+                {doctor.icpVerified && (
+                  <p className="mt-0.5 text-[11px] font-semibold text-bp-body/40">
+                    ICP verified provider
+                  </p>
+                )}
               </div>
 
               <button

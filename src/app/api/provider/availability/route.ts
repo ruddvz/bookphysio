@@ -14,6 +14,7 @@ import { parseIndiaDate } from '@/lib/india-date'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import {
   getProviderAvailabilityRewriteLockKey,
+  mutationRatelimit,
   redis,
   refreshRedisLockIfOwned,
   releaseRedisLockIfOwned,
@@ -262,6 +263,17 @@ export async function POST(request: NextRequest) {
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
   const { data: { user } } = await supabase.auth.getUser()
   const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
+
+  if (user) {
+    try {
+      const { success } = await mutationRatelimit.limit(`availability:${user.id}`)
+      if (!success) {
+        return NextResponse.json({ error: 'Too many updates. Please wait before trying again.' }, { status: 429 })
+      }
+    } catch {
+      // Rate limiter unavailable — allow through
+    }
+  }
 
   let body: unknown
   try {

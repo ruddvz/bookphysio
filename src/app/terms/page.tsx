@@ -1,6 +1,22 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { FileText, AlertCircle, Scale, CheckCircle2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service — BookPhysio.in',
+  description:
+    'Terms of use for the BookPhysio.in physiotherapy booking platform, covering accounts, bookings, payments, and provider responsibilities.',
+  alternates: { canonical: 'https://bookphysio.in/terms' },
+  openGraph: {
+    title: 'Terms of Service — BookPhysio.in',
+    description: 'Terms of use for BookPhysio.in.',
+    url: 'https://bookphysio.in/terms',
+    siteName: 'BookPhysio.in',
+    locale: 'en_IN',
+    type: 'website',
+  },
+}
 
 const SECTIONS = [
   { id: 'acceptance', label: '1. Acceptance of terms' },
