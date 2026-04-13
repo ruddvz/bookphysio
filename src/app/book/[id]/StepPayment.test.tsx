@@ -2,6 +2,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { StepPayment } from './StepPayment'
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
+
 describe('StepPayment', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -44,7 +48,7 @@ describe('StepPayment', () => {
     })
 
     expect(onSuccess).not.toHaveBeenCalled()
-    expect(screen.getByText(/please sign in to confirm this booking/i)).toBeInTheDocument()
+    expect(screen.getByText(/sign in to confirm your booking/i)).toBeInTheDocument()
   })
 
   it('includes the patient home address when confirming a home visit', async () => {

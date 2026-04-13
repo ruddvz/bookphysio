@@ -68,7 +68,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <ProofSection />
         <TopSpecialties />

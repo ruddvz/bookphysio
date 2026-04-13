@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight, LogIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type PaymentMethod = 'upi' | 'card' | 'netbanking' | 'pay_at_clinic'
@@ -41,9 +42,11 @@ const PAYMENT_MODES = [
 ]
 
 export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
+  const router = useRouter()
   const [method, setMethod] = useState<PaymentMethod>('pay_at_clinic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
 
   const gstAmount = Math.round(feeInr * 0.18)
   const total = feeInr + gstAmount
@@ -109,7 +112,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
       if (!apptRes.ok) {
         const data = await apptRes.json() as { error?: unknown }
         if (apptRes.status === 401) {
-          setError('Please sign in to confirm this booking.')
+          setShowLoginPrompt(true)
           return
         }
         setError(extractApiError(data.error))
@@ -134,6 +137,45 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
+      {/* Login prompt for guest users */}
+      {showLoginPrompt && (
+        <div className="mb-10 p-8 bg-bp-accent/5 border-2 border-bp-accent/20 rounded-[32px] animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex flex-col items-center text-center gap-6">
+            <div className="w-16 h-16 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
+              <LogIn size={28} />
+            </div>
+            <div>
+              <h3 className="text-[24px] font-bold text-bp-primary tracking-tight mb-2">Sign in to confirm your booking</h3>
+              <p className="text-[15px] font-bold text-bp-body/50 max-w-md leading-relaxed">
+                Create a free account or sign in to complete your reservation. Your booking details will be saved.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  const returnUrl = encodeURIComponent(window.location.href)
+                  router.push(`/login?return=${returnUrl}`)
+                }}
+                className="flex-1 h-14 bg-bp-accent text-white rounded-2xl font-bold text-[16px] hover:bg-bp-accent/90 active:scale-[0.98] transition-all"
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const returnUrl = encodeURIComponent(window.location.href)
+                  router.push(`/signup?return=${returnUrl}`)
+                }}
+                className="flex-1 h-14 bg-white border-2 border-bp-accent text-bp-accent rounded-2xl font-bold text-[16px] hover:bg-bp-accent/5 active:scale-[0.98] transition-all"
+              >
+                Create Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-4">
            <div className="w-12 h-12 bg-emerald-50 rounded-[18px] flex items-center justify-center text-[#059669] border border-emerald-100">

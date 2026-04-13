@@ -31,7 +31,7 @@ export function ServiceWorkerRegistration() {
           // Best-effort — never block the page on update check.
         })
       })
-      .catch((err) => console.warn('SW registration failed:', err))
+      .catch(() => { /* SW registration failed — non-critical */ })
 
     // When a new SW takes control, reload exactly once so the user gets the
     // newest HTML/JS bundle instead of being stuck on the previously cached one.

@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
         })
 
         if (!otpStateSaved) {
-          console.warn('Pending OTP metadata could not be persisted in sessionStorage; continuing with server cookie state only.')
+          // Pending OTP metadata could not be persisted — continuing with server cookie state only.
         }
 
         router.push(`/verify-otp?flow=${encodeURIComponent(flowId)}`)
