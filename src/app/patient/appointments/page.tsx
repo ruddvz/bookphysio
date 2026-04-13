@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, ArrowRight, Video, XCircle } from 'lucide-react'
+import { Calendar, ArrowRight, Video, XCircle, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
@@ -20,6 +20,7 @@ import {
   type AppointmentItem,
   type AppointmentTab,
 } from './appointments-utils'
+import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
@@ -158,7 +159,16 @@ function PatientAppointmentsContent() {
                   primary={providerDisplayName(appt)}
                   secondary={`${appt.availabilities?.starts_at ? formatApptDate(appt.availabilities.starts_at) : 'Pending date'} · ${appt.visit_type === 'home_visit' ? 'Home session' : 'Clinic visit'}`}
                   right={
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      {tab === 'upcoming' && canPatientCancelAppointment(appt.status, appt.availabilities?.starts_at) && (
+                        <Link
+                          href={`/patient/appointments/${appt.id}?reschedule=true`}
+                          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-bp-accent border border-bp-accent/20 rounded-full hover:bg-bp-accent/5 transition-colors"
+                        >
+                          <RefreshCw size={12} />
+                          Reschedule
+                        </Link>
+                      )}
                       <div className={cn("px-2.5 py-0.5 rounded-full text-[11px] font-semibold border", STATUS_COLORS[appt.status])}>
                         {STATUS_LABELS[appt.status] || appt.status}
                       </div>

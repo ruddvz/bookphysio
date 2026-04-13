@@ -62,6 +62,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 // ---------------------------------------------------------------------------
+// ISR — Revalidate doctor profiles every 5 minutes for fresh data
+// ---------------------------------------------------------------------------
+export const revalidate = 300
+
+// ---------------------------------------------------------------------------
 // Data fetching
 // ---------------------------------------------------------------------------
 
@@ -78,7 +83,7 @@ async function fetchProvider(id: string): Promise<FetchProviderResult> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   try {
     const res = await fetch(`${baseUrl}/api/providers/${id}`, {
-      cache: 'no-store',
+      next: { revalidate: 300 },
     })
     if (res.status === 404) {
       return { status: 'missing' }
@@ -138,6 +143,9 @@ function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderPro
 
   const highlights: ReviewHighlight[] = []
   const ratedReviews = reviews.filter((r) => r.rating > 0)
+  const comments = reviews
+    .map((r) => (r.comment ?? '').toLowerCase())
+    .filter((c) => c.length > 10)
 
   // High average rating
   if (ratedReviews.length >= 2) {
@@ -154,23 +162,79 @@ function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderPro
     highlights.push({ emoji: '🏥', label: 'Experienced', detail: `${provider.experience_years}+ years of practice` })
   }
 
-  // Multiple specialties
-  if (provider.specialties.length >= 2) {
+  // Structured review sentiment analysis
+  const sentimentCategories = [
+    {
+      emoji: '🤝',
+      label: 'Caring & Attentive',
+      keywords: ['caring', 'attentive', 'patient', 'listened', 'understanding', 'empathetic', 'kind', 'gentle', 'compassionate'],
+      detail: 'Patients praise the personal attention',
+    },
+    {
+      emoji: '✅',
+      label: 'Effective Treatment',
+      keywords: ['effective', 'helped', 'improved', 'better', 'relief', 'recovered', 'cured', 'healed', 'pain free', 'pain-free', 'results'],
+      detail: 'Patients report positive treatment outcomes',
+    },
+    {
+      emoji: '📋',
+      label: 'Clear Communication',
+      keywords: ['explained', 'clear', 'thorough', 'detailed', 'informative', 'transparent', 'plan', 'answered'],
+      detail: 'Takes time to explain the treatment plan',
+    },
+    {
+      emoji: '⏰',
+      label: 'Punctual & Professional',
+      keywords: ['on time', 'punctual', 'professional', 'organized', 'prompt', 'efficient', 'well-organized'],
+      detail: 'Patients appreciate the punctuality',
+    },
+    {
+      emoji: '🏡',
+      label: 'Great Home Visits',
+      keywords: ['home visit', 'came home', 'visited home', 'home session', 'at home', 'doorstep'],
+      detail: 'Praised for convenient home visit service',
+    },
+    {
+      emoji: '💪',
+      label: 'Expert Techniques',
+      keywords: ['technique', 'skilled', 'expert', 'knowledgeable', 'experienced', 'specialized', 'exercise', 'stretching'],
+      detail: 'Patients value the clinical expertise',
+    },
+  ]
+
+  for (const category of sentimentCategories) {
+    if (highlights.length >= 6) break
+    const matchCount = comments.filter((c) =>
+      category.keywords.some((kw) => c.includes(kw)),
+    ).length
+    // Require at least 2 reviews mentioning the category, or 1 if only 2-3 reviews total
+    const threshold = comments.length <= 3 ? 1 : 2
+    if (matchCount >= threshold) {
+      highlights.push({
+        emoji: category.emoji,
+        label: category.label,
+        detail: category.detail,
+      })
+    }
+  }
+
+  // Multiple specialties (fallback if no sentiment matches)
+  if (provider.specialties.length >= 2 && highlights.length < 4) {
     highlights.push({ emoji: '🎯', label: 'Multi-Specialist', detail: `${provider.specialties.length} areas of expertise` })
   }
 
   // Consistent positive feedback (all reviews ≥ 4 stars)
-  if (ratedReviews.length >= 3 && ratedReviews.every((r) => r.rating >= 4)) {
+  if (ratedReviews.length >= 3 && ratedReviews.every((r) => r.rating >= 4) && highlights.length < 6) {
     highlights.push({ emoji: '🔄', label: 'Consistently Excellent', detail: 'All patients rate 4+ stars' })
   }
 
   // Detailed comments (shows engagement)
   const commentedReviews = reviews.filter((r) => r.comment && r.comment.length > 30)
-  if (commentedReviews.length >= 3) {
+  if (commentedReviews.length >= 3 && highlights.length < 6) {
     highlights.push({ emoji: '💬', label: 'Detailed Feedback', detail: `${commentedReviews.length} patients wrote detailed reviews` })
   }
 
-  return highlights.slice(0, 4)
+  return highlights.slice(0, 6)
 }
 
 // ---------------------------------------------------------------------------
@@ -487,7 +551,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   <h2 id="why-patients-love" className="text-[22px] font-bold text-bp-primary tracking-tight mb-6 px-2 lg:px-4">
                     Why patients love {nameWithTitle}
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2 lg:px-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2 lg:px-4">
                     {reviewHighlights.map((h) => (
                       <div key={h.label} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bp-border/30 shadow-sm">
                         <span className="text-[24px] leading-none mt-0.5">{h.emoji}</span>

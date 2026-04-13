@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarDays, MapPin, Download, RefreshCw, X, Stethoscope, CreditCard, ArrowLeft, Loader2, CalendarPlus } from 'lucide-react'
@@ -45,9 +45,11 @@ const SECTION_CARD_CLS = "bg-white rounded-[32px] border border-bp-border shadow
 
 export default function PatientAppointmentDetail() {
   const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
   const queryClient = useQueryClient()
+  const rescheduleParam = searchParams.get('reschedule') === 'true'
   const [confirmCancel, setConfirmCancel] = useState(false)
-  const [showReschedule, setShowReschedule] = useState(false)
+  const [showReschedule, setShowReschedule] = useState(rescheduleParam)
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
     queryKey: ['appointment', 'patient', id],
