@@ -69,6 +69,22 @@ function withAppointmentDetailNotes<T extends { notes: string | null }>(
   }
 }
 
+/** Extract starts_at from a Supabase availability join (may be object or array). */
+function extractStartsAt(availabilities: unknown): string | null {
+  const row = Array.isArray(availabilities) ? availabilities[0] : availabilities
+  if (row && typeof row === 'object' && 'starts_at' in row) {
+    return (row as { starts_at: string }).starts_at
+  }
+  return null
+}
+
+/** Normalize a payments join into an array. */
+function normalizePayments(payments: unknown): PaymentRecord[] {
+  if (Array.isArray(payments)) return payments as PaymentRecord[]
+  if (payments) return [payments as PaymentRecord]
+  return []
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -212,12 +228,8 @@ export async function PATCH(
 
     if (!apptCheck) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
 
-    const availability = Array.isArray(apptCheck.availabilities) ? apptCheck.availabilities[0] : apptCheck.availabilities
-    const startsAt = availability && typeof availability === 'object' && 'starts_at' in availability
-      ? availability.starts_at as string | null | undefined
-      : null
-    const payments = ('payments' in apptCheck ? apptCheck.payments : null) as PaymentRecord[] | PaymentRecord | null | undefined
-    const paymentRecords = Array.isArray(payments) ? payments : payments ? [payments] : []
+    const startsAt = extractStartsAt(apptCheck.availabilities)
+    const paymentRecords = normalizePayments('payments' in apptCheck ? apptCheck.payments : null)
 
     if (paymentRecords.some((payment) => payment.status === 'paid')) {
       return jsonNoStore({ error: 'Appointments paid online cannot be rescheduled automatically. Please contact support.' }, { status: 409 })
@@ -302,12 +314,8 @@ export async function PATCH(
     .single()
 
   if (!appt) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
-  const availability = Array.isArray(appt.availabilities) ? appt.availabilities[0] : appt.availabilities
-  const startsAt = availability && typeof availability === 'object' && 'starts_at' in availability
-    ? availability.starts_at as string | null | undefined
-    : null
-  const payments = ('payments' in appt ? appt.payments : null) as PaymentRecord[] | PaymentRecord | null | undefined
-  const paymentRecords = Array.isArray(payments) ? payments : payments ? [payments] : []
+  const startsAt = extractStartsAt(appt.availabilities)
+  const paymentRecords = normalizePayments('payments' in appt ? appt.payments : null)
 
   if (paymentRecords.some((payment) => payment.status === 'paid')) {
     return jsonNoStore({ error: 'Appointments paid online cannot be cancelled automatically right now. Please contact support.' }, { status: 409 })

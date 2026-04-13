@@ -27,7 +27,7 @@ interface RescheduleModalProps {
  * Produces an ISO date string offset by `days` from `base`, using India timezone.
  */
 function indiaDateOffset(base: Date, days: number): string {
-  const d = new Date(base.getTime() + days * 86400_000)
+  const d = new Date(base.getTime() + days * 86_400_000)
   return d.toISOString()
 }
 
@@ -54,11 +54,11 @@ export default function RescheduleModal({
 
   const now = useMemo(() => new Date(), [])
   const windowStart = useMemo(() => {
-    const start = new Date(now.getTime() + weekOffset * 7 * 86400_000)
+    const start = new Date(now.getTime() + weekOffset * 7 * 86_400_000)
     return start < now ? now : start
   }, [now, weekOffset])
   const windowEnd = useMemo(
-    () => new Date(windowStart.getTime() + 7 * 86400_000),
+    () => new Date(windowStart.getTime() + 7 * 86_400_000),
     [windowStart],
   )
 
