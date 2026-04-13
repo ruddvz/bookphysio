@@ -52,7 +52,9 @@ export default function RescheduleModal({
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null)
   const [step, setStep] = useState<'select' | 'confirm'>('select')
 
-  const now = useMemo(() => new Date(), [])
+  // Refresh `now` when step changes to avoid stale time after long modal sessions
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- step+weekOffset are intentional deps to refresh the timestamp
+  const now = useMemo(() => new Date(), [step, weekOffset])
   const windowStart = useMemo(() => {
     const start = new Date(now.getTime() + weekOffset * 7 * 86_400_000)
     return start < now ? now : start

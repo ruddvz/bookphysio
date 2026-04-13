@@ -33,6 +33,7 @@ function toMsg91Phone(phone: string): string {
   if (digits.length === 10) return `91${digits}`
   if (digits.length === 12 && digits.startsWith('91')) return digits
   if (digits.length === 13 && digits.startsWith('091')) return digits.slice(1)
+  console.warn(`[msg91] Unexpected phone format: ${digits.length} digits. Passing through as-is.`)
   return digits
 }
 

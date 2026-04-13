@@ -229,7 +229,7 @@ export async function PATCH(
     if (!apptCheck) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
 
     const startsAt = extractStartsAt(apptCheck.availabilities)
-    const paymentRecords = normalizePayments('payments' in apptCheck ? apptCheck.payments : null)
+    const paymentRecords = normalizePayments((apptCheck as Record<string, unknown>).payments)
 
     if (paymentRecords.some((payment) => payment.status === 'paid')) {
       return jsonNoStore({ error: 'Appointments paid online cannot be rescheduled automatically. Please contact support.' }, { status: 409 })
@@ -315,7 +315,7 @@ export async function PATCH(
 
   if (!appt) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
   const startsAt = extractStartsAt(appt.availabilities)
-  const paymentRecords = normalizePayments('payments' in appt ? appt.payments : null)
+  const paymentRecords = normalizePayments((appt as Record<string, unknown>).payments)
 
   if (paymentRecords.some((payment) => payment.status === 'paid')) {
     return jsonNoStore({ error: 'Appointments paid online cannot be cancelled automatically right now. Please contact support.' }, { status: 409 })
