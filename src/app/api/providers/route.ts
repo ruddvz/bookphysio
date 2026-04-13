@@ -171,10 +171,11 @@ function selectBestLocation(
 
 function buildAvailabilityPreview(slots: ProviderAvailabilityRow[] | null | undefined): NonNullable<ProviderCard['availability_preview']> {
   const groupedSlots = new Map<string, string[]>()
-
-  for (const slot of (slots ?? []).slice().sort((left, right) => {
+  const sortedSlots = [...(slots ?? [])].sort((left, right) => {
     return new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime()
-  })) {
+  })
+
+  for (const slot of sortedSlots) {
     if (slot.is_booked || slot.is_blocked) {
       continue
     }
@@ -208,12 +209,11 @@ function sortProviders(
   }>,
   sort: SearchSort | undefined,
 ) {
-  if (!sort || sort === 'relevance') {
-    return providers
-  }
-
   return providers.slice().sort((left, right) => {
     switch (sort) {
+      case undefined:
+      case 'relevance':
+        return 0
       case 'availability': {
         const leftValue = left.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER
         const rightValue = right.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER

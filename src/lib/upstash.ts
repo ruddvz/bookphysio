@@ -10,16 +10,17 @@ function createMissingRedisClient(): Redis {
     throw new Error('Upstash Redis is not configured.')
   }
 
-  return {
-    get: unavailable,
-    set: unavailable,
-    del: unavailable,
-    eval: unavailable,
-    evalsha: unavailable,
-    createScript: () => ({
-      eval: unavailable,
-    }),
-  } as unknown as Redis
+  return new Proxy({} as Redis, {
+    get(_target, prop) {
+      if (prop === 'createScript') {
+        return () => ({
+          eval: unavailable,
+        }) as unknown as ReturnType<Redis['createScript']>
+      }
+
+      return unavailable
+    },
+  })
 }
 
 // Warn loudly at module init if Upstash credentials are missing in production.

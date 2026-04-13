@@ -74,6 +74,25 @@ async function releaseBookingHoldIfOwned(holdKey: string | null, expectedValue: 
   }
 }
 
+async function rollbackAppointmentCreation(args: {
+  appointmentId: string
+  availabilityId: string
+  activeIpHoldKey: string | null
+  provisionalHoldToken: string | null
+}) {
+  const { supabaseAdmin } = await import('@/lib/supabase/admin')
+  const cleanupResults = await Promise.allSettled([
+    supabaseAdmin.from('appointments').delete().eq('id', args.appointmentId),
+    supabaseAdmin.from('availabilities').update({ is_booked: false }).eq('id', args.availabilityId),
+    releaseBookingHoldIfOwned(args.activeIpHoldKey, args.provisionalHoldToken),
+  ])
+
+  const cleanupFailures = cleanupResults.filter((result) => result.status === 'rejected')
+  if (cleanupFailures.length > 0) {
+    console.error('[api/appointments] Failed rollback after payment insert error:', cleanupFailures)
+  }
+}
+
 async function isProviderAvailabilityBeingUpdated(providerId: string) {
   const availabilityRewriteLockKey = getProviderAvailabilityRewriteLockKey(providerId)
   const activeAvailabilityRewrite = await redis.get<string>(availabilityRewriteLockKey)
@@ -314,13 +333,12 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (paymentError) {
-    await supabaseAdmin.from('appointments').delete().eq('id', appointment.id)
-    await supabaseAdmin
-      .from('availabilities')
-      .update({ is_booked: false })
-      .eq('id', availability_id)
-    await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
-
+    await rollbackAppointmentCreation({
+      appointmentId: appointment.id,
+      availabilityId: availability_id,
+      activeIpHoldKey,
+      provisionalHoldToken,
+    })
     console.error('[api/appointments] Payment insert error:', paymentError)
     return jsonNoStore({ error: 'Failed to create payment record' }, { status: 500 })
   }

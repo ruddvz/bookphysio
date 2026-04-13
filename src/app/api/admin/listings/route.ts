@@ -86,6 +86,10 @@ export async function PATCH(request: NextRequest) {
       .eq('id', provider_id)
 
     if (userError) {
+      await supabaseAdmin
+        .from('providers')
+        .update({ verified: false, active: false })
+        .eq('id', provider_id)
       return NextResponse.json({ error: 'User role update failed' }, { status: 500 })
     }
 
@@ -97,6 +101,16 @@ export async function PATCH(request: NextRequest) {
     })
 
     if (authError) {
+      await Promise.allSettled([
+        supabaseAdmin
+          .from('providers')
+          .update({ verified: false, active: false })
+          .eq('id', provider_id),
+        supabaseAdmin
+          .from('users')
+          .update({ role: 'provider_pending' })
+          .eq('id', provider_id),
+      ])
       return NextResponse.json({ error: 'Auth role update failed' }, { status: 500 })
     }
   }
