@@ -4,6 +4,8 @@ import { StepPayment } from './StepPayment'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/book/test-id',
+  useSearchParams: () => new URLSearchParams(),
 }))
 
 describe('StepPayment', () => {

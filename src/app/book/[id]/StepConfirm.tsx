@@ -38,6 +38,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
   const [homeVisitAddress, setHomeVisitAddress] = useState('')
   const [painLocation, setPainLocation] = useState('')
   const [painSeverity, setPainSeverity] = useState(0)
+  const [painSeverityTouched, setPainSeverityTouched] = useState(false)
   const [painDuration, setPainDuration] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const requiresHomeVisitAddress = booking?.visitType === 'home_visit'
@@ -59,7 +60,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
     // Compose structured reason from questionnaire + free-text
     const parts: string[] = []
     if (painLocation) parts.push(`Location: ${painLocation}`)
-    if (painSeverity > 0) parts.push(`Severity: ${painSeverity}/10`)
+    if (painSeverityTouched) parts.push(`Severity: ${painSeverity}/10`)
     if (painDuration) parts.push(`Duration: ${painDuration}`)
     if (reason.trim()) parts.push(reason.trim())
     const composedReason = parts.join(' | ')
@@ -267,7 +268,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               step={1}
               value={painSeverity}
               aria-labelledby="severity-label"
-              onChange={(e) => setPainSeverity(Number(e.target.value))}
+              onChange={(e) => { setPainSeverity(Number(e.target.value)); setPainSeverityTouched(true) }}
               className="w-full accent-[#00766C] cursor-pointer"
             />
             <div className="flex justify-between text-[10px] font-bold text-bp-body/30 uppercase tracking-widest px-1">

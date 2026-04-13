@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { CreditCard, Smartphone, Building2, Wallet, ShieldCheck, CheckCircle2, X, Lock, MoveRight, LogIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -43,10 +43,14 @@ const PAYMENT_MODES = [
 
 export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [method, setMethod] = useState<PaymentMethod>('pay_at_clinic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+
+  const returnUrl = encodeURIComponent(`${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`)
 
   const gstAmount = Math.round(feeInr * 0.18)
   const total = feeInr + gstAmount
@@ -153,20 +157,14 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
             <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
               <button
                 type="button"
-                onClick={() => {
-                  const returnUrl = encodeURIComponent(window.location.href)
-                  router.push(`/login?return=${returnUrl}`)
-                }}
+                onClick={() => router.push(`/login?return=${returnUrl}`)}
                 className="flex-1 h-14 bg-bp-accent text-white rounded-2xl font-bold text-[16px] hover:bg-bp-accent/90 active:scale-[0.98] transition-all"
               >
                 Sign In
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  const returnUrl = encodeURIComponent(window.location.href)
-                  router.push(`/signup?return=${returnUrl}`)
-                }}
+                onClick={() => router.push(`/signup?return=${returnUrl}`)}
                 className="flex-1 h-14 bg-white border-2 border-bp-accent text-bp-accent rounded-2xl font-bold text-[16px] hover:bg-bp-accent/5 active:scale-[0.98] transition-all"
               >
                 Create Account
