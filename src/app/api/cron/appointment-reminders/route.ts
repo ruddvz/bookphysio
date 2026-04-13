@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { sendAppointmentReminder } from '@/lib/resend'
+import { sendAppointmentReminderSms } from '@/lib/msg91'
 import { formatIndiaDateTime } from '@/lib/india-date'
 
 /** Reminder window boundaries: look for appointments starting this many hours from now. */
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
   ] = await Promise.all([
     supabaseAdmin
       .from('users')
-      .select('id, full_name, email')
+      .select('id, full_name, email, phone')
       .in('id', patientIds),
     supabaseAdmin
       .from('users')
@@ -91,45 +92,70 @@ export async function POST(request: NextRequest) {
   const providerMap = new Map((providers ?? []).map((p) => [p.id, p]))
 
   let sent = 0
+  let smsSent = 0
   const errors: string[] = []
 
   for (const appointment of appointments) {
     const patient = patientMap.get(appointment.patient_id)
     const provider = providerMap.get(appointment.provider_id)
 
-    if (!patient?.email || !provider?.full_name) continue
+    if (!provider?.full_name) continue
+    if (!patient?.email && !patient?.phone) continue
 
     const startsAt = extractStartsAt(appointment.availabilities)
     if (!startsAt) continue
 
     const providerName = provider.full_name
+    const patientName = patient.full_name ?? 'there'
+    const dateFormatted = formatIndiaDateTime(startsAt, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+    const timeFormatted = formatIndiaDateTime(startsAt, {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
 
-    try {
-      await sendAppointmentReminder({
-        to: patient.email,
-        patientName: patient.full_name ?? 'there',
-        providerName,
-        appointmentDate: formatIndiaDateTime(startsAt, {
-          weekday: 'short',
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }),
-        appointmentTime: formatIndiaDateTime(startsAt, {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        visitType: appointment.visit_type,
-        appointmentId: appointment.id,
-      })
-      sent++
-    } catch (err) {
-      errors.push(`Failed for appointment ${appointment.id}: ${err instanceof Error ? err.message : String(err)}`)
+    // Send email reminder (if email available)
+    if (patient.email) {
+      try {
+        await sendAppointmentReminder({
+          to: patient.email,
+          patientName,
+          providerName,
+          appointmentDate: dateFormatted,
+          appointmentTime: timeFormatted,
+          visitType: appointment.visit_type,
+          appointmentId: appointment.id,
+        })
+        sent++
+      } catch (err) {
+        errors.push(`Email failed for ${appointment.id}: ${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
+
+    // Send SMS + WhatsApp reminder (if phone available, best-effort)
+    if (patient.phone) {
+      try {
+        const smsResult = await sendAppointmentReminderSms({
+          phone: patient.phone,
+          patientName,
+          providerName,
+          appointmentDate: dateFormatted,
+          appointmentTime: timeFormatted,
+        })
+        if (smsResult.sms || smsResult.whatsapp) smsSent++
+      } catch (err) {
+        errors.push(`SMS failed for ${appointment.id}: ${err instanceof Error ? err.message : String(err)}`)
+      }
     }
   }
 
   return NextResponse.json({
     sent,
+    smsSent,
     total: appointments.length,
     errors: errors.length > 0 ? errors : undefined,
   })

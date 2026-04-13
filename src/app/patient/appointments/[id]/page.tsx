@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { formatIndiaDateTime } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
+import RescheduleModal from './RescheduleModal'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -46,6 +47,7 @@ export default function PatientAppointmentDetail() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [showReschedule, setShowReschedule] = useState(false)
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
     queryKey: ['appointment', 'patient', id],
@@ -252,13 +254,14 @@ export default function PatientAppointmentDetail() {
         <div className="flex flex-col sm:flex-row gap-4 mt-12">
           {!confirmCancel ? (
             <>
-              <Link
-                href={`/book/${appt.provider_id}`}
+              <button
+                type="button"
+                onClick={() => setShowReschedule(true)}
                 className="flex-[2] flex items-center justify-center gap-2 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-bold tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5 cursor-pointer outline-none"
               >
                 <RefreshCw className="w-5 h-5" />
                 Reschedule with {doctorName}
-              </Link>
+              </button>
               <button
                 type="button"
                 onClick={() => setConfirmCancel(true)}
@@ -308,6 +311,18 @@ export default function PatientAppointmentDetail() {
             Book follow-up with {doctorName}
           </Link>
         </div>
+      )}
+
+      {/* Reschedule modal */}
+      {showReschedule && (
+        <RescheduleModal
+          appointmentId={appt.id}
+          providerId={appt.provider_id}
+          providerName={doctorName}
+          currentSlotDate={appt.availabilities.starts_at}
+          onClose={() => setShowReschedule(false)}
+          onSuccess={() => setShowReschedule(false)}
+        />
       )}
     </div>
   )

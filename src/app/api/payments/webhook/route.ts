@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { verifyWebhookSignature } from '@/lib/razorpay'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendBookingConfirmation } from '@/lib/resend'
+import { sendBookingConfirmationSms } from '@/lib/msg91'
 
 // NOTE: The create-order and verify endpoints are intentionally disabled (503) while
 // the payment flow is being re-architected. This webhook remains active to handle
@@ -145,6 +146,20 @@ export async function POST(request: NextRequest) {
           visitType: appt.visit_type,
           amountInr: appt.fee_inr,
         })
+
+        // Send SMS + WhatsApp confirmation (best-effort, non-blocking)
+        if (patient.phone) {
+          sendBookingConfirmationSms({
+            phone: patient.phone,
+            patientName: patient.full_name,
+            providerName: provider.full_name,
+            appointmentDate: date,
+            appointmentTime: time,
+            feeInr: appt.fee_inr,
+          }).catch((smsErr) => {
+            console.error('[webhook] SMS confirmation failed (non-fatal):', smsErr)
+          })
+        }
       }
     }
   } catch (emailError) {

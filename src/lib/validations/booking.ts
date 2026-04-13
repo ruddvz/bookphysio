@@ -22,6 +22,11 @@ export const cancelAppointmentSchema = z.object({
   reason: z.string().min(1).max(200).optional(),
 })
 
+export const rescheduleAppointmentSchema = z.object({
+  action: z.literal('reschedule'),
+  new_availability_id: z.string().uuid(),
+})
+
 export const updateNotesSchema = z.object({
   action: z.literal('update_notes'),
   notes: z.string().max(2000),
