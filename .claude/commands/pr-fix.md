@@ -49,8 +49,9 @@ Parse all review comments and classify each into:
 
 ### Phase 3: Checkout PR Branch
 
-1. Fetch the PR branch: `git fetch origin pull/<PR_NUMBER>/head:<branch_name>` or `git fetch origin <branch_name>`
-2. Checkout the branch: `git checkout <branch_name>`
+1. Get the PR's head branch name from the PR metadata (Phase 1)
+2. Fetch the branch: `git fetch origin <branch_name>`
+3. Checkout the branch: `git checkout <branch_name>`
 3. Verify clean working tree
 
 ### Phase 4: Apply Fixes
@@ -92,7 +93,7 @@ For each actionable comment (in file order, top to bottom):
 
    Reviewers: [CodeRabbit, Copilot, human reviewers]
    ```
-3. Push to the PR branch (use report_progress tool to push)
+3. Push to the PR branch using `report_progress` (which runs `git add .`, `git commit`, and `git push` internally)
 
 ### Phase 7: Report
 
