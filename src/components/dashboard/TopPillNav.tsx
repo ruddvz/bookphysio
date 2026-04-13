@@ -94,13 +94,13 @@ export default function TopPillNav({
   }, [])
 
   useEffect(() => {
+    setAvatarUrl(null)
+
     if (!user?.id) {
-      setAvatarUrl(null)
       return
     }
 
     let cancelled = false
-    setAvatarUrl(null)
 
     fetch('/api/profile')
       .then((res) => (res.ok ? res.json() : null))
@@ -109,11 +109,7 @@ export default function TopPillNav({
           setAvatarUrl(data?.avatar_url ?? null)
         }
       })
-      .catch(() => {
-        if (!cancelled) {
-          setAvatarUrl(null)
-        }
-      })
+      .catch(() => {})
 
     return () => {
       cancelled = true

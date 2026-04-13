@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const createClientMock = vi.fn()
 const otpRateLimitMock = vi.fn()
 const getRequestIpAddressMock = vi.fn()
+const signOutMock = vi.fn()
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: (...args: unknown[]) => createClientMock(...args),
@@ -35,6 +36,7 @@ describe('Auth login and callback routes', () => {
     vi.clearAllMocks()
     otpRateLimitMock.mockResolvedValue({ success: true })
     getRequestIpAddressMock.mockReturnValue('203.0.113.20')
+    signOutMock.mockResolvedValue({ error: null })
   })
 
   it('returns 503 when password login cannot determine the user role', async () => {
@@ -44,6 +46,7 @@ describe('Auth login and callback routes', () => {
           data: { user: { id: 'user-1' } },
           error: null,
         }),
+        signOut: signOutMock,
       },
       from: vi.fn(() => createProfileQuery({ data: null, error: { message: 'users offline' } })),
     })
@@ -62,6 +65,7 @@ describe('Auth login and callback routes', () => {
     await expect(response.json()).resolves.toEqual({
       error: 'Unable to determine account role. Please try again.',
     })
+    expect(signOutMock).toHaveBeenCalledTimes(1)
   })
 
   it('redirects the callback flow when the profile role cannot be loaded', async () => {
@@ -71,6 +75,7 @@ describe('Auth login and callback routes', () => {
           data: { user: { id: 'user-1' } },
           error: null,
         }),
+        signOut: signOutMock,
       },
       from: vi.fn(() => createProfileQuery({ data: null, error: { message: 'users offline' } })),
     })
@@ -80,5 +85,6 @@ describe('Auth login and callback routes', () => {
 
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe('http://localhost/login?error=profile_unavailable')
+    expect(signOutMock).toHaveBeenCalledTimes(1)
   })
 })

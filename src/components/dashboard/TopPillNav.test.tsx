@@ -1,7 +1,6 @@
-/* eslint-disable @next/next/no-img-element, jsx-a11y/alt-text */
 import { render, screen, waitFor } from '@testing-library/react'
 import { Bell, LayoutDashboard } from 'lucide-react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import TopPillNav from './TopPillNav'
 
 let mockUser: {
@@ -25,7 +24,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('next/image', () => ({
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
+  // eslint-disable-next-line @next/next/no-img-element
+  default: ({ alt = '', ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => <img alt={alt} {...props} />,
 }))
 
 vi.mock('@/context/AuthContext', () => ({
@@ -40,6 +40,11 @@ vi.mock('@/components/BpLogo', () => ({
 }))
 
 describe('TopPillNav', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
   beforeEach(() => {
     mockUser = {
       id: 'user-1',

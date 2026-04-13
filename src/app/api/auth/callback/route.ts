@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (profileError || !profile?.role) {
+    await supabase.auth.signOut()
     return NextResponse.redirect(`${origin}/login?error=profile_unavailable`)
   }
 

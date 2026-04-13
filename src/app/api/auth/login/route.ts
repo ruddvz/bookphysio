@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (profileError || !profile?.role) {
+    await supabase.auth.signOut()
     return NextResponse.json(
       { error: 'Unable to determine account role. Please try again.' },
       { status: 503 },
