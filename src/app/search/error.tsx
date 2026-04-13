@@ -2,6 +2,9 @@
 
 import { useEffect } from 'react'
 
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+
 export default function SearchError({
   error,
   reset,
@@ -10,26 +13,30 @@ export default function SearchError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('[search] Unhandled error:', error)
+    console.error(error)
   }, [error])
 
   return (
-    <div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-6">
-          <span className="text-2xl">🔍</span>
+    <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center text-red-500 mx-auto mb-5 text-xl font-bold">
+            !
+          </div>
+          <h1 className="text-[20px] font-bold text-[#1A1C29] mb-2">Search unavailable</h1>
+          <p className="text-[14px] text-slate-600 mb-6">
+            We couldn&apos;t load results. Please try again.
+          </p>
+          <button
+            onClick={reset}
+            className="rounded-full bg-[#00766C] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors"
+          >
+            Retry search
+          </button>
         </div>
-        <h2 className="text-[22px] font-bold text-[#333] mb-2">Search ran into a problem</h2>
-        <p className="text-[15px] text-[#666] mb-6 leading-relaxed">
-          We couldn&apos;t load the search results. This is usually temporary — please try again.
-        </p>
-        <button
-          onClick={reset}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] text-white text-[14px] font-semibold rounded-full hover:bg-[#005A52] transition-colors"
-        >
-          Try again
-        </button>
-      </div>
+      </main>
+      <Footer />
     </div>
   )
 }

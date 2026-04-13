@@ -171,4 +171,21 @@ describe('SearchContent', () => {
     expect(params.get('specialty_id')).toBe('Pain Management')
     expect(params.get('query')).toBeNull()
   })
+
+  it('passes the selected sort mode through to the providers API request', () => {
+    searchParamsValue = new URLSearchParams('sort=price')
+
+    mockSearchSWR({
+      data: mockSearchResponse(mockProviders),
+      error: undefined,
+      isLoading: false,
+      mutate: vi.fn() as unknown as SWRResponse<SearchResponse, Error>['mutate'],
+    })
+
+    render(<SearchContent />)
+
+    const fetchUrl = mockedUseSWR.mock.calls[0]?.[0]
+    expect(typeof fetchUrl).toBe('string')
+    expect(new URL(fetchUrl as string, 'http://localhost').searchParams.get('sort')).toBe('price')
+  })
 })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+
 import Link from 'next/link'
 
 export default function DoctorProfileError({
@@ -11,33 +12,31 @@ export default function DoctorProfileError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('[doctor-profile] Unhandled error:', error)
+    console.error(error)
   }, [error])
 
   return (
-    <div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-6">
-          <span className="text-2xl">👨‍⚕️</span>
-        </div>
-        <h2 className="text-[22px] font-bold text-[#333] mb-2">Couldn&apos;t load this profile</h2>
-        <p className="text-[15px] text-[#666] mb-6 leading-relaxed">
-          Something went wrong loading the physiotherapist&apos;s profile. Please try again or search for another provider.
-        </p>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={reset}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] text-white text-[14px] font-semibold rounded-full hover:bg-[#005A52] transition-colors"
-          >
-            Try again
-          </button>
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 px-6 py-3 border border-[#E5E7EB] text-[#333] text-[14px] font-semibold rounded-full hover:bg-slate-50 transition-colors"
-          >
-            Search providers
-          </Link>
-        </div>
+    <div className="min-h-screen bg-[#F7F8F9] flex flex-col items-center justify-center gap-6 px-6 text-center">
+      <div className="w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-xl font-bold">
+        !
+      </div>
+      <h1 className="text-[20px] font-bold text-[#1A1C29]">Couldn&apos;t load profile</h1>
+      <p className="text-[14px] text-slate-600 max-w-sm">
+        The provider profile could not be loaded right now.
+      </p>
+      <div className="flex gap-3">
+        <button
+          onClick={reset}
+          className="rounded-full bg-[#00766C] px-6 py-3 text-[14px] font-semibold text-white hover:bg-[#005A52] transition-colors"
+        >
+          Try again
+        </button>
+        <Link
+          href="/search"
+          className="rounded-full border border-slate-300 px-6 py-3 text-[14px] font-semibold text-slate-700 hover:bg-white transition-colors"
+        >
+          Back to search
+        </Link>
       </div>
     </div>
   )

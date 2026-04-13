@@ -5,6 +5,11 @@ export interface Specialty {
   icon_url: string | null
 }
 
+export interface ProviderAvailabilityPreviewDay {
+  date: string
+  slots: string[]
+}
+
 export interface ProviderLocation {
   id: string
   name: string
@@ -26,6 +31,7 @@ export interface ProviderCard {
   experience_years: number | null
   consultation_fee_inr: number | null
   next_available_slot: string | null
+  availability_preview?: ProviderAvailabilityPreviewDay[]
   visit_types: ('in_clinic' | 'home_visit')[]
   city: string | null
   distance?: string

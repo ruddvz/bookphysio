@@ -216,6 +216,23 @@ export default function PatientAppointmentDetail() {
         </div>
       </div>
 
+      {/* Book Follow-Up CTA — shown for completed/confirmed appointments */}
+      {(appt.status === 'completed' || appt.status === 'confirmed') && (
+        <div className={cn(SECTION_CARD_CLS, 'flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#E6F4F3] border-bp-accent/20')}>
+          <div>
+            <p className="text-[16px] font-bold text-bp-primary tracking-tight">Need another session?</p>
+            <p className="text-[14px] text-bp-body/70 font-medium mt-0.5">Book a follow-up with {doctorName}</p>
+          </div>
+          <Link
+            href={`/doctor/${appt.provider_id}`}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-bp-accent hover:bg-bp-primary text-white rounded-full text-[14px] font-bold shadow-[0_4px_12px_rgba(0,118,108,0.2)] transition-all hover:-translate-y-0.5"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Book follow-up
+          </Link>
+        </div>
+      )}
+
       {appt.patient_reason && (
         <div className={cn(SECTION_CARD_CLS, "bg-bp-surface border-none")}>
           <h3 className="text-[16px] font-bold text-bp-primary tracking-tight mb-3">Your Booking Notes</h3>

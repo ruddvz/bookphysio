@@ -32,5 +32,8 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+          GOOGLE_GENERATIVE_AI_API_KEY: placeholder-ai-key
+          RESEND_API_KEY: placeholder-resend-key
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build

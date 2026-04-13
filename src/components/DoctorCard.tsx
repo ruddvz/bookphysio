@@ -39,6 +39,10 @@ export interface Doctor {
   isLive?: boolean
   lat?: number | null
   lng?: number | null
+  availabilityPreview?: Array<{
+    date: string
+    slots: string[]
+  }>
 }
 
 interface DoctorCardProps {
@@ -56,45 +60,22 @@ type SlotDay = {
   slots: string[]
 }
 
-function seededRand(seed: number): () => number {
-  let value = seed
+function formatAvailabilityPreview(input: Doctor['availabilityPreview']): SlotDay[] {
+  const todayIso = formatIndiaDateInput(new Date())
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowIso = formatIndiaDateInput(tomorrow)
 
-  return () => {
-    value = (value * 16807) % 2147483647
-    return (value - 1) / 2147483646
-  }
-}
+  return (input ?? []).map((day) => {
+    const date = new Date(`${day.date}T00:00:00+05:30`)
 
-function generateDeterministicSlots(id: string): SlotDay[] {
-  const seed = id.split('').reduce((accumulator, character) => accumulator + character.charCodeAt(0), 0)
-  const random = seededRand(seed)
-  const days: SlotDay[] = []
-  const today = new Date()
-
-  for (let index = 0; index < 7; index += 1) {
-    const date = new Date(today)
-    date.setDate(today.getDate() + index)
-
-    const slotCount = Math.floor(random() * 4) + 1
-    const startHour = 9 + Math.floor(random() * 4)
-    const slots: string[] = []
-
-    for (let slotIndex = 0; slotIndex < slotCount; slotIndex += 1) {
-      const hour = startHour + slotIndex
-      const period = hour < 12 ? 'AM' : 'PM'
-      const displayHour = hour > 12 ? hour - 12 : hour
-      slots.push(`${displayHour}:00 ${period}`)
-    }
-
-    days.push({
-      label: index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : date.toLocaleDateString('en-IN', { weekday: 'short' }),
+    return {
+      label: day.date === todayIso ? 'Today' : day.date === tomorrowIso ? 'Tomorrow' : date.toLocaleDateString('en-IN', { weekday: 'short' }),
       dateLabel: date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-      iso: formatIndiaDateInput(date),
-      slots,
-    })
-  }
-
-  return days
+      iso: day.date,
+      slots: day.slots,
+    }
+  })
 }
 
 export default function DoctorCard({ doctor, className, isHovered, onMouseEnter, onMouseLeave }: DoctorCardProps) {
@@ -102,7 +83,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
   const [startIndex, setStartIndex] = useState(0)
   const [selectedSlot, setSelectedSlot] = useState<{ time: string; dayIso: string } | null>(null)
 
-  const availability = useMemo(() => generateDeterministicSlots(doctor.id), [doctor.id])
+  const availability = useMemo(() => formatAvailabilityPreview(doctor.availabilityPreview), [doctor.availabilityPreview])
   const visibleDays = availability.slice(startIndex, startIndex + 3)
 
   const initials = getProviderInitials(doctor.name)
@@ -288,7 +269,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 onClick={handlePrev}
                 disabled={startIndex === 0}
                 aria-label="Previous days"
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
+                 className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -296,7 +277,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 onClick={handleNext}
                 disabled={startIndex >= availability.length - 3}
                 aria-label="Next days"
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
+                 className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronRight size={14} />
               </button>
@@ -304,8 +285,8 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2">
-            {visibleDays.map((day) => (
-              <div key={day.iso} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
+             {visibleDays.length > 0 ? visibleDays.map((day) => (
+               <div key={day.iso} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
                 <div className="text-center">
                   <p className="text-[12px] font-bold text-bp-primary">{day.label}</p>
                   <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-bp-body/30">{day.dateLabel}</p>
@@ -342,9 +323,19 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                     </div>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
+               </div>
+             )) : Array.from({ length: 3 }).map((_, index) => (
+               <div key={index} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
+                 <div className="text-center">
+                   <p className="text-[12px] font-bold text-bp-primary">No slots</p>
+                   <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-bp-body/30">Check profile</p>
+                 </div>
+                 <div className="rounded-xl border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
+                   Unavailable
+                 </div>
+               </div>
+             ))}
+           </div>
 
           <button
             onClick={handleBook}

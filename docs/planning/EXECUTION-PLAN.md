@@ -241,6 +241,7 @@
   - Public providers API no longer returns `500`; runtime fallback deployed while `search_providers_v2` DB migration awaits authenticated apply access
   - Repo fix ready for next deploy: public pages no longer treat the missing demo-session state as a 404 error during auth hydration
   - Production dataset currently returns zero public providers, so results rendering remains data-limited rather than route-broken
+- [x] **15.8** Launch hardening: pending provider approvals, tracked pay-at-clinic bookings, live homepage proof/reviews, sortable search, and live availability previews
 
 ---
 

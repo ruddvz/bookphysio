@@ -74,6 +74,32 @@ async function releaseBookingHoldIfOwned(holdKey: string | null, expectedValue: 
   }
 }
 
+async function rollbackAppointmentCreation(args: {
+  appointmentId: string
+  availabilityId: string
+  activeIpHoldKey: string | null
+  provisionalHoldToken: string | null
+}) {
+  const { supabaseAdmin } = await import('@/lib/supabase/admin')
+  const cleanupResults = await Promise.allSettled([
+    supabaseAdmin.from('appointments').delete().eq('id', args.appointmentId),
+    supabaseAdmin.from('availabilities').update({ is_booked: false }).eq('id', args.availabilityId),
+    releaseBookingHoldIfOwned(args.activeIpHoldKey, args.provisionalHoldToken),
+  ])
+
+  const cleanupFailures = cleanupResults.filter((result) => {
+    if (result.status === 'rejected') {
+      return true
+    }
+
+    const value = result.value
+    return typeof value === 'object' && value !== null && 'error' in value && Boolean(value.error)
+  })
+  if (cleanupFailures.length > 0) {
+    console.error('[api/appointments] Failed rollback after payment insert error:', cleanupFailures)
+  }
+}
+
 async function isProviderAvailabilityBeingUpdated(providerId: string) {
   const availabilityRewriteLockKey = getProviderAvailabilityRewriteLockKey(providerId)
   const activeAvailabilityRewrite = await redis.get<string>(availabilityRewriteLockKey)
@@ -268,6 +294,8 @@ export async function POST(request: NextRequest) {
 
   const baseFeeInr = (slot.providers as unknown as { consultation_fee_inr: number }).consultation_fee_inr
   const feeInr = getVisitTypeConsultationFee(baseFeeInr, visit_type)
+  const gstAmountInr = Math.round(feeInr * 0.18)
+  const totalAmountInr = feeInr + gstAmountInr
   const appointmentNotes = buildAppointmentNotes({
     visitType: visit_type,
     notes,
@@ -298,6 +326,28 @@ export async function POST(request: NextRequest) {
 
     console.error('[api/appointments] Insert error:', error)
     return jsonNoStore({ error: 'Failed to create appointment' }, { status: 500 })
+  }
+
+  const { error: paymentError } = await supabaseAdmin
+    .from('payments')
+    .insert({
+      appointment_id: appointment.id,
+      amount_inr: totalAmountInr,
+      gst_amount_inr: gstAmountInr,
+      status: 'created',
+    })
+    .select('id')
+    .single()
+
+  if (paymentError) {
+    await rollbackAppointmentCreation({
+      appointmentId: appointment.id,
+      availabilityId: availability_id,
+      activeIpHoldKey,
+      provisionalHoldToken,
+    })
+    console.error('[api/appointments] Payment insert error:', paymentError)
+    return jsonNoStore({ error: 'Failed to create payment record' }, { status: 500 })
   }
 
   if (activeIpHoldKey && provisionalHoldToken) {

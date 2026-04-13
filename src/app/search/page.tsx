@@ -11,63 +11,37 @@ interface SearchPageProps {
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
   const params = await searchParams
   const specialty = typeof params.specialty === 'string' ? params.specialty : null
-  const city = typeof params.city === 'string' ? params.city : (typeof params.location === 'string' ? params.location : null)
-  const condition = typeof params.condition === 'string' ? params.condition : null
+  const city = typeof params.city === 'string' ? params.city : null
 
-  const parts: string[] = []
-  if (specialty) parts.push(specialty)
-  if (condition && !specialty) parts.push(condition)
-  parts.push('Physiotherapists')
-  if (city) parts.push(`in ${city}`)
+  const titleParts: string[] = []
+  if (specialty) titleParts.push(specialty)
+  titleParts.push('Physiotherapists')
+  if (city) titleParts.push(`in ${city}`)
 
-  const heading = parts.join(' ')
-  const title = `${heading} | BookPhysio.in`
+  const title = `${titleParts.join(' ')} | BookPhysio.in`
   const description = city
-    ? `Search and book verified ${specialty ?? 'physiotherapists'} in ${city}. Filter by home visit, specialty, price and same-day slots.`
+    ? `Find and book verified ${specialty ? specialty.toLowerCase() + ' ' : ''}physiotherapists in ${city}. Compare ratings, prices, and availability.`
     : 'Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.'
-  const canonicalParams = new URLSearchParams()
-  if (specialty) canonicalParams.set('specialty', specialty)
-  if (city) canonicalParams.set('city', city)
-  if (condition) canonicalParams.set('condition', condition)
-  const qs = canonicalParams.toString()
-  const canonical = `https://bookphysio.in/search${qs ? `?${qs}` : ''}`
 
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: { canonical: 'https://bookphysio.in/search' },
     openGraph: {
       title,
       description,
-      url: canonical,
+      url: 'https://bookphysio.in/search',
       siteName: 'BookPhysio.in',
       locale: 'en_IN',
       type: 'website',
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
+    twitter: { card: 'summary_large_image', title, description },
   }
-}
-
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in' },
-    { '@type': 'ListItem', position: 2, name: 'Find Physiotherapists' },
-  ],
 }
 
 export default function SearchPage() {
   return (
     <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
       <Navbar />
 
       <main className="flex-1">

@@ -5,14 +5,18 @@ if (typeof window !== 'undefined') {
   throw new Error('admin supabase client must only be used server-side')
 }
 
-if (process.env.NODE_ENV === 'production' && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error(
-    '[supabase/admin] SUPABASE_SERVICE_ROLE_KEY must be set in production.'
-  )
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !serviceRoleKey) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required in production')
+  }
+  console.warn('WARNING: Supabase admin credentials missing. Admin API features will fail.')
 }
 
 export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key',
+  supabaseUrl ?? 'https://placeholder.supabase.co',
+  serviceRoleKey ?? '',
   { auth: { autoRefreshToken: false, persistSession: false } }
 )

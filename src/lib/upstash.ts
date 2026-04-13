@@ -1,71 +1,100 @@
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 
-// In production, hard-fail when Redis credentials are missing so the app
-// never silently falls back to a dummy connection string.
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+const upstashUrl = process.env.UPSTASH_REDIS_REST_URL
+const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
+const hasUpstashCredentials = Boolean(upstashUrl && upstashToken)
 
-if (process.env.NODE_ENV === 'production' && (!redisUrl || !redisToken)) {
-  throw new Error(
-    '[upstash] UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set in production.'
+function createMissingRedisClient(): Redis {
+  const unavailable = async () => {
+    throw new Error('Upstash Redis is not configured.')
+  }
+
+  return new Proxy({} as Redis, {
+    get(_target, prop) {
+      if (prop === 'createScript') {
+        return () => ({
+          eval: unavailable,
+        }) as unknown as ReturnType<Redis['createScript']>
+      }
+
+      return unavailable
+    },
+  })
+}
+
+// Warn loudly at module init if Upstash credentials are missing in production.
+// Missing credentials disable all rate limiting, but request behavior on rate-limit
+// failures depends on each call site: some handlers may allow through, while others
+// may fail closed and return an error instead.
+if (process.env.NODE_ENV === 'production' &&
+  (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN)) {
+  console.error(
+    '[upstash] CRITICAL: UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is not set. ' +
+    'All rate limiting (OTP, login, booking, uploads, messaging, AI) is DISABLED. ' +
+    'Set both environment variables immediately.'
   )
 }
 
-export const redis = new Redis({
-  url: redisUrl || 'https://placeholder.upstash.io',
-  token: redisToken || 'placeholder_token',
-})
+const configuredRedis = hasUpstashCredentials
+  ? new Redis({
+      url: upstashUrl,
+      token: upstashToken,
+    })
+  : null
+
+export const redisClient: Redis = configuredRedis ?? createMissingRedisClient()
+export const redis = redisClient
 
 export const apiRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(20, '10 s'),
   prefix: 'bp:api',
 })
 
 export const otpRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(5, '10 m'),
   prefix: 'bp:otp',
 })
 
 export const previewRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(5, '10 m'),
   prefix: 'bp:preview',
 })
 
 export const bookingIpRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(6, '30 m'),
   prefix: 'bp:booking:ip',
 })
 
 export const bookingUserRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(1, '2 m'),
   prefix: 'bp:booking:user',
 })
 
 export const uploadRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(20, '10 m'),
   prefix: 'bp:upload',
 })
 
 export const messagesRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(30, '1 m'),
   prefix: 'bp:messages',
 })
 
 export const reviewsRatelimit = new Ratelimit({
-  redis,
+  redis: redisClient,
   limiter: Ratelimit.slidingWindow(5, '10 m'),
   prefix: 'bp:reviews',
 })
 
-const releaseOwnedLockScript = redis.createScript<number>([
+const releaseOwnedLockScript = redisClient.createScript<number>([
   'local current = redis.call("GET", KEYS[1])',
   'if current == ARGV[1] then',
   '  return redis.call("DEL", KEYS[1])',
@@ -73,7 +102,7 @@ const releaseOwnedLockScript = redis.createScript<number>([
   'return 0',
 ].join('\n'))
 
-const refreshOwnedLockScript = redis.createScript<number>([
+const refreshOwnedLockScript = redisClient.createScript<number>([
   'local current = redis.call("GET", KEYS[1])',
   'if current == ARGV[1] then',
   '  return redis.call("EXPIRE", KEYS[1], tonumber(ARGV[2]))',
