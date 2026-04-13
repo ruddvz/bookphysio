@@ -189,9 +189,13 @@ function extractNormalizedComments(reviews: ProviderReview[]): string[] {
     .filter((c) => c.length > 10)
 }
 
+const MIN_COMMENTS_FOR_HIGHER_THRESHOLD = 3
+const LOW_THRESHOLD = 1
+const DEFAULT_THRESHOLD = 2
+
 function matchSentimentCategories(comments: string[], categories: SentimentCategory[]): Map<SentimentCategory, number> {
   const matches = new Map<SentimentCategory, number>()
-  const threshold = comments.length <= 3 ? 1 : 2
+  const threshold = comments.length <= MIN_COMMENTS_FOR_HIGHER_THRESHOLD ? LOW_THRESHOLD : DEFAULT_THRESHOLD
 
   for (const category of categories) {
     const matchCount = comments.filter((c) =>

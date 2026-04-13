@@ -6,6 +6,8 @@ const revalidateSchema = z.object({
   paths: z.array(z.string().startsWith('/')).nonempty('At least one path is required'),
 })
 
+const MAX_PATHS_PER_REQUEST = 20
+
 /**
  * POST /api/revalidate
  *
@@ -32,8 +34,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid request body' }, { status: 400 })
   }
 
-  // Limit to 20 paths per request to prevent abuse
-  const pathsToRevalidate = parsed.data.paths.slice(0, 20)
+  // Limit paths per request to prevent abuse
+  const pathsToRevalidate = parsed.data.paths.slice(0, MAX_PATHS_PER_REQUEST)
   const revalidated: string[] = []
 
   for (const path of pathsToRevalidate) {

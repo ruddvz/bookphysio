@@ -3,8 +3,9 @@ import { sendAppointmentReminder } from '@/lib/resend'
 import { sendAppointmentReminderSms } from '@/lib/msg91'
 import { formatIndiaDateTime } from '@/lib/india-date'
 
-/** Reminder window boundaries: look for appointments starting this many hours from now. */
+/** Reminder window: appointments starting within this many hours from now (start). */
 const REMINDER_WINDOW_START_HOURS = 0
+/** Reminder window: appointments starting within this many hours from now (end). */
 const REMINDER_WINDOW_END_HOURS = 24
 
 /**
