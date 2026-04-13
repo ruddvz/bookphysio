@@ -1,6 +1,13 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY || 'placeholder-resend-key')
+if (!process.env.RESEND_API_KEY) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('RESEND_API_KEY is required in production')
+  }
+  console.warn('WARNING: RESEND_API_KEY is not set. Email features will fail.')
+}
+
+const resend = new Resend(process.env.RESEND_API_KEY ?? '')
 
 export async function sendBookingConfirmation({
   to,
@@ -19,8 +26,11 @@ export async function sendBookingConfirmation({
   visitType: string
   amountInr: number
 }) {
+  if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error('RESEND_FROM_EMAIL is required to send emails')
+  }
   return resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || 'noreply@bookphysio.in',
+    from: process.env.RESEND_FROM_EMAIL,
     to,
     subject: `Appointment Confirmed — ${providerName}`,
     html: `
