@@ -93,7 +93,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <SectionErrorBoundary fallbackTitle="Couldn't load the provider showcase">
           <ProofSection />

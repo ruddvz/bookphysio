@@ -14,6 +14,7 @@ interface PatientDetails {
   reason: string
   homeVisitAddress: string
   painLocation: string
+  painSeverity?: number
   painDuration: string
 }
 
@@ -103,6 +104,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
       const noteParts: string[] = []
       if (patient.reason.trim()) noteParts.push(patient.reason.trim())
       if (patient.painLocation) noteParts.push(`Pain area: ${patient.painLocation}`)
+      if (patient.painSeverity != null) noteParts.push(`Severity: ${patient.painSeverity}/10`)
       if (patient.painDuration) noteParts.push(`Duration: ${patient.painDuration}`)
       const combinedNotes = noteParts.join(' | ')
 

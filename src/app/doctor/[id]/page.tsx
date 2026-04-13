@@ -124,6 +124,56 @@ function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
 const cardClass = 'bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 mb-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] relative'
 
 // ---------------------------------------------------------------------------
+// Review highlights — "Why patients love Dr. X"
+// ---------------------------------------------------------------------------
+
+interface ReviewHighlight {
+  emoji: string
+  label: string
+  detail: string
+}
+
+function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderProfile): ReviewHighlight[] {
+  if (reviews.length < 2) return []
+
+  const highlights: ReviewHighlight[] = []
+  const ratedReviews = reviews.filter((r) => r.rating > 0)
+
+  // High average rating
+  if (ratedReviews.length >= 2) {
+    const avg = ratedReviews.reduce((sum, r) => sum + r.rating, 0) / ratedReviews.length
+    if (avg >= 4.5) {
+      highlights.push({ emoji: '⭐', label: 'Highly Rated', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} reviews` })
+    } else if (avg >= 4.0) {
+      highlights.push({ emoji: '👍', label: 'Well Reviewed', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} reviews` })
+    }
+  }
+
+  // Experience
+  if (provider.experience_years && provider.experience_years >= 5) {
+    highlights.push({ emoji: '🏥', label: 'Experienced', detail: `${provider.experience_years}+ years of practice` })
+  }
+
+  // Multiple specialties
+  if (provider.specialties.length >= 2) {
+    highlights.push({ emoji: '🎯', label: 'Multi-Specialist', detail: `${provider.specialties.length} areas of expertise` })
+  }
+
+  // Consistent positive feedback (all reviews ≥ 4 stars)
+  if (ratedReviews.length >= 3 && ratedReviews.every((r) => r.rating >= 4)) {
+    highlights.push({ emoji: '🔄', label: 'Consistently Excellent', detail: 'All patients rate 4+ stars' })
+  }
+
+  // Detailed comments (shows engagement)
+  const commentedReviews = reviews.filter((r) => r.comment && r.comment.length > 30)
+  if (commentedReviews.length >= 3) {
+    highlights.push({ emoji: '💬', label: 'Detailed Feedback', detail: `${commentedReviews.length} patients wrote detailed reviews` })
+  }
+
+  return highlights.slice(0, 4)
+}
+
+// ---------------------------------------------------------------------------
 // Page component
 // ---------------------------------------------------------------------------
 
@@ -189,6 +239,9 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   const mobileFeeLabel = visitTypes.length > 1 ? 'Starting Fee' : 'Consult Fee'
 
   const reviews: ProviderReview[] = provider.reviews ?? []
+
+  // Derive structured review highlights (only show when enough data exists)
+  const reviewHighlights = deriveReviewHighlights(reviews, provider)
 
   const isStateVerified = provider.iap_registration_no?.startsWith('STATE_')
   const stateName = isStateVerified ? provider.iap_registration_no?.split('_')[1] : null
@@ -427,6 +480,26 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                   </div>
                 </section>
               </div>
+
+              {/* Why Patients Love Section */}
+              {reviewHighlights.length > 0 && (
+                <section className={cn(cardClass, 'border-bp-accent/20 bg-gradient-to-br from-[#E6F4F3]/60 to-white')} aria-labelledby="why-patients-love">
+                  <h2 id="why-patients-love" className="text-[22px] font-bold text-bp-primary tracking-tight mb-6 px-2 lg:px-4">
+                    Why patients love {nameWithTitle}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2 lg:px-4">
+                    {reviewHighlights.map((h) => (
+                      <div key={h.label} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-bp-border/30 shadow-sm">
+                        <span className="text-[24px] leading-none mt-0.5">{h.emoji}</span>
+                        <div>
+                          <p className="text-[15px] font-bold text-bp-primary tracking-tight">{h.label}</p>
+                          <p className="text-[13px] text-bp-body/50 font-medium mt-0.5">{h.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* 4. Patient Feedback (Luxury List) */}
               <section className={cn(cardClass, "border-bp-border/10 bg-[#FBFCFD] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.03)]")} aria-labelledby="reviews-heading">

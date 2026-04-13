@@ -33,6 +33,7 @@ interface PatientDetails {
   reason: string
   homeVisitAddress: string
   painLocation: string
+  painSeverity?: number
   painDuration: string
 }
 

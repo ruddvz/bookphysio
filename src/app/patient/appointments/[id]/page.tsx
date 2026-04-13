@@ -224,7 +224,7 @@ export default function PatientAppointmentDetail() {
             <p className="text-[14px] text-bp-body/70 font-medium mt-0.5">Book a follow-up with {doctorName}</p>
           </div>
           <Link
-            href={`/doctor/${appt.provider_id}`}
+            href={`/book/${appt.provider_id}`}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-bp-accent hover:bg-bp-primary text-white rounded-full text-[14px] font-bold shadow-[0_4px_12px_rgba(0,118,108,0.2)] transition-all hover:-translate-y-0.5"
           >
             <RefreshCw className="w-4 h-4" />
@@ -253,7 +253,7 @@ export default function PatientAppointmentDetail() {
           {!confirmCancel ? (
             <>
               <Link
-                href={`/doctor/${appt.provider_id}`}
+                href={`/book/${appt.provider_id}`}
                 className="flex-[2] flex items-center justify-center gap-2 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-bold tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5 cursor-pointer outline-none"
               >
                 <RefreshCw className="w-5 h-5" />
@@ -301,7 +301,7 @@ export default function PatientAppointmentDetail() {
       {(appt.status === 'completed' || appt.status === 'cancelled') && (
         <div className="mt-8">
           <Link
-            href={`/doctor/${appt.provider_id}`}
+            href={`/book/${appt.provider_id}`}
             className="w-full flex items-center justify-center gap-2.5 px-8 py-5 bg-bp-accent hover:bg-bp-primary text-white rounded-[32px] text-[16px] font-bold tracking-tight shadow-[0_8px_16px_rgba(0,118,108,0.15)] transition-all hover:-translate-y-0.5"
           >
             <CalendarPlus className="w-5 h-5" />

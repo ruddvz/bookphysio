@@ -12,6 +12,7 @@ interface PatientDetails {
   reason: string
   homeVisitAddress: string
   painLocation: string
+  painSeverity?: number
   painDuration: string
 }
 
@@ -30,6 +31,8 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
   const [reason, setReason] = useState('')
   const [homeVisitAddress, setHomeVisitAddress] = useState('')
   const [painLocation, setPainLocation] = useState('')
+  const [painSeverity, setPainSeverity] = useState(0)
+  const [painSeverityTouched, setPainSeverityTouched] = useState(false)
   const [painDuration, setPainDuration] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const requiresHomeVisitAddress = booking?.visitType === 'home_visit'
@@ -47,7 +50,16 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-    onNext({ fullName, phone: `+91${phone}`, email, reason, homeVisitAddress, painLocation, painDuration })
+    onNext({
+      fullName,
+      phone: `+91${phone}`,
+      email,
+      reason,
+      homeVisitAddress,
+      painLocation,
+      painSeverity: painSeverityTouched ? painSeverity : undefined,
+      painDuration,
+    })
   }
 
   return (
@@ -100,6 +112,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                  value={fullName}
                  onChange={(e) => setFullName(e.target.value)}
                  placeholder="Enter patient's full name"
+                 aria-invalid={!!errors.fullName}
                  className={cn(
                    "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
                    errors.fullName 
@@ -111,7 +124,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                    {fullName.length > 3 && !errors.fullName && <CheckCircle2 className="text-emerald-500 animate-in zoom-in" size={20} />}
                </div>
              </div>
-             {errors.fullName && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.fullName}</p>}
+             {errors.fullName && <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.fullName}</p>}
            </div>
 
            {/* Mobile Number */}
@@ -134,6 +147,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                  maxLength={11}
                  onChange={(e) => setPhone(stripPhoneFormat(e.target.value))}
                  placeholder="98765 43210"
+                 aria-invalid={!!errors.phone}
                  className={cn(
                    "w-full bg-white rounded-[24px] border-2 pl-20 pr-6 py-6 text-[20px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200 tracking-wider",
                    errors.phone 
@@ -142,7 +156,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                  )}
                />
              </div>
-             {errors.phone && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.phone}</p>}
+             {errors.phone && <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.phone}</p>}
            </div>
         </div>
 
@@ -163,6 +177,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="patient@medical.secure"
+              aria-invalid={!!errors.email}
               className={cn(
                 "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
                 errors.email 
@@ -171,7 +186,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               )}
             />
           </div>
-          {errors.email && <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
+          {errors.email && <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
         </div>
 
         {requiresHomeVisitAddress ? (
@@ -192,6 +207,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                 placeholder="Enter the patient's full address for the home visit"
                 rows={3}
                 maxLength={250}
+                aria-invalid={!!errors.homeVisitAddress}
                 className={cn(
                   'w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none placeholder:text-gray-200 leading-[1.7]',
                   errors.homeVisitAddress
@@ -200,11 +216,11 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
                 )}
               />
             </div>
-            {errors.homeVisitAddress ? <p className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.homeVisitAddress}</p> : null}
+            {errors.homeVisitAddress ? <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.homeVisitAddress}</p> : null}
           </div>
         ) : null}
 
-        {/* Reason for visit (Luxury Area) */}
+        {/* Reason for visit */}
         <div className="space-y-4 group">
           <div className="flex items-center justify-between px-1">
              <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Clinical Concerns & Focus</label>
@@ -276,6 +292,31 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
               <option value="6_plus_months">6+ months</option>
               <option value="recurring">Recurring / On and off</option>
             </select>
+          </div>
+        </div>
+
+        {/* Pain Severity Slider */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <label id="severity-label" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Pain Severity (0–10)</label>
+            <div className="flex items-center gap-3">
+              <span className="text-[14px] font-bold text-bp-accent">{painSeverityTouched ? painSeverity : '—'}</span>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+            </div>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={10}
+            step={1}
+            value={painSeverity}
+            aria-labelledby="severity-label"
+            onChange={(e) => { setPainSeverity(Number(e.target.value)); setPainSeverityTouched(true) }}
+            className="w-full accent-[#00766C] cursor-pointer"
+          />
+          <div className="flex justify-between text-[10px] font-bold text-bp-body/30 uppercase tracking-widest px-1">
+            <span>No pain</span>
+            <span>Severe</span>
           </div>
         </div>
 

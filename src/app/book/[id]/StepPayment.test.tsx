@@ -2,6 +2,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { StepPayment } from './StepPayment'
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/book/test-id',
+  useSearchParams: () => new URLSearchParams(),
+}))
+
 describe('StepPayment', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -32,6 +38,7 @@ describe('StepPayment', () => {
           reason: 'Knee pain',
           homeVisitAddress: '',
           painLocation: '',
+          painSeverity: undefined,
           painDuration: '',
         }}
         onBack={() => {}}
@@ -46,7 +53,7 @@ describe('StepPayment', () => {
     })
 
     expect(onSuccess).not.toHaveBeenCalled()
-    expect(screen.getByText(/please sign in to confirm this booking/i)).toBeInTheDocument()
+    expect(screen.getByText(/sign in to complete your booking/i)).toBeInTheDocument()
   })
 
   it('includes the patient home address when confirming a home visit', async () => {
@@ -72,6 +79,7 @@ describe('StepPayment', () => {
           reason: 'Post-op recovery',
           homeVisitAddress: '12 Palm Street, Bengaluru',
           painLocation: 'knee',
+          painSeverity: 7,
           painDuration: '1_3_months',
         }}
         onBack={() => {}}
@@ -114,6 +122,7 @@ describe('StepPayment', () => {
           reason: '   ',
           homeVisitAddress: '',
           painLocation: '',
+          painSeverity: undefined,
           painDuration: '',
         }}
         onBack={() => {}}
