@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import {
   Calendar,
   CalendarPlus,
@@ -13,6 +13,9 @@ import {
   FileText,
   User,
   ArrowRight,
+  Clock,
+  X,
+  RefreshCw,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -34,6 +37,7 @@ import {
   getPatientAppointmentVisitLabel,
 } from './dashboard-utils'
 import type { AppointmentItem } from '../appointments/appointments-utils'
+import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 
 function fmtShortDate(iso: string): string {
   return formatIndiaDate(iso, { day: 'numeric', month: 'short' })
@@ -42,6 +46,33 @@ function fmtShortDate(iso: string): string {
 function getGreeting(): string {
   const hour = new Date().getHours()
   return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+}
+
+function formatCountdown(targetIso: string): string | null {
+  const diff = Date.parse(targetIso) - Date.now()
+  if (diff <= 0) return null
+  const hours = Math.floor(diff / (1000 * 60 * 60))
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  if (hours >= 48) {
+    const days = Math.floor(hours / 24)
+    return `in ${days} day${days > 1 ? 's' : ''}`
+  }
+  if (hours >= 1) return `in ${hours}h ${minutes}m`
+  return `in ${minutes} min${minutes !== 1 ? 's' : ''}`
+}
+
+function useCountdown(targetIso: string | undefined): string | null {
+  const [countdown, setCountdown] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!targetIso) return
+    const update = () => setCountdown(formatCountdown(targetIso))
+    update()
+    const id = setInterval(update, 60_000)
+    return () => clearInterval(id)
+  }, [targetIso])
+
+  return countdown
 }
 
 function isUpcomingAppointment(appointment: AppointmentItem): boolean {
@@ -151,6 +182,32 @@ export default function PatientDashboardHome() {
   const nextAppointment = getNextAppointment(appointments)
   const latestSummaryCount = records.filter((record) => Boolean(record.patient_summary)).length
   const latestSpecialty = nextAppointment?.providers?.specialties?.[0]?.name ?? null
+  const nextStartsAt = nextAppointment?.availabilities?.starts_at
+  const countdown = useCountdown(nextStartsAt)
+  const canCancelNext = nextAppointment
+    ? canPatientCancelAppointment(nextAppointment.status, nextStartsAt)
+    : false
+  const [confirmCancel, setConfirmCancel] = useState(false)
+
+  const cancelMut = useMutation({
+    mutationFn: async () => {
+      if (!nextAppointment) return
+      const res = await fetch(`/api/appointments/${nextAppointment.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel' }),
+      })
+      if (!res.ok) throw new Error('Cancel failed')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments-dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments'] })
+      setConfirmCancel(false)
+    },
+  })
+
+  const handleCancelClick = useCallback(() => setConfirmCancel(true), [])
+  const handleKeep = useCallback(() => setConfirmCancel(false), [])
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
@@ -200,6 +257,16 @@ export default function PatientDashboardHome() {
           <SectionCard role="patient" title="Upcoming appointment">
             {nextAppointment ? (
               <div className="rounded-2xl border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-4 sm:p-5 md:p-6">
+                {/* Countdown banner */}
+                {countdown && (
+                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-[var(--color-pt-primary)]/5 px-4 py-2.5">
+                    <Clock size={16} className="text-[var(--color-pt-primary)] shrink-0" />
+                    <span className="text-[13px] font-bold text-[var(--color-pt-primary)]">
+                      Your session is {countdown}
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-3 sm:space-y-4">
                     <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pt-primary)] shadow-sm">
@@ -242,10 +309,46 @@ export default function PatientDashboardHome() {
                       href="/search"
                       className="inline-flex items-center justify-center rounded-full border border-[var(--color-pt-border)] bg-white px-5 py-3 text-[13px] font-bold text-[var(--color-pt-ink)] transition-colors hover:bg-[var(--color-pt-border-soft)]"
                     >
+                      <RefreshCw size={13} className="mr-2" />
                       Book follow-up
                     </Link>
+                    {canCancelNext && !confirmCancel && (
+                      <button
+                        type="button"
+                        onClick={handleCancelClick}
+                        className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-5 py-3 text-[13px] font-bold text-red-600 transition-colors hover:bg-red-50"
+                      >
+                        <X size={13} className="mr-2" />
+                        Cancel appointment
+                      </button>
+                    )}
                   </div>
                 </div>
+
+                {/* Cancel confirmation */}
+                {confirmCancel && (
+                  <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 animate-in slide-in-from-top-2 duration-200">
+                    <p className="text-[14px] font-bold text-red-700 mb-1">Cancel this appointment?</p>
+                    <p className="text-[12px] text-red-600/70 mb-3">This action cannot be undone.</p>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => cancelMut.mutate()}
+                        disabled={cancelMut.isPending}
+                        className="px-5 py-2 bg-red-600 text-white text-[13px] font-bold rounded-full disabled:opacity-50 transition-colors hover:bg-red-700"
+                      >
+                        {cancelMut.isPending ? 'Cancelling...' : 'Yes, cancel'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleKeep}
+                        className="px-5 py-2 bg-white text-[13px] font-bold text-slate-700 border border-slate-200 rounded-full hover:bg-slate-50 transition-colors"
+                      >
+                        Keep it
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <EmptyState

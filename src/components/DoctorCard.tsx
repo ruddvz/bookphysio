@@ -107,6 +107,17 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
   const initials = getProviderInitials(doctor.name)
 
+  // Compute "Next available" label and urgency signals
+  const firstDayWithSlots = availability.find((day) => day.slots.length > 0)
+  const nextAvailableLabel = firstDayWithSlots?.label === 'Today'
+    ? 'Today'
+    : firstDayWithSlots?.label === 'Tomorrow'
+      ? 'Tomorrow'
+      : firstDayWithSlots
+        ? `${firstDayWithSlots.label}, ${firstDayWithSlots.dateLabel}`
+        : 'No slots'
+  const slotsRemainingToday = availability[0]?.slots.length ?? 0
+
   const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
@@ -214,7 +225,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-bp-body/40">
                     <Clock3 size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next slot</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Next available</span>
                   </div>
                   {doctor.isLive && (
                     <div className="flex items-center gap-1">
@@ -226,8 +237,14 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                     </div>
                   )}
                 </div>
-                <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">{doctor.nextSlot}</p>
-                <p className="mt-1 text-[13px] font-medium text-bp-body/60">Fast-filling slot</p>
+                <p className="mt-2 text-[14px] font-bold text-bp-primary leading-tight">
+                  {nextAvailableLabel}{doctor.nextSlot ? ` at ${doctor.nextSlot}` : ''}
+                </p>
+                <p className="mt-1 text-[13px] font-medium text-bp-body/60">
+                  {slotsRemainingToday > 0
+                    ? `Only ${slotsRemainingToday} slot${slotsRemainingToday > 1 ? 's' : ''} left today`
+                    : 'Fast-filling slot'}
+                </p>
               </div>
             </div>
 
