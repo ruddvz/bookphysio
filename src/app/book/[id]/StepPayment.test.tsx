@@ -31,6 +31,8 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: 'Knee pain',
           homeVisitAddress: '',
+          painLocation: '',
+          painDuration: '',
         }}
         onBack={() => {}}
         onSuccess={onSuccess}
@@ -69,6 +71,8 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: 'Post-op recovery',
           homeVisitAddress: '12 Palm Street, Bengaluru',
+          painLocation: 'knee',
+          painDuration: '1_3_months',
         }}
         onBack={() => {}}
         onSuccess={() => {}}
@@ -109,6 +113,8 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: '   ',
           homeVisitAddress: '',
+          painLocation: '',
+          painDuration: '',
         }}
         onBack={() => {}}
         onSuccess={() => {}}

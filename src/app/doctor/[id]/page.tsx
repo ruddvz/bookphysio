@@ -9,12 +9,40 @@ import CredentialsSection from './CredentialsSection'
 import ReviewsSection from './ReviewsSection'
 import { Activity } from 'lucide-react'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getVisitTypeConsultationFee, isVisitType, type VisitType } from '@/lib/booking/policy'
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
   return [{ id: 'placeholder' }]
+}
+
+export async function generateMetadata({ params }: DoctorPageProps): Promise<Metadata> {
+  const { id } = await params
+  const result = await fetchProvider(id)
+
+  if (result.status !== 'found') {
+    return { title: 'Provider Not Found | BookPhysio' }
+  }
+
+  const provider = result.provider
+  const name = provider.full_name.startsWith('Dr.')
+    ? provider.full_name
+    : `Dr. ${provider.full_name}`
+  const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
+  const city = provider.city ?? 'India'
+
+  return {
+    title: `${name} — ${specialty} in ${city} | BookPhysio`,
+    description: `Book an appointment with ${name}, a verified ${specialty.toLowerCase()} in ${city}. ${provider.experience_years ? `${provider.experience_years}+ years of experience.` : ''} ${provider.rating_count > 0 ? `Rated ${(provider.rating_avg ?? 0).toFixed(1)}/5 by ${provider.rating_count} patients.` : ''} Book online now.`,
+    openGraph: {
+      title: `${name} — ${specialty} in ${city}`,
+      description: `Book a session with ${name}. Verified ${specialty.toLowerCase()} on BookPhysio.in.`,
+      type: 'profile',
+      ...(provider.avatar_url ? { images: [{ url: provider.avatar_url, width: 160, height: 160, alt: name }] } : {}),
+    },
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -127,8 +155,49 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   const hasRegistration = !!provider.iap_registration_no
   const verificationSource = isStateVerified ? `${stateName} Council` : 'IAP'
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://bookphysio.in'
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: appUrl },
+      { '@type': 'ListItem', position: 2, name: 'Specialists', item: `${appUrl}/search` },
+      { '@type': 'ListItem', position: 3, name: nameWithTitle },
+    ],
+  }
+
+  const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
+  const localBusinessSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Physician',
+    name: nameWithTitle,
+    description: provider.bio ?? `${specialty} on BookPhysio.in`,
+    medicalSpecialty: 'PhysicalTherapy',
+    ...(provider.avatar_url ? { image: provider.avatar_url } : {}),
+    ...(provider.city ? { address: { '@type': 'PostalAddress', addressLocality: provider.city, addressCountry: 'IN' } } : {}),
+    ...(provider.rating_count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: (provider.rating_avg ?? 0).toFixed(1),
+            reviewCount: provider.rating_count,
+            bestRating: 5,
+          },
+        }
+      : {}),
+    url: `${appUrl}/doctor/${id}`,
+  }
+
   return (
     <div className="bg-bp-surface min-h-screen selection:bg-bp-primary/10 selection:text-bp-primary font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
       <Navbar />
 
       <ProfileHero

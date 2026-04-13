@@ -7,6 +7,7 @@ import HealthSystems from '@/components/HealthSystems'
 import ProviderCTA from '@/components/ProviderCTA'
 import Testimonials from '@/components/Testimonials'
 import FAQ from '@/components/FAQ'
+import CityQuickSearch from '@/components/CityQuickSearch'
 import CityLinks from '@/components/CityLinks'
 import Footer from '@/components/Footer'
 
@@ -77,6 +78,7 @@ export default function Home() {
         <ProviderCTA />
         <Testimonials />
         <FAQ />
+        <CityQuickSearch />
         <CityLinks />
       </main>
       <Footer />
