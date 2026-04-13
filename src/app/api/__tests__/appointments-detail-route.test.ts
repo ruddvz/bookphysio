@@ -98,8 +98,8 @@ describe('/api/appointments/[id] route', () => {
           fee_inr: 1560,
           notes: storedNotes,
           payments: [
-            { status: 'refunded', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
-            { status: 'paid', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
+            { status: 'refunded', amount_inr: 1841, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
+            { status: 'paid', amount_inr: 1841, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
           ],
           created_at: '2026-01-01T09:00:00.000Z',
           availabilities: { starts_at: '2026-01-02T09:00:00.000Z', ends_at: '2026-01-02T09:30:00.000Z', slot_duration_mins: 30 },
@@ -120,8 +120,8 @@ describe('/api/appointments/[id] route', () => {
         fee_inr: 1560,
         notes: storedNotes,
         payments: [
-          { status: 'refunded', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
-          { status: 'paid', amount_inr: 1560, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
+          { status: 'refunded', amount_inr: 1841, gst_amount_inr: 281, created_at: '2026-01-01T09:00:00.000Z' },
+          { status: 'paid', amount_inr: 1841, gst_amount_inr: 281, created_at: '2026-01-02T09:00:00.000Z' },
         ],
         created_at: '2026-01-01T09:00:00.000Z',
         availabilities: { starts_at: '2026-01-02T09:00:00.000Z', ends_at: '2026-01-02T09:30:00.000Z', slot_duration_mins: 30 },
@@ -153,7 +153,7 @@ describe('/api/appointments/[id] route', () => {
       patient_profile: { full_name: 'Patient One' },
       legacy_notes: null,
       payment_status: 'paid',
-      payment_amount_inr: 1560,
+      payment_amount_inr: 1841,
     })
   })
 

@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
@@ -10,6 +12,10 @@ export default function SearchError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    console.error(error)
+  }, [error])
+
   return (
     <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
       <Navbar />
@@ -20,7 +26,7 @@ export default function SearchError({
           </div>
           <h1 className="text-[20px] font-bold text-[#1A1C29] mb-2">Search unavailable</h1>
           <p className="text-[14px] text-slate-600 mb-6">
-            {error.message || 'We couldn\'t load results. Please try again.'}
+            We couldn&apos;t load results. Please try again.
           </p>
           <button
             onClick={reset}

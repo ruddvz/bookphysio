@@ -614,7 +614,7 @@ async function main() {
         const gst = Math.round(appt.fee_inr * 0.18)
         await supabase.from('payments').insert({
           appointment_id: appt.id,
-          amount_inr: appt.fee_inr,
+          amount_inr: appt.fee_inr + gst,
           gst_amount_inr: gst,
           status: 'paid',
           razorpay_order_id: `order_demo_${appt.id.slice(0, 8)}`,

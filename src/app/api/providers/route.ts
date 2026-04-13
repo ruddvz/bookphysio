@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { searchFiltersSchema } from '@/lib/validations/search'
 import { apiRatelimit, redis } from '@/lib/upstash'
 import { getRequestIpAddress } from '@/lib/server/runtime'
-import type { SearchResponse } from '@/app/api/contracts/search'
+import type { SearchResponse, SearchSort } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
 import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
@@ -75,8 +75,6 @@ interface ProviderDetailRow {
   specialties: ProviderCard['specialties']
   availabilities: ProviderAvailabilityRow[] | null
 }
-
-type SearchSort = 'relevance' | 'availability' | 'price' | 'distance' | 'rating'
 
 interface FallbackProviderUserRow {
   full_name: string

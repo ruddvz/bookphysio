@@ -16,8 +16,11 @@ export default function GlobalError({
       </div>
       <h1 className="text-[22px] font-bold text-[#1A1C29]">Something went wrong</h1>
       <p className="text-[14px] text-slate-600 max-w-sm">
-        {error.message || 'An unexpected error occurred. Please try again.'}
+        An unexpected error occurred. Please try again.
       </p>
+      {error.digest ? (
+        <p className="text-[12px] text-slate-500">Reference: {error.digest}</p>
+      ) : null}
       <div className="flex gap-3">
         <button
           onClick={reset}
