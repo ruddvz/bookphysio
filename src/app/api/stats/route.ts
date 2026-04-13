@@ -26,7 +26,7 @@ export async function GET() {
   const providerCount = providersResult.count ?? 0
   const appointmentCount = appointmentsResult.count ?? 0
   const uniqueCities = new Set((citiesResult.data ?? []).map((r) => (r as { city: string }).city)).size
-  const avgRating = 4.8 // Updated when review aggregation is available
+  const avgRating = 0 // Placeholder — implement review aggregation when sufficient data is available
 
   return NextResponse.json(
     { providers: providerCount, cities: Math.max(uniqueCities, 1), appointments: appointmentCount, avgRating },

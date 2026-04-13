@@ -54,7 +54,7 @@ export default function ProofSection() {
     { icon: Users,     value: stats ? `${stats.providers}+` : 'IAP',  label: 'Verified providers'   },
     { icon: MapPinIcon, value: stats ? `${stats.cities}+` : '10+',    label: 'Cities supported'     },
     { icon: Calendar,  value: stats ? `${stats.appointments.toLocaleString('en-IN')}+` : 'Free', label: stats ? 'Appointments booked' : 'To list your practice' },
-    { icon: StarIcon,  value: stats ? `${stats.avgRating}★` : '60s',  label: stats ? 'Average rating' : 'To book a session' },
+    { icon: StarIcon,  value: stats && stats.avgRating > 0 ? `${stats.avgRating}★` : '60s',  label: stats && stats.avgRating > 0 ? 'Average rating' : 'To book a session' },
   ]
 
   return (

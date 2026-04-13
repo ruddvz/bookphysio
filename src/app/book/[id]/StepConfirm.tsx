@@ -229,12 +229,13 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3 group">
             <div className="flex items-center justify-between px-1">
-              <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+              <label htmlFor="pain-location" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                 Pain / Condition Area
               </label>
               <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
             </div>
             <select
+              id="pain-location"
               value={painLocation}
               onChange={(e) => setPainLocation(e.target.value)}
               className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
@@ -256,12 +257,13 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
 
           <div className="space-y-3 group">
             <div className="flex items-center justify-between px-1">
-              <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+              <label htmlFor="pain-duration" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                 How Long Have You Had This?
               </label>
               <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
             </div>
             <select
+              id="pain-duration"
               value={painDuration}
               onChange={(e) => setPainDuration(e.target.value)}
               className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
