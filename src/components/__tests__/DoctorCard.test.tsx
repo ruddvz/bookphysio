@@ -26,6 +26,11 @@ const baseDoctor: Doctor = {
   visitTypes: ['In-clinic'],
   fee: 600,
   icpVerified: true,
+  availabilityPreview: [
+    { date: '2026-04-13', slots: ['10:00 AM', '11:00 AM'] },
+    { date: '2026-04-14', slots: ['02:00 PM'] },
+    { date: '2026-04-15', slots: [] },
+  ],
 }
 
 describe('DoctorCard', () => {
@@ -54,5 +59,13 @@ describe('DoctorCard', () => {
     const { container } = render(<DoctorCard doctor={doctor} />)
     const img = container.querySelector('img[src="null"]')
     expect(img).toBeNull()
+  })
+
+  it('renders the real availability preview passed from search results', () => {
+    const { getByText } = render(<DoctorCard doctor={baseDoctor} />)
+
+    expect(getByText('10:00 AM')).toBeTruthy()
+    expect(getByText('11:00 AM')).toBeTruthy()
+    expect(getByText('02:00 PM')).toBeTruthy()
   })
 })

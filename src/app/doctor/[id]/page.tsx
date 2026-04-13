@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
@@ -14,6 +15,49 @@ import { getVisitTypeConsultationFee, isVisitType, type VisitType } from '@/lib/
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
   return [{ id: 'placeholder' }]
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic SEO metadata
+// ---------------------------------------------------------------------------
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const result = await fetchProvider(id)
+
+  if (result.status !== 'found') {
+    return { title: 'Physiotherapist Not Found | BookPhysio.in' }
+  }
+
+  const provider = result.provider
+  const name = provider.full_name.startsWith('Dr.') ? provider.full_name : `Dr. ${provider.full_name}`
+  const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
+  const city = provider.city ?? 'India'
+  const title = `${name} — ${specialty} in ${city} | BookPhysio.in`
+  const description = provider.bio
+    ? provider.bio.slice(0, 155).replace(/\s+\S*$/, '…')
+    : `Book an appointment with ${name}, a verified ${specialty.toLowerCase()} in ${city}. View ratings, clinic photos, and real‑time availability on BookPhysio.in.`
+  const url = `https://bookphysio.in/doctor/${id}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'BookPhysio.in',
+      locale: 'en_IN',
+      type: 'profile',
+      ...(provider.avatar_url ? { images: [{ url: provider.avatar_url, width: 400, height: 400, alt: name }] } : {}),
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -150,8 +194,39 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   const hasRegistration = !!provider.iap_registration_no
   const verificationSource = isStateVerified ? `${stateName} Council` : 'IAP'
 
+  // JSON-LD structured data ---------------------------------------------------
+  const specialtyName = provider.specialties[0]?.name ?? 'Physiotherapist'
+  const profileUrl = `https://bookphysio.in/doctor/${id}`
+
+  const localBusinessLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalBusiness',
+    name: nameWithTitle,
+    description: provider.bio ?? `${nameWithTitle} — ${specialtyName} in ${provider.city ?? 'India'}`,
+    url: profileUrl,
+    ...(provider.avatar_url ? { image: provider.avatar_url } : {}),
+    ...(provider.city ? { address: { '@type': 'PostalAddress', addressLocality: provider.city, addressCountry: 'IN' } } : {}),
+    priceRange: `₹${baseFee}`,
+    ...(provider.rating_count > 0 ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: provider.rating_avg, reviewCount: provider.rating_count, bestRating: 5 } } : {}),
+    medicalSpecialty: specialtyName,
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in/' },
+      { '@type': 'ListItem', position: 2, name: 'Search', item: 'https://bookphysio.in/search' },
+      { '@type': 'ListItem', position: 3, name: nameWithTitle, item: profileUrl },
+    ],
+  }
+
   return (
     <div className="bg-bp-surface min-h-screen selection:bg-bp-primary/10 selection:text-bp-primary font-sans">
+      {/* Structured data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+
       <Navbar />
 
       {/* ── Breadcrumbs (Premium) ── */}

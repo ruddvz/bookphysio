@@ -27,6 +27,13 @@ const VISIT_TYPE_URL: Record<string, string> = {
 const VISIT_TYPE_LABEL: Record<string, string> = Object.fromEntries(
   Object.entries(VISIT_TYPE_URL).map(([k, v]) => [v, k])
 )
+const SORT_OPTIONS = [
+  { label: 'Relevance', value: 'relevance' },
+  { label: 'Soonest available', value: 'availability' },
+  { label: 'Price', value: 'price' },
+  { label: 'Distance', value: 'distance' },
+  { label: 'Rating', value: 'rating' },
+]
 
 type VisitType = 'Any' | 'In-clinic' | 'Home Visit'
 
@@ -142,6 +149,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
   const currentVisitType: VisitType = (VISIT_TYPE_LABEL[currentVisitTypeRaw] as VisitType) ?? 'Any'
   const currentMaxFee = Number(searchParams.get('max_fee') ?? DEFAULT_MAX_FEE)
   const currentSpecialty = searchParams.get('specialty') ?? ''
+  const currentSort = searchParams.get('sort') ?? ''
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [localMaxFee, setLocalMaxFee] = useState(currentMaxFee)
@@ -154,13 +162,15 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     currentCity !== DEFAULT_CITY ||
     currentVisitType !== 'Any' ||
     currentMaxFee !== DEFAULT_MAX_FEE ||
-    currentSpecialty !== ''
+    currentSpecialty !== '' ||
+    currentSort !== ''
 
   const activeCount = [
     currentCity !== DEFAULT_CITY,
     currentVisitType !== 'Any',
     currentMaxFee !== DEFAULT_MAX_FEE,
     currentSpecialty !== '',
+    currentSort !== '',
   ].filter(Boolean).length
 
   const pushParams = useCallback(
@@ -190,6 +200,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     next.delete('visit_type')
     next.delete('max_fee')
     next.delete('specialty')
+    next.delete('sort')
     router.push(`${basePath}?${next.toString()}`)
     setDrawerOpen(false)
   }
@@ -212,6 +223,17 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
           options={SPECIALTIES}
           icon={Activity}
           onChange={(val) => pushParams({ specialty: val })}
+        />
+
+        <FilterPill
+          label="Sort"
+          value={SORT_OPTIONS.find((option) => option.value === currentSort)?.label ?? ''}
+          options={SORT_OPTIONS.map((option) => option.label)}
+          icon={ChevronDown}
+          onChange={(label) => {
+            const selectedOption = SORT_OPTIONS.find((option) => option.label === label)
+            pushParams({ sort: selectedOption?.value ?? null })
+          }}
         />
 
         {/* Visit Type Pills */}
@@ -403,6 +425,29 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                       </button>
                     )
                   })}
+                </div>
+              </section>
+
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <ChevronDown size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">Sort by</label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {SORT_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => pushParams({ sort: option.value === currentSort ? null : option.value })}
+                      className={cn(
+                        "text-[13px] font-medium py-2 px-3.5 rounded-full border transition-all",
+                        currentSort === option.value
+                          ? "bg-[#00766C] text-white border-[#00766C]"
+                          : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
                 </div>
               </section>
             </div>

@@ -7,6 +7,7 @@ import type { SearchResponse } from '@/app/api/contracts/search'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
 import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
+import { formatIndiaDateInput, formatIndiaTime } from '@/lib/india-date'
 
 const SEARCH_CACHE_TTL_SECONDS = 60
 
@@ -74,6 +75,8 @@ interface ProviderDetailRow {
   specialties: ProviderCard['specialties']
   availabilities: ProviderAvailabilityRow[] | null
 }
+
+type SearchSort = 'relevance' | 'availability' | 'price' | 'distance' | 'rating'
 
 interface FallbackProviderUserRow {
   full_name: string
@@ -164,6 +167,74 @@ function selectBestLocation(
 
     return leftDistance - rightDistance
   })[0]
+}
+
+function buildAvailabilityPreview(slots: ProviderAvailabilityRow[] | null | undefined): NonNullable<ProviderCard['availability_preview']> {
+  const groupedSlots = new Map<string, string[]>()
+  const sortedSlots = [...(slots ?? [])].sort((left, right) => {
+    return new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime()
+  })
+
+  for (const slot of sortedSlots) {
+    if (slot.is_booked || slot.is_blocked) {
+      continue
+    }
+
+    const dateKey = formatIndiaDateInput(slot.starts_at)
+    const existingSlots = groupedSlots.get(dateKey) ?? []
+
+    if (existingSlots.length >= 3) {
+      continue
+    }
+
+    existingSlots.push(formatIndiaTime(slot.starts_at, { hour: '2-digit', minute: '2-digit' }))
+    groupedSlots.set(dateKey, existingSlots)
+
+    if (groupedSlots.size >= 7) {
+      break
+    }
+  }
+
+  return Array.from(groupedSlots.entries()).map(([date, previewSlots]) => ({
+    date,
+    slots: previewSlots,
+  }))
+}
+
+function sortProviders(
+  providers: Array<{
+    provider: ProviderCard
+    nextAvailableTimestamp: number | null
+    distanceKm: number | null
+  }>,
+  sort: SearchSort | undefined,
+) {
+  return providers.slice().sort((left, right) => {
+    switch (sort) {
+      case undefined:
+      case 'relevance':
+        return 0
+      case 'availability': {
+        const leftValue = left.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER
+        const rightValue = right.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER
+        return leftValue - rightValue
+      }
+      case 'price': {
+        const leftValue = left.provider.consultation_fee_inr ?? Number.MAX_SAFE_INTEGER
+        const rightValue = right.provider.consultation_fee_inr ?? Number.MAX_SAFE_INTEGER
+        return leftValue - rightValue
+      }
+      case 'distance': {
+        const leftValue = left.distanceKm ?? Number.MAX_SAFE_INTEGER
+        const rightValue = right.distanceKm ?? Number.MAX_SAFE_INTEGER
+        return leftValue - rightValue
+      }
+      case 'rating':
+        return (right.provider.rating_avg ?? 0) - (left.provider.rating_avg ?? 0)
+      default:
+        return 0
+    }
+  })
 }
 
 async function searchProvidersWithoutRpc({
@@ -345,7 +416,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { query, city, specialty_id, visit_type, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  const { query, city, specialty_id, visit_type, sort, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
   if (!hasPublicSupabaseEnv()) {
     // Surface a real error instead of silently returning an empty list. The previous
     // 200 + [] fallback masked missing Supabase env so the UI showed "no results in
@@ -464,7 +535,7 @@ export async function GET(request: NextRequest) {
   const providerDetailsById = new Map<string, ProviderDetailRow>(detailRows.map((provider) => [provider.id, provider]))
   const now = Date.now()
 
-  const providers: ProviderCard[] = results.map((provider) => {
+  const providerCards = results.map((provider) => {
     const details = providerDetailsById.get(provider.id)
     const nextAvailableSlot = (details?.availabilities ?? [])
       .filter((slot) => {
@@ -478,25 +549,32 @@ export async function GET(request: NextRequest) {
     })
 
     return {
-      id: provider.id,
-      slug: provider.slug,
-      full_name: provider.full_name,
-      title: provider.title,
-      avatar_url: provider.avatar_url,
-      verified: details?.verified ?? false,
-      specialties: details?.specialties ?? [],
-      rating_avg: provider.rating_avg || 0,
-      rating_count: provider.rating_count || 0,
-      experience_years: provider.experience_years,
-      consultation_fee_inr: provider.consultation_fee_inr,
-      next_available_slot: nextAvailableSlot?.starts_at ?? null,
-      visit_types: provider.visit_types ?? [],
-      city: provider.city,
-      lat: publicCoordinates.lat,
-      lng: publicCoordinates.lng,
-      distance: formatPublicProviderDistance(provider.distance_km),
+      provider: {
+        id: provider.id,
+        slug: provider.slug,
+        full_name: provider.full_name,
+        title: provider.title,
+        avatar_url: provider.avatar_url,
+        verified: details?.verified ?? false,
+        specialties: details?.specialties ?? [],
+        rating_avg: provider.rating_avg || 0,
+        rating_count: provider.rating_count || 0,
+        experience_years: provider.experience_years,
+        consultation_fee_inr: provider.consultation_fee_inr,
+        next_available_slot: nextAvailableSlot?.starts_at ?? null,
+        availability_preview: buildAvailabilityPreview(details?.availabilities),
+        visit_types: provider.visit_types ?? [],
+        city: provider.city,
+        lat: publicCoordinates.lat,
+        lng: publicCoordinates.lng,
+        distance: formatPublicProviderDistance(provider.distance_km),
+      } satisfies ProviderCard,
+      nextAvailableTimestamp: nextAvailableSlot ? new Date(nextAvailableSlot.starts_at).getTime() : null,
+      distanceKm: provider.distance_km ?? null,
     }
   })
+
+  const providers: ProviderCard[] = sortProviders(providerCards, sort).map(({ provider }) => provider)
 
   const response: SearchResponse = {
     providers,

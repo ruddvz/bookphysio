@@ -60,9 +60,9 @@ export async function GET(request: NextRequest) {
     { count: patientsCount, error: patientsError },
     { data: appointments, error: appointmentsError },
   ] = await Promise.all([
-    supabase.from('providers').select('*', { count: 'exact', head: true }).eq('verified', true),
-    supabase.from('providers').select('*', { count: 'exact', head: true }).eq('verified', false),
-    supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'patient'),
+    supabase.from('providers').select('id', { count: 'exact', head: true }).eq('verified', true),
+    supabase.from('providers').select('id', { count: 'exact', head: true }).eq('verified', false),
+    supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'patient'),
     supabaseAdmin.from('appointments').select('fee_inr, status').eq('status', 'completed'),
   ])
 

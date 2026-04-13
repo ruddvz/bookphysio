@@ -66,18 +66,18 @@ export async function GET(request: NextRequest) {
   ] = await Promise.all([
     supabase
       .from('providers')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('verified', true)
       .eq('active', true),
 
     supabase
       .from('users')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('role', 'patient'),
 
     supabaseAdmin
       .from('appointments')
-      .select('*', { count: 'exact', head: true }),
+      .select('id', { count: 'exact', head: true }),
 
     // Sum of fees for completed appointments (all time)
     supabaseAdmin
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
 
     supabaseAdmin
       .from('appointments')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .in('status', ['completed', 'cancelled', 'no_show']),
 
     // Monthly GMV: completed appointments in the last 7 months

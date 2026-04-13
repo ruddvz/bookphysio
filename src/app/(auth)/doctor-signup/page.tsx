@@ -1259,7 +1259,7 @@ function Step5({ email, onBack }: Step5Props) {
       </p>
       <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
       <p className="text-[13px] text-gray-500 mb-6 leading-relaxed">
-        Click the link in the email to activate your account and access your provider dashboard.
+        Click the link in the email to activate your account. Once our team approves your credentials, you&apos;ll get access to the provider dashboard.
         Check your spam folder if you don&apos;t see it within a few minutes.
       </p>
 
