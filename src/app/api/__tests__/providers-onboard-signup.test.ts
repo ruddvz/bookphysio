@@ -250,14 +250,14 @@ describe('POST /api/providers/onboard-signup', () => {
     expect(providerUpsertMock).not.toHaveBeenCalled()
   })
 
-  it('keeps new providers inactive until they are verified', async () => {
+  it('keeps new providers unverified while activating them for search after onboarding', async () => {
     const { POST } = await import('../providers/onboard-signup/route')
     const response = await POST(buildRequest(buildValidPayload()))
 
     expect(response.status).toBe(201)
     expect(providerUpsertMock).toHaveBeenCalledWith(expect.objectContaining({
       verified: false,
-      active: false,
+      active: true,
     }))
   })
 })

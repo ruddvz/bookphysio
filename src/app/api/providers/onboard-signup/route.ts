@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
         specialty_ids: selectedIds,
         consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
         verified: false,
-        active: false,
+        active: true,
         onboarding_step: 4,
       })
       .select()
