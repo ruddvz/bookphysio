@@ -35,7 +35,12 @@ export async function generateMetadata({ params }: DoctorPageProps): Promise<Met
 
   return {
     title: `${name} — ${specialty} in ${city} | BookPhysio`,
-    description: `Book an appointment with ${name}, a verified ${specialty.toLowerCase()} in ${city}. ${provider.experience_years ? `${provider.experience_years}+ years of experience.` : ''} ${provider.rating_count > 0 ? `Rated ${(provider.rating_avg ?? 0).toFixed(1)}/5 by ${provider.rating_count} patients.` : ''} Book online now.`,
+    description: [
+      `Book an appointment with ${name}, a verified ${specialty.toLowerCase()} in ${city}.`,
+      provider.experience_years ? `${provider.experience_years}+ years of experience.` : null,
+      provider.rating_count > 0 ? `Rated ${(provider.rating_avg ?? 0).toFixed(1)}/5 by ${provider.rating_count} patients.` : null,
+      'Book online now.',
+    ].filter(Boolean).join(' '),
     openGraph: {
       title: `${name} — ${specialty} in ${city}`,
       description: `Book a session with ${name}. Verified ${specialty.toLowerCase()} on BookPhysio.in.`,

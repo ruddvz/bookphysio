@@ -68,7 +68,7 @@ function useCountdown(targetIso: string | undefined): string | null {
     if (!targetIso) return
     const update = () => setCountdown(formatCountdown(targetIso))
     update()
-    const id = setInterval(update, 60_000)
+    const id = setInterval(update, 10_000)
     return () => clearInterval(id)
   }, [targetIso])
 

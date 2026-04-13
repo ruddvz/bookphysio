@@ -138,7 +138,6 @@ export default function ProfileHero({
                 </div>
               </div>
 
-              {/* Languages spoken — placeholder for when provider data includes this field */}
             </div>
           </div>
         </div>

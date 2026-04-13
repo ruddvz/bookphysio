@@ -2,6 +2,22 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { sendAppointmentReminder } from '@/lib/resend'
 import { formatIndiaDateTime } from '@/lib/india-date'
 
+/** Reminder window boundaries: look for appointments starting this many hours from now. */
+const REMINDER_WINDOW_START_HOURS = 23
+const REMINDER_WINDOW_END_HOURS = 25
+
+/**
+ * Extracts the `starts_at` ISO string from an appointment's availability relation.
+ * Supabase returns the joined row as an object (single) or array (many).
+ */
+function extractStartsAt(availabilities: unknown): string | null {
+  const row = Array.isArray(availabilities) ? availabilities[0] : availabilities
+  if (row && typeof row === 'object' && 'starts_at' in row) {
+    return (row as { starts_at: string }).starts_at
+  }
+  return null
+}
+
 /**
  * POST /api/cron/appointment-reminders
  *
@@ -21,8 +37,8 @@ export async function POST(request: NextRequest) {
 
   // Find appointments starting 23-25 hours from now (1-hour window)
   const now = new Date()
-  const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000)
-  const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000)
+  const windowStart = new Date(now.getTime() + REMINDER_WINDOW_START_HOURS * 60 * 60 * 1000)
+  const windowEnd = new Date(now.getTime() + REMINDER_WINDOW_END_HOURS * 60 * 60 * 1000)
 
   const { data: appointments, error } = await supabaseAdmin
     .from('appointments')
@@ -75,13 +91,7 @@ export async function POST(request: NextRequest) {
 
     if (!patient?.email || !provider?.full_name) continue
 
-    const availability = Array.isArray(appointment.availabilities)
-      ? appointment.availabilities[0]
-      : appointment.availabilities
-    const startsAt = availability && typeof availability === 'object' && 'starts_at' in availability
-      ? (availability.starts_at as string)
-      : null
-
+    const startsAt = extractStartsAt(appointment.availabilities)
     if (!startsAt) continue
 
     const providerName = provider.full_name.startsWith('Dr.')
