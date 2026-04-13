@@ -152,7 +152,7 @@ describe('Homepage regressions', () => {
 
     expect(container.firstChild).toHaveClass('bg-transparent')
     expect(container.firstChild).toHaveClass('fixed')
-    expect(screen.getByRole('link', { name: /sports sciences/i })).toHaveAttribute('href', '/specialty/sports')
+    expect(screen.getByRole('link', { name: /sports sciences/i })).toHaveAttribute('href', '/specialties/sports')
 
     rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()

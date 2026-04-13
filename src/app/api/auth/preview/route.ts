@@ -2,6 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createPreviewToken, getPreviewTokenSigningSecret, isPublicPreviewGateEnabled } from '@/lib/preview/token'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { previewRatelimit } from '@/lib/upstash'
+import { z } from 'zod'
+
+const previewPasswordSchema = z.object({
+  password: z.string().min(1, 'Password is required').max(256),
+})
 
 function constantTimeEqual(left: string, right: string): boolean {
   if (left.length !== right.length) {
@@ -45,13 +50,13 @@ export async function POST(request: NextRequest) {
   let password: string
   try {
     const body = await request.json()
-    password = typeof body.password === 'string' ? body.password : ''
+    const parsed = previewPasswordSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Password is required' }, { status: 400 })
+    }
+    password = parsed.data.password
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
-  }
-
-  if (!password) {
-    return NextResponse.json({ error: 'Password is required' }, { status: 400 })
   }
 
   const match = constantTimeEqual(password, secret)

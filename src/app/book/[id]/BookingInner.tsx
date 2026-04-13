@@ -32,6 +32,9 @@ interface PatientDetails {
   email: string
   reason: string
   homeVisitAddress: string
+  painLocation: string
+  painSeverity: number
+  painDuration: string
 }
 
 interface BookingResult {

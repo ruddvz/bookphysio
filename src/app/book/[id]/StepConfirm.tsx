@@ -5,21 +5,15 @@ import { User, Mail, FileText, ChevronRight, ShieldCheck, Sparkles, Activity, Ch
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 
-const PAIN_LOCATIONS = [
-  'Lower Back', 'Upper Back', 'Neck', 'Shoulder', 'Knee',
-  'Hip', 'Ankle/Foot', 'Wrist/Hand', 'Elbow', 'Other',
-]
-
-const PAIN_DURATIONS = [
-  'Less than a week', '1–4 weeks', '1–3 months', '3–6 months', '6+ months',
-]
-
 interface PatientDetails {
   fullName: string
   phone: string
   email: string
   reason: string
   homeVisitAddress: string
+  painLocation: string
+  painSeverity: number
+  painDuration: string
 }
 
 interface StepConfirmProps {
@@ -56,16 +50,16 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-
-    // Compose structured reason from questionnaire + free-text
-    const parts: string[] = []
-    if (painLocation) parts.push(`Location: ${painLocation}`)
-    if (painSeverityTouched) parts.push(`Severity: ${painSeverity}/10`)
-    if (painDuration) parts.push(`Duration: ${painDuration}`)
-    if (reason.trim()) parts.push(reason.trim())
-    const composedReason = parts.join(' | ')
-
-    onNext({ fullName, phone: `+91${phone}`, email, reason: composedReason, homeVisitAddress })
+    onNext({
+      fullName,
+      phone: `+91${phone}`,
+      email,
+      reason,
+      homeVisitAddress,
+      painLocation,
+      painSeverity: painSeverityTouched ? painSeverity : -1,
+      painDuration,
+    })
   }
 
   return (
@@ -178,21 +172,21 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
             <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
               <Mail size={20} className="text-bp-body/30 group-focus-within:text-bp-accent transition-all duration-500" />
             </div>
-             <input
-               type="email"
-               value={email}
-               onChange={(e) => setEmail(e.target.value)}
-               placeholder="patient@medical.secure"
-               aria-invalid={!!errors.email}
-               className={cn(
-                 "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
-                 errors.email 
-                    ? "border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]" 
-                    : "border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_20px_40px_-10px_rgba(0,118,108,0.1)]"
-               )}
-             />
-           </div>
-           {errors.email && <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="patient@medical.secure"
+              aria-invalid={!!errors.email}
+              className={cn(
+                "w-full bg-white rounded-[24px] border-2 pl-14 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 placeholder:text-gray-200",
+                errors.email 
+                   ? "border-red-100 focus:border-red-500 bg-red-50/10 shadow-[0_20px_40px_-10px_rgba(239,68,68,0.05)]" 
+                   : "border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_20px_40px_-10px_rgba(0,118,108,0.1)]"
+              )}
+            />
+          </div>
+          {errors.email && <p role="alert" className="text-[12px] font-bold text-red-500 ml-6 tracking-tight animate-in slide-in-from-top-2">{errors.email}</p>}
         </div>
 
         {requiresHomeVisitAddress ? (
@@ -226,95 +220,103 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
           </div>
         ) : null}
 
-        {/* Pre-visit Questionnaire (Structured) */}
-        <div className="space-y-6">
+        {/* Reason for visit */}
+        <div className="space-y-4 group">
           <div className="flex items-center justify-between px-1">
-            <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Pre-Visit Questionnaire</label>
-            <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+             <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Clinical Concerns & Focus</label>
+             <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
           </div>
-
-          {/* Pain Location */}
-          <div className="space-y-3">
-            <label className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block px-1">Where does it hurt?</label>
-            <div className="flex flex-wrap gap-2">
-              {PAIN_LOCATIONS.map((loc) => (
-                <button
-                  key={loc}
-                  type="button"
-                  onClick={() => setPainLocation(painLocation === loc ? '' : loc)}
-                  className={cn(
-                    "px-4 py-2.5 rounded-full text-[13px] font-bold border-2 transition-all duration-300 active:scale-95",
-                    painLocation === loc
-                      ? "bg-bp-accent text-white border-bp-accent shadow-sm"
-                      : "bg-white text-bp-body/60 border-bp-border hover:border-bp-accent/30 hover:text-bp-accent"
-                  )}
-                >
-                  {loc}
-                </button>
-              ))}
+          <div className="relative">
+            <div className="absolute top-6 left-6 pointer-events-none">
+              <FileText size={20} className="text-bp-body/30 group-focus-within:text-bp-accent transition-all duration-500" />
             </div>
-          </div>
-
-          {/* Pain Severity */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <label id="severity-label" className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block">Pain severity (0–10)</label>
-              <span className="text-[14px] font-bold text-bp-accent">{painSeverity > 0 ? painSeverity : '—'}</span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              step={1}
-              value={painSeverity}
-              aria-labelledby="severity-label"
-              onChange={(e) => { setPainSeverity(Number(e.target.value)); setPainSeverityTouched(true) }}
-              className="w-full accent-[#00766C] cursor-pointer"
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={500}
+              placeholder="Detail your primary symptoms or goals for this session..."
+              rows={4}
+              className="w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)] placeholder:text-gray-200 leading-[1.8]"
             />
-            <div className="flex justify-between text-[10px] font-bold text-bp-body/30 uppercase tracking-widest px-1">
-              <span>No pain</span>
-              <span>Severe</span>
-            </div>
           </div>
+        </div>
 
-          {/* Pain Duration */}
-          <div className="space-y-3">
-            <label className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block px-1">How long have you had this issue?</label>
-            <div className="flex flex-wrap gap-2">
-              {PAIN_DURATIONS.map((dur) => (
-                <button
-                  key={dur}
-                  type="button"
-                  onClick={() => setPainDuration(painDuration === dur ? '' : dur)}
-                  className={cn(
-                    "px-4 py-2.5 rounded-full text-[13px] font-bold border-2 transition-all duration-300 active:scale-95",
-                    painDuration === dur
-                      ? "bg-bp-accent text-white border-bp-accent shadow-sm"
-                      : "bg-white text-bp-body/60 border-bp-border hover:border-bp-accent/30 hover:text-bp-accent"
-                  )}
-                >
-                  {dur}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Additional Notes */}
+        {/* Pre-visit Questionnaire */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3 group">
-            <label className="text-[11px] font-bold text-bp-body/50 uppercase tracking-widest block px-1">Additional notes</label>
-            <div className="relative">
-              <div className="absolute top-6 left-6 pointer-events-none">
-                <FileText size={20} className="text-bp-body/30 group-focus-within:text-bp-accent transition-all duration-500" />
-              </div>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                maxLength={500}
-                placeholder="Any other symptoms, past treatments, or goals for this session..."
-                rows={3}
-                className="w-full bg-white rounded-[32px] border-2 pl-16 pr-6 py-6 text-[18px] font-bold outline-none transition-all duration-500 resize-none border-bp-border focus:border-bp-accent focus:bg-bp-accent/10/5 focus:shadow-[0_32px_64px_-16px_rgba(0,118,108,0.1)] placeholder:text-gray-200 leading-[1.8]"
-              />
+            <div className="flex items-center justify-between px-1">
+              <label htmlFor="pain-location" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+                Pain / Condition Area
+              </label>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
             </div>
+            <select
+              id="pain-location"
+              value={painLocation}
+              onChange={(e) => setPainLocation(e.target.value)}
+              className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
+            >
+              <option value="">Select area</option>
+              <option value="neck">Neck</option>
+              <option value="shoulder">Shoulder</option>
+              <option value="upper_back">Upper Back</option>
+              <option value="lower_back">Lower Back</option>
+              <option value="hip">Hip</option>
+              <option value="knee">Knee</option>
+              <option value="ankle_foot">Ankle / Foot</option>
+              <option value="wrist_hand">Wrist / Hand</option>
+              <option value="elbow">Elbow</option>
+              <option value="full_body">Full Body / General</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div className="space-y-3 group">
+            <div className="flex items-center justify-between px-1">
+              <label htmlFor="pain-duration" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
+                How Long Have You Had This?
+              </label>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+            </div>
+            <select
+              id="pain-duration"
+              value={painDuration}
+              onChange={(e) => setPainDuration(e.target.value)}
+              className="w-full bg-white rounded-[24px] border-2 px-6 py-6 text-[16px] font-bold outline-none transition-all duration-500 border-bp-border focus:border-bp-accent appearance-none cursor-pointer"
+            >
+              <option value="">Select duration</option>
+              <option value="less_than_week">Less than a week</option>
+              <option value="1_4_weeks">1–4 weeks</option>
+              <option value="1_3_months">1–3 months</option>
+              <option value="3_6_months">3–6 months</option>
+              <option value="6_plus_months">6+ months</option>
+              <option value="recurring">Recurring / On and off</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Pain Severity Slider */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <label id="severity-label" className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">Pain Severity (0–10)</label>
+            <div className="flex items-center gap-3">
+              <span className="text-[14px] font-bold text-bp-accent">{painSeverityTouched ? painSeverity : '—'}</span>
+              <div className="w-10 h-6 bg-bp-surface rounded-full flex items-center justify-center text-[10px] font-bold text-bp-body/30">OPT</div>
+            </div>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={10}
+            step={1}
+            value={painSeverity}
+            aria-labelledby="severity-label"
+            onChange={(e) => { setPainSeverity(Number(e.target.value)); setPainSeverityTouched(true) }}
+            className="w-full accent-[#00766C] cursor-pointer"
+          />
+          <div className="flex justify-between text-[10px] font-bold text-bp-body/30 uppercase tracking-widest px-1">
+            <span>No pain</span>
+            <span>Severe</span>
           </div>
         </div>
 

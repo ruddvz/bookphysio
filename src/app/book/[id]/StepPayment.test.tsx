@@ -37,6 +37,9 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: 'Knee pain',
           homeVisitAddress: '',
+          painLocation: '',
+          painSeverity: -1,
+          painDuration: '',
         }}
         onBack={() => {}}
         onSuccess={onSuccess}
@@ -50,7 +53,7 @@ describe('StepPayment', () => {
     })
 
     expect(onSuccess).not.toHaveBeenCalled()
-    expect(screen.getByText(/sign in to confirm your booking/i)).toBeInTheDocument()
+    expect(screen.getByText(/sign in to complete your booking/i)).toBeInTheDocument()
   })
 
   it('includes the patient home address when confirming a home visit', async () => {
@@ -75,6 +78,9 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: 'Post-op recovery',
           homeVisitAddress: '12 Palm Street, Bengaluru',
+          painLocation: 'knee',
+          painSeverity: 7,
+          painDuration: '1_3_months',
         }}
         onBack={() => {}}
         onSuccess={() => {}}
@@ -115,6 +121,9 @@ describe('StepPayment', () => {
           email: 'aarav@example.com',
           reason: '   ',
           homeVisitAddress: '',
+          painLocation: '',
+          painSeverity: -1,
+          painDuration: '',
         }}
         onBack={() => {}}
         onSuccess={() => {}}

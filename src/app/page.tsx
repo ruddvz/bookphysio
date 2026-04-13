@@ -1,4 +1,27 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
+
+export const metadata: Metadata = {
+  title: 'BookPhysio.in — Book Verified Physiotherapists in India',
+  description:
+    'Find and book IAP-verified physiotherapists for in-clinic or home visit sessions across India. Compare providers, check real availability, and book in 60 seconds.',
+  alternates: { canonical: 'https://bookphysio.in' },
+  openGraph: {
+    title: 'BookPhysio.in — Book Verified Physiotherapists in India',
+    description:
+      'Find and book IAP-verified physiotherapists for in-clinic or home visit sessions across India.',
+    url: 'https://bookphysio.in',
+    siteName: 'BookPhysio.in',
+    locale: 'en_IN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BookPhysio.in — Book Verified Physiotherapists',
+    description:
+      'Find and book IAP-verified physiotherapists across India. In-clinic or home visits.',
+  },
+}
 import HeroSection from '@/components/HeroSection'
 import ProofSection from '@/components/ProofSection'
 import TopSpecialties from '@/components/TopSpecialties'
@@ -7,8 +30,10 @@ import HealthSystems from '@/components/HealthSystems'
 import ProviderCTA from '@/components/ProviderCTA'
 import Testimonials from '@/components/Testimonials'
 import FAQ from '@/components/FAQ'
+import CityQuickSearch from '@/components/CityQuickSearch'
 import CityLinks from '@/components/CityLinks'
 import Footer from '@/components/Footer'
+import SectionErrorBoundary from '@/components/SectionErrorBoundary'
 
 const organizationSchema = {
   '@context': 'https://schema.org',
@@ -70,13 +95,22 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        <ProofSection />
-        <TopSpecialties />
+        <SectionErrorBoundary fallbackTitle="Couldn't load the provider showcase">
+          <ProofSection />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary fallbackTitle="Couldn't load specialties">
+          <TopSpecialties />
+        </SectionErrorBoundary>
         <HowItWorks />
-        <HealthSystems />
+        <SectionErrorBoundary fallbackTitle="Couldn't load health systems">
+          <HealthSystems />
+        </SectionErrorBoundary>
         <ProviderCTA />
-        <Testimonials />
+        <SectionErrorBoundary fallbackTitle="Couldn't load testimonials">
+          <Testimonials />
+        </SectionErrorBoundary>
         <FAQ />
+        <CityQuickSearch />
         <CityLinks />
       </main>
       <Footer />
