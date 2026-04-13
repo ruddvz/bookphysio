@@ -24,8 +24,13 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ alt = '', ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => <img alt={alt} {...props} />,
+  default: ({ alt = '', ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      {...props}
+      alt={alt}
+    />
+  ),
 }))
 
 vi.mock('@/context/AuthContext', () => ({
@@ -78,6 +83,28 @@ describe('TopPillNav', () => {
 
     expect(screen.getByRole('link', { name: 'Notifications' })).not.toHaveClass('hidden')
     expect(screen.getByRole('link', { name: 'Messages' })).not.toHaveClass('hidden')
+  })
+
+  it('falls back to initials when the profile avatar request fails', async () => {
+    render(
+      <TopPillNav
+        role="patient"
+        items={[
+          { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+        ]}
+        profileHref="/patient/profile"
+        roleLabel="Patient"
+      >
+        <div>Dashboard content</div>
+      </TopPillNav>
+    )
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    expect(screen.getByText('AK')).toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: 'Aarav Kapoor' })).not.toBeInTheDocument()
   })
 
   it('clears a stale avatar when the next profile has no avatar image', async () => {
