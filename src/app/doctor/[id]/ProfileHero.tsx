@@ -147,7 +147,7 @@ export default function ProfileHero({
           <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Sparkles size={22} strokeWidth={2.5} /></div>
             <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Experience</p>
-            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.experience_years ?? 5}+ <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">Years</span></p>
+            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.experience_years != null ? `${provider.experience_years}+` : 'N/A'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.experience_years != null ? 'Years' : ''}</span></p>
           </div>
           <div className="bg-[#FBFCFD] p-6 rounded-2xl border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Building2 size={22} strokeWidth={2.5} /></div>

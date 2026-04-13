@@ -235,6 +235,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                aria-label="Sort results"
                 className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
               >
                 <option value="relevance">Sort: Relevance</option>

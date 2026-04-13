@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 
 /**
  * GET /api/reviews/recent — publicly cacheable feed of latest published reviews
  * for the homepage Testimonials section.
  */
 export async function GET() {
+  if (!hasPublicSupabaseEnv()) {
+    return NextResponse.json({ reviews: [] }, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
+    })
+  }
+
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
 
   const { data, error } = await supabase

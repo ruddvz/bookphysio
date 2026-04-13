@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
 
-  // Find appointments completed 20-28 hours ago (window to avoid duplicates)
+  // Find appointments that ended 20-28 hours ago (based on availability ends_at)
   const now = new Date()
   const windowStart = new Date(now.getTime() - REVIEW_WINDOW_START_HOURS * 60 * 60 * 1000)
   const windowEnd = new Date(now.getTime() - REVIEW_WINDOW_END_HOURS * 60 * 60 * 1000)
@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
       availabilities (starts_at, ends_at)
     `)
     .eq('status', 'completed')
-    .gte('updated_at', windowStart.toISOString())
-    .lte('updated_at', windowEnd.toISOString())
+    .gte('availabilities.ends_at', windowStart.toISOString())
+    .lte('availabilities.ends_at', windowEnd.toISOString())
 
   if (error) {
     console.error('[cron/review-prompts] Query error:', error)
@@ -53,10 +53,15 @@ export async function POST(request: NextRequest) {
 
   // Filter out appointments that already have a review
   const appointmentIds = appointments.map((a) => a.id)
-  const { data: existingReviews } = await supabaseAdmin
+  const { data: existingReviews, error: reviewsError } = await supabaseAdmin
     .from('reviews')
     .select('appointment_id')
     .in('appointment_id', appointmentIds)
+
+  if (reviewsError) {
+    console.error('[cron/review-prompts] Reviews lookup error:', reviewsError)
+    return NextResponse.json({ error: 'Failed to check existing reviews' }, { status: 500 })
+  }
 
   const reviewedIds = new Set((existingReviews ?? []).map((r) => r.appointment_id))
   const unreviewedAppointments = appointments.filter((a) => !reviewedIds.has(a.id))
@@ -69,7 +74,10 @@ export async function POST(request: NextRequest) {
   const patientIds = [...new Set(unreviewedAppointments.map((a) => a.patient_id).filter(Boolean))]
   const providerIds = [...new Set(unreviewedAppointments.map((a) => a.provider_id).filter(Boolean))]
 
-  const [{ data: patients }, { data: providers }] = await Promise.all([
+  const [
+    { data: patients, error: patientsError },
+    { data: providers, error: providersError },
+  ] = await Promise.all([
     supabaseAdmin
       .from('users')
       .select('id, full_name, email')
@@ -79,6 +87,11 @@ export async function POST(request: NextRequest) {
       .select('id, full_name')
       .in('id', providerIds),
   ])
+
+  if (patientsError || providersError) {
+    console.error('[cron/review-prompts] User lookup error:', { patientsError, providersError })
+    return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 })
+  }
 
   const patientMap = new Map((patients ?? []).map((p) => [p.id, p]))
   const providerMap = new Map((providers ?? []).map((p) => [p.id, p]))
@@ -96,9 +109,7 @@ export async function POST(request: NextRequest) {
       await sendReviewPrompt({
         to: patient.email,
         patientName: patient.full_name ?? 'there',
-        providerName: provider.full_name.startsWith('Dr.')
-          ? provider.full_name
-          : `Dr. ${provider.full_name}`,
+        providerName: provider.full_name,
         appointmentId: appointment.id,
       })
       sent++

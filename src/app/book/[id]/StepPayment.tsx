@@ -100,6 +100,12 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
     setLoading(true)
 
     try {
+      const noteParts: string[] = []
+      if (patient.reason.trim()) noteParts.push(patient.reason.trim())
+      if (patient.painLocation) noteParts.push(`Pain area: ${patient.painLocation}`)
+      if (patient.painDuration) noteParts.push(`Duration: ${patient.painDuration}`)
+      const combinedNotes = noteParts.join(' | ')
+
       const apptRes = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -109,7 +115,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
           ...(locationId ? { location_id: locationId } : {}),
           visit_type: visitType,
           patient_address: visitType === 'home_visit' ? patient.homeVisitAddress : undefined,
-          ...(patient.reason.trim() ? { notes: patient.reason.trim() } : {}),
+          ...(combinedNotes ? { notes: combinedNotes } : {}),
         }),
       })
 

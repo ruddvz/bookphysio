@@ -59,7 +59,7 @@ export default function CredentialsSection({
               <Award size={20} strokeWidth={3} />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">Listed Qualification</p>
+              <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">Professional Title</p>
               <p className="text-[16px] font-bold text-bp-primary">{provider.title ?? 'Physiotherapist'}</p>
               <p className="text-[14px] font-medium text-bp-body/40 mt-1 italic">Additional academic details may be shared by the provider during consultation.</p>
             </div>

@@ -162,7 +162,12 @@ export default function PatientDashboardHome() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'cancel' }),
       })
-      if (!res.ok) throw new Error('Cancel failed')
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string }
+        if (res.status === 429) throw new Error('Too many requests. Please try again in a minute.')
+        if (res.status === 409) throw new Error(body.error ?? 'This appointment can no longer be cancelled.')
+        throw new Error(body.error ?? 'Cancel failed. Please try again.')
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patient-appointments-dashboard'] })
@@ -331,6 +336,11 @@ export default function PatientDashboardHome() {
                   <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 animate-in slide-in-from-top-2 duration-200">
                     <p className="text-[14px] font-bold text-red-700 mb-1">Cancel this appointment?</p>
                     <p className="text-[12px] text-red-600/70 mb-3">This action cannot be undone.</p>
+                    {cancelMut.isError && (
+                      <p className="text-[12px] font-semibold text-red-700 bg-red-100 rounded-lg px-3 py-2 mb-3">
+                        {cancelMut.error instanceof Error ? cancelMut.error.message : 'Cancel failed. Please try again.'}
+                      </p>
+                    )}
                     <div className="flex gap-3">
                       <button
                         type="button"

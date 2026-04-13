@@ -4,7 +4,7 @@ import { formatIndiaDateTime } from '@/lib/india-date'
 
 /** Reminder window boundaries: look for appointments starting this many hours from now. */
 const REMINDER_WINDOW_START_HOURS = 23
-const REMINDER_WINDOW_END_HOURS = 25
+const REMINDER_WINDOW_END_HOURS = 24
 
 /**
  * Extracts the `starts_at` ISO string from an appointment's availability relation.
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const { supabaseAdmin } = await import('@/lib/supabase/admin')
 
-  // Find appointments starting 23-25 hours from now (1-hour window)
+  // Find appointments starting 23-24 hours from now (1-hour window)
   const now = new Date()
   const windowStart = new Date(now.getTime() + REMINDER_WINDOW_START_HOURS * 60 * 60 * 1000)
   const windowEnd = new Date(now.getTime() + REMINDER_WINDOW_END_HOURS * 60 * 60 * 1000)
@@ -68,7 +68,10 @@ export async function POST(request: NextRequest) {
   const patientIds = [...new Set(appointments.map((a) => a.patient_id).filter(Boolean))]
   const providerIds = [...new Set(appointments.map((a) => a.provider_id).filter(Boolean))]
 
-  const [{ data: patients }, { data: providers }] = await Promise.all([
+  const [
+    { data: patients, error: patientsError },
+    { data: providers, error: providersError },
+  ] = await Promise.all([
     supabaseAdmin
       .from('users')
       .select('id, full_name, email')
@@ -78,6 +81,11 @@ export async function POST(request: NextRequest) {
       .select('id, full_name')
       .in('id', providerIds),
   ])
+
+  if (patientsError || providersError) {
+    console.error('[cron/appointment-reminders] User lookup error:', { patientsError, providersError })
+    return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 })
+  }
 
   const patientMap = new Map((patients ?? []).map((p) => [p.id, p]))
   const providerMap = new Map((providers ?? []).map((p) => [p.id, p]))
@@ -94,9 +102,7 @@ export async function POST(request: NextRequest) {
     const startsAt = extractStartsAt(appointment.availabilities)
     if (!startsAt) continue
 
-    const providerName = provider.full_name.startsWith('Dr.')
-      ? provider.full_name
-      : `Dr. ${provider.full_name}`
+    const providerName = provider.full_name
 
     try {
       await sendAppointmentReminder({

@@ -97,11 +97,8 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
       : firstDayWithSlots
         ? `${firstDayWithSlots.label}, ${firstDayWithSlots.dateLabel}`
         : 'No slots'
-  const slotsRemainingToday = availability[0]?.slots.length ?? 0
-
-  // Deterministic social proof number based on doctor ID
-  const socialProofSeed = doctor.id.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
-  const bookedThisWeek = (socialProofSeed % 15) + 5 // 5-19 bookings
+  const todayDay = availability.find((day) => day.label === 'Today')
+  const slotsRemainingToday = todayDay?.slots.length ?? 0
 
   const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -226,9 +223,9 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                   {nextAvailableLabel}{doctor.nextSlot ? ` at ${doctor.nextSlot}` : ''}
                 </p>
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">
-                  {slotsRemainingToday > 0
+                  {todayDay && slotsRemainingToday > 0
                     ? `Only ${slotsRemainingToday} slot${slotsRemainingToday > 1 ? 's' : ''} left today`
-                    : 'Fast-filling slot'}
+                    : 'Check available slots'}
                 </p>
               </div>
             </div>
@@ -237,9 +234,11 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Consult fee</p>
                 <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">₹{doctor.fee}</p>
-                <p className="mt-0.5 text-[11px] font-semibold text-bp-body/40">
-                  {bookedThisWeek} patients booked this week
-                </p>
+                {doctor.icpVerified && (
+                  <p className="mt-0.5 text-[11px] font-semibold text-bp-body/40">
+                    ICP verified provider
+                  </p>
+                )}
               </div>
 
               <button
