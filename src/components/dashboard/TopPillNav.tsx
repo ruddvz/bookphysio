@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
@@ -76,6 +77,8 @@ export default function TopPillNav({
     borderColor: `var(--color-${prefix}-border)`,
   }
 
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
   const displayName =
     (user?.user_metadata?.full_name as string | undefined) ??
     user?.phone ??
@@ -90,6 +93,19 @@ export default function TopPillNav({
   useEffect(() => {
     setGreeting(getGreeting())
   }, [])
+
+  // Fetch avatar_url from profile API (avatar is stored in users table, not auth metadata)
+  useEffect(() => {
+    if (!user?.id) return
+    let cancelled = false
+    fetch('/api/profile')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { avatar_url?: string | null } | null) => {
+        if (!cancelled && data?.avatar_url) setAvatarUrl(data.avatar_url)
+      })
+      .catch(() => {/* ignore — fallback to initials */})
+    return () => { cancelled = true }
+  }, [user?.id])
 
   const handleSignOut = async () => {
     try {
@@ -211,11 +227,21 @@ export default function TopPillNav({
               </div>
               <div
                 className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center text-white text-[13px] font-bold shadow-md shrink-0',
+                  'w-10 h-10 rounded-full flex items-center justify-center text-white text-[13px] font-bold shadow-md shrink-0 overflow-hidden',
                   avatarClass
                 )}
               >
-                {initials}
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={displayName}
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  initials
+                )}
               </div>
             </Link>
 
