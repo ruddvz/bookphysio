@@ -207,11 +207,10 @@ function sortProviders(
   }>,
   sort: SearchSort | undefined,
 ) {
+  if (!sort || sort === 'relevance') return providers
+
   return providers.slice().sort((left, right) => {
     switch (sort) {
-      case undefined:
-      case 'relevance':
-        return 0
       case 'availability': {
         const leftValue = left.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER
         const rightValue = right.nextAvailableTimestamp ?? Number.MAX_SAFE_INTEGER
