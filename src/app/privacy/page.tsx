@@ -1,6 +1,22 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ShieldCheck, Lock, Sparkles } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy — BookPhysio.in',
+  description:
+    'How BookPhysio.in collects, uses, and protects your personal and health information. Compliant with Indian data protection laws.',
+  alternates: { canonical: 'https://bookphysio.in/privacy' },
+  openGraph: {
+    title: 'Privacy Policy — BookPhysio.in',
+    description: 'How BookPhysio.in handles your personal and health data.',
+    url: 'https://bookphysio.in/privacy',
+    siteName: 'BookPhysio.in',
+    locale: 'en_IN',
+    type: 'website',
+  },
+}
 
 const SECTIONS = [
   { id: 'about', label: '1. About this policy' },

@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getDemoProfileById, getDemoSessionFromCookies } from '@/lib/demo/session'
+import { mutationRatelimit } from '@/lib/upstash'
 import { z } from 'zod'
 
 const avatarUrlSchema = z.string().url().max(2048).refine((value) => {
@@ -136,6 +137,15 @@ export async function PATCH(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  try {
+    const { success } = await mutationRatelimit.limit(`profile:${user.id}`)
+    if (!success) {
+      return NextResponse.json({ error: 'Too many updates. Please wait before trying again.' }, { status: 429 })
+    }
+  } catch {
+    // Rate limiter unavailable — allow through
+  }
 
   let body: unknown
 

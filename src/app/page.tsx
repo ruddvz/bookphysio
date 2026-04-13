@@ -1,4 +1,27 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
+
+export const metadata: Metadata = {
+  title: 'BookPhysio.in — Book Verified Physiotherapists in India',
+  description:
+    'Find and book IAP-verified physiotherapists for in-clinic or home visit sessions across India. Compare providers, check real availability, and book in 60 seconds.',
+  alternates: { canonical: 'https://bookphysio.in' },
+  openGraph: {
+    title: 'BookPhysio.in — Book Verified Physiotherapists in India',
+    description:
+      'Find and book IAP-verified physiotherapists for in-clinic or home visit sessions across India.',
+    url: 'https://bookphysio.in',
+    siteName: 'BookPhysio.in',
+    locale: 'en_IN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BookPhysio.in — Book Verified Physiotherapists',
+    description:
+      'Find and book IAP-verified physiotherapists across India. In-clinic or home visits.',
+  },
+}
 import HeroSection from '@/components/HeroSection'
 import ProofSection from '@/components/ProofSection'
 import TopSpecialties from '@/components/TopSpecialties'

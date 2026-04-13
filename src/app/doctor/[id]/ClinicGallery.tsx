@@ -36,8 +36,8 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
                ))}
             </div>
             <div className="flex gap-2">
-               <button onClick={prev} className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-all"><ChevronLeft size={20} /></button>
-               <button onClick={next} className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
+               <button onClick={prev} aria-label="Previous image" className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-all"><ChevronLeft size={20} /></button>
+               <button onClick={next} aria-label="Next image" className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
             </div>
          </div>
       </div>
@@ -64,7 +64,7 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
                <ImageIcon size={18} />
                <span className="text-[13px] font-bold uppercase tracking-widest">{index + 1} / {galleryImages.length} View</span>
             </div>
-            <button className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
+            <button aria-label="View fullscreen" className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
                <Maximize2 size={20} />
             </button>
          </div>
