@@ -344,7 +344,7 @@ export async function POST(request: NextRequest) {
   // For now, all bookings default to pay_at_clinic (gateway-based online payment
   // will create a separate 'razorpay' record via the payments/create-order flow).
   const gstAmountInr = Math.round(feeInr * 0.18)
-  supabaseAdmin
+  const { error: paymentError } = await supabaseAdmin
     .from('payments')
     .insert({
       appointment_id: appointment.id,
@@ -353,11 +353,12 @@ export async function POST(request: NextRequest) {
       status: 'created',
       gateway: 'pay_at_clinic',
     })
-    .then(({ error: paymentError }) => {
-      if (paymentError) {
-        console.error('[api/appointments] Failed to create pay_at_clinic payment record:', paymentError)
-      }
-    })
+
+  if (paymentError) {
+    console.error('[api/appointments] Failed to create pay_at_clinic payment record:', paymentError)
+    // Payment record failure is not user-facing — the appointment is valid.
+    // Log and continue so ops can reconcile manually.
+  }
 
   return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
 }

@@ -10,10 +10,6 @@ export function createClient() {
     )
   }
 
-  if (!url || !key) {
-    console.warn('Supabase credentials missing. Auth features will be disabled.')
-  }
-
   return createBrowserClient(
     url || 'https://placeholder.supabase.co',
     key || 'placeholder-anon-key'

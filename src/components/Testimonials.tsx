@@ -107,12 +107,13 @@ function PromiseCards() {
 }
 
 export default function Testimonials() {
-  const { data } = useSWR<RecentReviewsResponse>('/api/reviews/recent', fetcher, {
+  const { data, error: fetchError } = useSWR<RecentReviewsResponse>('/api/reviews/recent', fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 60_000,
   })
 
-  const hasReviews = data?.reviews && data.reviews.length > 0
+  // Show live reviews when available, otherwise fall back to platform promises
+  const hasReviews = !fetchError && data?.reviews && data.reviews.length > 0
 
   return (
     <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label={hasReviews ? 'Patient reviews' : 'Platform promises'}>
