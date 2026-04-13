@@ -30,7 +30,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   const provider = result.provider
-  const name = provider.full_name.startsWith('Dr.') ? provider.full_name : `Dr. ${provider.full_name}`
+  const titlePrefix = provider.title ?? 'Dr.'
+  const name = provider.full_name.startsWith(titlePrefix) ? provider.full_name : `${titlePrefix} ${provider.full_name}`
   const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
   const city = provider.city ?? 'India'
   const title = `${name} — ${specialty} in ${city} | BookPhysio.in`

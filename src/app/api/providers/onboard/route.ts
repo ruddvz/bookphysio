@@ -146,8 +146,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 1. Activate the user as a provider immediately so they can enter the
-    // provider portal after OTP verification and manage their live profile.
+    // 1. Mark the user as provider_pending. They cannot access the provider
+    // portal until an admin approves the listing (sets role → 'provider').
     const { error: userError } = await supabaseAdmin
       .from('users')
       .update({

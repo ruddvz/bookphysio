@@ -112,7 +112,7 @@ export default function ProofSection() {
                     <ShieldCheck size={14} className="text-indigo-400 shrink-0" />
                   </div>
                   <div className="text-[13px] text-slate-500">
-                    {specialty} · {provider.city}
+                    {specialty}{provider.city ? ` · ${provider.city}` : ''}
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     {'★★★★★'.split('').map((s, i) => (
