@@ -147,6 +147,33 @@ export default function PatientDashboardHome() {
     }
   }, [hasAppointmentsAccessError, hasRecordsAccessError, queryClient])
 
+  const records = data?.records ?? []
+  const appointments = appointmentData?.appointments ?? []
+  const nextAppointment = getNextAppointment(appointments)
+  const nextStartsAt = nextAppointment?.availabilities?.starts_at
+  const countdown = useCountdown(nextStartsAt)
+  const [confirmCancel, setConfirmCancel] = useState(false)
+
+  const cancelMut = useMutation({
+    mutationFn: async () => {
+      if (!nextAppointment) return
+      const res = await fetch(`/api/appointments/${nextAppointment.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel' }),
+      })
+      if (!res.ok) throw new Error('Cancel failed')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments-dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments'] })
+      setConfirmCancel(false)
+    },
+  })
+
+  const handleCancelClick = useCallback(() => setConfirmCancel(true), [])
+  const handleKeep = useCallback(() => setConfirmCancel(false), [])
+
   if (hasRecordsError || hasAppointmentsError) {
     return (
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
@@ -172,42 +199,16 @@ export default function PatientDashboardHome() {
 
   if (isLoading || areAppointmentsLoading) return <DashboardSkeleton />
 
-  const records = data?.records ?? []
-  const appointments = appointmentData?.appointments ?? []
   const recent = records.slice(0, 5)
   const uniqueProviders = new Set(records.map((r) => r.provider_name)).size
   const lastVisit = records[0] ?? null
   const upcomingAppointments = appointments.filter(isUpcomingAppointment)
   const upcomingCount = upcomingAppointments.length
-  const nextAppointment = getNextAppointment(appointments)
   const latestSummaryCount = records.filter((record) => Boolean(record.patient_summary)).length
   const latestSpecialty = nextAppointment?.providers?.specialties?.[0]?.name ?? null
-  const nextStartsAt = nextAppointment?.availabilities?.starts_at
-  const countdown = useCountdown(nextStartsAt)
   const canCancelNext = nextAppointment
     ? canPatientCancelAppointment(nextAppointment.status, nextStartsAt)
     : false
-  const [confirmCancel, setConfirmCancel] = useState(false)
-
-  const cancelMut = useMutation({
-    mutationFn: async () => {
-      if (!nextAppointment) return
-      const res = await fetch(`/api/appointments/${nextAppointment.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'cancel' }),
-      })
-      if (!res.ok) throw new Error('Cancel failed')
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['patient-appointments-dashboard'] })
-      queryClient.invalidateQueries({ queryKey: ['patient-appointments'] })
-      setConfirmCancel(false)
-    },
-  })
-
-  const handleCancelClick = useCallback(() => setConfirmCancel(true), [])
-  const handleKeep = useCallback(() => setConfirmCancel(false), [])
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">

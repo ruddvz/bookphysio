@@ -111,7 +111,7 @@ export default function Footer({
             {locale && localeSwitchPath ? (
               <LocaleSwitcher locale={locale} path={localeSwitchPath} />
             ) : null}
-            <span className="text-slate-600 text-[12px]">© 2026 BookPhysio.in</span>
+            <span className="text-slate-600 text-[12px]">© {new Date().getFullYear()} BookPhysio.in</span>
             <Link href={localizeHref('/privacy')} className="text-slate-500 text-[12px] hover:text-white transition-colors">Privacy</Link>
             <Link href={localizeHref('/terms')}   className="text-slate-500 text-[12px] hover:text-white transition-colors">Terms</Link>
             <Link href={localizeHref('/faq')}     className="text-slate-500 text-[12px] hover:text-white transition-colors">FAQ</Link>

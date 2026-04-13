@@ -28,9 +28,22 @@ export const metadata: Metadata = {
   },
 }
 
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bookphysio.in' },
+    { '@type': 'ListItem', position: 2, name: 'Find Physiotherapists' },
+  ],
+}
+
 export default function SearchPage() {
   return (
     <div className="bg-[#F7F8F9] min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Navbar />
 
       <main className="flex-1">
