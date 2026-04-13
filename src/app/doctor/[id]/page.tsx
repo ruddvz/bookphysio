@@ -142,11 +142,10 @@ function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderPro
   // High average rating
   if (ratedReviews.length >= 2) {
     const avg = ratedReviews.reduce((sum, r) => sum + r.rating, 0) / ratedReviews.length
-    const reviewWord = ratedReviews.length === 1 ? 'review' : 'reviews'
     if (avg >= 4.5) {
-      highlights.push({ emoji: '⭐', label: 'Highly Rated', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} ${reviewWord}` })
+      highlights.push({ emoji: '⭐', label: 'Highly Rated', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} reviews` })
     } else if (avg >= 4.0) {
-      highlights.push({ emoji: '👍', label: 'Well Reviewed', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} ${reviewWord}` })
+      highlights.push({ emoji: '👍', label: 'Well Reviewed', detail: `${avg.toFixed(1)} avg from ${ratedReviews.length} reviews` })
     }
   }
 
@@ -168,8 +167,7 @@ function deriveReviewHighlights(reviews: ProviderReview[], provider: ProviderPro
   // Detailed comments (shows engagement)
   const commentedReviews = reviews.filter((r) => r.comment && r.comment.length > 30)
   if (commentedReviews.length >= 3) {
-    const patientWord = commentedReviews.length === 1 ? 'patient' : 'patients'
-    highlights.push({ emoji: '💬', label: 'Detailed Feedback', detail: `${commentedReviews.length} ${patientWord} wrote detailed reviews` })
+    highlights.push({ emoji: '💬', label: 'Detailed Feedback', detail: `${commentedReviews.length} patients wrote detailed reviews` })
   }
 
   return highlights.slice(0, 4)
