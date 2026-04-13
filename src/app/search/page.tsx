@@ -4,28 +4,39 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import SearchContent from './SearchContent'
 
-export const metadata: Metadata = {
-  title: 'Find Physiotherapists Near You | BookPhysio.in',
-  description:
-    'Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.',
-  alternates: {
-    canonical: 'https://bookphysio.in/search',
-  },
-  openGraph: {
-    title: 'Find Physiotherapists Near You | BookPhysio.in',
-    description:
-      'Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.',
-    url: 'https://bookphysio.in/search',
-    siteName: 'BookPhysio.in',
-    locale: 'en_IN',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Find Physiotherapists Near You | BookPhysio.in',
-    description:
-      'Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.',
-  },
+interface SearchPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
+  const params = await searchParams
+  const specialty = typeof params.specialty === 'string' ? params.specialty : null
+  const city = typeof params.city === 'string' ? params.city : null
+
+  const titleParts: string[] = []
+  if (specialty) titleParts.push(specialty)
+  titleParts.push('Physiotherapists')
+  if (city) titleParts.push(`in ${city}`)
+
+  const title = `${titleParts.join(' ')} | BookPhysio.in`
+  const description = city
+    ? `Find and book verified ${specialty ? specialty.toLowerCase() + ' ' : ''}physiotherapists in ${city}. Compare ratings, prices, and availability.`
+    : 'Search and book verified physiotherapists across India. Filter by city, specialty, home visit availability, and same-day slots.'
+
+  return {
+    title,
+    description,
+    alternates: { canonical: 'https://bookphysio.in/search' },
+    openGraph: {
+      title,
+      description,
+      url: 'https://bookphysio.in/search',
+      siteName: 'BookPhysio.in',
+      locale: 'en_IN',
+      type: 'website',
+    },
+    twitter: { card: 'summary_large_image', title, description },
+  }
 }
 
 export default function SearchPage() {

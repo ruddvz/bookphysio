@@ -1,13 +1,12 @@
 'use client'
 
-import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
-
-const providers = [
-  { initials: 'SP', name: 'Sports Physio',      specialty: 'ACL · Runner rehab',   city: 'Mumbai',    fee: 800,  slot: 'Same-day slots',     rating: 4.9 },
-  { initials: 'OR', name: 'Ortho Rehab',        specialty: 'Joint · Back pain',    city: 'Delhi',     fee: 700,  slot: 'Next-day available', rating: 4.8 },
-  { initials: 'NP', name: 'Neuro Physio',       specialty: 'Stroke · Parkinson\'s', city: 'Bengaluru', fee: 900,  slot: 'Home visits',       rating: 5.0 },
-]
+import useSWR from 'swr'
+import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
+import type { SearchResponse } from '@/app/api/contracts/search'
+import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
+import { formatIndiaDateTime } from '@/lib/india-date'
 
 const features = [
   {
@@ -33,7 +32,23 @@ const features = [
   },
 ]
 
+const LIVE_PROVIDERS_URL = '/api/providers?limit=3&sort=rating'
+
+async function fetcher(url: string): Promise<SearchResponse> {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed to fetch proof providers')
+  return res.json() as Promise<SearchResponse>
+}
+
 export default function ProofSection() {
+  const { data } = useSWR<SearchResponse>(
+    LIVE_PROVIDERS_URL,
+    fetcher,
+    { revalidateOnFocus: false },
+  )
+
+  const providers = data?.providers ?? []
+
   return (
     <section className="bg-[#F8F7FF] py-24 md:py-32" aria-label="Network transparency">
       <div className="bp-container">
@@ -54,7 +69,7 @@ export default function ProofSection() {
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-[13px] font-semibold text-slate-500">
-                  Example provider categories
+                  Live provider highlights
                 </span>
               </div>
               <Link
@@ -66,40 +81,55 @@ export default function ProofSection() {
               </Link>
             </div>
 
-            {providers.map((p) => (
+            {providers.map((provider) => {
+              const providerName = getProviderDisplayName(provider)
+              const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
+              const initials = getProviderInitials(provider.full_name)
+              const slotLabel = provider.next_available_slot
+                ? formatIndiaDateTime(provider.next_available_slot, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+                : 'Check latest availability'
+
+              return (
               <div
-                key={p.name}
+                key={provider.id}
                 className="group flex items-center gap-5 p-5 rounded-2xl border border-emerald-200 bg-emerald-50 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 cursor-pointer"
               >
                 {/* Avatar */}
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[16px] font-bold text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors shrink-0">
-                  {p.initials}
-                </div>
+                {provider.avatar_url ? (
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-slate-100">
+                    <Image src={provider.avatar_url} alt={providerName} fill className="object-cover" sizes="56px" />
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-[16px] font-bold text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition-colors shrink-0">
+                    {initials}
+                  </div>
+                )}
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-slate-900 text-[15px]">{p.name}</span>
+                    <span className="font-semibold text-slate-900 text-[15px]">{providerName}</span>
                     <ShieldCheck size={14} className="text-indigo-400 shrink-0" />
                   </div>
                   <div className="text-[13px] text-slate-500">
-                    {p.specialty} · {p.city}
+                    {specialty} · {provider.city}
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     {'★★★★★'.split('').map((s, i) => (
-                      <span key={i} className={`text-[11px] ${i < Math.floor(p.rating) ? 'text-amber-400' : 'text-slate-200'}`}>★</span>
+                      <span key={i} className={`text-[11px] ${i < Math.floor(provider.rating_avg) ? 'text-amber-400' : 'text-slate-200'}`}>★</span>
                     ))}
-                    <span className="text-[12px] text-slate-400 ml-1">{p.rating}</span>
+                    <span className="text-[12px] text-slate-400 ml-1">{provider.rating_avg.toFixed(1)}</span>
                   </div>
                 </div>
 
                 {/* Price + slot */}
                 <div className="text-right shrink-0">
-                  <div className="text-[17px] font-bold text-slate-900">₹{p.fee}</div>
-                  <div className="text-[12px] font-semibold text-indigo-600 mt-1">{p.slot}</div>
+                  <div className="text-[17px] font-bold text-slate-900">₹{provider.consultation_fee_inr ?? 0}</div>
+                  <div className="text-[12px] font-semibold text-indigo-600 mt-1">{slotLabel}</div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Why trust section */}

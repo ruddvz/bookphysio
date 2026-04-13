@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .update({
         full_name: step1.name,
-        role: 'provider',
+        role: 'provider_pending',
       })
       .eq('id', user.id)
 
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
           full_name: step1.name,
           phone: step1.phone,
           provider_pending: true,
-          role: 'provider',
+          role: 'provider_pending',
         },
       })
 

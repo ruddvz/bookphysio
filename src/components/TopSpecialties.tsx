@@ -60,7 +60,7 @@ export default function TopSpecialties() {
             return (
               <Link
                 key={s.slug}
-                href={`/specialties/${s.slug}`}
+                href={`/specialty/${s.slug}`}
                 className={cn(
                   'group flex flex-col gap-4 p-6 rounded-2xl border bg-white',
                   'transition-all duration-200 hover:-translate-y-1',

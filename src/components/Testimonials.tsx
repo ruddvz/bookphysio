@@ -1,63 +1,86 @@
-import { ShieldCheck, Clock, Home } from 'lucide-react'
+'use client'
 
-const promises = [
-  {
-    title: 'Verified credentials',
-    description: 'We check every physiotherapist against their IAP or State Council registration before their profile goes live on the site.',
-    icon: ShieldCheck,
-    color: 'bg-indigo-100 text-indigo-700',
-  },
-  {
-    title: 'Clear pricing',
-    description: 'You see the session fee and any taxes before you book. The amount you pay at the end is the amount you saw at the start.',
-    icon: Clock,
-    color: 'bg-violet-100 text-violet-700',
-  },
-  {
-    title: 'Clinic or home visit',
-    description: 'Filter by home visit or in-clinic, compare providers side by side, and book whichever option fits your day better.',
-    icon: Home,
-    color: 'bg-emerald-100 text-emerald-700',
-  },
-]
+import useSWR from 'swr'
+import { Quote, Star } from 'lucide-react'
+
+type ReviewResponse = {
+  reviews: Array<{
+    id: string
+    rating: number
+    comment: string | null
+    created_at: string
+    provider: {
+      full_name: string
+      title: 'Dr.' | 'PT' | 'BPT' | 'MPT' | null
+      specialty: string | null
+    }
+  }>
+}
+
+const TESTIMONIALS_URL = '/api/reviews?limit=3'
+
+async function fetcher(url: string): Promise<ReviewResponse> {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed to fetch reviews')
+  return res.json() as Promise<ReviewResponse>
+}
 
 export default function Testimonials() {
+  const { data, error } = useSWR<ReviewResponse>(
+    TESTIMONIALS_URL,
+    fetcher,
+    { revalidateOnFocus: false },
+  )
+
+  const reviews = (data?.reviews ?? []).filter((review) => Boolean(review.comment?.trim()))
+
+  if (error || reviews.length === 0) {
+    return null
+  }
+
   return (
-    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Platform promises">
+    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Patient reviews">
       <div className="bp-container">
         {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
-            <div className="bp-kicker mb-4">What to expect</div>
-            <h2 className="text-slate-900 mb-3">Straightforward, start to finish.</h2>
+            <div className="bp-kicker mb-4">Patient reviews</div>
+            <h2 className="text-slate-900 mb-3">What patients are saying after treatment.</h2>
             <p className="text-slate-500 text-[16px] leading-relaxed">
-              We are a new platform, so here is what we are promising from day one: verified providers, honest prices and no unnecessary steps.
+              Published reviews only appear after a completed appointment, so every quote here comes from a real BookPhysio visit.
             </p>
           </div>
 
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-semibold shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            All providers verified
+            <Quote size={14} />
+            Verified post-visit feedback
           </div>
         </div>
 
         {/* Cards */}
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {promises.map(p => (
+          {reviews.map((review) => (
             <article
-              key={p.title}
+              key={review.id}
               className="flex flex-col p-7 bg-white rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-200"
             >
-              {/* Icon */}
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${p.color}`}>
-                <p.icon size={22} />
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-1 text-amber-500">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star key={index} size={16} className={index < review.rating ? 'fill-current' : 'text-slate-200'} />
+                  ))}
+                </div>
+                <span className="text-[12px] font-semibold text-slate-400">{review.created_at}</span>
               </div>
 
-              {/* Content */}
-              <h3 className="text-slate-900 text-[17px] font-semibold mb-2">{p.title}</h3>
-              <p className="text-slate-500 text-[15px] leading-relaxed flex-1">
-                {p.description}
-              </p>
+              <p className="text-slate-700 text-[15px] leading-relaxed flex-1">&ldquo;{review.comment}&rdquo;</p>
+
+              <div className="mt-6 border-t border-slate-100 pt-4">
+                <h3 className="text-slate-900 text-[17px] font-semibold">
+                  {(review.provider.title ? `${review.provider.title} ` : '') + review.provider.full_name}
+                </h3>
+                <p className="mt-1 text-[13px] font-medium text-slate-500">{review.provider.specialty ?? 'Physiotherapist'}</p>
+              </div>
             </article>
           ))}
         </div>
