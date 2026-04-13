@@ -18,13 +18,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=auth_failed`)
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('users')
     .select('role')
     .eq('id', data.user.id)
     .single()
 
-  const role = profile?.role ?? 'patient'
+  if (profileError) {
+    console.error('[auth/callback] Failed to fetch user profile:', profileError)
+  }
+
+  if (profileError || !profile?.role) {
+    return NextResponse.redirect(`${origin}/login?error=profile_unavailable`)
+  }
+
+  const role = profile.role
   const redirectTo = resolvePostAuthRedirect(role, returnTo)
 
   return NextResponse.redirect(`${origin}${redirectTo}`)

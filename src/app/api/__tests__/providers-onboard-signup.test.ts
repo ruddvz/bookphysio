@@ -9,11 +9,51 @@ const usersUpdateMock = vi.fn(() => ({
   eq: usersUpdateEqMock,
 }))
 const specialtiesSelectMock = vi.fn()
-const providerUpsertMock = vi.fn(() => ({
-  select: vi.fn(() => ({
-    single: vi.fn(),
-  })),
+const providerUpsertSingleMock = vi.fn()
+const providerUpsertSelectMock = vi.fn(() => ({
+  single: providerUpsertSingleMock,
 }))
+const providerUpsertMock = vi.fn(() => ({
+  select: providerUpsertSelectMock,
+}))
+const providerDeleteEqMock = vi.fn()
+const providerDeleteMock = vi.fn(() => ({
+  eq: providerDeleteEqMock,
+}))
+const locationsInsertSingleMock = vi.fn()
+const locationsInsertSelectMock = vi.fn(() => ({
+  single: locationsInsertSingleMock,
+}))
+const locationsInsertMock = vi.fn(() => ({
+  select: locationsInsertSelectMock,
+}))
+const locationsDeleteEqMock = vi.fn()
+const locationsDeleteMock = vi.fn(() => ({
+  eq: locationsDeleteEqMock,
+}))
+const providerSpecialtiesDeleteEqMock = vi.fn()
+const providerSpecialtiesDeleteMock = vi.fn(() => ({
+  eq: providerSpecialtiesDeleteEqMock,
+}))
+const providerSpecialtiesInsertMock = vi.fn()
+const availabilitiesDeleteLteMock = vi.fn()
+const availabilitiesDeleteGteMock = vi.fn(() => ({
+  lte: availabilitiesDeleteLteMock,
+}))
+const availabilitiesDeleteEqBookedMock = vi.fn(() => ({
+  gte: availabilitiesDeleteGteMock,
+}))
+const availabilitiesDeleteEqBlockedMock = vi.fn(() => ({
+  eq: availabilitiesDeleteEqBookedMock,
+}))
+const availabilitiesDeleteEqProviderMock = vi.fn(() => ({
+  eq: availabilitiesDeleteEqBlockedMock,
+}))
+const availabilitiesDeleteMock = vi.fn(() => ({
+  eq: availabilitiesDeleteEqProviderMock,
+}))
+const availabilitiesInsertMock = vi.fn()
+const deleteUserMock = vi.fn()
 
 vi.mock('@/lib/server/runtime', () => ({
   getRequestIpAddress: (...args: unknown[]) => getRequestIpAddressMock(...args),
@@ -37,7 +77,7 @@ vi.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     auth: {
       admin: {
-        deleteUser: vi.fn(),
+        deleteUser: (...args: unknown[]) => deleteUserMock(...args),
       },
     },
     from: (table: string) => {
@@ -56,6 +96,28 @@ vi.mock('@/lib/supabase/admin', () => ({
       if (table === 'providers') {
         return {
           upsert: providerUpsertMock,
+          delete: providerDeleteMock,
+        }
+      }
+
+      if (table === 'locations') {
+        return {
+          insert: locationsInsertMock,
+          delete: locationsDeleteMock,
+        }
+      }
+
+      if (table === 'provider_specialties') {
+        return {
+          delete: providerSpecialtiesDeleteMock,
+          insert: providerSpecialtiesInsertMock,
+        }
+      }
+
+      if (table === 'availabilities') {
+        return {
+          delete: availabilitiesDeleteMock,
+          insert: availabilitiesInsertMock,
         }
       }
 
@@ -141,6 +203,15 @@ describe('POST /api/providers/onboard-signup', () => {
       data: [{ id: 'specialty-1', name: 'Sports Physio' }],
       error: null,
     })
+    providerUpsertSingleMock.mockResolvedValue({ data: { id: 'provider-1' }, error: null })
+    locationsInsertSingleMock.mockResolvedValue({ data: { id: 'location-1' }, error: null })
+    providerSpecialtiesDeleteEqMock.mockResolvedValue({ error: null })
+    providerSpecialtiesInsertMock.mockResolvedValue({ error: null })
+    availabilitiesDeleteLteMock.mockResolvedValue({ error: null })
+    availabilitiesInsertMock.mockResolvedValue({ error: null })
+    providerDeleteEqMock.mockResolvedValue({ error: null })
+    locationsDeleteEqMock.mockResolvedValue({ error: null })
+    deleteUserMock.mockResolvedValue({ error: null })
   })
 
   it('requires state registration details for STATE registrations', async () => {
@@ -177,5 +248,16 @@ describe('POST /api/providers/onboard-signup', () => {
     expect(body.error).toBe('Some availability fields are invalid. Please review and try again.')
     expect(signUpMock).not.toHaveBeenCalled()
     expect(providerUpsertMock).not.toHaveBeenCalled()
+  })
+
+  it('keeps new providers inactive until they are verified', async () => {
+    const { POST } = await import('../providers/onboard-signup/route')
+    const response = await POST(buildRequest(buildValidPayload()))
+
+    expect(response.status).toBe(201)
+    expect(providerUpsertMock).toHaveBeenCalledWith(expect.objectContaining({
+      verified: false,
+      active: false,
+    }))
   })
 })
