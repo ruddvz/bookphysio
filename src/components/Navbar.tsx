@@ -7,11 +7,14 @@ import {
   Baby,
   Bone,
   Brain,
+  Briefcase,
   ChevronDown,
   Dumbbell,
+  Ear,
   Flower2,
   HeartPulse,
   Menu,
+  PersonStanding,
   Ribbon,
   Stethoscope,
   Users,
@@ -32,6 +35,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   Flower2,
   Ribbon,
   Users,
+  PersonStanding,
+  Briefcase,
+  Ear,
 }
 
 const navLinks = [
