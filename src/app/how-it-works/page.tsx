@@ -19,65 +19,69 @@ import {
   Home,
 } from 'lucide-react'
 
+// Character paths — swap these for new poses when illustrations are ready
+const PATIENT_CHARACTER = '/images/physio-female.png'
+const PROVIDER_CHARACTER = '/images/physio-male.png'
+
 const PATIENT_STEPS = [
   {
+    num: '01',
     icon: Search,
     title: 'Search',
     text: 'Enter your condition or a physiotherapist name and select your location.',
     tint: 'bg-[#E6F4F3] text-[#00766C]',
-    num: '01',
   },
   {
+    num: '02',
     icon: UserCheck,
     title: 'Choose Provider',
     text: 'Compare expert physiotherapists by specialty, rating, fees, and distance.',
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
-    num: '02',
   },
   {
+    num: '03',
     icon: CalendarDays,
     title: 'Pick a Slot',
     text: 'Select your preferred date and time from the live availability of the provider.',
     tint: 'bg-[#FEE9DD] text-[#C4532A]',
-    num: '03',
   },
   {
+    num: '04',
     icon: Activity,
     title: 'Book Instantly',
     text: 'Confirm your booking with a quick session request and get expert care.',
     tint: 'bg-[#FFE4EC] text-[#B53A63]',
-    num: '04',
   },
 ]
 
 const PROVIDER_STEPS = [
   {
+    num: '01',
     icon: Building2,
     title: 'Register Practice',
     text: 'Create your professional profile with your credentials and clinic details.',
     tint: 'bg-[#E6F4F3] text-[#00766C]',
-    num: '01',
   },
   {
+    num: '02',
     icon: CalendarRange,
     title: 'Set Availability',
     text: 'Configure your working hours, slot duration, and visit types.',
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
-    num: '02',
   },
   {
+    num: '03',
     icon: CalendarDays,
     title: 'Accept Bookings',
     text: 'Manage all your incoming appointments from a single dashboard.',
     tint: 'bg-[#FEE9DD] text-[#C4532A]',
-    num: '03',
   },
   {
+    num: '04',
     icon: WalletCards,
     title: 'Track Earnings',
     text: 'Monitor your weekly and monthly revenue automatically.',
     tint: 'bg-[#FFE4EC] text-[#B53A63]',
-    num: '04',
   },
 ]
 
@@ -99,6 +103,7 @@ export default function HowItWorksPage() {
   const primaryCtaHref = activeTab === 'patient' ? '/search' : '/doctor-signup'
   const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a provider'
   const trust = activeTab === 'patient' ? PATIENT_TRUST : PROVIDER_TRUST
+  const character = activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER
 
   return (
     <>
@@ -106,12 +111,12 @@ export default function HowItWorksPage() {
 
       <main className="bg-[#FAFAFA] min-h-screen">
 
-        {/* Hero — split layout with character */}
+        {/* Hero — split layout with physio character */}
         <section className="bg-white border-b border-slate-200/70 overflow-hidden">
           <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16">
-            <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-center">
+            <div className="grid lg:grid-cols-[1fr_300px] gap-10 items-center">
 
-              {/* Left: text + tabs */}
+              {/* Left: kicker + heading + trust points + tabs */}
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
                   How it works
@@ -163,17 +168,18 @@ export default function HowItWorksPage() {
                 </div>
               </div>
 
-              {/* Right: physio character */}
+              {/* Right: physio character — decorative, context communicated by tab labels */}
               <div className="hidden lg:flex justify-center items-end">
                 <div className="relative">
-                  <div className="w-[240px] h-[240px] rounded-full bg-[#E6F4F3]" />
+                  <div className="w-[220px] h-[220px] rounded-full bg-[#E6F4F3]" aria-hidden="true" />
                   <Image
-                    src={activeTab === 'patient' ? '/images/physio-female.png' : '/images/physio-male.png'}
-                    alt={activeTab === 'patient' ? 'Female physiotherapist' : 'Male physiotherapist'}
-                    width={220}
-                    height={320}
+                    src={character}
+                    alt=""
+                    aria-hidden="true"
+                    width={200}
+                    height={300}
                     className="absolute bottom-0 left-1/2 -translate-x-1/2 object-contain object-bottom"
-                    priority
+                    sizes="(min-width: 1024px) 200px, 0px"
                   />
                 </div>
               </div>
@@ -181,11 +187,11 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* Steps */}
+        {/* Steps — 2×2 grid with teal left-accent on hover */}
         <section className="py-12 lg:py-16">
           <div className="max-w-[1142px] mx-auto px-6">
             <div className="grid gap-4 sm:grid-cols-2">
-              {activeSteps.map((step, idx) => (
+              {activeSteps.map((step) => (
                 <div
                   key={step.title}
                   className="relative rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group"
@@ -198,7 +204,9 @@ export default function HowItWorksPage() {
                       Step {step.num}
                     </span>
                   </div>
-                  <h3 className="text-[18px] font-bold text-[#1A1C29] mb-2 group-hover:text-[#00766C] transition-colors">{step.title}</h3>
+                  <h3 className="text-[18px] font-bold text-[#1A1C29] mb-2 group-hover:text-[#00766C] transition-colors">
+                    {step.title}
+                  </h3>
                   <p className="text-[14px] leading-relaxed text-slate-500">{step.text}</p>
 
                   {/* Teal left accent on hover */}
@@ -214,7 +222,7 @@ export default function HowItWorksPage() {
           <div className="max-w-[1142px] mx-auto px-6">
             <div className="rounded-2xl bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
               {/* Background glow */}
-              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
 
               <div className="max-w-xl text-center md:text-left relative z-10">
                 <h2 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight">

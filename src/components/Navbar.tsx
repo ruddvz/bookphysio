@@ -118,11 +118,11 @@ export default function Navbar({
                   className={cn(
                     'flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
                     browseOpen
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60'
+                      ? 'bg-[#E6F4F3] text-[#00766C]'
+                      : 'text-slate-600 hover:text-[#00766C] hover:bg-[#E6F4F3]/60'
                   )}
                 >
-                  Browse
+                  Specialities
                   <ChevronDown
                     size={15}
                     className={cn('transition-transform duration-200', browseOpen && 'rotate-180')}
@@ -160,7 +160,7 @@ export default function Navbar({
                               <Icon size={18} />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-[13px] font-semibold text-slate-800 group-hover:text-indigo-700 transition-colors leading-tight">
+                              <p className="text-[13px] font-semibold text-slate-800 group-hover:text-[#00766C] transition-colors leading-tight">
                                 {s.label}
                               </p>
                               <p className="text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2">
@@ -175,12 +175,12 @@ export default function Navbar({
                       <Link
                         href={searchHref}
                         onClick={() => setBrowseOpen(false)}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 transition-all group"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-[#E6F4F3] transition-all group"
                       >
-                        <span className="text-[13px] font-semibold text-slate-600 group-hover:text-indigo-700">
+                        <span className="text-[13px] font-semibold text-slate-600 group-hover:text-[#00766C]">
                           Browse all physiotherapists
                         </span>
-                        <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+                        <ArrowRight size={14} className="text-slate-400 group-hover:text-[#00766C] group-hover:translate-x-0.5 transition-all" />
                       </Link>
                     </div>
                   </div>
@@ -293,7 +293,7 @@ export default function Navbar({
                     <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', s.tint.bg, s.tint.text)}>
                       <Icon size={16} />
                     </div>
-                    <span className="text-[13px] font-semibold text-slate-700 group-hover:text-indigo-700 transition-colors leading-tight">
+                    <span className="text-[13px] font-semibold text-slate-700 group-hover:text-[#00766C] transition-colors leading-tight">
                       {s.label}
                     </span>
                   </Link>
@@ -305,13 +305,13 @@ export default function Navbar({
             <Link
               href={searchHref}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-between px-4 py-3 mb-4 rounded-2xl bg-white/50 border border-indigo-100/60 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-indigo-700 transition-all group"
+              className="flex items-center justify-between px-4 py-3 mb-4 rounded-2xl bg-white/50 border border-[#00766C]/20 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-[#00766C] transition-all group"
             >
               Browse all physiotherapists
-              <ArrowRight size={14} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+              <ArrowRight size={14} className="text-slate-400 group-hover:text-[#00766C] group-hover:translate-x-0.5 transition-all" />
             </Link>
 
-            <div className="h-px bg-indigo-100/50 mb-4" />
+            <div className="h-px bg-[#00766C]/10 mb-4" />
 
             {/* Nav links */}
             <div className="space-y-1.5">

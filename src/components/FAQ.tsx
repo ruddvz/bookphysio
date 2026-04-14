@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Plus, Minus, ArrowRight } from 'lucide-react'
@@ -30,38 +29,21 @@ const faqs = [
   {
     id: 5,
     q: 'Can I cancel or reschedule a session?',
-    a: 'You can cancel or reschedule free of charge up to four hours before the session from your Patient Dashboard. Cancellations inside the four-hour window may be charged in full at the provider\u2019s discretion.',
+    a: 'Yes. You can cancel or reschedule free of charge up to four hours before the session from your Patient Dashboard. Cancellations inside the four-hour window may be charged in full at the provider\u2019s discretion.',
   },
 ]
-
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map((faq) => ({
-    '@type': 'Question',
-    name: faq.q,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: faq.a,
-    },
-  })),
-}
 
 export default function FAQ() {
   const [openId, setOpenId] = useState<number | null>(1)
 
   return (
     <section className="bg-white py-24 md:py-32" aria-label="Frequently asked questions">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
       <div className="bp-container">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.4fr] items-start">
 
           {/* Left: header + CTA */}
           <div className="lg:sticky lg:top-28">
-            <div className="bp-kicker mb-4">Common questions</div>
+            <div className="bp-kicker mb-4" style={{ background: 'rgba(0,118,108,0.08)', borderColor: 'rgba(0,118,108,0.2)', color: '#00766C' }}>Common questions</div>
             <h2 className="text-slate-900 mb-4">Before you book, here is what people usually want to know.</h2>
             <p className="text-slate-500 text-[16px] leading-relaxed mb-8">
               Short answers to the questions we hear most often. If yours is not here, our support team is happy to help.
@@ -81,18 +63,6 @@ export default function FAQ() {
                 View all FAQs
               </Link>
             </div>
-
-            {/* Male physio — decorative, desktop only */}
-            <div className="hidden lg:block relative mt-6 h-[240px] overflow-hidden">
-              <Image
-                src="/images/physio-male.png"
-                alt=""
-                width={160}
-                height={240}
-                className="object-contain object-bottom absolute bottom-0 left-0 pointer-events-none select-none"
-                aria-hidden="true"
-              />
-            </div>
           </div>
 
           {/* Right: accordion */}
@@ -105,7 +75,7 @@ export default function FAQ() {
                   className={cn(
                     'rounded-xl border transition-all duration-200',
                     isOpen
-                      ? 'border-[#00766C]/20 bg-[#E6F4F3]/40'
+                      ? 'border-[#00766C]/20 bg-[#E6F4F3]/50'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   )}
                 >
