@@ -130,12 +130,17 @@ ALTER TABLE providers
 ---
 
 ### Phase 6 — Search Filters Enhancement
-**Goal:** Add qualification and equipment filters to search page.
+**Goal:** Add qualification and certification filters to search page.
 
 **Files to modify:**
 - `src/app/search/page.tsx` — Add filter chips for `qualification`, `certifications`
 - `src/app/api/providers/route.ts` — Handle new filter params
 - `src/lib/validations/search.ts` — Add `qualification`, `certification` to searchFiltersSchema
+
+### Docs & Memory (after search filter implementation)
+- [ ] Update `docs/CODEMAPS/api.md` and `docs/CODEMAPS/lib.md`
+- [ ] Tick completed phases in `docs/planning/EXECUTION-PLAN.md`
+- [ ] Update `docs/planning/ACTIVE.md` with next steps
 
 ---
 
@@ -178,4 +183,8 @@ ALTER TABLE providers
 - The user will provide more clinical details for each specialty content. Phase 1 will use the document-extracted data as the seed; we can update later.
 - No changes to the navbar are needed — the Browse dropdown already works.
 - All new specialties (Geriatric, Vestibular, Industrial) need corresponding DB rows in the `specialties` table + a new migration.
-- DPDPA compliance: no new PII is being collected beyond what already exists (certifications are professional, not personal data).
+- DPDPA compliance: `iap_member_id` is a professional identifier and personal data under DPDPA.
+  Retention: retained for provider account lifetime, archived on account deletion.
+  Access: restricted to admin role and the owning provider (enforced via RLS).
+  Logging: create/update/delete operations on `iap_member_id` are audit-logged via the DB audit trail.
+  Certifications and equipment tags are professional metadata, not personal data.

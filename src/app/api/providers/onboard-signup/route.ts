@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
-import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { parseIndiaDate } from '@/lib/india-date'
@@ -217,47 +216,46 @@ export async function POST(request: NextRequest) {
   let specialtiesLinked = false
 
   try {
-    // 1. Create the Supabase auth user via the anon client's signUp().
-    //    This automatically sends the confirmation email when email confirmation
-    //    is enabled in the Supabase dashboard. We don't use admin.createUser()
-    //    because it does NOT send confirmation emails.
-    const supabase = await createClient()
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // 1. Create the Supabase auth user via the admin client.
+    //    Using admin.createUser() is reliable in server-side Route Handlers —
+    //    the anon signUp() can fail in server context due to email rate limits
+    //    or SMTP configuration checks. email_confirm: false means the user must
+    //    confirm their email before logging in. The confirmation email is sent
+    //    client-side by Step 5 via supabase.auth.resend() immediately on mount.
+    const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-        options: {
-          data: {
-            full_name: step1.name,
-            phone: step1.phone,
-            role: 'provider_pending',
-            provider_pending: true,
-          },
-        },
+      email_confirm: false,
+      user_metadata: {
+        full_name: step1.name,
+        phone: step1.phone,
+        role: 'provider_pending',
+        provider_pending: true,
+      },
     })
 
-    if (authError) {
-      if (isAlreadyRegisteredAuthError(authError.message)) {
+    if (adminError) {
+      if (isAlreadyRegisteredAuthError(adminError.message)) {
         return NextResponse.json(
           { error: 'An account with this email already exists. Please sign in instead.' },
           { status: 409 },
         )
       }
-      console.error('Provider signup: auth user creation failed', authError)
+      console.error('Provider signup: admin user creation failed', adminError)
       return NextResponse.json(
         { error: 'Unable to create account. Please try again.' },
         { status: 500 },
       )
     }
 
-    // signUp() with an already-confirmed email returns a user with empty identities
-    if (!authData.user || (authData.user.identities?.length === 0)) {
+    if (!adminData.user) {
       return NextResponse.json(
         { error: 'An account with this email already exists. Please sign in instead.' },
         { status: 409 },
       )
     }
 
-    userId = authData.user.id
+    userId = adminData.user.id
 
     // 2. The handle_new_user DB trigger fires on auth.users INSERT and creates
     //    the users row with role='provider' (from user_metadata.role).
@@ -391,7 +389,7 @@ export async function POST(request: NextRequest) {
         if (provRollbackError) console.error('Rollback providers failed:', provRollbackError)
       }
       // Delete the auth user to allow re-signup with the same email.
-      // The handle_new_user trigger creates a users row when the auth user is created;
+      // The handle_new_user trigger creates a users row on auth.users INSERT;
       // deleting the auth user cascades to the users row via ON DELETE CASCADE on the FK.
       const { error: userRollbackError } = await supabaseAdmin.auth.admin.deleteUser(userId)
       if (userRollbackError) console.error('Rollback auth user failed:', userRollbackError)
