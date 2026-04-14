@@ -905,11 +905,11 @@ interface Step4Props {
   onChange: (d: Step4Data) => void
   onNext: () => void
   onBack: () => void
-  otpError?: string
-  otpLoading?: boolean
+  submitError?: string
+  submitLoading?: boolean
 }
 
-function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoading }: Step4Props) {
+function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submitLoading }: Step4Props) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [focusedFee, setFocusedFee] = useState<string | null>(null)
   const [focusedTimes, setFocusedTimes] = useState<string | null>(null)
@@ -1183,15 +1183,15 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, otpError, otpLoadin
         </div>
       </div>
 
-      <PrimaryButton onClick={handleNext} disabled={otpLoading}>
-        {otpLoading ? 'Submitting…' : (
+      <PrimaryButton onClick={handleNext} disabled={submitLoading}>
+        {submitLoading ? 'Submitting…' : (
           <>
             Complete Registration
             <ArrowRight className="w-4 h-4" />
           </>
         )}
       </PrimaryButton>
-      {otpError ? <FieldError msg={otpError} /> : null}
+      {submitError ? <FieldError msg={submitError} /> : null}
       <div className="flex justify-center">
         <BackLink onClick={onBack} />
       </div>
@@ -1219,6 +1219,18 @@ function Step5({ email, onBack }: Step5Props) {
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [countdown])
+
+  // Auto-send the first confirmation email on mount.
+  // admin.createUser() (used server-side) does not auto-send confirmation emails,
+  // so we trigger it here via the client-side resend() immediately when Step 5 renders.
+  useEffect(() => {
+    if (!email) return
+    const supabase = createClient()
+    supabase.auth.resend({ type: 'signup', email }).catch(() => {
+      // Best-effort — user can still click Resend manually
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,
@@ -1441,8 +1453,8 @@ export default function DoctorSignupPage() {
           onChange={setStep4}
           onNext={goNext}
           onBack={goBack}
-          otpError={submitError}
-          otpLoading={submitLoading}
+          submitError={submitError}
+          submitLoading={submitLoading}
         />
       )}
       {currentStep === 5 && (
