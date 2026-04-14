@@ -39,28 +39,24 @@ const MUSTARD = '#F5A623'
 
 export default function TopSpecialties() {
   return (
-    <section className="bg-white py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
+    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
       <div className="bp-container">
 
         {/* Header */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-12">
           <div className="max-w-xl">
-            <div className="border-l-4 border-[#00766C] pl-5">
-              <div className="bp-kicker mb-3" style={{ background: 'rgba(0,118,108,0.08)', borderColor: 'rgba(0,118,108,0.2)', color: '#00766C' }}>
-                Browse by specialty
-              </div>
-              <h2 className="text-slate-900 mb-3">
-                Start from what is bothering you.
-              </h2>
-            </div>
-            <p className="text-slate-500 text-[16px] leading-relaxed mt-4">
+            <div className="bp-kicker mb-4">Browse by specialty</div>
+            <h2 className="text-slate-900 mb-3">
+              Start from what is bothering you.
+            </h2>
+            <p className="text-slate-500 text-[16px] leading-relaxed">
               Pick a specialty and we will show you verified physiotherapists in your city, along with their real availability.
             </p>
           </div>
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-[#00766C]/40 hover:text-[#00766C] transition-all group shrink-0 self-start lg:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-indigo-200 hover:text-indigo-700 transition-all group shrink-0 self-start lg:self-auto"
           >
             View all specialties
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -113,7 +109,10 @@ export default function TopSpecialties() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                     {s.subLabel}
                   </p>
-                  <h3 className="text-[16px] font-bold text-slate-900 transition-colors group-hover:text-[#00766C]">
+                  <h3 className={cn(
+                    'text-[16px] font-bold transition-colors group-hover:text-indigo-700',
+                    s.tint.text
+                  )}>
                     {s.label}
                   </h3>
                   <p className="text-slate-500 text-[12px] leading-relaxed line-clamp-2 flex-1">
@@ -121,7 +120,7 @@ export default function TopSpecialties() {
                   </p>
 
                   {/* CTA */}
-                  <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-[#00766C] transition-colors mt-1">
+                  <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors mt-1">
                     Learn more
                     <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                   </div>
@@ -132,14 +131,14 @@ export default function TopSpecialties() {
         </div>
 
         {/* Trust strip */}
-        <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-[#F7F8F9] border border-slate-200">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#E6F4F3] border border-[#00766C]/20 text-[#00766C] text-[12px] font-semibold">
+        <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-slate-200">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold">
             IAP-verified care
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-[12px] font-semibold">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
             Home visits available
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-[12px] font-semibold">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
             Same-day booking
           </div>
           <p className="ml-auto text-[12px] text-slate-400 font-medium hidden md:block">
