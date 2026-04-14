@@ -5,12 +5,12 @@ import { buildSpecialtyArticleMetadata } from '@/components/specialties/articleM
 import { SPECIALTIES } from '@/lib/specialties'
 
 const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
-  'musculoskeletal': {
-    title: 'Musculoskeletal Physiotherapy',
+  'orthopaedic': {
+    title: 'Orthopaedic Physiotherapy',
     ncahpName: 'Musculoskeletal Sciences',
     subtitle: 'Expert relief for your bones, joints, ligaments, and muscles.',
     description:
-      'Musculoskeletal physiotherapy deals with problems of the bones, joints, ligaments and muscles. It is commonly used after a knee or hip replacement, for back or neck pain, for recovery after a fracture, and for people living with arthritis. Your physiotherapist will assess how you are moving, use hands-on techniques where helpful, and give you exercises to do between sessions so the improvements stick.',
+      'Orthopaedic physiotherapy deals with problems of the bones, joints, ligaments and muscles. It is commonly used after a knee or hip replacement, for back or neck pain, for recovery after a fracture, and for people living with arthritis. Your physiotherapist will assess how you are moving, use hands-on techniques where helpful, and give you exercises to do between sessions so the improvements stick.',
     highlights: [
       'Expert manual therapy and joint mobilisation',
       'Post-operative rehabilitation pathways',
@@ -32,7 +32,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Sciatica and disc problems',
     ],
   },
-  'neurosciences': {
+  'neurological': {
     title: 'Neurological Physiotherapy',
     ncahpName: 'Neurosciences',
     subtitle: 'Re-wiring the brain for improved mobility and independence.',
@@ -57,33 +57,6 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Spinal cord injury',
       "Bell's palsy",
       'Traumatic brain injury',
-    ],
-  },
-  'cardio-pulmonary': {
-    title: 'Cardio-Pulmonary Physiotherapy',
-    ncahpName: 'Cardio-Pulmonary Sciences',
-    subtitle: 'Breathing easier, recovering stronger.',
-    description:
-      'Cardio-pulmonary physiotherapy focuses on the heart and lungs. It helps people recovering from cardiac surgery, managing COPD, or rebuilding stamina after a prolonged ICU stay. Treatment typically includes breathing exercises, graded physical activity, airway clearance techniques and education on managing symptoms day to day. The goal is to get you back to a level of activity that feels comfortable and sustainable.',
-    highlights: [
-      'Breathing retraining and airway clearance',
-      'Post-cardiac surgery rehabilitation',
-      'Graded exercise programmes for stamina',
-      'ICU and ventilator weaning support',
-    ],
-    benefits: [
-      'Improved lung capacity and oxygen uptake',
-      'Faster recovery after heart surgery',
-      'Better management of chronic respiratory conditions',
-      'Reduced hospital readmission rates',
-    ],
-    conditions: [
-      'COPD and chronic bronchitis',
-      'Post-cardiac surgery recovery',
-      'Asthma management',
-      'Post-COVID respiratory rehabilitation',
-      'ICU and ventilator recovery',
-      'Pulmonary fibrosis',
     ],
   },
   'sports': {
@@ -113,7 +86,7 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Rotator cuff injuries',
     ],
   },
-  'paediatrics': {
+  'paediatric': {
     title: 'Paediatric Physiotherapy',
     ncahpName: 'Paediatrics & Neonatal Sciences',
     subtitle: 'Gentle, engaging care for infants and children.',
@@ -140,34 +113,115 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Sports injuries in young athletes',
     ],
   },
-  'womens-health': {
-    title: "Women's Health Physiotherapy",
-    ncahpName: 'Obstetrics & Gynaecology Sciences',
-    subtitle: 'Private, supportive care for prenatal, postnatal, and pelvic health.',
+  'cardiopulmonary': {
+    title: 'Cardiopulmonary Physiotherapy',
+    ncahpName: 'Cardio-Pulmonary Sciences',
+    subtitle: 'Breathing easier, recovering stronger.',
     description:
-      "Women's health physiotherapy focuses on the pelvis and pelvic floor. It can help you prepare for childbirth, recover after delivery, rebuild core strength if you have diastasis recti, and manage issues like urinary incontinence or pelvic organ prolapse. Sessions are one-to-one and confidential, and your physiotherapist will explain each step so you feel comfortable throughout.",
+      'Cardiopulmonary physiotherapy focuses on the heart and lungs. It helps people recovering from cardiac surgery, managing COPD, or rebuilding stamina after a prolonged ICU stay. Treatment typically includes breathing exercises, graded physical activity, airway clearance techniques and education on managing symptoms day to day. The goal is to get you back to a level of activity that feels comfortable and sustainable.',
     highlights: [
-      'Comprehensive pelvic floor rehabilitation',
-      'Safe prenatal and postnatal exercise planning',
-      'Diastasis recti recovery techniques',
-      'Bladder and bowel control reinforcement',
+      'Breathing retraining and airway clearance',
+      'Post-cardiac surgery rehabilitation',
+      'Graded exercise programmes for stamina',
+      'ICU and ventilator weaning support',
     ],
     benefits: [
-      'Smoother pregnancy and delivery preparation',
-      'Rapid recovery of core strength after birth',
-      'Resolution of incontinence issues',
-      'Confident return to high-impact activities',
+      'Improved lung capacity and oxygen uptake',
+      'Faster recovery after heart surgery',
+      'Better management of chronic respiratory conditions',
+      'Reduced hospital readmission rates',
+    ],
+    conditions: [
+      'COPD and chronic bronchitis',
+      'Post-cardiac surgery recovery',
+      'Asthma management',
+      'Post-COVID respiratory rehabilitation',
+      'ICU and ventilator recovery',
+      'Pulmonary fibrosis',
+    ],
+  },
+  'geriatric': {
+    title: 'Geriatric Physiotherapy',
+    ncahpName: 'Community Rehabilitation Sciences',
+    subtitle: 'Compassionate care to maintain independence and quality of life in older adults.',
+    description:
+      'Getting older often brings less strength, stiffer joints and a reduced sense of balance. Geriatric physiotherapy is designed around those changes. The focus is on keeping you independent at home, managing osteoarthritis and osteoporosis, easing chronic pain without relying only on medicines, and most importantly, preventing falls. Sessions can take place at home or at the clinic, whichever suits you best.',
+    highlights: [
+      'Dedicated fall prevention and balance training',
+      'Osteoarthritis and joint wear management',
+      'Home accessibility and safety assessments',
+      'Gentle mobility and flexibility preservation',
+    ],
+    benefits: [
+      'Maintains independence and self-reliance',
+      'Significantly reduces life-threatening falls',
+      'Drug-free chronic pain relief',
+      'Extends the ability to live comfortably at home',
+    ],
+    conditions: [
+      'Age-related mobility decline',
+      'Osteoarthritis and osteoporosis',
+      'Fall risk and balance disorders',
+      'Post-hospitalisation deconditioning',
+      'Chronic pain in older adults',
+      'Frailty and muscle weakness',
+    ],
+  },
+  'obstetrics': {
+    title: 'Obstetric Physiotherapy',
+    ncahpName: 'Obstetrics & Gynaecology Sciences',
+    subtitle: 'Safe, supportive physiotherapy throughout your pregnancy journey.',
+    description:
+      'Obstetric physiotherapy supports women through pregnancy and the postnatal period. It addresses the physical changes that pregnancy brings — pelvic girdle pain, back ache, diastasis recti, and fatigue — and helps prepare the body for labour and recovery. Your physiotherapist will design a programme that is safe at every trimester, with modifications as your pregnancy progresses.',
+    highlights: [
+      'Safe prenatal exercise programming by trimester',
+      'Pelvic girdle and back pain management',
+      'Labour preparation and breathing techniques',
+      'Postnatal core and pelvic floor recovery',
+    ],
+    benefits: [
+      'Reduced pregnancy-related back and pelvic pain',
+      'Better preparation for labour and delivery',
+      'Faster postnatal recovery',
+      'Confident return to daily activities after birth',
+    ],
+    conditions: [
+      'Pelvic girdle pain (PGP)',
+      'Low back pain in pregnancy',
+      'Diastasis recti',
+      'Postnatal core weakness',
+      'Symphysis pubis dysfunction',
+      'Prenatal swelling and discomfort',
+    ],
+  },
+  'gynaecology': {
+    title: "Gynaecological Physiotherapy",
+    ncahpName: 'Obstetrics & Gynaecology Sciences',
+    subtitle: 'Private, specialised care for pelvic health and women\'s wellbeing.',
+    description:
+      "Gynaecological physiotherapy focuses on the pelvic floor — the muscles, ligaments and connective tissue that support the bladder, bowel and uterus. It can help manage urinary or faecal incontinence, pelvic organ prolapse, painful intercourse, and chronic pelvic pain. Sessions are one-to-one and completely confidential, and your physiotherapist will explain each step so you always feel in control.",
+    highlights: [
+      'Comprehensive pelvic floor rehabilitation',
+      'Bladder and bowel control programmes',
+      'Pelvic pain and dyspareunia management',
+      'Internal and external manual therapy',
+    ],
+    benefits: [
+      'Resolution of urinary incontinence',
+      'Improved pelvic organ support',
+      'Reduced chronic pelvic pain',
+      'Restored sexual comfort and confidence',
     ],
     conditions: [
       'Urinary incontinence',
       'Pelvic organ prolapse',
-      'Diastasis recti',
-      'Prenatal back and pelvic pain',
-      'Postnatal recovery',
-      'Pelvic floor dysfunction',
+      'Faecal incontinence',
+      'Painful intercourse (dyspareunia)',
+      'Chronic pelvic pain',
+      'Vaginismus',
     ],
   },
-  'oncology-rehab': {
+  'oncology': {
     title: 'Oncology Rehabilitation',
     ncahpName: 'Oncology Sciences',
     subtitle: 'Rebuilding strength and confidence during and after cancer treatment.',
@@ -194,31 +248,85 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Deconditioning after prolonged bed rest',
     ],
   },
-  'community-rehab': {
-    title: 'Community Rehabilitation',
+  'community': {
+    title: 'Community Physiotherapy',
     ncahpName: 'Community Rehabilitation Sciences',
-    subtitle: 'Compassionate care to maintain independence and quality of life.',
+    subtitle: 'Accessible, inclusive rehabilitation for every person in every community.',
     description:
-      'Getting older often means less strength, stiffer joints and a slightly shakier sense of balance. Community rehabilitation physiotherapy is built around those changes. The focus is on keeping you independent at home, managing osteoarthritis and osteoporosis, easing chronic pain without relying only on medicines, and most importantly, preventing falls. It also covers disability management and community-based recovery programmes. Sessions can happen at home or at the clinic, whichever feels easier.',
+      'Community physiotherapy brings rehabilitation services to where people live, work and gather. It focuses on making care accessible for people with disabilities, chronic conditions, or limited mobility who cannot easily reach a clinic. Whether delivered at home, in a community centre, or through group programmes, the aim is to improve function, promote independence, and support social participation.',
     highlights: [
-      'Dedicated fall prevention training',
-      'Osteoarthritis and joint wear management',
-      'Home accessibility assessments',
-      'Gentle mobility and flexibility preservation',
+      'Home visit and community outreach programmes',
+      'Group rehabilitation and wellness sessions',
+      'Disability management and adaptive strategies',
+      'Education for families and carers',
     ],
     benefits: [
-      'Maintains independence and self-reliance',
-      'Significantly reduces life-threatening falls',
-      'Provides drug-free chronic pain relief',
-      'Extends the ability to live at home comfortably',
+      'Care delivered where you feel most comfortable',
+      'Reduced barriers to accessing rehabilitation',
+      'Stronger community support and social connection',
+      'Practical strategies for daily life',
     ],
     conditions: [
-      'Age-related mobility decline',
-      'Osteoarthritis and osteoporosis',
-      'Fall risk and balance disorders',
-      'Post-hospitalisation deconditioning',
-      'Chronic pain in older adults',
-      'Disability management and home adaptation',
+      'Chronic disability and mobility limitations',
+      'Post-stroke community reintegration',
+      'Learning and developmental disabilities',
+      'Chronic musculoskeletal conditions',
+      'Social isolation and deconditioning',
+      'Post-hospitalisation recovery at home',
+    ],
+  },
+  'industrial': {
+    title: 'Industrial & Occupational Physiotherapy',
+    ncahpName: 'Community Rehabilitation Sciences',
+    subtitle: 'Protecting your body at work and getting you back to full capacity.',
+    description:
+      'Industrial physiotherapy — also called occupational or ergonomic physiotherapy — focuses on injuries that happen at work, or that are made worse by the way you work. It involves assessing your workplace setup, treating injuries like repetitive strain, back pain and shoulder problems, and designing programmes that get you back to work safely. It also covers pre-employment screening and worksite hazard assessments.',
+    highlights: [
+      'Ergonomic workstation assessment and correction',
+      'Return-to-work rehabilitation planning',
+      'Repetitive strain injury treatment',
+      'Manual handling training and injury prevention',
+    ],
+    benefits: [
+      'Reduced risk of recurring workplace injuries',
+      'Faster, safer return to full work duties',
+      'Less absenteeism and improved productivity',
+      'Long-term postural and movement habits',
+    ],
+    conditions: [
+      'Repetitive strain injury (RSI)',
+      'Work-related back and neck pain',
+      'Carpal tunnel syndrome',
+      'Shoulder and elbow overuse injuries',
+      'Manual handling injuries',
+      'Prolonged sitting or standing posture problems',
+    ],
+  },
+  'vestibular': {
+    title: 'Vestibular Physiotherapy',
+    ncahpName: 'Neurosciences',
+    subtitle: 'Stopping the world spinning — expert care for dizziness and balance.',
+    description:
+      'Vestibular physiotherapy treats problems with the inner ear and balance system. If you experience vertigo, dizziness, a feeling of unsteadiness, or a sensation that the room is spinning, a vestibular physiotherapist can identify the cause and treat it with targeted exercises and repositioning techniques. The most common condition — BPPV (benign paroxysmal positional vertigo) — often resolves in just one or two sessions.',
+    highlights: [
+      'Canalith repositioning for BPPV (Epley manoeuvre)',
+      'Vestibular rehabilitation exercises (VRT)',
+      'Gaze stabilisation and eye-head coordination',
+      'Balance retraining and fall prevention',
+    ],
+    benefits: [
+      'Rapid resolution of BPPV vertigo',
+      'Significantly reduced dizziness and unsteadiness',
+      'Restored confidence in daily movement',
+      'Lower risk of falls related to balance problems',
+    ],
+    conditions: [
+      'Benign paroxysmal positional vertigo (BPPV)',
+      'Vestibular neuritis and labyrinthitis',
+      'Chronic dizziness and unsteadiness',
+      'Post-concussion balance problems',
+      "Meni\u00e8re's disease",
+      'Age-related balance decline',
     ],
   },
 }
@@ -272,13 +380,15 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
       '@type': 'MedicalSpecialty',
       name: 'PhysicalTherapy',
     },
-    lastReviewed: '2026-04-10',
+    lastReviewed: '2026-04-14',
     reviewedBy: {
       '@type': 'Organization',
       name: 'BookPhysio',
       url: 'https://bookphysio.in',
     },
   }
+
+  const specialty = SPECIALTIES.find((s) => s.slug === slug)
 
   return (
     <>
@@ -290,7 +400,7 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalWebPageSchema) }}
       />
-      <SpecialtyArticle data={data} slug={slug} />
+      <SpecialtyArticle data={data} slug={slug} image={specialty?.image} subLabel={specialty?.subLabel} />
     </>
   )
 }

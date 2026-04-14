@@ -1,14 +1,18 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
   Baby,
   Bone,
   Brain,
+  Briefcase,
   Dumbbell,
+  Ear,
   Flower2,
   HeartPulse,
+  PersonStanding,
   Ribbon,
   Stethoscope,
   Users,
@@ -25,7 +29,13 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   Flower2,
   Ribbon,
   Users,
+  PersonStanding,
+  Briefcase,
+  Ear,
 }
+
+/** Mustard yellow — matches the 3D illustration card accent */
+const MUSTARD = '#F5A623'
 
 export default function TopSpecialties() {
   return (
@@ -53,39 +63,67 @@ export default function TopSpecialties() {
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* Grid — 12 items, image-first cards */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {SPECIALTIES.map((s) => {
             const Icon = ICON_MAP[s.icon] ?? Stethoscope
+            const hasImage = Boolean(s.image)
+
             return (
               <Link
                 key={s.slug}
-                href={`/specialty/${s.slug}`}
+                href={`/specialties/${s.slug}`}
                 className={cn(
-                  'group flex flex-col gap-4 p-6 rounded-2xl border bg-white',
+                  'group flex flex-col rounded-2xl border bg-white overflow-hidden',
                   'transition-all duration-200 hover:-translate-y-1',
                   'hover:shadow-lg hover:shadow-slate-200/80',
                   s.tint.border,
                   s.tint.hoverBorder,
                 )}
               >
-                {/* Icon */}
-                <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', s.tint.bg, s.tint.text)}>
-                  <Icon size={22} />
-                </div>
+                {/* Image area */}
+                {hasImage ? (
+                  <div
+                    className="relative w-full h-40 overflow-hidden"
+                    style={{ backgroundColor: MUSTARD }}
+                  >
+                    <Image
+                      src={s.image!}
+                      alt={`${s.label} physiotherapy`}
+                      fill
+                      className="object-contain object-bottom"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  </div>
+                ) : (
+                  /* Fallback icon area */
+                  <div className={cn('w-full h-32 flex items-center justify-center', s.tint.bg)}>
+                    <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center', s.tint.bg, s.tint.text)}>
+                      <Icon size={28} />
+                    </div>
+                  </div>
+                )}
 
-                {/* Content */}
-                <div className="flex-1">
-                  <h3 className={cn('text-[16px] font-bold mb-1 transition-colors group-hover:text-indigo-700', s.tint.text)}>
+                {/* Text content */}
+                <div className="flex flex-col flex-1 gap-1.5 p-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                    {s.subLabel}
+                  </p>
+                  <h3 className={cn(
+                    'text-[16px] font-bold transition-colors group-hover:text-indigo-700',
+                    s.tint.text
+                  )}>
                     {s.label}
                   </h3>
-                  <p className="text-slate-500 text-[13px] leading-relaxed">{s.tagline}</p>
-                </div>
+                  <p className="text-slate-500 text-[12px] leading-relaxed line-clamp-2 flex-1">
+                    {s.tagline}
+                  </p>
 
-                {/* CTA */}
-                <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors">
-                  Learn more
-                  <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                  {/* CTA */}
+                  <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400 group-hover:text-indigo-600 transition-colors mt-1">
+                    Learn more
+                    <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </div>
               </Link>
             )

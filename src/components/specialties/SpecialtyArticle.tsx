@@ -1,7 +1,8 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { ArrowRight, Calendar, CheckCircle2, ShieldCheck, Sparkles, Stethoscope, FileText } from 'lucide-react'
+import { ArrowRight, Calendar, CheckCircle2, ShieldCheck, Stethoscope } from 'lucide-react'
 
 export interface SpecialtyArticleData {
   title: string
@@ -16,17 +17,16 @@ export interface SpecialtyArticleData {
 interface SpecialtyArticleProps {
   data: SpecialtyArticleData
   slug?: string
+  /** Path to 3D illustration image, e.g. /specialties/orthopaedic.png */
+  image?: string
+  /** Patient-friendly sub-label, e.g. "Bones & Joints" */
+  subLabel?: string
 }
 
-const SECTIONS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'conditions', label: 'Common conditions' },
-  { id: 'treatment', label: 'How treatment works' },
-  { id: 'benefits', label: 'Patient benefits' },
-  { id: 'booking', label: 'Book a session' },
-]
+/** Mustard yellow — matches the 3D illustration background exactly */
+const MUSTARD = '#F5A623'
 
-export default function SpecialtyArticle({ data, slug }: SpecialtyArticleProps) {
+export default function SpecialtyArticle({ data, slug, image, subLabel }: SpecialtyArticleProps) {
   const bookingHref = slug
     ? `/search?specialty=${encodeURIComponent(slug)}`
     : `/search?condition=${encodeURIComponent(data.title)}`
@@ -35,213 +35,197 @@ export default function SpecialtyArticle({ data, slug }: SpecialtyArticleProps) 
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-[#FAFAFA]">
-        {/* Hero */}
-        <section className="border-b border-slate-200/70 bg-white">
-          <div className="mx-auto max-w-[1142px] px-6 py-12 lg:py-16 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F4F3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              {data.ncahpName ? `NCAHP: ${data.ncahpName}` : 'Clinical specialty'}
+      <main className="min-h-screen" style={{ backgroundColor: MUSTARD }}>
+
+        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        <section
+          className="relative overflow-hidden pt-[68px]"
+          style={{ backgroundColor: MUSTARD }}
+          aria-label="Specialty hero"
+        >
+          <div className="mx-auto max-w-[1142px] px-6">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-0">
+
+              {/* Left — text */}
+              <div className="flex-1 py-14 lg:py-20 lg:pr-12 z-10">
+                {/* NCAHP badge */}
+                {data.ncahpName && (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-black/20 bg-black/10 px-3 py-1 mb-6">
+                    <ShieldCheck className="h-3.5 w-3.5 text-black/70" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/70">
+                      NCAHP: {data.ncahpName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Sub-label */}
+                {subLabel && (
+                  <p className="text-[14px] font-bold uppercase tracking-[0.22em] text-black/60 mb-2">
+                    {subLabel}
+                  </p>
+                )}
+
+                {/* Title */}
+                <h1 className="text-[36px] lg:text-[52px] font-black tracking-tight leading-[1.05] text-black mb-5">
+                  {data.title}
+                </h1>
+
+                {/* Subtitle */}
+                <p className="text-[17px] lg:text-[19px] leading-relaxed text-black/75 max-w-[520px] mb-8">
+                  {data.subtitle}
+                </p>
+
+                {/* CTA */}
+                <Link
+                  href={bookingHref}
+                  className="inline-flex items-center gap-2.5 rounded-full bg-black px-7 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-80 group"
+                >
+                  <Calendar className="h-4 w-4" />
+                  Find a specialist
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+
+                {/* Disclaimer chip */}
+                <p className="mt-6 text-[11px] text-black/50 leading-relaxed max-w-[420px]">
+                  This page is for general information only — not medical advice. Always consult a qualified physiotherapist.
+                </p>
+              </div>
+
+              {/* Right — illustration image (seamless on mustard bg) */}
+              {image && (
+                <div className="relative lg:w-[480px] xl:w-[540px] shrink-0 self-end">
+                  <Image
+                    src={image}
+                    alt={`${data.title} illustration`}
+                    width={540}
+                    height={480}
+                    className="w-full h-auto object-contain object-bottom"
+                    priority
+                  />
+                </div>
+              )}
+
+              {/* Fallback icon when no image */}
+              {!image && (
+                <div className="hidden lg:flex lg:w-[300px] shrink-0 items-center justify-center self-center">
+                  <div className="w-32 h-32 rounded-full bg-black/10 flex items-center justify-center">
+                    <Stethoscope className="w-16 h-16 text-black/40" />
+                  </div>
+                </div>
+              )}
             </div>
-            <h1 className="mt-5 text-[30px] lg:text-[40px] font-bold tracking-tight leading-tight text-[#1A1C29]">
-              {data.title} <span className="text-[#00766C]">in India</span>
-            </h1>
-            <p className="mt-4 mx-auto max-w-[720px] text-[15px] leading-relaxed text-slate-600 lg:text-[17px]">
-              {data.subtitle}
-            </p>
           </div>
+
+          {/* Subtle wave divider into content area */}
+          <div
+            className="absolute bottom-0 inset-x-0 h-8 pointer-events-none"
+            style={{
+              background: `linear-gradient(to bottom, transparent, ${MUSTARD})`,
+            }}
+          />
         </section>
 
-        {/* Content with TOC sidebar */}
-        <section className="py-12 lg:py-16">
+        {/* ── Content cards on mustard background ─────────────────────── */}
+        <section className="pb-24" style={{ backgroundColor: MUSTARD }}>
           <div className="mx-auto max-w-[1142px] px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
 
-              {/* Sidebar TOC */}
-              <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
-                <div>
-                  <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-4">
-                    On this page
-                  </h2>
-                  <ul className="space-y-2">
-                    {SECTIONS.filter((s) => s.id !== 'conditions' || data.conditions?.length).map((s) => (
-                      <li key={s.id}>
-                        <a
-                          href={`#${s.id}`}
-                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
-                        >
-                          {s.label}
-                        </a>
+            {/* Overview */}
+            <div className="mb-6">
+              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Overview</h2>
+                <h3 className="text-[22px] lg:text-[24px] font-bold text-black mb-4">What this care covers</h3>
+                <p className="text-[15px] lg:text-[16px] leading-relaxed text-[#333333]">
+                  {data.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6 mb-6">
+
+              {/* Conditions */}
+              {data.conditions && data.conditions.length > 0 && (
+                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
+                  <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
+                  <ul className="space-y-3">
+                    {data.conditions.map((condition) => (
+                      <li key={condition} className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: MUSTARD }}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                        </div>
+                        <span className="text-[14px] font-medium text-[#333333]">{condition}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
+              )}
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
-                  <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
-                    <Stethoscope className="w-5 h-5" />
-                  </div>
-                  <h3 className="mt-4 text-[15px] font-semibold text-[#1A1C29]">
-                    Not medical advice
-                  </h3>
-                  <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
-                    This page is for general information only. It does not replace a consultation with a qualified physiotherapist. Always seek professional advice for your specific condition.
-                  </p>
-                  <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-[#00766C] uppercase tracking-[0.16em]">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> IAP-verified providers
-                  </div>
-                </div>
-              </aside>
-
-              {/* Main content */}
-              <div className="lg:col-span-8 space-y-10 lg:space-y-12">
-
-                {/* Overview */}
-                <section id="overview" className="scroll-mt-28">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] lg:p-10">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C]">
-                        <FileText className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                          Overview
-                        </p>
-                        <h2 className="text-[22px] lg:text-[24px] font-bold tracking-tight text-[#1A1C29]">
-                          What this care covers
-                        </h2>
-                      </div>
-                    </div>
-                    <p className="text-[15px] leading-relaxed text-slate-600 lg:text-[16px]">
-                      {data.description}
-                    </p>
-                  </div>
-                </section>
-
-                {/* Conditions */}
-                {data.conditions && data.conditions.length > 0 && (
-                  <section id="conditions" className="scroll-mt-28">
-                    <h2 className="text-[22px] lg:text-[24px] font-bold text-[#1A1C29] tracking-tight mb-5">
-                      Common conditions treated
-                    </h2>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {data.conditions.map((condition) => (
-                        <div
-                          key={condition}
-                          className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
-                        >
-                          <div className="w-5 h-5 rounded-full bg-[#E6F4F3] flex items-center justify-center shrink-0">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#00766C]" />
-                          </div>
-                          <span className="text-[14px] font-medium text-slate-700">{condition}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Treatment approaches */}
-                <section id="treatment" className="scroll-mt-28">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] lg:p-7">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C]">
-                        <CheckCircle2 className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                          Core approaches
-                        </p>
-                        <h2 className="mt-1 text-[22px] lg:text-[24px] font-bold tracking-tight text-[#1A1C29]">
-                          How treatment is delivered
-                        </h2>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      {data.highlights.map((highlight, index) => {
-                        const tints = [
-                          'bg-[#E6F4F3] text-[#00766C]',
-                          'bg-[#E7EEFB] text-[#2F5EC4]',
-                          'bg-[#FEE9DD] text-[#C4532A]',
-                          'bg-[#EDEAF8] text-[#5B4BC4]',
-                        ]
-                        return (
-                          <div
-                            key={highlight}
-                            className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
-                          >
-                            <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${tints[index % tints.length]}`}>
-                              <CheckCircle2 className="h-5 w-5" />
-                            </div>
-                            <p className="text-[14px] leading-relaxed text-slate-700">{highlight}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Benefits */}
-                <section id="benefits" className="scroll-mt-28">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] lg:p-7">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#FEE9DD] text-[#C4532A]">
-                        <Sparkles className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                          Patient benefits
-                        </p>
-                        <h2 className="mt-1 text-[22px] lg:text-[24px] font-bold tracking-tight text-[#1A1C29]">
-                          What better recovery looks like
-                        </h2>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      {data.benefits.map((benefit, index) => {
-                        const tints = [
-                          'bg-[#FEE9DD] text-[#C4532A]',
-                          'bg-[#E6F4F3] text-[#00766C]',
-                          'bg-[#FCE7F3] text-[#BE185D]',
-                          'bg-[#EEF2FF] text-[#4338CA]',
-                        ]
-                        return (
-                          <div
-                            key={benefit}
-                            className="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
-                          >
-                            <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${tints[index % tints.length]}`}>
-                              <Sparkles className="h-5 w-5" />
-                            </div>
-                            <p className="text-[14px] leading-relaxed text-slate-700">{benefit}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </section>
-
-                {/* CTA */}
-                <section id="booking" className="scroll-mt-28 rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-[0_1px_3px_rgba(15,23,42,0.04)] lg:p-10">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E6F4F3] text-[#00766C]">
-                    <Calendar className="h-6 w-6" />
-                  </div>
-                  <h2 className="mt-5 text-[22px] font-bold tracking-tight text-[#1A1C29] lg:text-[24px]">
-                    Ready to start your recovery?
-                  </h2>
-                  <p className="mx-auto mt-3 max-w-[620px] text-[14px] leading-relaxed text-slate-600 lg:text-[15px]">
-                    Browse verified physiotherapists, compare visit formats, and book the kind of specialist support that matches your condition and pace of recovery.
-                  </p>
-                  <Link
-                    href={bookingHref}
-                    className="group mt-6 inline-flex items-center gap-2 rounded-full bg-[#00766C] px-7 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#005A52]"
-                  >
-                    <Calendar className="h-4 w-4" />
-                    Find a specialist
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </section>
+              {/* Treatment approaches */}
+              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Approach</h2>
+                <h3 className="text-[20px] font-bold text-black mb-5">How treatment is delivered</h3>
+                <ul className="space-y-3">
+                  {data.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-3">
+                      <CheckCircle2
+                        className="w-5 h-5 shrink-0 mt-0.5"
+                        style={{ color: MUSTARD }}
+                        strokeWidth={2.5}
+                      />
+                      <span className="text-[14px] leading-relaxed text-[#333333]">{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
+
+            {/* Benefits */}
+            <div className="mb-6">
+              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Patient benefits</h2>
+                <h3 className="text-[20px] font-bold text-black mb-5">What better recovery looks like</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {data.benefits.map((benefit) => (
+                    <div
+                      key={benefit}
+                      className="flex items-start gap-3 rounded-xl p-4"
+                      style={{ backgroundColor: `${MUSTARD}22` }}
+                    >
+                      <div
+                        className="w-2 h-2 rounded-full shrink-0 mt-1.5"
+                        style={{ backgroundColor: MUSTARD }}
+                      />
+                      <p className="text-[14px] leading-relaxed font-medium text-black">{benefit}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* CTA card */}
+            <div
+              className="rounded-2xl p-10 text-center"
+              style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/15 mb-5">
+                <Calendar className="h-7 w-7 text-black" />
+              </div>
+              <h2 className="text-[24px] lg:text-[28px] font-black tracking-tight text-black mb-3">
+                Ready to start your recovery?
+              </h2>
+              <p className="mx-auto max-w-[580px] text-[15px] leading-relaxed text-black/70 mb-7">
+                Browse verified physiotherapists, compare visit formats, and book the specialist support that matches your condition and recovery pace.
+              </p>
+              <Link
+                href={bookingHref}
+                className="inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-80 group"
+              >
+                <Calendar className="h-4 w-4" />
+                Find a specialist
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
           </div>
         </section>
       </main>

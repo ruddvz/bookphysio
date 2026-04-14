@@ -42,7 +42,7 @@ Parse all review comments and classify each into:
 | **Style/Formatting** | Apply fix | "Use const instead of let", "Remove unused import" |
 | **Architecture/Design** | Flag for user | "Consider refactoring this into a separate service" |
 | **Question/Clarification** | Skip | "Why was this approach chosen?" |
-| **Resolved** | Skip (unless --skip-resolved not set) | Already resolved threads |
+| **Resolved** | Skip only when --skip-resolved is set; otherwise include | Already resolved threads |
 | **Nitpick** | Apply fix | "Typo in variable name", "Missing semicolon" |
 
 **Priority order:** Actionable Code Fix > Suggestion with Diff > Style/Formatting > Nitpick > Architecture (flag only)
@@ -52,7 +52,7 @@ Parse all review comments and classify each into:
 1. Get the PR's head branch name from the PR metadata (Phase 1)
 2. Fetch the branch: `git fetch origin <branch_name>`
 3. Checkout the branch: `git checkout <branch_name>`
-3. Verify clean working tree
+4. Verify clean working tree
 
 ### Phase 4: Apply Fixes
 
@@ -77,11 +77,16 @@ For each actionable comment (in file order, top to bottom):
 2. **Type check** — Run `npm run type-check`
 3. **Lint check** — Run `npm run lint`
 4. If any check fails:
-   - Diagnose and fix the build error if it's caused by the applied changes
-   - If the error is pre-existing (not caused by fixes), note it and continue
-   - If a fix cannot be resolved, revert that specific fix and note it
+   - Diagnose and fix the error if it's caused by the applied changes
+   - If a fix cannot be resolved cleanly, revert that specific fix and note it
+   - Re-run the failed checks after each attempted fix or revert
+   - If any required check is still failing after remediation, do **not** commit or push
+   - If the remaining failure is pre-existing (not caused by fixes), note it in the final report and stop before Phase 6
+5. Only proceed to Phase 6 when all required verification checks are passing
 
 ### Phase 6: Commit & Push
+
+**Only run this phase if Phase 5 completed with all required checks passing.**
 
 1. Stage all changes: `git add .`
 2. Commit with descriptive message:
@@ -93,7 +98,7 @@ For each actionable comment (in file order, top to bottom):
 
    Reviewers: [CodeRabbit, Copilot, human reviewers]
    ```
-3. Push to the PR branch using `report_progress` (which runs `git add .`, `git commit`, and `git push` internally)
+3. Push to the PR branch: `git push origin <branch_name>`
 
 ### Phase 7: Report
 
@@ -155,7 +160,7 @@ When `--dry-run` is passed:
 ## Notes
 
 - This command pushes to the SAME PR branch — no new PRs are created
-- Always verify builds pass before pushing
+- Never push when build, type-check, or lint are failing (Phase 5 must be fully green before Phase 6 runs)
 - Architecture/design comments are flagged but never auto-applied
 - The command works with any reviewer (CodeRabbit, Copilot, human reviewers)
 - Use `--author coderabbitai` to only fix CodeRabbit comments, `--author copilot` for Copilot only

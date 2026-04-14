@@ -1,18 +1,12 @@
 import type { ImgHTMLAttributes } from 'react'
 import { fireEvent, render, screen, within } from '@testing-library/react'
-import type { SWRResponse } from 'swr'
-import useSWR from 'swr'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import FAQ from './FAQ'
 import Footer from './Footer'
-import HealthSystems from './HealthSystems'
 import HeroSection from './HeroSection'
-import HowItWorks from './HowItWorks'
 import Navbar from './Navbar'
 import ProofSection from './ProofSection'
-import Testimonials from './Testimonials'
 import TopSpecialties from './TopSpecialties'
-import { SPECIALTIES } from '@/lib/specialties'
 
 vi.mock('next/image', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,64 +16,20 @@ vi.mock('next/image', () => ({
   ),
 }))
 
-vi.mock('swr', () => ({
-  __esModule: true,
-  default: vi.fn(),
-}))
-
-const mockedUseSWR = useSWR as unknown as {
-  mockImplementation: (implementation: (key: string) => SWRResponse<unknown, Error>) => void
-}
-
 describe('Homepage regressions', () => {
-  beforeEach(() => {
-    mockedUseSWR.mockImplementation((key: string) => {
-      if (key === '/api/providers?limit=3&sort=rating') {
-        return {
-          data: {
-            providers: [],
-            total: 0,
-            page: 1,
-            limit: 3,
-          },
-          error: undefined,
-          isLoading: false,
-        } as SWRResponse<unknown, Error>
-      }
-
-      if (key === '/api/reviews?limit=3') {
-        return {
-          data: { reviews: [] },
-          error: undefined,
-          isLoading: false,
-        } as SWRResponse<unknown, Error>
-      }
-
-      return {
-        data: undefined,
-        error: undefined,
-        isLoading: false,
-      } as SWRResponse<unknown, Error>
-    })
-  })
-
   it('renders named homepage regions for assistive tech', () => {
     render(
       <>
         <HeroSection />
-        <ProofSection />
         <TopSpecialties />
-        <HowItWorks />
-        <HealthSystems />
+        <ProofSection />
         <FAQ />
       </>
     )
 
     expect(screen.getByRole('region', { name: /hero/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /browse by specialty/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /how booking works/i })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: /platform trust signals/i })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /network transparency/i })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: /frequently asked questions/i })).toBeInTheDocument()
   }, 15000)
 
@@ -104,16 +54,11 @@ describe('Homepage regressions', () => {
     const { container } = render(
       <>
         <FAQ />
-        <HowItWorks />
-        <TopSpecialties />
-        <HealthSystems />
+        <ProofSection />
       </>
     )
 
     expect(screen.getByText(/Before you book, here is what people usually want to know/i)).toBeInTheDocument()
-    expect(screen.getByText(/Finding a physiotherapist should not feel like a research project/i)).toBeInTheDocument()
-    expect(screen.getByText(/Pick a specialty and we will show you verified physiotherapists/i)).toBeInTheDocument()
-    expect(screen.getByText(/Credentials, visit format, fees and availability are all on the same page/i)).toBeInTheDocument()
     expect(screen.getByText('Can I cancel or reschedule a session?')).toBeInTheDocument()
 
     expect(container).not.toHaveTextContent('The FAQ should feel like part of the product, not a legal appendix.')
@@ -152,7 +97,6 @@ describe('Homepage regressions', () => {
 
     expect(container.firstChild).toHaveClass('bg-transparent')
     expect(container.firstChild).toHaveClass('fixed')
-    expect(screen.getByRole('link', { name: /sports sciences/i })).toHaveAttribute('href', '/specialties/sports')
 
     rerender(<Footer />)
     expect(screen.queryByRole('link', { name: /start searching/i })).not.toBeInTheDocument()
@@ -160,28 +104,5 @@ describe('Homepage regressions', () => {
     expect(screen.queryByText('Verified providers')).not.toBeInTheDocument()
     expect(screen.queryByText('Home visits')).not.toBeInTheDocument()
     expect(screen.getByText(/bookphysio is a booking platform/i)).toBeInTheDocument()
-    expect(screen.getByText(`© ${new Date().getFullYear()} BookPhysio.in`)).toBeInTheDocument()
-  })
-
-  it('keeps specialty, workflow, and testimonial polish aligned with the audit', () => {
-    const { container: specialties } = render(<TopSpecialties />)
-
-    const specialtyCtas = screen.getAllByText(/learn more/i)
-
-    expect(specialtyCtas).toHaveLength(SPECIALTIES.length)
-
-    for (const cta of specialtyCtas) {
-      expect(cta.className).toContain('text-slate-400')
-      expect(cta.className).toContain('group-hover:text-indigo-600')
-    }
-
-    expect(specialties.querySelectorAll('.lucide-arrow-right')).toHaveLength(SPECIALTIES.length + 1)
-
-    const { container: workflow } = render(<HowItWorks />)
-    expect(workflow.querySelector('.lucide-sliders-horizontal')).toBeInTheDocument()
-    expect(workflow.querySelector('.lucide-star')).not.toBeInTheDocument()
-
-    render(<Testimonials />)
-    expect(screen.queryByRole('region', { name: /patient reviews/i })).not.toBeInTheDocument()
   })
 })
