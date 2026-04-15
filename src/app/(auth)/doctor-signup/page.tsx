@@ -26,6 +26,8 @@ interface Step2Data {
   degree: 'BPT' | 'MPT' | 'PhD' | ''
   experienceYears: string
   specialties: string[]
+  certifications: string[]
+  equipmentTags: string[]
 }
 
 interface Step3Data {
@@ -248,6 +250,85 @@ const inputStyle: React.CSSProperties = {
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
   return <p style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px' }}>{msg}</p>
+}
+
+function CertTagInput({
+  label,
+  placeholder,
+  hint,
+  values,
+  onChange,
+}: {
+  label: string
+  placeholder?: string
+  hint?: string
+  values: string[]
+  onChange: (vals: string[]) => void
+}) {
+  const [inputVal, setInputVal] = useState('')
+
+  function addTag() {
+    const trimmed = inputVal.trim()
+    if (trimmed && !values.includes(trimmed)) {
+      onChange([...values, trimmed])
+    }
+    setInputVal('')
+  }
+
+  function removeTag(tag: string) {
+    onChange(values.filter((v) => v !== tag))
+  }
+
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <Label>{label}</Label>
+      {hint && <p style={{ fontSize: '12px', color: '#555B6E', marginBottom: '8px' }}>{hint}</p>}
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <input
+          type="text"
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag() } }}
+          placeholder={placeholder}
+          style={{ ...inputStyle, flex: 1 }}
+        />
+        <button
+          type="button"
+          onClick={addTag}
+          style={{
+            height: '44px', padding: '0 14px', borderRadius: '8px',
+            border: '1px solid var(--color-bp-border)', background: 'var(--color-bp-surface)',
+            fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}
+        >
+          Add
+        </button>
+      </div>
+      {values.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+          {values.map((tag) => (
+            <span
+              key={tag}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '4px 10px', borderRadius: '20px',
+                background: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
+                fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)',
+              }}
+            >
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(tag)}
+                aria-label={`Remove ${tag}`}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: '#999', fontSize: '14px' }}
+              >×</button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function Label({ children }: { children: React.ReactNode }) {
@@ -736,6 +817,22 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         </div>
         <FieldError msg={errors.specialties} />
       </div>
+
+      <CertTagInput
+        label="Certifications (optional)"
+        placeholder="e.g. Mulligan, McKenzie, NDT"
+        hint="Add technique certifications you hold"
+        values={data.certifications}
+        onChange={(vals) => onChange({ ...data, certifications: vals })}
+      />
+
+      <CertTagInput
+        label="Equipment & Modalities (optional)"
+        placeholder="e.g. TENS, Ultrasound, Traction"
+        hint="Add equipment or modalities you use"
+        values={data.equipmentTags}
+        onChange={(vals) => onChange({ ...data, equipmentTags: vals })}
+      />
 
       <PrimaryButton onClick={handleNext}>
         Next: Practice Details
@@ -1377,6 +1474,8 @@ export default function DoctorSignupPage() {
     degree: '',
     experienceYears: '',
     specialties: [],
+    certifications: [],
+    equipmentTags: [],
   })
   const [step3, setStep3] = useState<Step3Data>({
     clinicName: '', address: '', city: '', state: '', pincode: '', visitTypes: [],

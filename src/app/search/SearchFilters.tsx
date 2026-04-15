@@ -19,6 +19,7 @@ const CITIES = [
   'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
 ]
 
+const QUALIFICATIONS = ['BPT', 'MPT', 'PhD', 'DPT']
 const VISIT_TYPES = ['In-clinic', 'Home Visit']
 const VISIT_TYPE_URL: Record<string, string> = {
   'In-clinic': 'in_clinic',
@@ -149,6 +150,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
   const currentVisitType: VisitType = (VISIT_TYPE_LABEL[currentVisitTypeRaw] as VisitType) ?? 'Any'
   const currentMaxFee = Number(searchParams.get('max_fee') ?? DEFAULT_MAX_FEE)
   const currentSpecialty = searchParams.get('specialty') ?? ''
+  const currentQualification = searchParams.get('qualification') ?? ''
   const currentSort = searchParams.get('sort') ?? ''
 
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -163,6 +165,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     currentVisitType !== 'Any' ||
     currentMaxFee !== DEFAULT_MAX_FEE ||
     currentSpecialty !== '' ||
+    currentQualification !== '' ||
     currentSort !== ''
 
   const activeCount = [
@@ -170,6 +173,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     currentVisitType !== 'Any',
     currentMaxFee !== DEFAULT_MAX_FEE,
     currentSpecialty !== '',
+    currentQualification !== '',
     currentSort !== '',
   ].filter(Boolean).length
 
@@ -200,6 +204,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
     next.delete('visit_type')
     next.delete('max_fee')
     next.delete('specialty')
+    next.delete('qualification')
     next.delete('sort')
     router.push(`${basePath}?${next.toString()}`)
     setDrawerOpen(false)
@@ -223,6 +228,13 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
           options={SPECIALTIES}
           icon={Activity}
           onChange={(val) => pushParams({ specialty: val })}
+        />
+
+        <FilterPill
+          label="Qualification"
+          value={currentQualification}
+          options={QUALIFICATIONS}
+          onChange={(val) => pushParams({ qualification: val })}
         />
 
         <FilterPill
@@ -371,6 +383,30 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                       )}
                     >
                       {c}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {/* Qualification */}
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <Activity size={15} className="text-[#00766C]" />
+                  <label className="text-[13px] font-semibold text-[#333]">Qualification</label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {QUALIFICATIONS.map(q => (
+                    <button
+                      key={q}
+                      onClick={() => pushParams({ qualification: q === currentQualification ? null : q })}
+                      className={cn(
+                        "text-[13px] font-medium py-2 px-3.5 rounded-full border transition-all",
+                        currentQualification === q
+                          ? "bg-[#00766C] text-white border-[#00766C]"
+                          : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
+                      )}
+                    >
+                      {q}
                     </button>
                   ))}
                 </div>
