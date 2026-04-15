@@ -52,12 +52,14 @@ const onboardSignupSchema = z.object({
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
     certifications: z.array(z.string().min(1).max(200)).max(20).optional().default([]),
   }).superRefine((data, context) => {
-    if (data.registrationType === 'NCAHP' && !data.ncahpNumber?.trim()) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['ncahpNumber'],
-        message: 'NCAHP registration number is required',
-      })
+    if (data.registrationType === 'NCAHP') {
+      if (!data.ncahpNumber?.trim() || data.ncahpNumber.trim().length < 3) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['ncahpNumber'],
+          message: 'NCAHP registration number must be at least 3 characters',
+        })
+      }
     }
 
     if (data.registrationType === 'IAP' && !data.iapNumber?.trim()) {
@@ -353,9 +355,8 @@ export async function POST(request: NextRequest) {
         address: isClinic ? (step3.address ?? '') : '',
         city: step3.city,
         state: step3.state,
-        pincode: step3.pincode ?? '',
+        pincode: isClinic ? (step3.pincode ?? '') : '',
         visit_type: step3.visitTypes,
-        modalities: step3.modalities ?? [],
       })
       .select('id')
       .single()

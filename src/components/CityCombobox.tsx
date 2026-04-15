@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { INDIA_CITIES, formatCityLabel, searchCities, type IndiaCity } from '@/lib/india-locations'
 
 interface CityComboboxProps {
   value: string
   onChange: (city: string, state?: string) => void
   placeholder?: string
-  inputStyle?: React.CSSProperties
   className?: string
   /** If true, shows only the city name in the input (not "City, State") */
   cityOnly?: boolean
@@ -17,14 +16,16 @@ interface CityComboboxProps {
  * Searchable city picker that shows "City, State" format.
  * Selecting a city provides both the city name and state to the onChange handler.
  */
-export default function CityCombobox({
+export function CityCombobox({
   value,
   onChange,
   placeholder = 'Search city…',
-  inputStyle,
   className,
   cityOnly = false,
 }: CityComboboxProps) {
+  const id = useId()
+  const listboxId = `${id}-listbox`
+
   const [query, setQuery] = useState(value)
   const [open, setOpen] = useState(false)
   const [highlighted, setHighlighted] = useState(0)
@@ -33,10 +34,14 @@ export default function CityCombobox({
 
   const results = searchCities(query).slice(0, 8)
 
-  // Sync external value changes
+  // Sync external value changes — reconstruct the full "City, State" label from
+  // the bare city name so the input shows the selected label after parent re-renders.
   useEffect(() => {
-    setQuery(value)
-  }, [value])
+    if (!value) { setQuery(''); return }
+    if (cityOnly) { setQuery(value); return }
+    const entry = INDIA_CITIES.find((c) => c.city === value)
+    setQuery(entry ? formatCityLabel(entry) : value)
+  }, [value, cityOnly])
 
   // Close on outside click
   useEffect(() => {
@@ -77,11 +82,14 @@ export default function CityCombobox({
     setQuery(v)
     setHighlighted(0)
     setOpen(true)
-    // If user clears field, clear parent too
     if (!v) onChange('', undefined)
   }
 
-  const showDropdown = open && results.length > 0
+  // Show dropdown whenever open and the user has typed something (allows "No cities found")
+  const showDropdown = open && query.trim().length > 0
+  const activeDescendant = showDropdown && results[highlighted]
+    ? `${id}-option-${highlighted}`
+    : undefined
 
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }} className={className}>
@@ -96,12 +104,14 @@ export default function CityCombobox({
         autoComplete="off"
         role="combobox"
         aria-expanded={showDropdown}
+        aria-controls={listboxId}
         aria-autocomplete="list"
         aria-haspopup="listbox"
-        style={inputStyle}
+        aria-activedescendant={activeDescendant}
       />
       {showDropdown && (
         <ul
+          id={listboxId}
           role="listbox"
           style={{
             position: 'absolute',
@@ -123,6 +133,7 @@ export default function CityCombobox({
           {results.map((entry, i) => (
             <li
               key={entry.slug}
+              id={`${id}-option-${i}`}
               role="option"
               aria-selected={i === highlighted}
               onMouseDown={(e) => { e.preventDefault(); handleSelect(entry) }}

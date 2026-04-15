@@ -149,7 +149,7 @@ export default function HeroSection() {
     const params = new URLSearchParams()
     const s = overrideSpecialty ?? specialty
     if (s.trim()) params.set('specialty', s.trim())
-    if (city.trim()) params.set('city', city.trim())
+    if (city.trim()) params.set('city', city.split(',')[0]?.trim() ?? city.trim())
     router.push(params.toString() ? `/search?${params}` : '/search')
   }
 
