@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import CityCombobox from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
+import { INDIA_STATES } from '@/lib/india-locations'
 import { createClient } from '@/lib/supabase/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -19,7 +21,8 @@ interface Step1Data {
 }
 
 interface Step2Data {
-  registrationType: 'IAP' | 'STATE'
+  registrationType: 'NCAHP' | 'IAP' | 'STATE'
+  ncahpNumber: string
   iapNumber: string
   stateRegistrationNumber: string
   stateName: string
@@ -27,16 +30,16 @@ interface Step2Data {
   experienceYears: string
   specialties: string[]
   certifications: string[]
-  equipmentTags: string[]
 }
 
 interface Step3Data {
+  visitTypes: string[]
   clinicName: string
   address: string
   city: string
   state: string
   pincode: string
-  visitTypes: string[]
+  modalities: string[]
 }
 
 interface DayTimeRange {
@@ -72,23 +75,33 @@ const SPECIALTIES = [
   "Women's Health",
   'Geriatric Physio',
   'Cardiopulmonary',
+  'Oncology Physio',
+  'Community Physio',
+  'Industrial Physio',
+  'Vestibular Physio',
 ]
-const CITIES = [
-  'Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Hyderabad',
-  'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
+
+const CERTIFICATIONS = [
+  'MIAP (Member, Indian Association of Physiotherapists)',
+  'McKenzie (MDT) Practitioner',
+  'Mulligan Concept Practitioner',
+  'Maitland Manual Therapist',
+  'COMT (Certified Orthopaedic Manual Therapist)',
+  'CDNT (Certified Dry Needling Therapist)',
+  'CKTT (Certified Kinesio Taping Technician)',
 ]
-const CITY_TO_STATE: Record<string, string> = {
-  Delhi: 'Delhi',
-  Mumbai: 'Maharashtra',
-  Bangalore: 'Karnataka',
-  Chennai: 'Tamil Nadu',
-  Hyderabad: 'Telangana',
-  Pune: 'Maharashtra',
-  Kolkata: 'West Bengal',
-  Ahmedabad: 'Gujarat',
-  Jaipur: 'Rajasthan',
-  Surat: 'Gujarat',
-}
+
+const MODALITIES = [
+  'Laser Therapy (Class IV/LLLT)',
+  'Shockwave Therapy (ESWT)',
+  'PEMF (Pulsed Electromagnetic Field)',
+  'Shortwave Diathermy (SWD)',
+  'Traction Unit (Cervical/Lumbar)',
+  'CPM (Continuous Passive Motion)',
+  'Hydrotherapy',
+  'Cryotherapy',
+]
+
 const VISIT_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
   home_visit: 'Home Visit',
@@ -117,7 +130,8 @@ const step1Schema = z.object({
 })
 
 const step2Schema = z.object({
-  registrationType: z.enum(['IAP', 'STATE']),
+  registrationType: z.enum(['NCAHP', 'IAP', 'STATE']),
+  ncahpNumber: z.string().optional(),
   iapNumber: z.string().optional(),
   stateRegistrationNumber: z.string().optional(),
   stateName: z.string().optional(),
@@ -127,9 +141,11 @@ const step2Schema = z.object({
     .regex(/^\d+$/, 'Enter a number')
     .refine((v) => parseInt(v) >= 0 && parseInt(v) <= 50, 'Enter valid years (0–50)'),
   specialties: z.array(z.string()).min(1, 'Select at least one specialty'),
-  certifications: z.array(z.string().trim().min(1).max(100)).max(20).default([]),
-  equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).default([]),
+  certifications: z.array(z.string()),
 }).refine(data => {
+  if (data.registrationType === 'NCAHP') {
+    return !!data.ncahpNumber && data.ncahpNumber.length >= 3
+  }
   if (data.registrationType === 'IAP') {
     return !!data.iapNumber && data.iapNumber.length >= 3
   }
@@ -140,12 +156,13 @@ const step2Schema = z.object({
 })
 
 const step3Schema = z.object({
+  visitTypes: z.array(z.string()).min(1, 'Select at least one visit type'),
   clinicName: z.string().optional(),
   address: z.string().optional(),
   city: z.string().min(1, 'Select a city'),
   state: z.string().min(2, 'State is required'),
   pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode').optional().or(z.literal('')),
-  visitTypes: z.array(z.string()).min(1, 'Select at least one visit type'),
+  modalities: z.array(z.string()),
 }).superRefine((data, ctx) => {
   const isClinic = data.visitTypes.includes('in_clinic')
   if (!isClinic) return
@@ -187,6 +204,16 @@ function buildInitialAvailability(): Record<string, DayAvailability> {
 function timeToMinutes(value: string): number {
   const [hours, minutes] = value.split(':').map(Number)
   return (hours ?? 0) * 60 + (minutes ?? 0)
+}
+
+/** Convert 24h time string to 12h AM/PM display label */
+function format24hTo12h(time: string): string {
+  const [hStr, mStr] = time.split(':')
+  const h = parseInt(hStr ?? '0', 10)
+  const m = mStr ?? '00'
+  const period = h < 12 ? 'AM' : 'PM'
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${hour12}:${m} ${period}`
 }
 
 function validateStep4(data: Step4Data, visitTypes: string[]): Record<string, string> {
@@ -266,85 +293,6 @@ function FieldError({ msg }: { msg?: string }) {
   return <p style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px' }}>{msg}</p>
 }
 
-function CertTagInput({
-  label,
-  placeholder,
-  hint,
-  values,
-  onChange,
-}: {
-  label: string
-  placeholder?: string
-  hint?: string
-  values: string[]
-  onChange: (vals: string[]) => void
-}) {
-  const [inputVal, setInputVal] = useState('')
-
-  function addTag() {
-    const trimmed = inputVal.trim()
-    if (trimmed && !values.includes(trimmed)) {
-      onChange([...values, trimmed])
-    }
-    setInputVal('')
-  }
-
-  function removeTag(tag: string) {
-    onChange(values.filter((v) => v !== tag))
-  }
-
-  return (
-    <div style={{ marginBottom: '20px' }}>
-      <Label>{label}</Label>
-      {hint && <p style={{ fontSize: '12px', color: '#555B6E', marginBottom: '8px' }}>{hint}</p>}
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <input
-          type="text"
-          value={inputVal}
-          onChange={(e) => setInputVal(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag() } }}
-          placeholder={placeholder}
-          style={{ ...inputStyle, flex: 1 }}
-        />
-        <button
-          type="button"
-          onClick={addTag}
-          style={{
-            height: '44px', padding: '0 14px', borderRadius: '8px',
-            border: '1px solid var(--color-bp-border)', background: 'var(--color-bp-surface)',
-            fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)', cursor: 'pointer', whiteSpace: 'nowrap',
-          }}
-        >
-          Add
-        </button>
-      </div>
-      {values.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
-          {values.map((tag) => (
-            <span
-              key={tag}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '4px',
-                padding: '4px 10px', borderRadius: '20px',
-                background: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
-                fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)',
-              }}
-            >
-              {tag}
-              <button
-                type="button"
-                onClick={() => removeTag(tag)}
-                aria-label={`Remove ${tag}`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: '#999', fontSize: '14px' }}
-              >×</button>
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
@@ -362,7 +310,7 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full h-11 text-white border-none rounded-[var(--sq-xs)] text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
+      className={`w-full h-11 text-white border-none rounded-lg text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
         disabled ? 'bg-bp-primary/40 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary-dark cursor-pointer'
       }`}
     >
@@ -557,12 +505,38 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <Label>Full Name</Label>
-        <FocusableInput
-          value={data.name}
-          onChange={(v) => onChange({ ...data, name: v })}
-          placeholder="Dr. Priya Sharma"
-        />
+        <Label>Your Name</Label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+          <div style={{
+            height: '44px', padding: '0 12px',
+            backgroundColor: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
+            borderRight: 'none', borderRadius: '8px 0 0 8px',
+            display: 'flex', alignItems: 'center',
+            fontSize: '14px', fontWeight: 700, color: 'var(--color-bp-primary)', flexShrink: 0,
+          }}>
+            Dr.
+          </div>
+          <FocusableInput
+            value={data.name}
+            onChange={(v) => onChange({ ...data, name: v })}
+            placeholder="Priya Sharma"
+            style={{ borderRadius: '0', borderLeft: 'none', borderRight: 'none' }}
+          />
+          <div style={{
+            height: '44px', padding: '0 12px',
+            backgroundColor: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
+            borderLeft: 'none', borderRadius: '0 8px 8px 0',
+            display: 'flex', alignItems: 'center',
+            fontSize: '14px', fontWeight: 700, color: 'var(--color-bp-primary)', flexShrink: 0,
+          }}>
+            , PT
+          </div>
+        </div>
+        {data.name && (
+          <p style={{ fontSize: '12px', color: '#555B6E', marginTop: '5px' }}>
+            Your profile will appear as: <strong style={{ color: 'var(--color-bp-primary)' }}>Dr. {data.name}, PT</strong>
+          </p>
+        )}
         <FieldError msg={errors.name} />
       </div>
 
@@ -675,6 +649,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors
       setErrors({
+        ncahpNumber: flat.ncahpNumber?.[0],
         iapNumber: flat.iapNumber?.[0],
         stateRegistrationNumber: flat.stateRegistrationNumber?.[0],
         stateName: flat.stateName?.[0],
@@ -709,49 +684,60 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
       <div style={{ marginBottom: '24px' }}>
         <Label>Registration Type</Label>
         <div style={{ display: 'flex', padding: '4px', borderRadius: '12px', gap: '4px', backgroundColor: 'var(--color-bp-surface)' }}>
-          <button
-            onClick={() => onChange({ ...data, registrationType: 'IAP' })}
-            style={{
-              flex: 1,
-              padding: '8px',
-              fontSize: '13px',
-              fontWeight: 700,
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: data.registrationType === 'IAP' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'IAP' ? 'var(--color-bp-primary)' : '#555B6E',
-              boxShadow: data.registrationType === 'IAP' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
-              transition: 'all 0.2s'
-            }}
-          >
-            IAP Number (Recommended)
-          </button>
-          <button
-            onClick={() => onChange({ ...data, registrationType: 'STATE' })}
-            style={{
-              flex: 1,
-              padding: '8px',
-              fontSize: '13px',
-              fontWeight: 700,
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: data.registrationType === 'STATE' ? '#FFFFFF' : 'transparent',
-              color: data.registrationType === 'STATE' ? 'var(--color-bp-primary)' : '#555B6E',
-              boxShadow: data.registrationType === 'STATE' ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
-              transition: 'all 0.2s'
-            }}
-          >
-            State Council Number
-          </button>
+          {(['NCAHP', 'IAP', 'STATE'] as const).map((type) => {
+            const labels: Record<string, string> = {
+              NCAHP: 'NCAHP',
+              IAP: 'IAP',
+              STATE: 'State Council',
+            }
+            return (
+              <button
+                key={type}
+                onClick={() => onChange({ ...data, registrationType: type })}
+                style={{
+                  flex: 1,
+                  padding: '8px 4px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: data.registrationType === type ? '#FFFFFF' : 'transparent',
+                  color: data.registrationType === type ? 'var(--color-bp-primary)' : '#555B6E',
+                  boxShadow: data.registrationType === type ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {labels[type]}
+              </button>
+            )
+          })}
         </div>
+        <p style={{ fontSize: '11px', color: '#888', marginTop: '5px' }}>
+          {data.registrationType === 'NCAHP'
+            ? 'National Commission for Allied and Healthcare Professions — highest trust level'
+            : data.registrationType === 'IAP'
+            ? 'Indian Association of Physiotherapists membership number'
+            : 'State Allied and Healthcare Council registration'}
+        </p>
         <FieldError msg={errors.registrationType} />
       </div>
 
-      {data.registrationType === 'IAP' ? (
+      {data.registrationType === 'NCAHP' && (
         <div style={{ marginBottom: '16px' }}>
-          <Label>IAP Registration Number</Label>
+          <Label>NCAHP Registration Number</Label>
+          <FocusableInput
+            value={data.ncahpNumber}
+            onChange={(v) => onChange({ ...data, ncahpNumber: v })}
+            placeholder="e.g. NCAHP/PT/2024/12345"
+          />
+          <FieldError msg={errors.ncahpNumber} />
+        </div>
+      )}
+
+      {data.registrationType === 'IAP' && (
+        <div style={{ marginBottom: '16px' }}>
+          <Label>IAP Membership Number</Label>
           <FocusableInput
             value={data.iapNumber}
             onChange={(v) => onChange({ ...data, iapNumber: v })}
@@ -759,15 +745,22 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
           />
           <FieldError msg={errors.iapNumber} />
         </div>
-      ) : (
+      )}
+
+      {data.registrationType === 'STATE' && (
         <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
           <div style={{ flex: 1 }}>
-            <Label>Council/State Name</Label>
-            <FocusableInput
+            <Label>State Council</Label>
+            <select
               value={data.stateName}
-              onChange={(v) => onChange({ ...data, stateName: v })}
-              placeholder="e.g. Maharashtra"
-            />
+              onChange={(e) => onChange({ ...data, stateName: e.target.value })}
+              style={{ ...inputStyle }}
+            >
+              <option value="">Select state</option>
+              {INDIA_STATES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
             <FieldError msg={errors.stateName} />
           </div>
           <div style={{ flex: 1 }}>
@@ -832,21 +825,27 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         <FieldError msg={errors.specialties} />
       </div>
 
-      <CertTagInput
-        label="Certifications (optional)"
-        placeholder="e.g. Mulligan, McKenzie, NDT"
-        hint="Add technique certifications you hold"
-        values={data.certifications}
-        onChange={(vals) => onChange({ ...data, certifications: vals })}
-      />
-
-      <CertTagInput
-        label="Equipment & Modalities (optional)"
-        placeholder="e.g. TENS, Ultrasound, Traction"
-        hint="Add equipment or modalities you use"
-        values={data.equipmentTags}
-        onChange={(vals) => onChange({ ...data, equipmentTags: vals })}
-      />
+      <div style={{ marginBottom: '24px' }}>
+        <Label>Clinical Certifications <span style={{ fontWeight: 400, color: '#888', fontSize: '12px' }}>(optional)</span></Label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {CERTIFICATIONS.map((cert) => (
+            <label key={cert} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-bp-primary)' }}>
+              <input
+                type="checkbox"
+                checked={data.certifications.includes(cert)}
+                onChange={() => {
+                  const next = data.certifications.includes(cert)
+                    ? data.certifications.filter((c) => c !== cert)
+                    : [...data.certifications, cert]
+                  onChange({ ...data, certifications: next })
+                }}
+                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px', marginTop: '2px', flexShrink: 0 }}
+              />
+              {cert}
+            </label>
+          ))}
+        </div>
+      </div>
 
       <PrimaryButton onClick={handleNext}>
         Next: Practice Details
@@ -869,22 +868,23 @@ interface Step3Props {
 }
 
 function Step3({ data, onChange, onNext, onBack }: Step3Props) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Step3Data, string>>>({})
+  const [errors, setErrors] = useState<Partial<Record<keyof Step3Data | 'form', string>>>({})
   const [areaFocused, setAreaFocused] = useState(false)
-  const [cityFocused, setCityFocused] = useState(false)
+
+  const isClinic = data.visitTypes.includes('in_clinic')
 
   function handleNext() {
     const result = step3Schema.safeParse(data)
     if (!result.success) {
       const flat = result.error.flatten().fieldErrors
-        setErrors({
-          clinicName: flat.clinicName?.[0],
-          address: flat.address?.[0],
-          city: flat.city?.[0],
-          state: flat.state?.[0],
-          pincode: flat.pincode?.[0],
-          visitTypes: flat.visitTypes?.[0],
-        })
+      setErrors({
+        clinicName: flat.clinicName?.[0],
+        address: flat.address?.[0],
+        city: flat.city?.[0],
+        state: flat.state?.[0],
+        pincode: flat.pincode?.[0],
+        visitTypes: flat.visitTypes?.[0],
+      })
       return
     }
     setErrors({})
@@ -907,69 +907,101 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         Where you see patients
       </p>
 
-      <div style={{ marginBottom: '16px' }}>
-        <Label>Clinic / Practice Name</Label>
-        <FocusableInput
-          value={data.clinicName}
-          onChange={(v) => onChange({ ...data, clinicName: v })}
-          placeholder="Sharma Physiotherapy Centre"
-        />
-        <FieldError msg={errors.clinicName} />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <Label>Address</Label>
-        <textarea
-          rows={2}
-          value={data.address}
-          onChange={(e) => onChange({ ...data, address: e.target.value })}
-          placeholder="Shop 12, Green Park Main Road"
-          onFocus={() => setAreaFocused(true)}
-          onBlur={() => setAreaFocused(false)}
-          style={{
-            ...inputStyle,
-            height: 'auto',
-            padding: '10px 12px',
-            resize: 'vertical',
-            borderColor: areaFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
-          }}
-        />
-        <FieldError msg={errors.address} />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <Label>City</Label>
-        <select
-          value={data.city}
-          onChange={(e) => onChange({
-            ...data,
-            city: e.target.value,
-            state: CITY_TO_STATE[e.target.value] ?? '',
+      {/* Visit Types — at the top so the form adapts */}
+      <div style={{ marginBottom: '20px' }}>
+        <Label>How do you see patients?</Label>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {Object.entries(VISIT_LABELS).map(([vt, label]) => {
+            const active = data.visitTypes.includes(vt)
+            return (
+              <button
+                key={vt}
+                type="button"
+                onClick={() => toggleVisitType(vt)}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '24px',
+                  border: `2px solid ${active ? 'var(--color-bp-primary)' : 'var(--color-bp-border)'}`,
+                  backgroundColor: active ? 'var(--color-bp-primary)' : '#fff',
+                  color: active ? '#fff' : 'var(--color-bp-primary)',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {label}
+              </button>
+            )
           })}
-          onFocus={() => setCityFocused(true)}
-          onBlur={() => setCityFocused(false)}
-          style={{ ...inputStyle, borderColor: cityFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
-        >
-          <option value="">Select city</option>
-          {CITIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+        </div>
+        <FieldError msg={errors.visitTypes} />
+      </div>
+
+      {/* Clinic fields — only shown if in-clinic visits selected */}
+      {isClinic && (
+        <>
+          <div style={{ marginBottom: '16px' }}>
+            <Label>Clinic / Practice Name</Label>
+            <FocusableInput
+              value={data.clinicName}
+              onChange={(v) => onChange({ ...data, clinicName: v })}
+              placeholder="Sharma Physiotherapy Centre"
+            />
+            <FieldError msg={errors.clinicName} />
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <Label>Clinic Address</Label>
+            <textarea
+              rows={2}
+              value={data.address}
+              onChange={(e) => onChange({ ...data, address: e.target.value })}
+              placeholder="Shop 12, Green Park Main Road"
+              onFocus={() => setAreaFocused(true)}
+              onBlur={() => setAreaFocused(false)}
+              style={{
+                ...inputStyle,
+                height: 'auto',
+                padding: '10px 12px',
+                resize: 'vertical',
+                borderColor: areaFocused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
+              }}
+            />
+            <FieldError msg={errors.address} />
+          </div>
+        </>
+      )}
+
+      <div style={{ marginBottom: '16px' }}>
+        <Label>{isClinic ? 'City' : 'Your service city'}</Label>
+        <CityCombobox
+          value={data.city ? `${data.city}${data.state ? `, ${data.state}` : ''}` : ''}
+          onChange={(city, state) => onChange({ ...data, city, state: state ?? data.state })}
+          placeholder="Search city… (e.g. Surat)"
+          cityOnly={false}
+          inputStyle={{ ...inputStyle }}
+        />
         <FieldError msg={errors.city} />
       </div>
 
       <div style={{ marginBottom: '16px' }}>
         <Label>State</Label>
-        <FocusableInput
+        <select
           value={data.state}
-          onChange={(v) => onChange({ ...data, state: v })}
-          placeholder="Maharashtra"
-        />
+          onChange={(e) => onChange({ ...data, state: e.target.value })}
+          style={{ ...inputStyle }}
+        >
+          <option value="">Select state</option>
+          {INDIA_STATES.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
         <FieldError msg={errors.state} />
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <Label>Pincode</Label>
+      <div style={{ marginBottom: '20px' }}>
+        <Label>{isClinic ? 'Clinic Pincode' : 'Base Pincode'}</Label>
         <FocusableInput
           value={data.pincode}
           onChange={(v) => onChange({ ...data, pincode: v.replace(/\D/g, '').slice(0, 6) })}
@@ -979,23 +1011,30 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         <FieldError msg={errors.pincode} />
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
-        <Label>Visit Types Offered</Label>
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          {Object.entries(VISIT_LABELS).map(([vt, label]) => (
-            <label key={vt} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
-              <input
-                type="checkbox"
-                checked={data.visitTypes.includes(vt)}
-                onChange={() => toggleVisitType(vt)}
-                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px' }}
-              />
-              {label}
-            </label>
-          ))}
+      {/* Modalities — shown only for clinic providers */}
+      {isClinic && (
+        <div style={{ marginBottom: '24px' }}>
+          <Label>Equipment Available <span style={{ fontWeight: 400, color: '#888', fontSize: '12px' }}>(optional)</span></Label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {MODALITIES.map((mod) => (
+              <label key={mod} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-bp-primary)' }}>
+                <input
+                  type="checkbox"
+                  checked={data.modalities.includes(mod)}
+                  onChange={() => {
+                    const next = data.modalities.includes(mod)
+                      ? data.modalities.filter((m) => m !== mod)
+                      : [...data.modalities, mod]
+                    onChange({ ...data, modalities: next })
+                  }}
+                  style={{ accentColor: 'var(--color-bp-primary)', width: '15px', height: '15px', marginTop: '2px', flexShrink: 0 }}
+                />
+                {mod}
+              </label>
+            ))}
+          </div>
         </div>
-        <FieldError msg={errors.visitTypes} />
-      </div>
+      )}
 
       <PrimaryButton onClick={handleNext}>
         Next: Pricing &amp; Availability
@@ -1175,7 +1214,45 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
       <div style={{ marginBottom: '24px' }}>
         <Label>Weekly Availability</Label>
         <FieldError msg={errors.availability} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
+
+        {/* Quick presets */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '8px 0 12px' }}>
+          {[
+            { label: 'Mon–Fri 9am–6pm', days: ['Mon','Tue','Wed','Thu','Fri'], start: '09:00', end: '18:00' },
+            { label: 'Mon–Sat 9am–5pm', days: ['Mon','Tue','Wed','Thu','Fri','Sat'], start: '09:00', end: '17:00' },
+            { label: 'Mon–Fri 8am–8pm', days: ['Mon','Tue','Wed','Thu','Fri'], start: '08:00', end: '20:00' },
+          ].map((preset) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => {
+                const next = { ...data.availability }
+                DAYS.forEach((d) => {
+                  if (preset.days.includes(d)) {
+                    next[d] = { enabled: true, slots: [{ startTime: preset.start, endTime: preset.end }] }
+                  } else {
+                    next[d] = { ...next[d], enabled: false }
+                  }
+                })
+                onChange({ ...data, availability: next })
+              }}
+              style={{
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontWeight: 600,
+                borderRadius: '20px',
+                border: '1px solid var(--color-bp-border)',
+                backgroundColor: '#fff',
+                color: 'var(--color-bp-primary)',
+                cursor: 'pointer',
+              }}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {DAYS.map((day) => {
             const av = data.availability[day]
             const dim = !av.enabled
@@ -1192,7 +1269,26 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: av.enabled ? '12px' : '0' }}>
-                  <span style={{ fontSize: '14px', color: 'var(--color-bp-primary)', fontWeight: 600 }}>{day}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--color-bp-primary)', fontWeight: 600, width: '32px' }}>{day}</span>
+                    {av.enabled && ['Mon','Tue','Wed','Thu','Fri'].includes(day) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const slots = av.slots
+                          const next = { ...data.availability }
+                          const weekdays = ['Mon','Tue','Wed','Thu','Fri']
+                          weekdays.forEach((d) => {
+                            if (d !== day) next[d] = { enabled: true, slots: slots.map((s) => ({ ...s })) }
+                          })
+                          onChange({ ...data, availability: next })
+                        }}
+                        style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-bp-primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'var(--color-bp-surface)' }}
+                      >
+                        Copy to weekdays
+                      </button>
+                    )}
+                  </div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--color-bp-primary)' }}>
                     <input
                       type="checkbox"
@@ -1227,7 +1323,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                             borderColor: focusedTimes === `${day}-${slotIndex}-start` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
                           }}
                         >
-                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{format24hTo12h(t)}</option>)}
                         </select>
                         <span style={{ fontSize: '13px', color: '#555B6E' }}>to</span>
                         <select
@@ -1248,7 +1344,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                             borderColor: focusedTimes === `${day}-${slotIndex}-end` ? 'var(--color-bp-primary)' : 'var(--color-bp-border)',
                           }}
                         >
-                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                          {TIME_OPTIONS.map((t) => <option key={t} value={t}>{format24hTo12h(t)}</option>)}
                         </select>
                         {av.slots.length > 1 ? (
                           <button
@@ -1413,7 +1509,7 @@ function Step5({ email, onBack }: Step5Props) {
       </p>
 
       {/* Resend section */}
-      <div className="rounded-[var(--sq-xs)] border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
+      <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
         <p className="text-sm text-gray-500">
           Didn&apos;t receive it? Check your spam folder or resend below.
         </p>
@@ -1431,7 +1527,7 @@ function Step5({ email, onBack }: Step5Props) {
             type="button"
             onClick={handleResend}
             disabled={resendStatus === 'loading' || countdown > 0}
-            className="inline-flex items-center gap-2 rounded-[var(--sq-xs)] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {resendStatus === 'loading' ? (
               <>
@@ -1481,7 +1577,8 @@ export default function DoctorSignupPage() {
 
   const [step1, setStep1] = useState<Step1Data>({ name: '', phone: '', email: '', password: '' })
   const [step2, setStep2] = useState<Step2Data>({
-    registrationType: 'IAP',
+    registrationType: 'NCAHP',
+    ncahpNumber: '',
     iapNumber: '',
     stateRegistrationNumber: '',
     stateName: '',
@@ -1489,10 +1586,15 @@ export default function DoctorSignupPage() {
     experienceYears: '',
     specialties: [],
     certifications: [],
-    equipmentTags: [],
   })
   const [step3, setStep3] = useState<Step3Data>({
-    clinicName: '', address: '', city: '', state: '', pincode: '', visitTypes: [],
+    visitTypes: [],
+    clinicName: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    modalities: [],
   })
   const [step4, setStep4] = useState<Step4Data>({
     fees: { in_clinic: '', home_visit: '' },
@@ -1570,7 +1672,7 @@ export default function DoctorSignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-[var(--sq-lg)] border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
+    <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
       <div className="flex justify-center mb-6">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>

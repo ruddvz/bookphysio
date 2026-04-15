@@ -9,4 +9,8 @@ INSERT INTO specialties (name, slug) VALUES
   ('Post-Surgical Rehabilitation', 'post-surgical'),
   ('Spine & Back Pain', 'spine'),
   ('Women''s Health Physiotherapy', 'womens-health'),
-  ('Home Visit Physiotherapy', 'home-visit');
+  ('Home Visit Physiotherapy', 'home-visit'),
+  ('Oncology Physiotherapy', 'oncology'),
+  ('Community Physiotherapy', 'community'),
+  ('Industrial & Occupational Physiotherapy', 'industrial'),
+  ('Vestibular Physiotherapy', 'vestibular');
