@@ -68,10 +68,10 @@ export default function ProofSection() {
               <Link
                 key={p.name}
                 href="/search"
-                className="group flex items-center gap-5 p-5 rounded-2xl border border-[#00766C]/20 bg-white hover:shadow-lg hover:shadow-[#00766C]/5 hover:border-[#00766C]/40 transition-all duration-200"
+                className="group flex items-center gap-5 p-5 rounded-[var(--sq-lg)] border border-[#00766C]/20 bg-white hover:shadow-lg hover:shadow-[#00766C]/5 hover:border-[#00766C]/40 hover:scale-[1.01] transition-all duration-200 shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.04)]"
               >
                 {/* Avatar */}
-                <div className="w-14 h-14 rounded-2xl bg-[#E6F4F3] flex items-center justify-center text-[16px] font-bold text-[#00766C] group-hover:bg-[#00766C] group-hover:text-white transition-colors shrink-0">
+                <div className="w-14 h-14 rounded-[var(--sq-md)] bg-[#E6F4F3] flex items-center justify-center text-[16px] font-bold text-[#00766C] group-hover:bg-[#00766C] group-hover:text-white transition-colors shrink-0">
                   {p.initials}
                 </div>
 
@@ -105,7 +105,7 @@ export default function ProofSection() {
           {/* Trust panel — character + features + CTA */}
           <div className="space-y-6 lg:sticky lg:top-28">
             {/* Physio character */}
-            <div className="relative rounded-2xl bg-[#E6F4F3] overflow-hidden flex justify-center" style={{ minHeight: 200 }}>
+            <div className="relative rounded-[var(--sq-lg)] bg-[#E6F4F3] overflow-hidden flex justify-center" style={{ minHeight: 200 }}>
               <Image
                 src={PROOF_CHARACTER}
                 alt=""
@@ -126,7 +126,7 @@ export default function ProofSection() {
 
             {features.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-[#E6F4F3] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-[var(--sq-xs)] bg-[#E6F4F3] flex items-center justify-center shrink-0">
                   <Icon size={18} className="text-[#00766C]" />
                 </div>
                 <div>
@@ -138,7 +138,7 @@ export default function ProofSection() {
 
             <Link
               href="/search"
-              className="mt-2 w-full flex items-center justify-center gap-2 py-4 bg-[#00766C] text-white rounded-xl font-semibold text-[15px] hover:bg-[#005A52] transition-colors group"
+              className="mt-2 w-full flex items-center justify-center gap-2 py-4 bg-[#00766C] text-white rounded-[var(--sq-sm)] font-semibold text-[15px] hover:bg-[#005A52] transition-colors group"
             >
               Search verified physios
               <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />

@@ -92,7 +92,7 @@ export function SubscriptionPlans({ currentTier = 'free' }: SubscriptionPlansPro
             <div
               key={plan.tier}
               className={cn(
-                'relative rounded-2xl border p-6 flex flex-col gap-4',
+                'relative rounded-[var(--sq-lg)] border p-6 flex flex-col gap-4',
                 isCurrent
                   ? 'border-bp-accent bg-bp-accent/10'
                   : 'border-bp-border bg-white',

@@ -82,7 +82,7 @@ export default function ProviderPatients() {
              placeholder="Search name or phone..."
              value={search}
              onChange={(e) => setSearch(e.target.value)}
-             className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-2xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
+             className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-[var(--sq-lg)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
            />
            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
@@ -92,7 +92,7 @@ export default function ProviderPatients() {
         {isLoading ? (
           <div className="space-y-4 py-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-xl" />
+              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-[var(--sq-sm)]" />
             ))}
           </div>
         ) : isError ? (
@@ -118,7 +118,7 @@ export default function ProviderPatients() {
                 key={p.profile_id}
                 role="provider"
                 icon={
-                  <div className="w-12 h-12 rounded-xl bg-[var(--color-pv-tile-1-bg)] text-[var(--color-pv-primary)] flex items-center justify-center text-sm font-black border border-[var(--color-pv-tile-1-bg)]/20">
+                  <div className="w-12 h-12 rounded-[var(--sq-sm)] bg-[var(--color-pv-tile-1-bg)] text-[var(--color-pv-primary)] flex items-center justify-center text-sm font-black border border-[var(--color-pv-tile-1-bg)]/20">
                     {p.patient_name.charAt(0).toUpperCase()}
                   </div>
                 }

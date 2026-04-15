@@ -229,7 +229,7 @@ export default function ProviderAppointmentDetail() {
                 value={notesDraft ?? appt.provider_notes ?? appt.notes ?? ''}
                 onChange={e => setNotesDraft(e.target.value)}
                 placeholder="Document clinical diagnosis and roadmap..."
-                className="w-full p-6 bg-slate-50 border border-slate-200 rounded-2xl text-[15px] font-bold text-slate-900 leading-relaxed focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none"
+                className="w-full p-6 bg-slate-50 border border-slate-200 rounded-[var(--sq-lg)] text-[15px] font-bold text-slate-900 leading-relaxed focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none"
               />
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest italic">
@@ -238,7 +238,7 @@ export default function ProviderAppointmentDetail() {
                 <button
                   onClick={() => notesMut.mutate()}
                   disabled={notesMut.isPending}
-                  className="px-8 py-3 bg-[var(--color-pv-ink)] text-white rounded-xl text-[13px] font-black uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all flex items-center gap-2 group shadow-xl shadow-indigo-500/10 disabled:opacity-40"
+                  className="px-8 py-3 bg-[var(--color-pv-ink)] text-white rounded-[var(--sq-sm)] text-[13px] font-black uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all flex items-center gap-2 group shadow-xl shadow-indigo-500/10 disabled:opacity-40"
                 >
                   {notesMut.isPending ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} className="group-hover:scale-110 transition-transform" />}
                   {notesMut.isPending ? 'Committing...' : 'Commit Record'}
@@ -266,7 +266,7 @@ export default function ProviderAppointmentDetail() {
                    </div>
                  ))}
                  <div className="pt-4 mt-2 border-t border-slate-50">
-                    <button className="w-full py-3 bg-slate-50 text-[12px] font-bold text-slate-600 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                    <button className="w-full py-3 bg-slate-50 text-[12px] font-bold text-slate-600 rounded-[var(--sq-sm)] hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
                        Reschedule Session
                        <ArrowUpRight size={14} />
                     </button>
@@ -276,11 +276,11 @@ export default function ProviderAppointmentDetail() {
 
            <SectionCard role="provider" title="Registry Support">
               <div className="space-y-4">
-                 <button className="w-full flex items-center gap-3 px-4 py-3 bg-rose-50/50 hover:bg-rose-50 text-rose-500 rounded-xl text-[12px] font-bold transition-all border border-rose-100/50 group">
+                 <button className="w-full flex items-center gap-3 px-4 py-3 bg-rose-50/50 hover:bg-rose-50 text-rose-500 rounded-[var(--sq-sm)] text-[12px] font-bold transition-all border border-rose-100/50 group">
                     <CircleAlert size={16} className="group-hover:scale-110 transition-transform" />
                     Flag Clinical Issue
                  </button>
-                 <Link href="/provider/earnings" className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-[12px] font-bold transition-all border border-slate-100/50 group">
+                 <Link href="/provider/earnings" className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-[var(--sq-sm)] text-[12px] font-bold transition-all border border-slate-100/50 group">
                     <Activity size={16} className="group-hover:translate-x-1 transition-transform" />
                     Open Earnings Hub
                  </Link>

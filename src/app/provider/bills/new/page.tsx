@@ -203,7 +203,7 @@ function NewBillForm() {
                   type="text"
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                 />
               </div>
               <div className="space-y-2">
@@ -213,7 +213,7 @@ function NewBillForm() {
                   type="date"
                   value={invoiceDate}
                   onChange={(e) => setInvoiceDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ function NewBillForm() {
 
           <SectionCard role="provider" title="Issuing Provider" kicker="PRACTICE IDENTITY">
             <div className="space-y-6">
-              <div className="p-5 bg-[var(--color-pv-track-bg)] border border-slate-100 rounded-2xl">
+              <div className="p-5 bg-[var(--color-pv-track-bg)] border border-slate-100 rounded-[var(--sq-lg)]">
                 <div className="text-[16px] font-bold text-slate-900 mb-1">{profile?.full_name ?? 'Practitioner'}</div>
                 <div className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
                   {profile?.iap_registration_no ? `IAP Reg: ${profile.iap_registration_no}` : 'Verified Clinical Practitioner'}
@@ -234,7 +234,7 @@ function NewBillForm() {
                     type="text"
                     value={providerSpecialization}
                     onChange={(e) => setProviderSpecialization(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="e.g. Sports Physiotherapist"
                   />
                 </div>
@@ -244,7 +244,7 @@ function NewBillForm() {
                     type="email"
                     value={providerEmail}
                     onChange={(e) => setProviderEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="clinic@example.com"
                   />
                 </div>
@@ -261,13 +261,13 @@ function NewBillForm() {
                   type="text"
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                   placeholder="Full legal name"
                 />
               </div>
               <div className="space-y-2">
                 <label htmlFor="patient-contact-number" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Contact Number</label>
-                <div className="flex bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:bg-white focus-within:border-[var(--color-pv-primary)] transition-all">
+                <div className="flex bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] overflow-hidden focus-within:bg-white focus-within:border-[var(--color-pv-primary)] transition-all">
                   <span className="px-4 py-3 text-[14px] font-bold text-slate-400 bg-slate-100/50 border-r border-slate-200 flex items-center shrink-0">+91</span>
                   <input
                     id="patient-contact-number"
@@ -290,7 +290,7 @@ function NewBillForm() {
           >
             <div className="space-y-4">
               {lineItems.map((line, idx) => (
-                <div key={idx} className="flex flex-col md:grid md:grid-cols-[1fr,100px,140px,44px] gap-4 p-5 bg-slate-50 border border-slate-100 rounded-2xl relative">
+                <div key={idx} className="flex flex-col md:grid md:grid-cols-[1fr,100px,140px,44px] gap-4 p-5 bg-slate-50 border border-slate-100 rounded-[var(--sq-lg)] relative">
                   <div className="space-y-2">
                     <label htmlFor={`line-description-${idx}`} className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</label>
                     <input
@@ -298,7 +298,7 @@ function NewBillForm() {
                       type="text"
                       value={line.description}
                       onChange={(e) => updateLine(idx, { description: e.target.value })}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-[var(--sq-xs)] text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -308,7 +308,7 @@ function NewBillForm() {
                       type="number"
                       value={line.visit_count}
                       onChange={(e) => updateLine(idx, { visit_count: parseInt(e.target.value, 10) || 1 })}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-[var(--sq-xs)] text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -318,7 +318,7 @@ function NewBillForm() {
                       type="number"
                       value={line.rate_inr}
                       onChange={(e) => updateLine(idx, { rate_inr: parseInt(e.target.value, 10) || 0 })}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-[var(--sq-xs)] text-[13px] font-bold text-slate-900 focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     />
                   </div>
                   <div className="flex items-end pb-1.5 justify-end">
@@ -341,7 +341,7 @@ function NewBillForm() {
 
         <div className="space-y-6">
           <SectionCard role="provider" title="Persistence Summary">
-             <div className="bg-[var(--color-pv-ink)] rounded-2xl p-6 text-white space-y-6">
+             <div className="bg-[var(--color-pv-ink)] rounded-[var(--sq-lg)] p-6 text-white space-y-6">
                 <div className="space-y-4">
                    <div className="flex justify-between items-center text-[13px] text-indigo-100/60">
                       <span>Registry Subtotal</span>
@@ -371,7 +371,7 @@ function NewBillForm() {
                 <button
                   onClick={handleDownload}
                   disabled={!canSubmit || generating}
-                  className="w-full py-4 bg-[var(--color-pv-primary)] hover:bg-[var(--color-pv-primary-hover)] text-white rounded-xl text-[14px] font-bold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-[var(--color-pv-primary)] hover:bg-[var(--color-pv-primary-hover)] text-white rounded-[var(--sq-sm)] text-[14px] font-bold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                    {generating ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
                    {generating ? 'Finalizing PDF...' : 'Generate PDF'}
@@ -387,7 +387,7 @@ function NewBillForm() {
                      rows={4}
                      value={notes}
                      onChange={(e) => setNotes(e.target.value)}
-                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[13px] font-bold text-slate-900 focus:bg-white outline-none resize-none"
+                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[13px] font-bold text-slate-900 focus:bg-white outline-none resize-none"
                      placeholder="Instructions or clinical observations..."
                    />
                 </div>
@@ -395,7 +395,7 @@ function NewBillForm() {
           </SectionCard>
 
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl flex items-center gap-3 text-rose-700">
+            <div className="p-4 bg-rose-50 border border-rose-100 rounded-[var(--sq-sm)] flex items-center gap-3 text-rose-700">
                <AlertCircle size={18} />
                <p className="text-[12px] font-bold">{error}</p>
             </div>

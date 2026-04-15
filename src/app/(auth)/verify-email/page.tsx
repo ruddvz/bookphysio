@@ -59,7 +59,7 @@ function VerifyEmailContent() {
     : null
 
   return (
-    <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-6">
 
         {/* Logo */}
@@ -88,7 +88,7 @@ function VerifyEmailContent() {
         </div>
 
         {/* Resend section */}
-        <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3">
+        <div className="rounded-[var(--sq-xs)] border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3">
           <p className="text-sm text-gray-500">
             Didn&apos;t receive it? Check your spam folder or resend below.
           </p>
@@ -106,7 +106,7 @@ function VerifyEmailContent() {
               type="button"
               onClick={handleResend}
               disabled={resendStatus === 'loading' || countdown > 0}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-[var(--sq-xs)] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {resendStatus === 'loading' ? (
                 <>
@@ -148,7 +148,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="h-10 w-[200px] bg-gray-100 rounded animate-pulse" />
           <div className="h-16 w-16 rounded-full bg-gray-100 animate-pulse" />

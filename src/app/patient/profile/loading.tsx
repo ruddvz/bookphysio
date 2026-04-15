@@ -19,7 +19,7 @@ export default function ProfileLoading() {
         {[1, 2, 3].map((i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-[var(--sq-xs)]" />
           </div>
         ))}
 

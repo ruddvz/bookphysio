@@ -133,7 +133,7 @@ export default function HowItWorksPage() {
                 <div className="flex flex-col gap-2.5 mb-8">
                   {trust.map(({ icon: Icon, text }) => (
                     <div key={text} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-[#E6F4F3] border border-[#00766C]/20 flex items-center justify-center shrink-0">
+                      <div className="w-6 h-6 rounded-[var(--sq-xs)] bg-[#E6F4F3] border border-[#00766C]/20 flex items-center justify-center shrink-0">
                         <Icon size={12} className="text-[#00766C]" />
                       </div>
                       <span className="text-[14px] text-slate-600">{text}</span>
@@ -171,7 +171,7 @@ export default function HowItWorksPage() {
               {/* Right: physio character — decorative, context communicated by tab labels */}
               <div className="hidden lg:flex justify-center items-end">
                 <div className="relative">
-                  <div className="w-[220px] h-[220px] rounded-full bg-[#E6F4F3]" aria-hidden="true" />
+                  <div className="w-[220px] h-[220px] rounded-[60px] bg-[#E6F4F3]" aria-hidden="true" />
                   <Image
                     src={character}
                     alt=""
@@ -194,7 +194,7 @@ export default function HowItWorksPage() {
               {activeSteps.map((step) => (
                 <div
                   key={step.title}
-                  className="relative rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group"
+                  className="relative rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group"
                 >
                   <div className="flex items-start justify-between mb-5">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${step.tint}`}>
@@ -220,11 +220,24 @@ export default function HowItWorksPage() {
         {/* CTA — dark */}
         <section className="pb-12 lg:pb-16">
           <div className="max-w-[1142px] mx-auto px-6">
-            <div className="rounded-2xl bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+            <div className="rounded-[var(--sq-xl)] bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
               {/* Background glow */}
               <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
 
-              <div className="max-w-xl text-center md:text-left relative z-10">
+              {/* Character — desktop only */}
+              <div className="hidden lg:block shrink-0 relative z-10 select-none">
+                <Image
+                  src={PROVIDER_CHARACTER}
+                  alt=""
+                  aria-hidden="true"
+                  width={140}
+                  height={210}
+                  className="object-contain object-bottom drop-shadow-2xl"
+                  sizes="(min-width: 1024px) 140px, 0px"
+                />
+              </div>
+
+              <div className="flex-1 text-center md:text-left relative z-10">
                 <h2 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight">
                   {activeTab === 'patient'
                     ? 'Get back to feeling your best.'

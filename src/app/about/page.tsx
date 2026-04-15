@@ -85,7 +85,7 @@ export default function AboutPage() {
                   </p>
                 </div>
               </div>
-              <div className="aspect-square bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+              <div className="aspect-square bg-white border border-slate-200 rounded-[var(--sq-lg)] flex items-center justify-center p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                 <div className="text-center">
                   <div className="mx-auto w-16 h-16 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center mb-4">
                     <Globe className="w-8 h-8" />
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 {benefits.map(({ title, text, icon: Icon, tint }) => (
                   <div
                     key={title}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
+                    className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
                   >
                     <div
                       className={`w-11 h-11 rounded-full flex items-center justify-center ${tint}`}
@@ -124,7 +124,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-8 lg:p-12 text-center shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+            <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-8 lg:p-12 text-center shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
               <div className="mx-auto w-12 h-12 rounded-full bg-[#FEE9DD] text-[#FF6B35] flex items-center justify-center mb-4">
                 <Heart className="w-6 h-6" />
               </div>

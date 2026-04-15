@@ -109,7 +109,7 @@ export default function PatientPayments() {
         {isLoading ? (
           <div className="space-y-4 py-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-xl" />
+              <div key={i} className="h-16 w-full animate-pulse bg-slate-50 rounded-[var(--sq-sm)]" />
             ))}
           </div>
         ) : isError ? (

@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
                   onBlur={() => setFocused(false)}
                   placeholder="e.g. 98765 43210 or name@email.com"
                   className={cn(
-                    "w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all",
+                    "w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-[var(--sq-lg)] outline-none border-2 transition-all",
                     error ? "border-red-200 bg-red-50/30" : focused ? "border-bp-accent bg-white shadow-xl shadow-bp-primary/5" : "border-transparent hover:border-bp-border"
                   )}
                 />

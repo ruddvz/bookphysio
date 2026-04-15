@@ -40,7 +40,7 @@ export interface DashCardProps {
 export function DashCard({ role, className = '', children }: DashCardProps) {
   return (
     <div
-      className={`rounded-2xl border bg-white p-5 lg:p-6 transition-all duration-200 ${className}`}
+      className={`rounded-[var(--sq-lg)] border bg-white p-5 lg:p-6 transition-all duration-200 ${className}`}
       style={{
         borderColor: v(role, 'border'),
         boxShadow: cardShadow,
@@ -72,7 +72,7 @@ export function StatTile({
 }: StatTileProps) {
   return (
     <div
-      className="rounded-2xl border bg-white p-4 sm:p-5 transition-all duration-200"
+      className="rounded-[var(--sq-lg)] border bg-white p-4 sm:p-5 transition-all duration-200"
       style={{
         borderColor: v(role, 'border'),
         boxShadow: cardShadow,
@@ -324,7 +324,7 @@ export function ListRow({
 }: ListRowProps) {
   const body = (
     <div
-      className={`flex items-center gap-4 py-4 px-2 -mx-2 rounded-xl transition-all duration-200 hover:bg-slate-50/50 ${
+      className={`flex items-center gap-4 py-4 px-2 -mx-2 rounded-[var(--sq-sm)] transition-all duration-200 hover:bg-slate-50/50 ${
         onClick || href ? 'cursor-pointer active:scale-[0.99] group/row' : ''
       } ${className}`}
     >
@@ -334,7 +334,7 @@ export function ListRow({
             IconOrElement
           ) : (
              <div
-               className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center"
+               className="w-9 h-9 sm:w-11 sm:h-11 rounded-[var(--sq-lg)] flex items-center justify-center"
                style={{
                  background: v(role, `tile-${tone}-bg`),
                  color: v(role, `tile-${tone}-fg`),
@@ -419,7 +419,7 @@ export function EmptyState({
   return (
     <div className="text-center py-12 px-6">
       <div
-        className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center mb-4"
+        className="w-16 h-16 rounded-[var(--sq-xl)] mx-auto flex items-center justify-center mb-4"
         style={{
           background: v(role, 'border-soft'),
           color: v(role, 'muted'),

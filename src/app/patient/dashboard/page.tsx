@@ -92,13 +92,13 @@ function isUpcomingAppointment(appointment: AppointmentItem): boolean {
 function DashboardSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
-      <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
+      <Skeleton className="h-10 w-72 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+          <Skeleton key={i} className="h-28 rounded-[var(--sq-lg)] bg-slate-100" />
         ))}
       </div>
-      <Skeleton className="h-80 rounded-2xl bg-slate-100" />
+      <Skeleton className="h-80 rounded-[var(--sq-lg)] bg-slate-100" />
     </div>
   )
 }
@@ -262,10 +262,10 @@ export default function PatientDashboardHome() {
         <div className="flex-1 space-y-6">
           <SectionCard role="patient" title="Upcoming appointment">
             {nextAppointment ? (
-              <div className="rounded-2xl border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-4 sm:p-5 md:p-6">
+              <div className="rounded-[var(--sq-lg)] border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-4 sm:p-5 md:p-6">
                 {/* Countdown banner */}
                 {countdown && (
-                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-[var(--color-pt-primary)]/5 px-4 py-2.5">
+                  <div className="mb-4 flex items-center gap-2 rounded-[var(--sq-sm)] bg-[var(--color-pt-primary)]/5 px-4 py-2.5">
                     <Clock size={16} className="text-[var(--color-pt-primary)] shrink-0" />
                     <span className="text-[13px] font-bold text-[var(--color-pt-primary)]">
                       Your session is {countdown}
@@ -333,11 +333,11 @@ export default function PatientDashboardHome() {
 
                 {/* Cancel confirmation */}
                 {confirmCancel && (
-                  <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 animate-in slide-in-from-top-2 duration-200">
+                  <div className="mt-4 rounded-[var(--sq-sm)] border border-red-200 bg-red-50 p-4 animate-in slide-in-from-top-2 duration-200">
                     <p className="text-[14px] font-bold text-red-700 mb-1">Cancel this appointment?</p>
                     <p className="text-[12px] text-red-600/70 mb-3">This action cannot be undone.</p>
                     {cancelMut.isError && (
-                      <p className="text-[12px] font-semibold text-red-700 bg-red-100 rounded-lg px-3 py-2 mb-3">
+                      <p className="text-[12px] font-semibold text-red-700 bg-red-100 rounded-[var(--sq-xs)] px-3 py-2 mb-3">
                         {cancelMut.error instanceof Error ? cancelMut.error.message : 'Cancel failed. Please try again.'}
                       </p>
                     )}
@@ -433,7 +433,7 @@ export default function PatientDashboardHome() {
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-pt-border-soft)] transition-colors group"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--sq-sm)] hover:bg-[var(--color-pt-border-soft)] transition-colors group"
                 >
                   <Icon size={16} className="text-[var(--color-pt-primary)]" />
                   <span className="flex-1 text-[13px] font-medium text-[var(--color-pt-ink)]">

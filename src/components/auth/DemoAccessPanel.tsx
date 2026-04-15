@@ -71,7 +71,7 @@ export function DemoAccessPanel({ variant = 'default' }: { variant?: 'default' |
       <div className="flex items-start gap-3">
         <div className={cn(
           'flex items-center justify-center text-bp-accent ring-1 ring-bp-border/80',
-          isCompact ? 'h-9 w-9 rounded-xl bg-white shadow-sm' : 'h-11 w-11 rounded-2xl bg-bp-surface shadow-inner'
+          isCompact ? 'h-9 w-9 rounded-[var(--sq-sm)] bg-white shadow-sm' : 'h-11 w-11 rounded-[var(--sq-lg)] bg-bp-surface shadow-inner'
         )}>
           <MonitorSmartphone size={isCompact ? 18 : 22} strokeWidth={2.3} />
         </div>
@@ -99,12 +99,12 @@ export function DemoAccessPanel({ variant = 'default' }: { variant?: 'default' |
                 'group flex items-center gap-4 border border-bp-border/90 text-left transition-all',
                 'bg-bp-surface/70 shadow-sm hover:border-bp-accent/25 hover:bg-white hover:shadow-lg hover:shadow-bp-primary/5',
                 'disabled:cursor-not-allowed disabled:opacity-70',
-                isCompact ? 'rounded-xl px-3.5 py-3' : 'rounded-2xl px-4 py-3.5'
+                isCompact ? 'rounded-[var(--sq-sm)] px-3.5 py-3' : 'rounded-[var(--sq-lg)] px-4 py-3.5'
               )}
             >
               <div className={cn(
                 'flex items-center justify-center bg-white text-bp-primary ring-1 ring-bp-border/70 transition-all group-hover:bg-bp-accent group-hover:text-white',
-                isCompact ? 'h-9 w-9 rounded-lg' : 'h-10 w-10 rounded-xl'
+                isCompact ? 'h-9 w-9 rounded-[var(--sq-xs)]' : 'h-10 w-10 rounded-[var(--sq-sm)]'
               )}>
                 {isLoading ? <Loader2 size={isCompact ? 16 : 18} className="animate-spin" /> : <OptionIcon size={isCompact ? 18 : 22} strokeWidth={2.5} />}
               </div>

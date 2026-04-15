@@ -71,7 +71,7 @@ export default function HowItWorks() {
             {steps.map(({ num, icon: Icon, title, desc, color }) => (
               <div
                 key={num}
-                className="relative group flex flex-col bg-white rounded-2xl border border-slate-200 p-6 hover:border-[#00766C]/30 hover:shadow-lg hover:shadow-[#00766C]/5 transition-all duration-200 overflow-hidden"
+                className="relative group flex flex-col bg-white rounded-[var(--sq-lg)] border border-slate-200 p-6 hover:border-[#00766C]/30 hover:shadow-lg hover:shadow-[#00766C]/5 transition-all duration-200 overflow-hidden"
               >
                 {/* Teal left accent */}
                 <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-[#00766C] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -82,7 +82,7 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Icon */}
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${color}`}>
+                <div className={`w-12 h-12 rounded-[var(--sq-sm)] flex items-center justify-center mb-5 ${color}`}>
                   <Icon size={22} />
                 </div>
 

@@ -166,14 +166,14 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
   return (
     <>
       {/* Compact install banner */}
-      <div className="mx-4 mb-4 rounded-2xl border border-slate-100 bg-white p-3.5 shadow-sm">
+      <div className="mx-4 mb-4 rounded-[var(--sq-lg)] border border-slate-100 bg-white p-3.5 shadow-sm">
         <div className="flex items-center gap-3">
           <Image
             src={getIconSrc(role)}
             alt={`${config.label} icon`}
             width={40}
             height={40}
-            className="shrink-0 rounded-xl"
+            className="shrink-0 rounded-[var(--sq-sm)]"
             unoptimized
           />
           <div className="flex-1 min-w-0">
@@ -186,7 +186,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
           </div>
           <button
             onClick={handleInstall}
-            className={`shrink-0 rounded-xl px-4 py-2 text-[12px] font-bold text-white shadow-sm transition-opacity hover:opacity-90 ${config.accent}`}
+            className={`shrink-0 rounded-[var(--sq-sm)] px-4 py-2 text-[12px] font-bold text-white shadow-sm transition-opacity hover:opacity-90 ${config.accent}`}
           >
             Install
           </button>
@@ -207,7 +207,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowTutorial(false)}
           />
-          <div className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-2xl">
+          <div className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-[var(--sq-lg)] bg-white shadow-2xl">
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-2xl border-b border-slate-100 bg-white px-5 py-4">
               <div className="flex items-center gap-3">
@@ -216,7 +216,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                   alt=""
                   width={32}
                   height={32}
-                  className="rounded-lg"
+                  className="rounded-[var(--sq-xs)]"
                   unoptimized
                 />
                 <h2 className="text-[16px] font-bold text-slate-800">
@@ -238,12 +238,12 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                 <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
                   How to install
                 </h3>
-                <div className="flex rounded-xl bg-slate-100 p-1">
+                <div className="flex rounded-[var(--sq-sm)] bg-slate-100 p-1">
                   {(['android', 'ios', 'desktop'] as const).map((p) => (
                     <button
                       key={p}
                       onClick={() => setPlatform(p)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-[12px] font-bold transition-all ${
+                      className={`flex-1 flex items-center justify-center gap-1.5 rounded-[var(--sq-xs)] py-2 text-[12px] font-bold transition-all ${
                         platform === p
                           ? 'bg-white text-slate-900 shadow-sm'
                           : 'text-slate-500 hover:text-slate-700'
@@ -286,7 +286,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                   {deferredPrompt && (
                     <button
                       onClick={handleInstall}
-                      className={`w-full rounded-xl py-3 text-[13px] font-bold text-white transition-opacity hover:opacity-90 ${config.accent}`}
+                      className={`w-full rounded-[var(--sq-sm)] py-3 text-[13px] font-bold text-white transition-opacity hover:opacity-90 ${config.accent}`}
                     >
                       Install Now — Skip the Steps
                     </button>
@@ -346,7 +346,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                   {deferredPrompt && (
                     <button
                       onClick={handleInstall}
-                      className={`w-full rounded-xl py-3 text-[13px] font-bold text-white transition-opacity hover:opacity-90 ${config.accent}`}
+                      className={`w-full rounded-[var(--sq-sm)] py-3 text-[13px] font-bold text-white transition-opacity hover:opacity-90 ${config.accent}`}
                     >
                       Install Now — Skip the Steps
                     </button>
@@ -363,7 +363,7 @@ export function PWAInstallPrompt({ role }: { role: DashboardRole }) {
                   {WHY_INSTALL_ITEMS.map(({ icon: Icon, title, description }) => (
                     <div
                       key={title}
-                      className={`rounded-xl border border-slate-100 p-3 ${config.accentLight}`}
+                      className={`rounded-[var(--sq-sm)] border border-slate-100 p-3 ${config.accentLight}`}
                     >
                       <Icon size={18} className={`${config.accentText} mb-2`} />
                       <p className="text-[12px] font-bold text-slate-800 leading-tight">

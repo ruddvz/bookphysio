@@ -91,7 +91,7 @@ export default function DevLoginPage() {
             key={account.role}
             onClick={() => loginAs(account.role)}
             disabled={loading !== null}
-            className={`flex flex-col items-start gap-3 p-5 border-2 rounded-xl transition-all text-left disabled:opacity-60 ${account.color}`}
+            className={`flex flex-col items-start gap-3 p-5 border-2 rounded-[var(--sq-sm)] transition-all text-left disabled:opacity-60 ${account.color}`}
           >
             <span className="text-3xl">{account.emoji}</span>
             <div className="w-full">
@@ -116,7 +116,7 @@ export default function DevLoginPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg max-w-lg text-center">
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-[var(--sq-xs)] max-w-lg text-center">
           {error}
         </div>
       )}

@@ -60,8 +60,8 @@ export default function SimilarProviders({ currentProviderId, specialty, city }:
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="animate-pulse rounded-2xl border border-bp-border bg-white p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-bp-border/40 shrink-0" />
+              <div key={i} className="animate-pulse rounded-[var(--sq-lg)] border border-bp-border bg-white p-4 flex items-center gap-4">
+                <div className="w-14 h-14 rounded-[var(--sq-sm)] bg-bp-border/40 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3.5 bg-bp-border/40 rounded-full w-3/4" />
                   <div className="h-3 bg-bp-border/30 rounded-full w-1/2" />
@@ -84,15 +84,15 @@ function SimilarCard({ provider }: { provider: ProviderCard }) {
   return (
     <Link
       href={`/doctor/${provider.id}`}
-      className="flex items-center gap-4 rounded-2xl border border-bp-border bg-white p-4 hover:border-bp-accent/30 hover:shadow-md transition-all group"
+      className="flex items-center gap-4 rounded-[var(--sq-lg)] border border-bp-border bg-white p-4 hover:border-bp-accent/30 hover:shadow-md transition-all group"
     >
       <div className="relative w-14 h-14 shrink-0">
         {provider.avatar_url ? (
-          <div className="relative w-14 h-14 rounded-xl overflow-hidden">
+          <div className="relative w-14 h-14 rounded-[var(--sq-sm)] overflow-hidden">
             <Image src={provider.avatar_url} alt={name} fill className="object-cover" sizes="56px" />
           </div>
         ) : (
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-bold">
+          <div className="w-14 h-14 rounded-[var(--sq-sm)] bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-bold">
             {initials}
           </div>
         )}

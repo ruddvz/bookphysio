@@ -51,14 +51,14 @@ export default function FAQ() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-[#00766C] text-white rounded-xl font-semibold text-[14px] hover:bg-[#005A52] transition-colors group w-fit"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-[#00766C] text-white rounded-[var(--sq-sm)] font-semibold text-[14px] hover:bg-[#005A52] transition-colors group w-fit"
               >
                 Browse providers
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 href="/faq"
-                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-xl font-semibold text-[14px] hover:border-[#00766C]/30 hover:text-[#00766C] transition-colors w-fit"
+                className="inline-flex items-center gap-2 px-5 py-3.5 border border-slate-200 text-slate-700 rounded-[var(--sq-sm)] font-semibold text-[14px] hover:border-[#00766C]/30 hover:text-[#00766C] transition-colors w-fit"
               >
                 View all FAQs
               </Link>
@@ -73,7 +73,7 @@ export default function FAQ() {
                 <div
                   key={faq.id}
                   className={cn(
-                    'rounded-xl border transition-all duration-200',
+                    'rounded-[var(--sq-sm)] border transition-all duration-200',
                     isOpen
                       ? 'border-[#00766C]/20 bg-[#E6F4F3]/50'
                       : 'border-slate-200 bg-white hover:border-slate-300'
@@ -94,7 +94,7 @@ export default function FAQ() {
                       {faq.q}
                     </span>
                     <span className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-lg border transition-all shrink-0',
+                      'flex h-7 w-7 items-center justify-center rounded-[var(--sq-xs)] border transition-all shrink-0',
                       isOpen
                         ? 'border-[#00766C]/20 bg-[#E6F4F3] text-[#00766C]'
                         : 'border-slate-200 bg-white text-slate-400'

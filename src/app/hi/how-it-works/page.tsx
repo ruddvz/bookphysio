@@ -125,7 +125,7 @@ export default function HindiHowItWorksPage() {
               {activeSteps.map((step, idx) => (
                 <div
                   key={step.title}
-                  className="relative rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
+                  className="relative rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] hover:border-[#00766C]/30"
                 >
                   <div className="flex items-start justify-between">
                     <div className={`w-11 h-11 rounded-full flex items-center justify-center ${step.tint}`}>
@@ -145,7 +145,7 @@ export default function HindiHowItWorksPage() {
 
         <section className="pb-12 lg:pb-16">
           <div className="max-w-[1142px] mx-auto px-6">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)] flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.04)] flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="max-w-xl text-center md:text-left">
                 <h2 className="text-[22px] lg:text-[26px] font-bold text-[#1A1C29] tracking-tight leading-tight">
                   {activeTab === 'patient'

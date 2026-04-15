@@ -62,13 +62,13 @@ function fmtToday(d: Date): string {
 function DashboardSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
-      <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
+      <Skeleton className="h-10 w-72 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+          <Skeleton key={i} className="h-28 rounded-[var(--sq-lg)] bg-slate-100" />
         ))}
       </div>
-      <Skeleton className="h-80 rounded-2xl bg-slate-100" />
+      <Skeleton className="h-80 rounded-[var(--sq-lg)] bg-slate-100" />
     </div>
   )
 }
@@ -141,7 +141,7 @@ function AiInsightsCard() {
     >
       {!insights && !loading && !error && (
         <div className="text-center py-8">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[var(--color-ad-tile-3-bg)] flex items-center justify-center mb-4">
+          <div className="w-16 h-16 mx-auto rounded-[var(--sq-lg)] bg-[var(--color-ad-tile-3-bg)] flex items-center justify-center mb-4">
             <Sparkles size={28} className="text-[var(--color-ad-tile-3-fg)]" />
           </div>
           <h3 className="text-[16px] font-bold text-[var(--color-ad-ink)] mb-2">
@@ -187,7 +187,7 @@ function AiInsightsCard() {
           {/* Language toggle */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${healthBg}`}>
+              <div className={`w-10 h-10 rounded-[var(--sq-sm)] flex items-center justify-center ${healthBg}`}>
                 <Activity size={18} className={healthColor} />
               </div>
               <div>
@@ -198,7 +198,7 @@ function AiInsightsCard() {
             <button
               type="button"
               onClick={() => setShowHindi(!showHindi)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--sq-xs)] border border-slate-200 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
             >
               <Globe size={12} />
               {showHindi ? 'English' : 'हिन्दी'}
@@ -212,7 +212,7 @@ function AiInsightsCard() {
               { label: 'Revenue', value: insights.keyMetrics.revenueStatus, icon: '💰' },
               { label: 'Supply', value: insights.keyMetrics.providerSupply, icon: '👥' },
             ].map(({ label, value, icon }) => (
-              <div key={label} className="rounded-xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-3 text-center">
+              <div key={label} className="rounded-[var(--sq-sm)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-3 text-center">
                 <div className="text-[16px] mb-1">{icon}</div>
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</div>
                 <div className="text-[13px] font-semibold text-[var(--color-ad-ink)] capitalize">{value}</div>
@@ -221,7 +221,7 @@ function AiInsightsCard() {
           </div>
 
           {/* Summary */}
-          <div className="rounded-xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+          <div className="rounded-[var(--sq-sm)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Summary</div>
             <p className="text-[13px] text-[var(--color-ad-ink)] leading-relaxed">{summary}</p>
           </div>
@@ -235,7 +235,7 @@ function AiInsightsCard() {
               </div>
               <div className="space-y-2">
                 {alerts.map((alert, i) => (
-                  <div key={i} className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                  <div key={i} className="flex items-start gap-2.5 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
                     <span className="text-[12px] text-amber-800">{alert}</span>
                   </div>
@@ -253,7 +253,7 @@ function AiInsightsCard() {
               </div>
               <div className="space-y-2">
                 {recommendations.map((rec, i) => (
-                  <div key={i} className="flex items-start gap-2.5 rounded-xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-3">
+                  <div key={i} className="flex items-start gap-2.5 rounded-[var(--sq-sm)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-3">
                     <div className="w-5 h-5 rounded-full bg-[var(--color-ad-tile-1-bg)] flex items-center justify-center shrink-0 text-[10px] font-bold text-[var(--color-ad-primary)]">
                       {i + 1}
                     </div>
@@ -410,8 +410,8 @@ export default function AdminDashboardHome() {
             action={{ label: 'Open queue', href: '/admin/listings' }}
           >
             {stats.pendingApprovals > 0 ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-xl border border-[var(--color-ad-tile-4-fg)] bg-[var(--color-ad-tile-4-bg)] p-4 sm:p-5">
-                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--color-ad-tile-4-fg)]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-[var(--sq-sm)] border border-[var(--color-ad-tile-4-fg)] bg-[var(--color-ad-tile-4-bg)] p-4 sm:p-5">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-[var(--sq-lg)] bg-white text-[var(--color-ad-tile-4-fg)]">
                   <ShieldCheck size={22} />
                 </div>
                 <div className="flex-1">
@@ -470,7 +470,7 @@ export default function AdminDashboardHome() {
 
           <SectionCard role="admin" title="Operations pulse">
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+              <div className="rounded-[var(--sq-lg)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Queue state
                 </div>
@@ -482,7 +482,7 @@ export default function AdminDashboardHome() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+              <div className="rounded-[var(--sq-lg)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Patients / provider
                 </div>
@@ -494,7 +494,7 @@ export default function AdminDashboardHome() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
+              <div className="rounded-[var(--sq-lg)] border border-[var(--color-ad-border-soft)] bg-[var(--color-ad-surface)] p-4">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Completed GMV / provider
                 </div>
@@ -543,7 +543,7 @@ export default function AdminDashboardHome() {
                 <Link
                   key={label}
                   href={href}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-ad-border-soft)] transition-colors group"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--sq-sm)] hover:bg-[var(--color-ad-border-soft)] transition-colors group"
                 >
                   <Icon size={16} className="text-[var(--color-ad-primary)]" />
                   <span className="flex-1 text-[13px] font-medium text-[var(--color-ad-ink)]">

@@ -471,9 +471,9 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
       <div className="mx-auto max-w-[1680px] px-4 md:px-6 py-6 md:py-8">
         <div className="grid gap-6 xl:grid-cols-[290px_minmax(0,1fr)_320px]">
           <aside className="hidden xl:flex flex-col gap-6">
-            <div className="rounded-3xl border border-bp-border bg-white/90 p-6 shadow-[0_28px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+            <div className="rounded-[var(--sq-xl)] border border-bp-border bg-white/90 p-6 shadow-[0_28px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-xl">
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
+                <div className="flex h-14 w-14 items-center justify-center rounded-[var(--sq-lg)] bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
                   <AceMascot expression={currentExpression} />
                 </div>
                 <div>
@@ -491,8 +491,8 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     const MetricIcon = metric.icon
 
                     return (
-                      <div key={metric.label} className="rounded-2xl border border-bp-border bg-white p-3 shadow-sm">
-                        <div className={cn('mb-3 flex h-9 w-9 items-center justify-center rounded-2xl', styles.icon)}>
+                      <div key={metric.label} className="rounded-[var(--sq-lg)] border border-bp-border bg-white p-3 shadow-sm">
+                        <div className={cn('mb-3 flex h-9 w-9 items-center justify-center rounded-[var(--sq-lg)]', styles.icon)}>
                           <MetricIcon size={18} strokeWidth={2.5} />
                         </div>
                         <p className="text-[11px] font-bold uppercase tracking-widest text-bp-body/40">{metric.label}</p>
@@ -504,7 +504,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
               </div>
             </div>
 
-            <div className="rounded-3xl bg-bp-primary p-6 text-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.5)]">
+            <div className="rounded-[var(--sq-xl)] bg-bp-primary p-6 text-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.5)]">
               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
                 <ShieldCheck size={14} />
                 Safe by design
@@ -512,7 +512,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
               <h2 className="mt-4 text-[20px] font-bold tracking-tight">{copy.safetyTitle}</h2>
               <div className="mt-5 space-y-3">
                 {copy.safetyPoints.map((point) => (
-                  <div key={point} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div key={point} className="flex items-start gap-3 rounded-[var(--sq-lg)] border border-white/10 bg-white/5 p-4">
                     <CheckCircle2 className="mt-0.5 text-emerald-300" size={16} />
                     <p className="text-[13px] font-medium leading-relaxed text-white/75">{point}</p>
                   </div>
@@ -522,7 +522,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
           </aside>
 
           <main className="min-w-0 space-y-6">
-            <header className="overflow-hidden rounded-3xl border border-bp-border bg-white/90 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <header className="overflow-hidden rounded-[var(--sq-xl)] border border-bp-border bg-white/90 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.35)] backdrop-blur-xl">
               <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.24em] text-bp-body/40">
@@ -569,9 +569,9 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     const MetricIcon = metric.icon
 
                     return (
-                      <div key={metric.label} className="rounded-2xl border border-bp-border bg-[#fafbfc] p-4 shadow-sm">
+                      <div key={metric.label} className="rounded-[var(--sq-lg)] border border-bp-border bg-[#fafbfc] p-4 shadow-sm">
                         <div className="flex items-center justify-between gap-3">
-                          <div className={cn('flex h-11 w-11 items-center justify-center rounded-2xl', styles.icon)}>
+                          <div className={cn('flex h-11 w-11 items-center justify-center rounded-[var(--sq-lg)]', styles.icon)}>
                             <MetricIcon size={20} strokeWidth={2.5} />
                           </div>
                           <div className={cn('rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em]', styles.badge)}>
@@ -589,7 +589,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
             </header>
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-              <section className="flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-bp-border bg-white shadow-[0_28px_80px_-42px_rgba(0,0,0,0.22)]">
+              <section className="flex min-h-[760px] flex-col overflow-hidden rounded-[var(--sq-xl)] border border-bp-border bg-white shadow-[0_28px_80px_-42px_rgba(0,0,0,0.22)]">
                 <div className="flex items-center justify-between border-b border-bp-border px-6 py-5 md:px-8">
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">{copy.modeLabel}</p>
@@ -602,7 +602,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                 </div>
 
                 <div ref={chatRef} className="flex-1 space-y-6 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
-                  <div className="rounded-2xl border border-bp-accent/20 bg-[linear-gradient(135deg,_rgba(230,244,243,0.95),_rgba(255,255,255,0.9))] p-5 shadow-sm">
+                  <div className="rounded-[var(--sq-lg)] border border-bp-accent/20 bg-[linear-gradient(135deg,_rgba(230,244,243,0.95),_rgba(255,255,255,0.9))] p-5 shadow-sm">
                     <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-bp-accent">
                       <Zap size={12} />
                       {copy.modeLabel}
@@ -629,7 +629,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       >
                         <div
                           className={cn(
-                            'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-sm',
+                            'flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--sq-sm)] shadow-sm',
                             isUser ? 'bg-bp-primary text-white' : 'bg-[#F3F4F6] text-bp-accent'
                           )}
                         >
@@ -638,7 +638,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
 
                         <div
                           className={cn(
-                            'rounded-2xl px-5 py-4 shadow-sm',
+                            'rounded-[var(--sq-lg)] px-5 py-4 shadow-sm',
                             isUser
                               ? 'rounded-tr-none border border-[#1f6f68] bg-bp-accent text-white'
                               : 'rounded-tl-none border border-bp-border bg-white text-bp-primary'
@@ -668,10 +668,10 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
 
                   {isLoading && (
                     <div className="mr-auto flex max-w-[92%] items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#F3F4F6] text-bp-accent shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--sq-sm)] bg-[#F3F4F6] text-bp-accent shadow-sm">
                         <Bot size={24} className="animate-pulse" />
                       </div>
-                      <div className="rounded-2xl rounded-tl-none border border-bp-border bg-white px-5 py-4 shadow-sm">
+                      <div className="rounded-[var(--sq-lg)] rounded-tl-none border border-bp-border bg-white px-5 py-4 shadow-sm">
                         <div className="flex items-center gap-2">
                           <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-bp-accent" />
                           <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-bp-accent [animation-delay:120ms]" />
@@ -707,7 +707,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                     <label htmlFor={inputId} className="sr-only">
                       {variant === 'patient' ? 'Ask BookPhysio AI about symptoms and recovery' : variant === 'pai' ? 'Ask PAI about a condition, protocol, or exercise' : 'Ask BookPhysio AI about a clinical case'}
                     </label>
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--sq-lg)] bg-bp-accent text-white shadow-lg shadow-bp-accent/20 overflow-hidden translate-z-0">
                       <AceMascot expression={currentExpression} />
                     </div>
                     <input
@@ -724,7 +724,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       disabled={!(input || '').trim() || isLoading}
                       aria-label={variant === 'patient' ? 'Send recovery question' : variant === 'pai' ? 'Send PAI question' : 'Send clinical question'}
                       className={cn(
-                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all',
+                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--sq-lg)] transition-all',
                         (input || '').trim() && !isLoading
                           ? 'bg-bp-primary text-white shadow-lg hover:bg-bp-accent active:scale-95'
                           : 'cursor-not-allowed bg-gray-200 text-white'
@@ -738,7 +738,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
               </section>
 
               <aside className="hidden xl:flex flex-col gap-6">
-                <div className="rounded-3xl border border-bp-border bg-white p-6 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.22)]">
+                <div className="rounded-[var(--sq-xl)] border border-bp-border bg-white p-6 shadow-[0_24px_70px_-40px_rgba(0,0,0,0.22)]">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-bp-body/40">
                     <BookOpen size={14} />
                     {copy.railTitle}
@@ -751,7 +751,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                       const content = (
                         <>
                           <div className="flex items-start gap-3">
-                            <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl', styles.icon)}>
+                            <div className={cn('flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--sq-lg)]', styles.icon)}>
                               <CardIcon size={20} strokeWidth={2.5} />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -763,7 +763,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                             </div>
                           </div>
                           {card.cta && (
-                            <div className="mt-4 flex items-center justify-between rounded-2xl border border-bp-border bg-[#fafbfc] px-4 py-3 text-[12px] font-bold text-bp-primary">
+                            <div className="mt-4 flex items-center justify-between rounded-[var(--sq-lg)] border border-bp-border bg-[#fafbfc] px-4 py-3 text-[12px] font-bold text-bp-primary">
                               <span>{card.cta}</span>
                               <ChevronRight size={14} className="text-bp-accent" />
                             </div>
@@ -775,12 +775,12 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                         <Link
                           key={card.title}
                           href={card.href}
-                          className="group block rounded-2xl border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4 transition-all hover:-translate-y-0.5 hover:border-bp-accent/20 hover:shadow-lg"
+                          className="group block rounded-[var(--sq-lg)] border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4 transition-all hover:-translate-y-0.5 hover:border-bp-accent/20 hover:shadow-lg"
                         >
                           {content}
                         </Link>
                       ) : (
-                        <div key={card.title} className="rounded-2xl border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4">
+                        <div key={card.title} className="rounded-[var(--sq-lg)] border border-bp-border bg-[linear-gradient(180deg,_white,_rgba(249,250,251,0.9))] p-4">
                           {content}
                         </div>
                       )
@@ -788,7 +788,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                   </div>
                 </div>
 
-                <div className="rounded-3xl bg-bp-primary p-6 text-white shadow-[0_24px_70px_-35px_rgba(0,0,0,0.45)]">
+                <div className="rounded-[var(--sq-xl)] bg-bp-primary p-6 text-white shadow-[0_24px_70px_-35px_rgba(0,0,0,0.45)]">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
                     <Activity size={14} />
                     {copy.modeLabel}
@@ -796,7 +796,7 @@ export function BookPhysioAIChat({ variant, api, initialMessages }: BookPhysioAI
                   <h3 className="mt-4 text-[22px] font-bold tracking-tight">{copy.safetyTitle}</h3>
                   <div className="mt-5 space-y-3">
                     {copy.safetyPoints.map((point) => (
-                      <div key={point} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div key={point} className="flex items-start gap-3 rounded-[var(--sq-lg)] border border-white/10 bg-white/5 p-4">
                         <CheckCircle2 className="mt-0.5 text-emerald-300" size={16} />
                         <p className="text-[13px] font-medium leading-relaxed text-white/75">{point}</p>
                       </div>

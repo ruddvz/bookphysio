@@ -186,20 +186,20 @@ export default function ProviderSchedule() {
             <button
               onClick={prevWeek}
               aria-label="Previous week"
-              className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors"
+              className="p-2 rounded-[var(--sq-sm)] border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={goToday}
-              className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 rounded-[var(--sq-sm)] border border-slate-200 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-colors"
             >
               Today
             </button>
             <button
               onClick={nextWeek}
               aria-label="Next week"
-              className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors"
+              className="p-2 rounded-[var(--sq-sm)] border border-slate-200 hover:bg-slate-50 text-slate-500 transition-colors"
             >
               <ChevronRight size={18} />
             </button>
@@ -214,13 +214,13 @@ export default function ProviderSchedule() {
                <span className="w-2 h-2 rounded-full bg-slate-100 border border-slate-200" />
                Open slot
              </div>
-             <div className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg">
+             <div className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-[var(--sq-xs)]">
                Expected revenue: <span className="text-[var(--color-pv-primary)]">₹{weekTotalRupees.toLocaleString('en-IN')}</span>
              </div>
           </div>
         </div>
 
-        <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="border border-slate-100 rounded-[var(--sq-lg)] overflow-hidden shadow-sm">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-32 bg-slate-50/50">
               <Loader2 className="w-10 h-10 animate-spin text-[var(--color-pv-primary)]" />
@@ -293,7 +293,7 @@ export default function ProviderSchedule() {
                         key={e.visit_id}
                         className="flex items-center gap-4 px-4 py-4"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-pv-tile-1-bg)] text-[var(--color-pv-tile-1-fg)]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--sq-sm)] bg-[var(--color-pv-tile-1-bg)] text-[var(--color-pv-tile-1-fg)]">
                           <Clock size={16} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -373,7 +373,7 @@ export default function ProviderSchedule() {
                                   {cellEntries.map((e) => (
                                     <div
                                       key={e.visit_id}
-                                      className="bg-white border border-slate-200 border-l-4 border-l-[var(--color-pv-primary)] shadow-sm rounded-xl p-3 flex flex-col justify-between h-full hover:shadow-md transition-all cursor-pointer"
+                                      className="bg-white border border-slate-200 border-l-4 border-l-[var(--color-pv-primary)] shadow-sm rounded-[var(--sq-sm)] p-3 flex flex-col justify-between h-full hover:shadow-md transition-all cursor-pointer"
                                       title={`${e.patient_name} — Visit ${e.visit_number}`}
                                     >
                                       <div>
@@ -393,7 +393,7 @@ export default function ProviderSchedule() {
                                   type="button"
                                   onClick={() => openModalForCell(key, h)}
                                   aria-label={`Book session on ${formatDay(d)} at ${formatHour(h)}`}
-                                  className="w-full h-full min-h-[100px] rounded-xl border border-transparent hover:bg-slate-50/50 hover:border-slate-200 transition-all flex flex-col items-center justify-center gap-2 group/btn"
+                                  className="w-full h-full min-h-[100px] rounded-[var(--sq-sm)] border border-transparent hover:bg-slate-50/50 hover:border-slate-200 transition-all flex flex-col items-center justify-center gap-2 group/btn"
                                 >
                                   <Plus size={16} className="text-slate-200 group-hover/btn:text-[var(--color-pv-primary)] transition-colors" />
                                 </button>
@@ -418,7 +418,7 @@ export default function ProviderSchedule() {
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-in zoom-in-95"
+            className="bg-white rounded-t-2xl sm:rounded-[var(--sq-lg)] shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-in zoom-in-95"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -441,7 +441,7 @@ export default function ProviderSchedule() {
                     id="schedule-patient"
                     value={draft.profile_id}
                     onChange={(e) => setDraft({ ...draft, profile_id: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
                   >
                     <option value="">Choose patient…</option>
                     {patients.map((p) => (
@@ -449,7 +449,7 @@ export default function ProviderSchedule() {
                     ))}
                   </select>
                 ) : (
-                  <div className="p-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-center">
+                  <div className="p-4 border-2 border-dashed border-slate-200 rounded-[var(--sq-sm)] bg-slate-50 text-center">
                     <p className="text-[13px] text-slate-500">Your patient directory is empty.</p>
                   </div>
                 )}
@@ -463,7 +463,7 @@ export default function ProviderSchedule() {
                     type="date"
                     value={draft.visit_date}
                     onChange={(e) => setDraft({ ...draft, visit_date: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -473,7 +473,7 @@ export default function ProviderSchedule() {
                     type="time"
                     value={draft.visit_time}
                     onChange={(e) => setDraft({ ...draft, visit_time: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -487,7 +487,7 @@ export default function ProviderSchedule() {
                     type="number"
                     value={draft.fee_inr}
                     onChange={(e) => setDraft({ ...draft, fee_inr: e.target.value })}
-                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-bold text-[var(--color-pv-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-bold text-[var(--color-pv-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="500"
                   />
                 </div>

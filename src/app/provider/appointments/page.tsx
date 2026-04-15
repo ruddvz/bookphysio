@@ -128,7 +128,7 @@ function ProviderAppointmentsContent() {
             placeholder="Search roster..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-2xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
+            className="w-full pl-11 pr-4 py-3 bg-[var(--color-pv-track-bg)] border-none rounded-[var(--sq-lg)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)]/20 transition-all outline-none"
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
@@ -138,7 +138,7 @@ function ProviderAppointmentsContent() {
         {isLoading ? (
           <div className="space-y-4 py-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-20 w-full animate-pulse bg-slate-50 rounded-2xl" />
+              <div key={i} className="h-20 w-full animate-pulse bg-slate-50 rounded-[var(--sq-lg)]" />
             ))}
           </div>
         ) : isError ? (
@@ -168,7 +168,7 @@ function ProviderAppointmentsContent() {
                   key={appt.id}
                   role="provider"
                   icon={
-                    <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center text-[var(--color-pv-primary)] text-sm font-black border border-slate-200/50">
+                    <div className="w-12 h-12 rounded-[var(--sq-sm)] bg-slate-100 overflow-hidden flex items-center justify-center text-[var(--color-pv-primary)] text-sm font-black border border-slate-200/50">
                       {patient?.avatar_url ? (
                         <Image src={patient.avatar_url} width={48} height={48} alt="" />
                       ) : (
@@ -202,12 +202,12 @@ function ProviderAppointmentsContent() {
                           </span>
                         )}
                       </div>
-                      <div className={cn("px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border", statusStyle.color)}>
+                      <div className={cn("px-3 py-1 rounded-[var(--sq-xs)] text-[10px] font-black uppercase tracking-widest border", statusStyle.color)}>
                         {statusStyle.label}
                       </div>
                       <Link
                         href={`/provider/appointments/${appt.id}`}
-                        className="p-2.5 bg-slate-100 text-slate-400 hover:bg-[var(--color-pv-ink)] hover:text-white rounded-xl transition-all"
+                        className="p-2.5 bg-slate-100 text-slate-400 hover:bg-[var(--color-pv-ink)] hover:text-white rounded-[var(--sq-sm)] transition-all"
                       >
                         <ArrowUpRight size={18} strokeWidth={3} />
                       </Link>

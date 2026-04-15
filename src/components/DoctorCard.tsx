@@ -139,7 +139,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
         <div className="flex gap-5">
           <div className="relative shrink-0">
             {doctor.avatarUrl ? (
-              <div className="relative h-24 w-24 rounded-2xl overflow-hidden shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+              <div className="relative h-24 w-24 rounded-[var(--sq-lg)] overflow-hidden shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
                 <Image
                   src={doctor.avatarUrl}
                   alt={doctor.name}
@@ -149,7 +149,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 />
               </div>
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
+              <div className="flex h-24 w-24 items-center justify-center rounded-[var(--sq-lg)] bg-bp-accent/10 text-[28px] font-semibold text-bp-primary shadow-[0_18px_35px_-28px_rgba(24,49,45,0.28)]">
                 {initials}
               </div>
             )}
@@ -197,7 +197,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-bp-border bg-bp-surface/50 p-3">
+              <div className="rounded-[var(--sq-sm)] border border-bp-border bg-bp-surface/50 p-3">
                 <div className="flex items-center gap-2 text-bp-body/40">
                   <MapPin size={14} />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Location</span>
@@ -206,7 +206,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
               </div>
 
-              <div className="rounded-xl border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
+              <div className="rounded-[var(--sq-sm)] border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-bp-body/40">
                     <Clock3 size={14} />
@@ -256,7 +256,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           </div>
         </div>
 
-        <div className="bg-bp-surface/40 rounded-3xl border border-bp-border p-4">
+        <div className="bg-bp-surface/40 rounded-[var(--sq-xl)] border border-bp-border p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h4 className="flex items-center gap-2 text-[13px] font-bold tracking-tight text-bp-primary">
@@ -271,7 +271,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 onClick={handlePrev}
                 disabled={startIndex === 0}
                 aria-label="Previous days"
-                 className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
+                 className="flex h-8 w-8 items-center justify-center rounded-[var(--sq-sm)] border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -279,7 +279,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                 onClick={handleNext}
                 disabled={startIndex >= availability.length - 3}
                 aria-label="Next days"
-                 className="flex h-8 w-8 items-center justify-center rounded-xl border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
+                 className="flex h-8 w-8 items-center justify-center rounded-[var(--sq-sm)] border border-bp-border bg-white text-bp-body/40 transition-all hover:border-bp-accent/30 hover:text-bp-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <ChevronRight size={14} />
               </button>
@@ -288,7 +288,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
           <div className="mt-4 grid grid-cols-3 gap-2">
              {visibleDays.length > 0 ? visibleDays.map((day) => (
-               <div key={day.iso} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
+               <div key={day.iso} className="flex flex-col gap-2 rounded-[var(--sq-lg)] border border-bp-border bg-white p-2.5">
                 <div className="text-center">
                   <p className="text-[12px] font-bold text-bp-primary">{day.label}</p>
                   <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-bp-body/30">{day.dateLabel}</p>
@@ -308,7 +308,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                             setSelectedSlot(isSelected ? null : { time: slot, dayIso: day.iso })
                           }}
                           className={cn(
-                            'inline-flex w-full items-center justify-center gap-1 rounded-xl border min-h-[44px] py-2.5 text-[11px] font-bold transition-all',
+                            'inline-flex w-full items-center justify-center gap-1 rounded-[var(--sq-sm)] border min-h-[44px] py-2.5 text-[11px] font-bold transition-all',
                             isSelected
                               ? 'border-bp-accent bg-bp-accent text-white shadow-lg shadow-bp-accent/20'
                               : 'border-bp-border bg-bp-surface/30 text-bp-body hover:border-bp-accent/25 hover:text-bp-primary'
@@ -320,19 +320,19 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                       )
                     })
                   ) : (
-                    <div className="rounded-xl border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
+                    <div className="rounded-[var(--sq-sm)] border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
                       Off
                     </div>
                   )}
                 </div>
                </div>
              )) : Array.from({ length: 3 }).map((_, index) => (
-               <div key={index} className="flex flex-col gap-2 rounded-2xl border border-bp-border bg-white p-2.5">
+               <div key={index} className="flex flex-col gap-2 rounded-[var(--sq-lg)] border border-bp-border bg-white p-2.5">
                  <div className="text-center">
                    <p className="text-[12px] font-bold text-bp-primary">No slots</p>
                    <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-bp-body/30">Check profile</p>
                  </div>
-                 <div className="rounded-xl border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
+                 <div className="rounded-[var(--sq-sm)] border border-dashed border-bp-border bg-bp-surface/20 px-2 py-5 text-center text-[10px] font-bold text-bp-body/30">
                    Unavailable
                  </div>
                </div>
@@ -342,7 +342,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           <button
             onClick={handleBook}
             disabled={doctor.disableProfileLink}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-bp-accent px-4 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent/90 active:scale-[0.99] shadow-lg shadow-bp-accent/10"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[var(--sq-lg)] bg-bp-accent px-4 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent/90 active:scale-[0.99] shadow-lg shadow-bp-accent/10"
           >
             {doctor.secondaryActionLabel ?? 'Book Appointment'}
             <ArrowRight size={16} />

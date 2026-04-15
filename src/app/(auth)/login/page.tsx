@@ -119,7 +119,7 @@ export default function LoginPage() {
   const inputBase = 'flex-1 border-none bg-transparent py-4 text-[15px] text-gray-900 outline-none placeholder:text-gray-400'
 
   return (
-    <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-6">
 
         {/* Logo + heading */}
@@ -137,7 +137,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('google')}
             disabled={!!oauthLoading || loading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2.5 rounded-[var(--sq-xs)] border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             {oauthLoading === 'google' ? (
               <div className="h-4 w-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
@@ -156,7 +156,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuth('apple')}
             disabled={!!oauthLoading || loading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2.5 rounded-[var(--sq-xs)] border border-gray-200 bg-white py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             {oauthLoading === 'apple' ? (
               <div className="h-4 w-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
@@ -179,7 +179,7 @@ export default function LoginPage() {
         {/* Email + password form */}
         <div>
           {errors.general && (
-            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
+            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-[var(--sq-xs)] border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
               <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
               {errors.general}
             </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
                 Email address
               </label>
               <div className={cn(
-                'flex overflow-hidden rounded-lg border bg-white transition-colors',
+                'flex overflow-hidden rounded-[var(--sq-xs)] border bg-white transition-colors',
                 errors.email ? 'border-red-300' : emailFocused ? 'border-bp-primary ring-3 ring-bp-primary/10' : 'border-gray-200 hover:border-gray-300'
               )}>
                 <span className="flex shrink-0 items-center pl-3 pr-2">
@@ -225,7 +225,7 @@ export default function LoginPage() {
                 </Link>
               </div>
               <div className={cn(
-                'flex overflow-hidden rounded-lg border bg-white transition-colors',
+                'flex overflow-hidden rounded-[var(--sq-xs)] border bg-white transition-colors',
                 errors.password ? 'border-red-300' : passwordFocused ? 'border-bp-primary ring-3 ring-bp-primary/10' : 'border-gray-200 hover:border-gray-300'
               )}>
                 <span className="flex shrink-0 items-center pl-3 pr-2">
@@ -259,7 +259,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !!oauthLoading}
-              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-[var(--sq-xs)] bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>

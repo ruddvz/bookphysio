@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { formatIndiaDate } from '@/lib/india-date'
 import type { ProviderProfile, ProviderReview } from '@/app/api/contracts/provider'
 
-const cardClass = 'bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 mb-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] relative'
+const cardClass = 'bg-white rounded-[var(--sq-lg)] border border-slate-200 p-6 lg:p-8 mb-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)] relative'
 
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
   return (
@@ -44,7 +44,7 @@ export default function ReviewsSection({ provider, nameWithTitle }: ReviewsSecti
             Verified outcomes and recovery stories from patients under professional care.
           </p>
         </div>
-        <div className="flex items-center gap-8 p-6 bg-white rounded-2xl border border-bp-border/30 shadow-sm relative overflow-hidden group">
+        <div className="flex items-center gap-8 p-6 bg-white rounded-[var(--sq-lg)] border border-bp-border/30 shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-bp-primary/[0.03] rounded-bl-[60px] -z-0" />
           <div className="text-right relative z-10">
             <div className="text-[44px] font-bold text-bp-primary leading-none tracking-tighter">{(provider.rating_avg ?? 0).toFixed(1)}</div>
@@ -61,10 +61,10 @@ export default function ReviewsSection({ provider, nameWithTitle }: ReviewsSecti
       <div className="grid grid-cols-1 gap-8 px-2 lg:px-4">
         {reviews.length > 0 ? (
           reviews.filter((r) => r.comment).slice(0, 5).map((review) => (
-            <article key={review.id} className="group p-8 lg:p-10 rounded-2xl bg-white border border-bp-border/20 hover:border-bp-primary/30 hover:shadow-[0_12px_48px_-8px_rgba(0,118,108,0.05)] transition-all duration-700 relative overflow-hidden">
+            <article key={review.id} className="group p-8 lg:p-10 rounded-[var(--sq-lg)] bg-white border border-bp-border/20 hover:border-bp-primary/30 hover:shadow-[0_12px_48px_-8px_rgba(0,118,108,0.05)] transition-all duration-700 relative overflow-hidden">
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-bp-surface border border-bp-border/40 flex items-center justify-center text-bp-primary text-xl font-bold shadow-inner shadow-black/[0.02]">
+                  <div className="w-14 h-14 rounded-[var(--sq-lg)] bg-bp-surface border border-bp-border/40 flex items-center justify-center text-bp-primary text-xl font-bold shadow-inner shadow-black/[0.02]">
                     {review.comment?.charAt(0).toUpperCase() || 'P'}
                   </div>
                   <div>
@@ -88,8 +88,8 @@ export default function ReviewsSection({ provider, nameWithTitle }: ReviewsSecti
             </article>
           ))
         ) : (
-          <div className="py-24 text-center bg-white rounded-2xl border-2 border-dashed border-bp-border/40">
-            <div className="w-20 h-20 bg-bp-surface rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-bp-border/20"><Mail className="text-bp-border" size={32} /></div>
+          <div className="py-24 text-center bg-white rounded-[var(--sq-lg)] border-2 border-dashed border-bp-border/40">
+            <div className="w-20 h-20 bg-bp-surface rounded-[var(--sq-xl)] flex items-center justify-center mx-auto mb-6 shadow-sm border border-bp-border/20"><Mail className="text-bp-border" size={32} /></div>
             <h3 className="text-[18px] font-bold text-bp-primary/70 mb-2 tracking-tight">Clinical Outcomes Pending</h3>
             <p className="text-bp-body/40 text-[15px] font-bold max-w-sm mx-auto">Be among the first to document your professional recovery journey with {nameWithTitle}.</p>
           </div>

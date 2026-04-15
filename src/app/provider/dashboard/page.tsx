@@ -83,13 +83,13 @@ function formatNextSlotValue(entry: ScheduleEntry, todayKey: string): string {
 function DashboardSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
-      <Skeleton className="h-10 w-72 rounded-xl bg-slate-100" />
+      <Skeleton className="h-10 w-72 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+          <Skeleton key={i} className="h-28 rounded-[var(--sq-lg)] bg-slate-100" />
         ))}
       </div>
-      <Skeleton className="h-80 rounded-2xl bg-slate-100" />
+      <Skeleton className="h-80 rounded-[var(--sq-lg)] bg-slate-100" />
     </div>
   )
 }
@@ -245,7 +245,7 @@ export default function ProviderDashboardHome() {
         <div className="space-y-6">
            <SectionCard role="provider" title="Next consult">
              {nextVisit ? (
-               <div className="rounded-2xl border border-[var(--color-pv-border-soft)] bg-[var(--color-pv-track-bg)]/70 p-4 sm:p-5 md:p-6">
+               <div className="rounded-[var(--sq-lg)] border border-[var(--color-pv-border-soft)] bg-[var(--color-pv-track-bg)]/70 p-4 sm:p-5 md:p-6">
                  <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
                    <div className="space-y-3 sm:space-y-4">
                      <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-pv-primary)] shadow-sm">
@@ -393,7 +393,7 @@ export default function ProviderDashboardHome() {
                    <Link
                      key={href}
                      href={href}
-                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--color-pv-border-soft)] transition-colors group"
+                     className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--sq-sm)] hover:bg-[var(--color-pv-border-soft)] transition-colors group"
                    >
                      <Icon size={16} className="text-[var(--color-pv-primary)]" />
                      <span className="flex-1 text-[13px] font-medium text-[var(--color-pv-ink)]">{label}</span>
@@ -417,7 +417,7 @@ export default function ProviderDashboardHome() {
                     <span className="text-slate-500">Remaining today</span>
                     <span className="font-bold text-[var(--color-pv-ink)]">{remainingToday}</span>
                   </div>
-                  <div className="rounded-2xl bg-[var(--color-pv-track-bg)] p-4 text-[12px] font-bold text-slate-600">
+                  <div className="rounded-[var(--sq-lg)] bg-[var(--color-pv-track-bg)] p-4 text-[12px] font-bold text-slate-600">
                     Scheduled this week: ₹{scheduledFeesThisWeek.toLocaleString('en-IN')}
                   </div>
                   <Link

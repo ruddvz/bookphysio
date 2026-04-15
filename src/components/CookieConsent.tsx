@@ -29,7 +29,7 @@ export function CookieConsent() {
 
   return (
     <div className="fixed bottom-8 left-8 right-8 z-[100] md:left-auto md:max-w-md animate-in slide-in-from-bottom-10 duration-700">
-      <div className="bg-white rounded-2xl border border-bp-border p-6 shadow-2xl shadow-bp-primary/10">
+      <div className="bg-white rounded-[var(--sq-lg)] border border-bp-border p-6 shadow-2xl shadow-bp-primary/10">
         <div className="flex flex-col gap-4">
           <p className="text-[14px] leading-relaxed text-bp-body font-medium">
             We use essential cookies for clinical security and performance.
@@ -38,13 +38,13 @@ export function CookieConsent() {
           <div className="flex gap-3">
             <button
               onClick={handleAccept}
-              className="flex-1 bg-[#6B7BF5] text-white py-3 rounded-xl text-[14px] font-bold hover:bg-[#5363D7] transition-all active:scale-[0.98]"
+              className="flex-1 bg-[#6B7BF5] text-white py-3 rounded-[var(--sq-sm)] text-[14px] font-bold hover:bg-[#5363D7] transition-all active:scale-[0.98]"
             >
               Accept
             </button>
             <button
               onClick={handleReject}
-              className="px-6 py-3 border border-bp-border rounded-xl text-[14px] font-bold text-bp-body/60 hover:bg-bp-surface transition-all active:scale-[0.98]"
+              className="px-6 py-3 border border-bp-border rounded-[var(--sq-sm)] text-[14px] font-bold text-bp-body/60 hover:bg-bp-surface transition-all active:scale-[0.98]"
             >
               Essential Only
             </button>

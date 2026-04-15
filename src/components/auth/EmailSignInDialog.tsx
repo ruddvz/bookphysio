@@ -111,7 +111,7 @@ export default function EmailSignInDialog({
                 {t.loginInboxBody(email)}
               </DialogDescription>
             </DialogHeader>
-            <Button type="button" className="h-12 w-full rounded-2xl text-base" onClick={() => onOpenChange?.(false)}>
+            <Button type="button" className="h-12 w-full rounded-[var(--sq-lg)] text-base" onClick={() => onOpenChange?.(false)}>
               {t.loginBackToLogin}
             </Button>
           </div>
@@ -158,18 +158,18 @@ export default function EmailSignInDialog({
                       setError("")
                     }
                   }}
-                  className="h-13 rounded-2xl border-bp-border bg-white px-4 text-base text-bp-primary shadow-sm shadow-bp-primary/5"
+                  className="h-13 rounded-[var(--sq-lg)] border-bp-border bg-white px-4 text-base text-bp-primary shadow-sm shadow-bp-primary/5"
                 />
               </div>
 
               {error ? <p id={emailErrorId} role="alert" className="text-sm font-bold text-red-500">{error}</p> : null}
 
-              <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl text-base shadow-lg shadow-bp-primary/10">
+              <Button type="submit" disabled={loading} className="h-13 w-full rounded-[var(--sq-lg)] text-base shadow-lg shadow-bp-primary/10">
                 {loading ? t.loginButtonLoading : t.loginButtonEmail}
               </Button>
             </form>
 
-            <div className="rounded-2xl border border-bp-border/70 bg-white px-4 py-3 text-center text-xs font-bold text-bp-body/60">
+            <div className="rounded-[var(--sq-lg)] border border-bp-border/70 bg-white px-4 py-3 text-center text-xs font-bold text-bp-body/60">
               {t.loginEmailDialogHint}
             </div>
 

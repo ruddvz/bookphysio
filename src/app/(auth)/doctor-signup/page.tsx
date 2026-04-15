@@ -267,7 +267,7 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full h-11 text-white border-none rounded-lg text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
+      className={`w-full h-11 text-white border-none rounded-[var(--sq-xs)] text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
         disabled ? 'bg-bp-primary/40 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary-dark cursor-pointer'
       }`}
     >
@@ -1264,7 +1264,7 @@ function Step5({ email, onBack }: Step5Props) {
       </p>
 
       {/* Resend section */}
-      <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
+      <div className="rounded-[var(--sq-xs)] border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
         <p className="text-sm text-gray-500">
           Didn&apos;t receive it? Check your spam folder or resend below.
         </p>
@@ -1282,7 +1282,7 @@ function Step5({ email, onBack }: Step5Props) {
             type="button"
             onClick={handleResend}
             disabled={resendStatus === 'loading' || countdown > 0}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--sq-xs)] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {resendStatus === 'loading' ? (
               <>
@@ -1419,7 +1419,7 @@ export default function DoctorSignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
+    <div className="bg-white rounded-[var(--sq-lg)] border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
       <div className="flex justify-center mb-6">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>

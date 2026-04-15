@@ -99,7 +99,7 @@ function FilterPill({
       </button>
 
       {isOpen && (
-        <div role="listbox" aria-label={label} className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E7EB] rounded-xl shadow-lg shadow-black/8 z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
+        <div role="listbox" aria-label={label} className="absolute top-full left-0 mt-2 w-56 bg-white border border-[#E5E7EB] rounded-[var(--sq-sm)] shadow-lg shadow-black/8 z-50 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150 overflow-hidden">
           <button
             role="option"
             aria-selected={!value}
@@ -292,7 +292,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
       <div className="md:hidden">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="inline-flex items-center justify-between w-full h-12 px-4 rounded-xl border border-[#E5E7EB] bg-white text-[14px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
+          className="inline-flex items-center justify-between w-full h-12 px-4 rounded-[var(--sq-sm)] border border-[#E5E7EB] bg-white text-[14px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
         >
           <div className="flex items-center gap-2.5">
             <SlidersHorizontal size={16} className="text-[#00766C]" />
@@ -382,7 +382,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                   <Wallet size={15} className="text-[#00766C]" />
                   <label className="text-[13px] font-semibold text-[#333]">Max Consultation Fee</label>
                 </div>
-                <div className="bg-[#F9FAFB] p-5 rounded-2xl border border-[#F3F4F6]">
+                <div className="bg-[#F9FAFB] p-5 rounded-[var(--sq-lg)] border border-[#F3F4F6]">
                   <div className="flex justify-between items-baseline mb-4">
                     <span className="text-[28px] font-bold text-[#00766C] tracking-tight">₹{localMaxFee}</span>
                     <span id="mobile-fee-label" className="text-[11px] text-[#999] font-medium">max per session</span>
@@ -414,7 +414,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                         key={type}
                         onClick={() => pushParams({ visit_type: type === 'Any' ? null : VISIT_TYPE_URL[type] })}
                         className={cn(
-                          "flex flex-col items-center gap-1.5 py-3.5 px-3 rounded-xl border text-center transition-all",
+                          "flex flex-col items-center gap-1.5 py-3.5 px-3 rounded-[var(--sq-sm)] border text-center transition-all",
                           currentVisitType === type
                             ? "bg-[#00766C] text-white border-[#00766C]"
                             : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
@@ -456,7 +456,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
             <div className="sticky bottom-0 bg-white border-t border-[#F3F4F6] px-6 py-4 flex gap-3">
               <button
                 onClick={clearAll}
-                className="flex-1 py-3 text-[14px] font-semibold text-[#666] rounded-xl border border-[#E5E7EB] hover:bg-[#F5F5F5] transition-colors"
+                className="flex-1 py-3 text-[14px] font-semibold text-[#666] rounded-[var(--sq-sm)] border border-[#E5E7EB] hover:bg-[#F5F5F5] transition-colors"
               >
                 Reset
               </button>
@@ -465,7 +465,7 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
                   pushParams({ max_fee: localMaxFee === DEFAULT_MAX_FEE ? null : String(localMaxFee) })
                   setDrawerOpen(false)
                 }}
-                className="flex-[2] py-3 rounded-xl bg-[#00766C] text-white text-[14px] font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                className="flex-[2] py-3 rounded-[var(--sq-sm)] bg-[#00766C] text-white text-[14px] font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
               >
                 Show {total} results
               </button>

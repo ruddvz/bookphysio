@@ -45,7 +45,7 @@ export default function Testimonials() {
             </p>
 
             {/* Pull quote */}
-            <div className="bg-white rounded-2xl p-7 border border-[#00766C]/15 shadow-sm relative overflow-hidden">
+            <div className="bg-white rounded-[var(--sq-lg)] p-7 border border-[#00766C]/15 shadow-sm relative overflow-hidden">
               <div className="text-[64px] font-serif text-[#00766C]/15 leading-none -mt-3 -ml-1 mb-1 select-none">&ldquo;</div>
               <p className="text-slate-700 text-[17px] leading-relaxed font-medium italic">
                 We only list physiotherapists we&rsquo;ve verified ourselves. That&rsquo;s the whole product.
@@ -83,9 +83,9 @@ export default function Testimonials() {
             {promises.map(p => (
               <article
                 key={p.title}
-                className="flex gap-4 p-6 bg-white rounded-2xl border border-[#00766C]/10 hover:border-[#00766C]/25 hover:shadow-md hover:shadow-[#00766C]/5 transition-all duration-200"
+                className="flex gap-4 p-6 bg-white rounded-[var(--sq-lg)] border border-[#00766C]/10 hover:border-[#00766C]/25 hover:shadow-md hover:shadow-[#00766C]/5 transition-all duration-200"
               >
-                <div className={`w-11 h-11 rounded-xl ${p.bg} flex items-center justify-center shrink-0 mt-0.5`}>
+                <div className={`w-11 h-11 rounded-[var(--sq-sm)] ${p.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                   <p.icon size={20} className={p.color} />
                 </div>
                 <div>

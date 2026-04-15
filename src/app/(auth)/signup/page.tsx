@@ -118,7 +118,7 @@ export default function SignupPage() {
 
   const fieldWrap = (field: keyof SignupForm, hasError: boolean) =>
     cn(
-      'flex overflow-hidden rounded-lg border bg-white transition-colors',
+      'flex overflow-hidden rounded-[var(--sq-xs)] border bg-white transition-colors',
       hasError
         ? 'border-red-300'
         : focused === field
@@ -131,7 +131,7 @@ export default function SignupPage() {
     cn('h-4 w-4 transition-colors', focused === field ? 'text-bp-primary' : 'text-gray-400')
 
   return (
-    <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-6">
 
         {/* Logo + heading */}
@@ -145,7 +145,7 @@ export default function SignupPage() {
 
         <div>
           {errors.general && (
-            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-lg border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
+            <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-[var(--sq-xs)] border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
               <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
               {errors.general}
             </div>
@@ -269,7 +269,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-[var(--sq-xs)] bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
