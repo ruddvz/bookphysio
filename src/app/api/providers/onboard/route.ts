@@ -94,6 +94,8 @@ const onboardSchema = z.object({
     degree: z.string().min(1).max(100),
     experienceYears: z.string().regex(/^\d{1,2}$/, 'Experience years must be a number'),
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
+    certifications: z.array(z.string().min(1).max(100)).max(20).optional().default([]),
+    equipmentTags: z.array(z.string().min(1).max(100)).max(30).optional().default([]),
   }),
   step3: z.object({
     clinicName: z.string().min(2).max(200),
@@ -179,6 +181,11 @@ export async function POST(request: NextRequest) {
       .filter((specialty) => step2.specialties.includes(specialty.name))
       .map((specialty) => specialty.id)
 
+    const qualificationMap: Record<string, 'BPT' | 'MPT' | 'PhD' | 'DPT'> = {
+      BPT: 'BPT', MPT: 'MPT', PhD: 'PhD', DPT: 'DPT',
+    }
+    const qualificationValue = qualificationMap[step2.degree] ?? null
+
     // 2. Create provider profile
     const { error: providerError } = await supabaseAdmin
       .from('providers')
@@ -192,6 +199,9 @@ export async function POST(request: NextRequest) {
           : (step2.iapNumber || ''),
         specialty_ids: selectedIds,
         consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
+        qualification: qualificationValue,
+        certifications: step2.certifications ?? [],
+        equipment_tags: step2.equipmentTags ?? [],
         verified: false,
         active: false,
         onboarding_step: 4,

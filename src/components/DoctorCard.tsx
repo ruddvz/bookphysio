@@ -27,6 +27,7 @@ export interface Doctor {
   name: string
   credentials: string
   specialty: string
+  qualification?: string | null
   rating: number
   reviewCount: number
   location: string
@@ -165,9 +166,16 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-start gap-3">
               <div className="min-w-0 flex-1">
-                <h3 className="text-[22px] font-bold tracking-tight text-bp-primary md:text-[24px]">
-                  {doctor.name}
-                </h3>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-[22px] font-bold tracking-tight text-bp-primary md:text-[24px]">
+                    {doctor.name}
+                  </h3>
+                  {doctor.qualification && (
+                    <span className="inline-flex items-center rounded-md bg-bp-accent/10 px-2 py-0.5 text-[11px] font-bold text-bp-accent shrink-0">
+                      {doctor.qualification}
+                    </span>
+                  )}
+                </div>
                 <p className="mt-1 text-[14px] font-medium text-bp-body/60">{doctor.credentials}</p>
               </div>
 

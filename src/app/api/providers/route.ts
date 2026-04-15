@@ -239,6 +239,7 @@ async function searchProvidersWithoutRpc({
   city,
   resolvedSpecialtyId,
   visit_type,
+  qualification,
   min_rating,
   max_fee_inr,
   page,
@@ -252,6 +253,7 @@ async function searchProvidersWithoutRpc({
   city: string | null
   resolvedSpecialtyId: string | null
   visit_type: ProviderCard['visit_types'][number] | null
+  qualification: string | null
   min_rating: number | undefined
   max_fee_inr: number | undefined
   page: number
@@ -285,6 +287,10 @@ async function searchProvidersWithoutRpc({
 
   if (resolvedSpecialtyId) {
     fallbackQuery = fallbackQuery.contains('specialty_ids', [resolvedSpecialtyId])
+  }
+
+  if (qualification) {
+    fallbackQuery = fallbackQuery.eq('qualification', qualification)
   }
 
   if (query) {
@@ -413,7 +419,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { query, city, specialty_id, visit_type, sort, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  const { query, city, specialty_id, visit_type, qualification, sort, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
   if (!hasPublicSupabaseEnv()) {
     // Surface a real error instead of silently returning an empty list. The previous
     // 200 + [] fallback masked missing Supabase env so the UI showed "no results in
@@ -478,6 +484,7 @@ export async function GET(request: NextRequest) {
       city: city ?? null,
       resolvedSpecialtyId,
       visit_type: visit_type ?? null,
+      qualification: qualification ?? null,
       min_rating,
       max_fee_inr,
       page,

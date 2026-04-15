@@ -548,14 +548,52 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                     )}
                     <div className="flex items-start gap-4">
                       <div className="mt-1 bg-bp-accent/10 p-2 rounded-xl text-bp-accent">
-                        <Awards size={20} strokeWidth={3} />
+                        <Award size={20} strokeWidth={3} />
                       </div>
                       <div>
                         <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-1">Listed Qualification</p>
-                        <p className="text-[16px] font-bold text-bp-primary">{provider.title ?? 'Physiotherapist'}</p>
+                        <p className="text-[16px] font-bold text-bp-primary">
+                          {provider.qualification ? `${provider.qualification} — ${provider.title ?? 'PT'}` : (provider.title ?? 'Physiotherapist')}
+                        </p>
                         <p className="text-[14px] font-medium text-bp-body/40 mt-1 italic">Additional academic details may be shared by the provider during consultation.</p>
                       </div>
                     </div>
+
+                    {provider.certifications && provider.certifications.length > 0 && (
+                      <div className="flex items-start gap-4">
+                        <div className="mt-1 bg-bp-accent/10 p-2 rounded-xl text-bp-accent">
+                          <CheckCircle2 size={20} strokeWidth={3} />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-2">Certifications</p>
+                          <div className="flex flex-wrap gap-2">
+                            {provider.certifications.map((cert) => (
+                              <span key={cert} className="rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-[12px] font-bold text-bp-primary">
+                                {cert}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {provider.equipment_tags && provider.equipment_tags.length > 0 && (
+                      <div className="flex items-start gap-4">
+                        <div className="mt-1 bg-bp-accent/10 p-2 rounded-xl text-bp-accent">
+                          <Activity size={20} strokeWidth={2.5} />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-2">Equipment & Modalities</p>
+                          <div className="flex flex-wrap gap-2">
+                            {provider.equipment_tags.map((tag) => (
+                              <span key={tag} className="rounded-full border border-bp-border bg-white px-3 py-1 text-[12px] font-bold text-bp-body">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </section>
               </div>

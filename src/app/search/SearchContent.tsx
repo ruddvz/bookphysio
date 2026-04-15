@@ -14,6 +14,7 @@ import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 import { formatIndiaDateTime } from '@/lib/india-date'
+import { conditionSlugToSpecialtySlug } from '@/lib/conditions'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
@@ -46,6 +47,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     name: nameWithTitle,
     credentials: p.specialties.map((s) => s.name).join(', ') || 'BPT',
     specialty: p.specialties[0]?.name ?? 'Physiotherapist',
+    qualification: p.qualification ?? null,
     rating: p.rating_avg ?? 0,
     reviewCount: p.rating_count ?? 0,
     location: p.city ?? 'India',
@@ -126,6 +128,12 @@ function resolveConditionFilters(condition: string | null): {
     return { specialty: null, visitType: null, query: null }
   }
 
+  // Check slug-based conditions first (from specialty article pages)
+  const slugMapped = conditionSlugToSpecialtySlug(condition)
+  if (slugMapped) {
+    return { specialty: slugMapped, visitType: null, query: null }
+  }
+
   const normalizedCondition = normalizeConditionTerm(condition)
   const mappedSpecialty = CONDITION_SPECIALTY_MAP[normalizedCondition] ?? null
   const visitType = normalizedCondition === 'home visits' || normalizedCondition === 'home visit'
@@ -154,6 +162,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
   const specialty = searchParams.get('specialty') ?? conditionFilters.specialty
   const visit_type = searchParams.get('visit_type') ?? conditionFilters.visitType
+  const qualification = searchParams.get('qualification')
   const max_fee = searchParams.get('max_fee')
   const sort = searchParams.get('sort')
   const lat = searchParams.get('lat')
@@ -165,12 +174,13 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     if (specialty) apiParams.specialty_id = specialty
     if (conditionFilters.query) apiParams.query = conditionFilters.query
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
+    if (qualification) apiParams.qualification = qualification
     if (sort) apiParams.sort = sort
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, specialty, conditionFilters.query, visit_type, sort, max_fee, lat, lng])
+  }, [city, specialty, conditionFilters.query, visit_type, qualification, sort, max_fee, lat, lng])
 
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
     fetchUrl,
