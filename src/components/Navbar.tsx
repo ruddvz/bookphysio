@@ -48,9 +48,12 @@ const navLinks = [
 export default function Navbar({
   locale,
   localeSwitchPath,
+  scrolledBg,
 }: {
   locale?: StaticLocale
   localeSwitchPath?: LocalizedStaticPath
+  /** Override the scrolled-state background (e.g. '#F5A623' for specialty pages) */
+  scrolledBg?: string
 } = {}) {
   const [browseOpen, setBrowseOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -89,9 +92,12 @@ export default function Navbar({
         className={cn(
           'fixed top-0 inset-x-0 z-[100] transition-all duration-300',
           scrolled
-            ? 'bg-white/90 backdrop-blur-xl border-b border-indigo-100/60 shadow-sm shadow-indigo-100/40'
+            ? scrolledBg
+              ? 'backdrop-blur-xl border-b border-black/10 shadow-sm'
+              : 'bg-white/90 backdrop-blur-xl border-b border-indigo-100/60 shadow-sm shadow-indigo-100/40'
             : 'bg-transparent'
         )}
+        style={scrolled && scrolledBg ? { backgroundColor: scrolledBg } : undefined}
       >
         <div className="bp-container">
           <div className="flex h-[68px] items-center justify-between gap-6">
@@ -212,7 +218,7 @@ export default function Navbar({
               </Link>
               <Link
                 href={loginHref}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#6B7BF5] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#5363D7]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-gray-800"
               >
                 Sign in
                 <ArrowRight size={13} />
@@ -335,6 +341,14 @@ export default function Navbar({
 
           {/* Auth CTAs */}
           <div className="relative z-10 shrink-0 px-5 pb-10 pt-3 space-y-3">
+            <Link
+              href="/doctor-signup"
+              onClick={() => setMobileOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-[var(--sq-lg)] border border-slate-300 bg-white/60 text-[14px] font-semibold text-slate-700 active:scale-[0.98] transition-transform"
+            >
+              <Stethoscope size={15} />
+              Sign up for doctors
+            </Link>
             <Link
               href={signupHref}
               onClick={() => setMobileOpen(false)}

@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SPECIALTIES } from '@/lib/specialties'
 
 const ROTATING_WORDS = [
   'sports rehab',
@@ -15,13 +16,11 @@ const ROTATING_WORDS = [
   'joint mobility',
 ]
 
-const HERO_CHIP_ROWS = [
-  ['Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain', 'Joint stiffness'],
-  ['Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica', 'Balance issues', 'Posture issues'],
-  ['Stroke recovery', 'Kids physio', 'Pregnancy pain', 'Elderly care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
+const CONDITIONS = [
+  'Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain',
+  'Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica',
+  'Stroke recovery', 'Kids physio', 'Pregnancy pain', 'Elderly care', 'Ankle sprain',
 ]
-
-const CONDITIONS = HERO_CHIP_ROWS.flat()
 
 const CITIES = [
   'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
@@ -30,10 +29,10 @@ const CITIES = [
 ]
 
 const TRUST_STATS = [
-  { value: 'IAP',     label: 'Verified providers'  },
-  { value: '10+',     label: 'Cities supported'    },
-  { value: 'Free',    label: 'To list your practice'},
-  { value: '60s',     label: 'To book a session'   },
+  { value: 'IAP',    label: 'Verified providers'   },
+  { value: '15+',    label: 'Cities live'           },
+  { value: 'Free',   label: 'To list your practice' },
+  { value: '60s',    label: 'To book a session'     },
 ]
 
 function SearchField({
@@ -51,9 +50,6 @@ function SearchField({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    // Use 'click' (not 'mousedown') so the listener fires AFTER the trigger's
-    // own onClick has run — otherwise opening one field would race with
-    // closing it on the same gesture and the dropdown would never appear.
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onCloseOptions()
     }
@@ -150,8 +146,12 @@ export default function HeroSection() {
     const params = new URLSearchParams()
     const c = overrideCondition ?? condition
     if (c.trim()) params.set('condition', c.trim())
-    if (location.trim())  params.set('location',  location.trim())
+    if (location.trim()) params.set('city', location.trim())
     router.push(params.toString() ? `/search?${params}` : '/search')
+  }
+
+  const handleSpecialtyChip = (slug: string) => {
+    router.push(`/specialties/${slug}`)
   }
 
   return (
@@ -160,7 +160,7 @@ export default function HeroSection() {
       style={{ background: 'linear-gradient(155deg, #F0EEFF 0%, #E8F8F7 40%, #FFF5F8 75%, #FFF8F0 100%)' }}
       aria-label="Hero section"
     >
-      {/* Decorative container — overflow hidden to clip blobs, pointer-events-none so clicks pass through */}
+      {/* Decorative container */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Soft blob decorations */}
         <div
@@ -185,26 +185,26 @@ export default function HeroSection() {
           }}
         />
 
-        {/* Male physio character — desktop only, left-side decorative float */}
-        <div className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 w-[240px] z-[5] select-none">
+        {/* Male physio character — desktop only */}
+        <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-[200px] z-[5] select-none">
           <Image
             src="/images/physio-male.png"
             alt=""
-            width={240}
-            height={360}
+            width={200}
+            height={300}
             priority
             className="object-contain"
             aria-hidden="true"
           />
         </div>
 
-        {/* Female physio character — desktop only, right-side decorative float */}
-        <div className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 w-[260px] z-[5] select-none">
+        {/* Female physio character — desktop only */}
+        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[220px] z-[5] select-none">
           <Image
             src="/images/physio-female.png"
             alt=""
-            width={260}
-            height={400}
+            width={220}
+            height={340}
             priority
             className="object-contain"
             aria-hidden="true"
@@ -213,11 +213,11 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="bp-container relative z-10 pt-20 pb-20">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="bp-container relative z-10 pt-24 pb-28">
+        <div className="max-w-3xl mx-auto text-center">
 
           {/* Headline */}
-          <h1 className="mb-6 animate-fade-up delay-100" style={{ color: '#2D2B55' }}>
+          <h1 className="mb-5 animate-fade-up delay-100" style={{ color: '#2D2B55' }}>
             Book verified physios
             <br />
             for{' '}
@@ -236,16 +236,48 @@ export default function HeroSection() {
             </span>
           </h1>
 
-          {/* Subheading */}
-          <p className="text-[18px] leading-relaxed max-w-2xl mx-auto mb-10 animate-fade-up delay-200" style={{ color: '#5A5880' }}>
-            Find IAP-verified physiotherapists for a clinic visit or a session at home. Pick a time, confirm with an OTP, and you are done.
+          {/* Subheading — two distinct lines */}
+          <p className="text-[18px] leading-relaxed max-w-2xl mx-auto mb-8 animate-fade-up delay-200" style={{ color: '#5A5880' }}>
+            Find IAP-verified physiotherapists for a clinic visit or a session at home.
+            <br className="hidden sm:block" />
+            {' '}Pick a time, confirm with an OTP, and you are done.
           </p>
 
-          {/* Search bar */}
+          {/* Static specialty chips — above the search bar */}
+          <div className="mb-6 animate-fade-up delay-250" role="group" aria-label="Browse specialties">
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#9290B0' }}>
+              Browse by specialty
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {SPECIALTIES.map((s) => (
+                <button
+                  key={s.slug}
+                  type="button"
+                  onClick={() => handleSpecialtyChip(s.slug)}
+                  className="bp-hero-chip px-4 py-2 text-[13px] font-semibold shrink-0"
+                >
+                  {s.label}
+                </button>
+              ))}
+              {/* Quick condition shortcuts */}
+              {CONDITIONS.slice(0, 4).map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => { setCondition(tag); handleSearch(tag) }}
+                  className="bp-hero-chip px-4 py-2 text-[13px] font-semibold shrink-0"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Search bar — below chips, narrower */}
           <div className="animate-fade-up delay-300 mb-10">
             <form
               onSubmit={e => { e.preventDefault(); handleSearch() }}
-              className="flex flex-col lg:flex-row bg-white/90 backdrop-blur-md rounded-[2.5rem] lg:rounded-full overflow-visible border border-indigo-100 max-w-4xl mx-auto shadow-xl shadow-indigo-200/40 p-2"
+              className="flex flex-col lg:flex-row bg-white/90 backdrop-blur-md rounded-[2.5rem] lg:rounded-full overflow-visible border border-indigo-100 max-w-2xl mx-auto shadow-xl shadow-indigo-200/40 p-2"
             >
               <SearchField
                 className="rounded-[2rem] lg:rounded-full"
@@ -254,7 +286,7 @@ export default function HeroSection() {
                 icon={Search}
                 value={condition}
                 onChange={setCondition}
-                placeholder="e.g. Back pain, Sports injury..."
+                placeholder="e.g. Back pain, Knee pain..."
                 options={CONDITIONS}
                 onSelect={setCondition}
                 showOptions={showConditions}
@@ -294,65 +326,6 @@ export default function HeroSection() {
                 </button>
               </div>
             </form>
-
-            {/* Auto-scrolling honeycomb chip marquee — three rows, alternating direction */}
-            <div className="mt-4 -mx-4 pb-2">
-              <div
-                role="group"
-                aria-label="Browse common conditions"
-                className="flex flex-col gap-3"
-              >
-                {HERO_CHIP_ROWS.map((row, rowIndex) => {
-                  const isReverse = rowIndex === 1
-                  // Negative delays start each row mid-animation so chips appear centred on first paint
-                  const delays = ['-8s', '-14s', '-4s']
-                  return (
-                    <div
-                      key={`hero-chip-row-${rowIndex}`}
-                      data-chip-row
-                      className="overflow-hidden"
-                    >
-                      <div
-                        className={cn(
-                          'flex gap-3',
-                          isReverse ? 'animate-chip-marquee-reverse' : 'animate-chip-marquee',
-                        )}
-                        style={{
-                          animationDuration: `${28 + rowIndex * 4}s`,
-                          animationDelay: delays[rowIndex],
-                        }}
-                      >
-                        {/* Visible chips — announced by screen readers */}
-                        {row.map((tag) => (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => { setCondition(tag); handleSearch(tag) }}
-                            className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                        {/* Duplicate for seamless infinite loop — hidden from assistive tech */}
-                        <span aria-hidden="true" className="contents">
-                          {row.map((tag) => (
-                            <button
-                              key={`dup-${tag}`}
-                              type="button"
-                              tabIndex={-1}
-                              onClick={() => { setCondition(tag); handleSearch(tag) }}
-                              className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
-                            >
-                              {tag}
-                            </button>
-                          ))}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
           </div>
 
           {/* Trust stats */}
@@ -367,12 +340,12 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Floating trust badges */}
-      <div className="hidden lg:flex absolute bottom-12 left-1/2 -translate-x-1/2 items-center gap-4 z-10 animate-fade-up delay-500">
+      {/* Floating trust badges — positioned so they don't overlap stats */}
+      <div className="hidden lg:flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center gap-4 z-10 animate-fade-up delay-500">
         {[
           { icon: Shield, label: 'IAP/State Council Verified' },
-          { icon: Home,   label: 'Home Visits Available'  },
-          { icon: Clock,  label: 'Same-Day Slots'          },
+          { icon: Home,   label: 'Home Visits Available'      },
+          { icon: Clock,  label: 'Same-Day Slots'             },
         ].map(({ icon: Icon, label }) => (
           <div
             key={label}

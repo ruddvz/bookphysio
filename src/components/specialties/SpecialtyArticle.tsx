@@ -54,7 +54,7 @@ export default function SpecialtyArticle({
 
   return (
     <>
-      <Navbar />
+      <Navbar scrolledBg={MUSTARD} />
 
       <main className="min-h-screen" style={{ backgroundColor: MUSTARD }}>
 
@@ -308,23 +308,23 @@ export default function SpecialtyArticle({
               </div>
             </div>
 
-            {/* CTA card */}
+            {/* CTA card — solid black for contrast */}
             <div
               className="rounded-[var(--sq-lg)] p-10 text-center"
-              style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}
+              style={{ backgroundColor: '#000000' }}
             >
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/15 mb-5">
-                <Calendar className="h-7 w-7 text-black" />
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/10 mb-5">
+                <Calendar className="h-7 w-7 text-white" />
               </div>
-              <h2 className="text-[24px] lg:text-[28px] font-black tracking-tight text-black mb-3">
+              <h2 className="text-[24px] lg:text-[28px] font-black tracking-tight text-white mb-3">
                 Ready to start your recovery?
               </h2>
-              <p className="mx-auto max-w-[580px] text-[15px] leading-relaxed text-black/70 mb-7">
+              <p className="mx-auto max-w-[580px] text-[15px] leading-relaxed text-white/70 mb-7">
                 Browse verified physiotherapists, compare visit formats, and book the specialist support that matches your condition and recovery pace.
               </p>
               <Link
                 href={bookingHref}
-                className="inline-flex items-center gap-2.5 rounded-full bg-black px-8 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-80 group"
+                className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-[15px] font-bold text-black transition-opacity hover:opacity-90 group"
               >
                 <Calendar className="h-4 w-4" />
                 Find a specialist

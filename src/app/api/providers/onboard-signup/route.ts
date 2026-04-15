@@ -79,12 +79,24 @@ const onboardSignupSchema = z.object({
     }
   }),
   step3: z.object({
-    clinicName: z.string().min(2).max(200),
-    address: z.string().min(5).max(500),
+    clinicName: z.string().max(200).optional(),
+    address: z.string().max(500).optional(),
     city: z.string().min(2).max(100),
     state: z.string().min(2).max(100),
-    pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode'),
+    pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode').optional().or(z.literal('')),
     visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
+  }).superRefine((data, ctx) => {
+    const isClinic = data.visitTypes.includes('in_clinic')
+    if (!isClinic) return
+    if (!data.clinicName?.trim() || data.clinicName.trim().length < 2) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['clinicName'], message: 'Enter your clinic name' })
+    }
+    if (!data.address?.trim() || data.address.trim().length < 5) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['address'], message: 'Enter your clinic address' })
+    }
+    if (!data.pincode?.trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['pincode'], message: 'Enter your clinic pincode' })
+    }
   }),
   step4: z.object({
     fees: z.record(z.string(), z.coerce.number().int().min(0).max(999999)),
@@ -310,15 +322,16 @@ export async function POST(request: NextRequest) {
     providerCreated = true
 
     // 5. Create location
+    const isClinic = step3.visitTypes.includes('in_clinic')
     const { data: locationRow, error: locError } = await supabaseAdmin
       .from('locations')
       .insert({
         provider_id: userId,
-        name: step3.clinicName,
-        address: step3.address,
+        name: isClinic ? (step3.clinicName ?? '') : '',
+        address: isClinic ? (step3.address ?? '') : '',
         city: step3.city,
         state: step3.state,
-        pincode: step3.pincode,
+        pincode: isClinic ? (step3.pincode ?? '') : '',
         visit_type: step3.visitTypes,
       })
       .select('id')

@@ -140,12 +140,24 @@ const step2Schema = z.object({
 })
 
 const step3Schema = z.object({
-  clinicName: z.string().min(2, 'Enter clinic name'),
-  address: z.string().min(5, 'Enter full address'),
+  clinicName: z.string().optional(),
+  address: z.string().optional(),
   city: z.string().min(1, 'Select a city'),
   state: z.string().min(2, 'State is required'),
-  pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode'),
+  pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode').optional().or(z.literal('')),
   visitTypes: z.array(z.string()).min(1, 'Select at least one visit type'),
+}).superRefine((data, ctx) => {
+  const isClinic = data.visitTypes.includes('in_clinic')
+  if (!isClinic) return
+  if (!data.clinicName?.trim() || data.clinicName.trim().length < 2) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['clinicName'], message: 'Enter your clinic name' })
+  }
+  if (!data.address?.trim() || data.address.trim().length < 5) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['address'], message: 'Enter your clinic address' })
+  }
+  if (!data.pincode?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['pincode'], message: 'Enter your clinic pincode' })
+  }
 })
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
