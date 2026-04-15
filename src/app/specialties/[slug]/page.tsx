@@ -345,11 +345,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
+  const specialty = SPECIALTIES.find((s) => s.slug === slug)
+
   return buildSpecialtyArticleMetadata({
     slug,
-    title: data.title,
+    title: specialty?.seoTitle ?? data.title,
     subtitle: data.subtitle,
-    description: data.description,
+    description: specialty?.seoDescription ?? data.description,
   })
 }
 
@@ -400,7 +402,17 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalWebPageSchema) }}
       />
-      <SpecialtyArticle data={data} slug={slug} image={specialty?.image} subLabel={specialty?.subLabel} />
+      <SpecialtyArticle
+        data={data}
+        slug={slug}
+        image={specialty?.image}
+        subLabel={specialty?.subLabel}
+        richConditions={specialty?.conditions}
+        symptoms={specialty?.symptoms}
+        treatments={specialty?.treatments}
+        modalities={specialty?.modalities}
+        certifications={specialty?.certifications}
+      />
     </>
   )
 }

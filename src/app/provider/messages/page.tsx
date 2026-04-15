@@ -130,7 +130,7 @@ export default function ProviderMessages() {
             <input
               type="search"
               placeholder="Search conversations..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[14px] focus:ring-2 focus:ring-[var(--color-pv-primary)] transition-all outline-none"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-[var(--sq-sm)] text-[14px] focus:ring-2 focus:ring-[var(--color-pv-primary)] transition-all outline-none"
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)]" />
           </div>
@@ -190,7 +190,7 @@ export default function ProviderMessages() {
 
         {/* Main Content: Chat Thread */}
         <div className={cn(
-          "flex-1 flex flex-col min-h-0 bg-white rounded-2xl border border-[var(--color-pv-border)] overflow-hidden",
+          "flex-1 flex flex-col min-h-0 bg-white rounded-[var(--sq-lg)] border border-[var(--color-pv-border)] overflow-hidden",
           !selectedConversationId && "hidden xl:flex opacity-60 pointer-events-none"
         )}>
           {activeChat ? (
@@ -219,8 +219,8 @@ export default function ProviderMessages() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button aria-label="Voice call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400" disabled><Phone size={18} /></button>
-                  <button aria-label="Video call unavailable" className="p-2 rounded-lg hover:bg-slate-50 text-slate-400" disabled><Video size={18} /></button>
+                  <button aria-label="Voice call unavailable" className="p-2 rounded-[var(--sq-xs)] hover:bg-slate-50 text-slate-400" disabled><Phone size={18} /></button>
+                  <button aria-label="Video call unavailable" className="p-2 rounded-[var(--sq-xs)] hover:bg-slate-50 text-slate-400" disabled><Video size={18} /></button>
                 </div>
               </div>
 
@@ -257,7 +257,7 @@ export default function ProviderMessages() {
                           isSent ? "ml-auto items-end" : "items-start"
                         )}>
                           <div className={cn(
-                            "px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed shadow-sm",
+                            "px-4 py-2.5 rounded-[var(--sq-lg)] text-[14px] leading-relaxed shadow-sm",
                             isSent
                               ? "bg-[var(--color-pv-primary)] text-white rounded-tr-sm"
                               : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm"
@@ -283,7 +283,7 @@ export default function ProviderMessages() {
               {/* Input Area */}
               <div className="p-4 border-t border-[var(--color-pv-border-soft)]">
                 <div className="flex items-center gap-3">
-                  <button aria-label="Attach file" className="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50" disabled>
+                  <button aria-label="Attach file" className="w-10 h-10 rounded-[var(--sq-sm)] border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50" disabled>
                     <Paperclip size={18} />
                   </button>
                   <div className="flex-1 relative">
@@ -298,13 +298,13 @@ export default function ProviderMessages() {
                           if (messageText.trim()) sendMessageMutation.mutate(messageText.trim())
                         }
                       }}
-                      className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all resize-none"
+                      className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all resize-none"
                     />
                     <button
                       onClick={() => messageText.trim() && sendMessageMutation.mutate(messageText.trim())}
                       disabled={!messageText.trim() || sendMessageMutation.isPending}
                       aria-label="Send message"
-                      className="absolute right-1.5 top-1.5 w-8 h-8 bg-[var(--color-pv-primary)] text-white rounded-lg flex items-center justify-center hover:opacity-90 disabled:opacity-50 transition-all"
+                      className="absolute right-1.5 top-1.5 w-8 h-8 bg-[var(--color-pv-primary)] text-white rounded-[var(--sq-xs)] flex items-center justify-center hover:opacity-90 disabled:opacity-50 transition-all"
                     >
                       {sendMessageMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                     </button>
@@ -314,7 +314,7 @@ export default function ProviderMessages() {
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300 mb-4">
+              <div className="w-16 h-16 rounded-[var(--sq-lg)] bg-slate-100 flex items-center justify-center text-slate-300 mb-4">
                 <MessageSquare size={32} />
               </div>
               <h3 className="text-[18px] font-bold text-slate-900 mb-1">Select a conversation</h3>

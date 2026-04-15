@@ -122,7 +122,7 @@ export default function ProviderNotifications() {
       <SectionCard role="provider" title="Active Events">
         {isLoading ? (
           <div className="space-y-4 py-8">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-16 w-full bg-slate-50 animate-pulse rounded-xl" />)}
+            {[1, 2, 3, 4].map(i => <div key={i} className="h-16 w-full bg-slate-50 animate-pulse rounded-[var(--sq-sm)]" />)}
           </div>
         ) : isError ? (
           <EmptyState

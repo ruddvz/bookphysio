@@ -43,7 +43,7 @@ export default function HindiPrivacyPage() {
                       <li key={section.id}>
                         <a
                           href={`#${section.id}`}
-                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
+                          className="block rounded-[var(--sq-sm)] px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
                         >
                           {section.label}
                         </a>
@@ -52,7 +52,7 @@ export default function HindiPrivacyPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
@@ -89,13 +89,13 @@ export default function HindiPrivacyPage() {
                     बेहतर बुकिंग अनुभव और क्लिनिकल समन्वय के लिए हम निम्न प्रकार की जानकारी एकत्र कर सकते हैं:
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">व्यक्तिगत डेटा</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         नाम, उम्र, जेंडर, फोन नंबर, ईमेल और शहर जैसी बुनियादी जानकारी।
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">बुकिंग और क्लिनिकल संदर्भ</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         विज़िट का कारण, पसंदीदा विज़िट प्रकार और आपकी बुकिंग हिस्ट्री।
@@ -129,7 +129,7 @@ export default function HindiPrivacyPage() {
                   <h2 className="text-[22px] lg:text-[24px] font-bold text-[#1A1C29] tracking-tight mb-4">
                     4. सुरक्षा उपाय
                   </h2>
-                  <div className="rounded-2xl bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                  <div className="rounded-[var(--sq-lg)] bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                     <Lock className="w-6 h-6 text-[#FF6B35] mb-3" />
                     <p className="text-[14px] lg:text-[15px] leading-relaxed text-white/85">
                       हम इंडस्ट्री-स्टैंडर्ड तकनीकी और संगठनात्मक उपाय अपनाते हैं ताकि आपकी जानकारी अनधिकृत एक्सेस, बदलाव या दुरुपयोग से सुरक्षित रहे।{' '}
@@ -149,7 +149,7 @@ export default function HindiPrivacyPage() {
                   </p>
                 </section>
 
-                <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <section className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="flex flex-col md:flex-row gap-5 items-center md:items-start text-center md:text-left">
                     <div className="w-12 h-12 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center shrink-0">
                       <Sparkles className="w-6 h-6" />

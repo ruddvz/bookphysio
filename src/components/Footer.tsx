@@ -69,11 +69,11 @@ export default function Footer({
 
             {/* Trust badges */}
             <div className="flex flex-wrap gap-2 mt-6">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/8 text-slate-400 text-[12px] font-medium">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--sq-xs)] bg-white/5 border border-white/8 text-slate-400 text-[12px] font-medium">
                 <ShieldCheck size={12} className="text-indigo-400" />
                 IAP Verified
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/8 text-slate-400 text-[12px] font-medium">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--sq-xs)] bg-white/5 border border-white/8 text-slate-400 text-[12px] font-medium">
                 <Heart size={12} className="text-rose-400" />
                 Made for India
               </div>

@@ -103,7 +103,7 @@ function SearchField({
       </div>
 
       {showOptions && filtered.length > 0 && (
-        <div id={listboxId} role="listbox" className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[24px] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
+        <div id={listboxId} role="listbox" className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[var(--sq-xl)] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
           {filtered.slice(0, 10).map(opt => (
             <button
               key={opt}
@@ -111,7 +111,7 @@ function SearchField({
               role="option"
               aria-selected={opt === value}
               onClick={() => { onSelect(opt); onCloseOptions() }}
-              className="w-full text-left px-5 py-3.5 text-[15px] font-semibold text-slate-700 hover:bg-[#EEF0FD] hover:text-[#6B7BF5] rounded-xl transition-colors"
+              className="w-full text-left px-5 py-3.5 text-[15px] font-semibold text-slate-700 hover:bg-[#EEF0FD] hover:text-[#6B7BF5] rounded-[var(--sq-sm)] transition-colors"
             >
               {opt}
             </button>
@@ -376,7 +376,7 @@ export default function HeroSection() {
         ].map(({ icon: Icon, label }) => (
           <div
             key={label}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-sm border text-[12px] font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-[var(--sq-sm)] backdrop-blur-sm border text-[12px] font-medium"
             style={{ background: 'rgba(255,255,255,0.75)', borderColor: '#E0DFEE', color: '#5A5880' }}
           >
             <Icon size={14} className="text-indigo-400" />

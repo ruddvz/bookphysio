@@ -11,7 +11,7 @@ export default function PatientSearch() {
         Search for experts by condition, specialty, or clinic name.
       </p>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm py-16 px-8 text-center">
+      <div className="bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm py-16 px-8 text-center">
         <div className="w-16 h-16 mx-auto rounded-full bg-blue-50 flex items-center justify-center mb-5">
           <Search className="w-8 h-8 text-blue-600" />
         </div>

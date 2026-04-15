@@ -66,7 +66,7 @@ export default function UpdatePasswordPage() {
           </p>
 
           {error && (
-            <div className="mb-6 rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-[13px] font-bold text-red-600">
+            <div className="mb-6 rounded-[var(--sq-lg)] bg-red-50 border border-red-100 px-4 py-3 text-[13px] font-bold text-red-600">
               {error}
             </div>
           )}
@@ -84,7 +84,7 @@ export default function UpdatePasswordPage() {
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="At least 8 characters"
                   className={cn(
-                    'w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all',
+                    'w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-[var(--sq-lg)] outline-none border-2 transition-all',
                     error ? 'border-red-200 bg-red-50/30' : 'border-transparent hover:border-bp-border focus:border-bp-accent focus:bg-white focus:shadow-xl focus:shadow-bp-primary/5'
                   )}
                 />
@@ -104,7 +104,7 @@ export default function UpdatePasswordPage() {
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   placeholder="Re-enter your new password"
                   className={cn(
-                    'w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-2xl outline-none border-2 transition-all',
+                    'w-full pl-12 pr-4 py-4 text-[16px] font-bold text-bp-primary bg-bp-surface rounded-[var(--sq-lg)] outline-none border-2 transition-all',
                     error ? 'border-red-200 bg-red-50/30' : 'border-transparent hover:border-bp-border focus:border-bp-accent focus:bg-white focus:shadow-xl focus:shadow-bp-primary/5'
                   )}
                 />

@@ -215,7 +215,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       {/* ── Header ── */}
       <div className="flex flex-col gap-5 mb-10 relative z-10">
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20/50 rounded-lg text-[10px] font-bold text-bp-accent uppercase tracking-widest leading-none">
+           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-[var(--sq-xs)] text-[10px] font-bold text-bp-accent uppercase tracking-widest leading-none">
               Secured Session
            </div>
            <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest leading-none">
@@ -255,7 +255,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
                 )}
               >
                 <div className={cn(
-                  "p-1.5 rounded-lg transition-all duration-500", 
+                  "p-1.5 rounded-[var(--sq-xs)] transition-all duration-500", 
                   isActive ? "bg-bp-primary/5 text-bp-primary scale-110" : "text-bp-body/20 group-hover:scale-110"
                 )}>
                    <Icon size={18} strokeWidth={isActive ? 3 : 2} />
@@ -318,7 +318,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
             </div>
           ) : slots.length === 0 ? (
             <div className="py-20 text-center flex flex-col items-center">
-              <div className="w-14 h-14 bg-white rounded-2xl border border-bp-border/40 shadow-sm flex items-center justify-center mb-4 text-bp-border">
+              <div className="w-14 h-14 bg-white rounded-[var(--sq-lg)] border border-bp-border/40 shadow-sm flex items-center justify-center mb-4 text-bp-border">
                  <Calendar className="w-7 h-7" />
               </div>
               <p className="text-[14px] text-bp-primary font-bold tracking-tight">No Slots Available</p>
@@ -362,7 +362,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
         
         <div className="flex flex-col gap-4 pt-2">
            <div className="flex items-center gap-3 p-4 bg-emerald-50/50 border border-emerald-100/50 rounded-[24px] backdrop-blur-sm">
-              <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center rounded-2xl text-emerald-600 shadow-sm shadow-emerald-200/50">
+              <div className="w-10 h-10 bg-emerald-100 flex items-center justify-center rounded-[var(--sq-lg)] text-emerald-600 shadow-sm shadow-emerald-200/50">
                  <ShieldCheck size={20} />
               </div>
               <div>

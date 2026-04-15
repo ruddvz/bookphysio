@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ArrowRight, Calendar, CheckCircle2, ShieldCheck, Stethoscope } from 'lucide-react'
+import type { SpecialtyCondition } from '@/lib/specialties'
 
 export interface SpecialtyArticleData {
   title: string
@@ -21,12 +22,32 @@ interface SpecialtyArticleProps {
   image?: string
   /** Patient-friendly sub-label, e.g. "Bones & Joints" */
   subLabel?: string
+  /** Rich conditions with slugs for clickable search links */
+  richConditions?: readonly SpecialtyCondition[]
+  /** Common presenting symptoms */
+  symptoms?: readonly string[]
+  /** Treatment approaches */
+  treatments?: readonly string[]
+  /** Equipment and modality tags */
+  modalities?: readonly string[]
+  /** Professional certifications to look for */
+  certifications?: readonly string[]
 }
 
 /** Mustard yellow — matches the 3D illustration background exactly */
 const MUSTARD = '#F5A623'
 
-export default function SpecialtyArticle({ data, slug, image, subLabel }: SpecialtyArticleProps) {
+export default function SpecialtyArticle({
+  data,
+  slug,
+  image,
+  subLabel,
+  richConditions,
+  symptoms,
+  treatments,
+  modalities,
+  certifications,
+}: SpecialtyArticleProps) {
   const bookingHref = slug
     ? `/search?specialty=${encodeURIComponent(slug)}`
     : `/search?condition=${encodeURIComponent(data.title)}`
@@ -131,7 +152,7 @@ export default function SpecialtyArticle({ data, slug, image, subLabel }: Specia
 
             {/* Overview */}
             <div className="mb-6">
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Overview</h2>
                 <h3 className="text-[22px] lg:text-[24px] font-bold text-black mb-4">What this care covers</h3>
                 <p className="text-[15px] lg:text-[16px] leading-relaxed text-[#333333]">
@@ -140,11 +161,34 @@ export default function SpecialtyArticle({ data, slug, image, subLabel }: Specia
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-6 mb-6">
-
-              {/* Conditions */}
-              {data.conditions && data.conditions.length > 0 && (
-                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+            {/* ── Conditions — rich cards with links (Phase 2) or plain list fallback ── */}
+            {richConditions && richConditions.length > 0 ? (
+              <div className="mb-6">
+                <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
+                  <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {richConditions.map((condition) => (
+                      <Link
+                        key={condition.slug}
+                        href={`/search?condition=${encodeURIComponent(condition.slug)}`}
+                        className="group flex flex-col gap-1.5 rounded-xl p-4 transition-colors hover:bg-black/5"
+                        style={{ backgroundColor: `${MUSTARD}22` }}
+                      >
+                        <span className="text-[14px] font-semibold text-black group-hover:underline">
+                          {condition.name}
+                        </span>
+                        <span className="text-[13px] leading-relaxed text-[#555555]">
+                          {condition.description}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : data.conditions && data.conditions.length > 0 ? (
+              <div className="mb-6">
+                <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                   <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
                   <ul className="space-y-3">
@@ -158,37 +202,99 @@ export default function SpecialtyArticle({ data, slug, image, subLabel }: Specia
                     ))}
                   </ul>
                 </div>
-              )}
+              </div>
+            ) : null}
+
+            {/* ── Symptoms ─────────────────────────────────────────────── */}
+            {symptoms && symptoms.length > 0 && (
+              <div className="mb-6">
+                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Signs & symptoms</h2>
+                  <h3 className="text-[20px] font-bold text-black mb-5">When to seek help</h3>
+                  <ul className="grid sm:grid-cols-2 gap-3">
+                    {symptoms.map((symptom) => (
+                      <li key={symptom} className="flex items-start gap-3">
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: MUSTARD }}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                        </div>
+                        <span className="text-[14px] leading-relaxed text-[#333333]">{symptom}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            <div className="grid lg:grid-cols-2 gap-6 mb-6">
 
               {/* Treatment approaches */}
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Approach</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">How treatment is delivered</h3>
                 <ul className="space-y-3">
-                  {data.highlights.map((highlight) => (
-                    <li key={highlight} className="flex items-start gap-3">
+                  {(treatments ?? data.highlights).map((item) => (
+                    <li key={item} className="flex items-start gap-3">
                       <CheckCircle2
                         className="w-5 h-5 shrink-0 mt-0.5"
                         style={{ color: MUSTARD }}
                         strokeWidth={2.5}
                       />
-                      <span className="text-[14px] leading-relaxed text-[#333333]">{highlight}</span>
+                      <span className="text-[14px] leading-relaxed text-[#333333]">{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+
+              {/* Modalities & certifications combined */}
+              {(modalities?.length ?? 0) > 0 || (certifications?.length ?? 0) > 0 ? (
+                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                  {modalities && modalities.length > 0 && (
+                    <>
+                      <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Equipment used</h2>
+                      <h3 className="text-[20px] font-bold text-black mb-4">Modalities & equipment</h3>
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {modalities.map((m) => (
+                          <span
+                            key={m}
+                            className="rounded-full px-3 py-1 text-[13px] font-medium text-black/80"
+                            style={{ backgroundColor: `${MUSTARD}44` }}
+                          >
+                            {m}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  {certifications && certifications.length > 0 && (
+                    <>
+                      <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Qualifications to look for</h2>
+                      <h3 className="text-[18px] font-bold text-black mb-4">Relevant certifications</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {certifications.map((c) => (
+                          <span
+                            key={c}
+                            className="rounded-full border border-black/15 bg-white px-3 py-1 text-[13px] font-medium text-black/80"
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : null}
             </div>
 
             {/* Benefits */}
             <div className="mb-6">
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Patient benefits</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">What better recovery looks like</h3>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {data.benefits.map((benefit) => (
                     <div
                       key={benefit}
-                      className="flex items-start gap-3 rounded-xl p-4"
+                      className="flex items-start gap-3 rounded-[var(--sq-sm)] p-4"
                       style={{ backgroundColor: `${MUSTARD}22` }}
                     >
                       <div
@@ -204,7 +310,7 @@ export default function SpecialtyArticle({ data, slug, image, subLabel }: Specia
 
             {/* CTA card */}
             <div
-              className="rounded-2xl p-10 text-center"
+              className="rounded-[var(--sq-lg)] p-10 text-center"
               style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}
             >
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/15 mb-5">

@@ -108,7 +108,7 @@ export default function HindiFAQPage() {
                       <li key={category.category}>
                         <a
                           href={`#faq-section-${index}`}
-                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
+                          className="block rounded-[var(--sq-sm)] px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
                         >
                           {category.category}
                         </a>
@@ -117,7 +117,7 @@ export default function HindiFAQPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
                     <Sparkles className="w-5 h-5" />
                   </div>
@@ -150,13 +150,13 @@ export default function HindiFAQPage() {
                         return (
                           <div
                             key={id}
-                            className={`rounded-2xl border bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors ${
+                            className={`rounded-[var(--sq-lg)] border bg-white shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-colors ${
                               isOpen ? 'border-[#00766C]/40' : 'border-slate-200'
                             }`}
                           >
                             <button
                               onClick={() => toggle(id)}
-                              className="w-full text-left px-5 lg:px-6 py-4 lg:py-5 flex items-center justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] focus-visible:ring-offset-2 rounded-2xl"
+                              className="w-full text-left px-5 lg:px-6 py-4 lg:py-5 flex items-center justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00766C] focus-visible:ring-offset-2 rounded-[var(--sq-lg)]"
                             >
                               <span className="text-[15px] font-semibold text-[#1A1C29]">
                                 {item.question}

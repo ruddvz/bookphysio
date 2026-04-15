@@ -17,7 +17,7 @@ export default function BookingError({
   return (
     <div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-6">
+        <div className="w-16 h-16 rounded-[var(--sq-lg)] bg-amber-50 flex items-center justify-center mx-auto mb-6">
           <span className="text-2xl">📅</span>
         </div>
         <h2 className="text-[22px] font-bold text-[#333] mb-2">Booking page error</h2>

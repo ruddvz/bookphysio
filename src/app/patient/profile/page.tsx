@@ -113,13 +113,13 @@ export default function PatientProfile() {
           <SectionCard role="patient" title="Personal details">
             <div className="flex items-center gap-6 mb-8">
               <div className="relative group">
-                <div className="flex items-center justify-center w-24 h-24 rounded-2xl bg-[var(--color-pt-tile-1-bg)] text-[var(--color-pt-primary)] text-2xl font-bold overflow-hidden ring-4 ring-white shadow-sm">
+                <div className="flex items-center justify-center w-24 h-24 rounded-[var(--sq-lg)] bg-[var(--color-pt-tile-1-bg)] text-[var(--color-pt-primary)] text-2xl font-bold overflow-hidden ring-4 ring-white shadow-sm">
                   {profile.avatar_url
                     ? <Image src={profile.avatar_url} width={96} height={96} alt={profile.full_name} className="w-full h-full object-cover" />
                     : initials
                   }
                 </div>
-                <button type="button" className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-slate-200 text-slate-400 rounded-lg flex items-center justify-center shadow-sm hover:text-[var(--color-pt-primary)] transition-colors">
+                <button type="button" className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-slate-200 text-slate-400 rounded-[var(--sq-xs)] flex items-center justify-center shadow-sm hover:text-[var(--color-pt-primary)] transition-colors">
                   <Camera className="w-4 h-4" />
                 </button>
               </div>
@@ -142,7 +142,7 @@ export default function PatientProfile() {
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] transition-all outline-none"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] transition-all outline-none"
                   />
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pt-primary)]" />
                 </div>
@@ -158,7 +158,7 @@ export default function PatientProfile() {
                       type="text"
                       value={profile.phone ?? '—'}
                       disabled
-                      className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[14px] text-slate-400 cursor-not-allowed outline-none"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-400 cursor-not-allowed outline-none"
                     />
                     <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 uppercase">
@@ -176,7 +176,7 @@ export default function PatientProfile() {
                       type="text"
                       value={profile.email ?? '—'}
                       disabled
-                      className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[14px] text-slate-400 cursor-not-allowed outline-none"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-slate-400 cursor-not-allowed outline-none"
                     />
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                   </div>
@@ -211,7 +211,7 @@ export default function PatientProfile() {
           <SectionCard role="patient" title="Security">
             <div className="flex items-center justify-between py-2">
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-slate-100 flex items-center justify-center text-slate-400">
                   <Lock size={18} />
                 </div>
                 <div>
@@ -235,7 +235,7 @@ export default function PatientProfile() {
                   Your data is protected by industry-standard encryption and will never be shared without your consent.
                 </div>
               </div>
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="p-4 bg-slate-50 rounded-[var(--sq-sm)] border border-slate-100">
                  <h4 className="text-[12px] font-bold text-slate-900 mb-2">Need help?</h4>
                  <p className="text-[12px] text-slate-500 leading-relaxed mb-4">
                    Facing issues with your account or bookings? Our team is here to assist.
@@ -258,7 +258,7 @@ export default function PatientProfile() {
       {/* Support Dialog */}
       {showSupport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[var(--sq-lg)] shadow-2xl w-full max-w-md overflow-hidden relative animate-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                <h3 className="text-[16px] font-bold text-slate-900">Support Request</h3>
                <button onClick={() => setShowSupport(false)} className="text-slate-400 hover:text-slate-600"><X size={20}/></button>
@@ -286,7 +286,7 @@ export default function PatientProfile() {
                       value={supportSubject}
                       onChange={e => setSupportSubject(e.target.value)}
                       placeholder="e.g., Booking issue, App error"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] outline-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] outline-none"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -297,7 +297,7 @@ export default function PatientProfile() {
                       value={supportMessage}
                       onChange={e => setSupportMessage(e.target.value)}
                       placeholder="How can we help?"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] outline-none resize-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] focus:bg-white focus:ring-2 focus:ring-[var(--color-pt-primary)] outline-none resize-none"
                     />
                   </div>
                   <div className="pt-4 flex justify-end gap-3">

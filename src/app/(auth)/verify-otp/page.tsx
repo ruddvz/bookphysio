@@ -62,12 +62,12 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
           <BpLogo href="/" size="auth" />
         </div>
         <div className="mt-10 space-y-4">
-          <div className="h-10 w-48 rounded-2xl bg-bp-surface animate-pulse" />
+          <div className="h-10 w-48 rounded-[var(--sq-lg)] bg-bp-surface animate-pulse" />
           <div className="h-4 w-full rounded-full bg-bp-surface animate-pulse" />
           <div className="h-4 w-3/4 rounded-full bg-bp-surface animate-pulse" />
           <div className="grid grid-cols-6 gap-3 pt-6">
             {Array.from({ length: OTP_LENGTH }).map((_, index) => (
-              <div key={index} className="h-14 rounded-2xl bg-bp-surface animate-pulse" />
+              <div key={index} className="h-14 rounded-[var(--sq-lg)] bg-bp-surface animate-pulse" />
             ))}
           </div>
         </div>
@@ -206,7 +206,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         <button
           type="button"
           onClick={() => router.push(restartHref)}
-          className="mt-10 inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-bp-accent px-6 text-[16px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
+          className="mt-10 inline-flex h-14 items-center justify-center gap-3 rounded-[var(--sq-lg)] bg-bp-accent px-6 text-[16px] font-bold text-white transition-all hover:bg-bp-primary active:scale-[0.98]"
         >
           {t.otpRestart}
           <ArrowRight className="h-5 w-5" />
@@ -279,7 +279,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
         onClick={() => handleVerify()}
         disabled={!allFilled || loading}
         className={cn(
-          "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-bold text-white rounded-2xl mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
+          "w-full h-18 flex items-center justify-center gap-3 py-5 text-[18px] font-bold text-white rounded-[var(--sq-lg)] mb-8 transition-all active:scale-[0.98] relative overflow-hidden",
           allFilled && !loading 
             ? 'bg-bp-accent hover:bg-bp-primary shadow-xl shadow-bp-primary/10 cursor-pointer' 
             : 'bg-bp-border cursor-not-allowed text-white/50'

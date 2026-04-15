@@ -210,8 +210,8 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                      </p>
                      {mode.badge && (
                        <span className={cn(
-                         "text-[9px] font-bold uppercase tracking-[0.2em] px-2.5 py-1 rounded-lg",
-                         mode.available && isSelected ? "bg-bp-accent/15/50 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
+                         "text-[9px] font-bold uppercase tracking-[0.2em] px-2.5 py-1 rounded-[var(--sq-xs)]",
+                         mode.available && isSelected ? "bg-bp-accent/15 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
                        )}>
                          {mode.badge}
                        </span>
@@ -238,7 +238,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
 
         {error && !needsAuth && (
           <div className="p-6 bg-red-50 border border-red-100 rounded-[32px] flex gap-4 mt-8 animate-in shake-in-50 duration-500">
-            <div className="p-2 bg-red-100 rounded-2xl h-fit">
+            <div className="p-2 bg-red-100 rounded-[var(--sq-lg)] h-fit">
                <X className="w-5 h-5 text-red-500" strokeWidth={3} />
             </div>
             <div>
@@ -251,7 +251,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
         {needsAuth && (
           <div className="p-8 bg-bp-surface border-2 border-bp-accent/20 rounded-[32px] mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="flex flex-col items-center text-center gap-4">
-              <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
+              <div className="w-14 h-14 bg-bp-accent/10 rounded-[var(--sq-lg)] flex items-center justify-center text-bp-accent">
                 <LogIn size={28} />
               </div>
               <div>

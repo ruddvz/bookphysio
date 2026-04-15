@@ -35,7 +35,7 @@ export function DoctorCardSkeleton({ className }: { className?: string }) {
           </div>
         </div>
 
-        <div className="bg-bp-surface/40 rounded-3xl border border-bp-border space-y-4 p-4">
+        <div className="bg-bp-surface/40 rounded-[var(--sq-xl)] border border-bp-border space-y-4 p-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28 rounded-full bg-bp-border/40" />
             <div className="flex gap-2">
@@ -46,15 +46,15 @@ export function DoctorCardSkeleton({ className }: { className?: string }) {
 
           <div className="grid grid-cols-3 gap-3">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="space-y-2 rounded-2xl border border-bp-border bg-white p-3">
+              <div key={index} className="space-y-2 rounded-[var(--sq-lg)] border border-bp-border bg-white p-3">
                 <Skeleton className="h-4 w-10 rounded-full bg-bp-border/40" />
-                <Skeleton className="h-8 w-full rounded-xl bg-bp-border/30" />
-                <Skeleton className="h-8 w-full rounded-xl bg-bp-border/20" />
+                <Skeleton className="h-8 w-full rounded-[var(--sq-sm)] bg-bp-border/30" />
+                <Skeleton className="h-8 w-full rounded-[var(--sq-sm)] bg-bp-border/20" />
               </div>
             ))}
           </div>
 
-          <Skeleton className="h-12 w-full rounded-2xl bg-bp-accent/20" />
+          <Skeleton className="h-12 w-full rounded-[var(--sq-lg)] bg-bp-accent/20" />
         </div>
       </div>
     </div>

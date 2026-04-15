@@ -46,9 +46,11 @@ const onboardSignupSchema = z.object({
     iapNumber: z.string().max(50).optional(),
     stateRegistrationNumber: z.string().max(50).optional(),
     stateName: z.string().max(100).optional(),
-    degree: z.string().min(1).max(100),
+    degree: z.enum(['BPT', 'MPT', 'PhD', 'DPT']),
     experienceYears: z.string().regex(/^\d{1,2}$/, 'Experience years must be a number'),
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
+    certifications: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
+    equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).optional().default([]),
   }).superRefine((data, context) => {
     if (data.registrationType === 'IAP' && !data.iapNumber?.trim()) {
       context.addIssue({
@@ -281,6 +283,7 @@ export async function POST(request: NextRequest) {
 
     // 4. Create provider profile
     const providerSlug = slugifyProviderName(step1.name, userId as string)
+    const qualificationValue = step2.degree
     const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
@@ -293,6 +296,9 @@ export async function POST(request: NextRequest) {
           : (step2.iapNumber || ''),
         specialty_ids: selectedIds,
         consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
+        qualification: qualificationValue,
+        certifications: step2.certifications ?? [],
+        equipment_tags: step2.equipmentTags ?? [],
         verified: false,
         active: true,
         onboarding_step: 4,

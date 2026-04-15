@@ -167,6 +167,13 @@
 }
 
 :root {
+  /* ── Squircle radii (Apple-style G2 curvature approximation) ── */
+  --sq-xs: 10px;   /* small badges, icon boxes */
+  --sq-sm: 14px;   /* buttons, inputs, toggles */
+  --sq-md: 18px;   /* medium cards, accordion items */
+  --sq-lg: 22px;   /* large cards, sections */
+  --sq-xl: 28px;   /* hero-level containers, modals */
+
   --background: #F7F8F9;
   --foreground: #333333;
   --card: #FFFFFF;
@@ -286,33 +293,33 @@
     text-transform: uppercase;
   }
 
-  /* Cards */
+  /* Cards — squircle radii */
   .bp-card {
     background: var(--color-bp-card);
     border: 1px solid var(--color-bp-border);
-    border-radius: 18px;
-    box-shadow: 0 1px 4px rgba(45,43,85,0.05);
+    border-radius: var(--sq-lg);
+    box-shadow: 0 1px 4px rgba(45,43,85,0.05), inset 0 0 0 0.5px rgba(0,0,0,0.04);
     transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   }
   .bp-card:hover {
-    box-shadow: 0 8px 28px -4px rgba(139,155,216,0.18);
+    box-shadow: 0 8px 28px -4px rgba(139,155,216,0.18), inset 0 0 0 0.5px rgba(0,0,0,0.04);
     border-color: var(--color-bp-primary-muted);
     transform: translateY(-2px);
   }
   .bp-card-elevated {
     background: var(--color-bp-card);
     border: 1px solid var(--color-bp-border);
-    border-radius: 20px;
-    box-shadow: 0 4px 16px -4px rgba(139,155,216,0.15);
+    border-radius: var(--sq-xl);
+    box-shadow: 0 4px 16px -4px rgba(139,155,216,0.15), inset 0 0 0 0.5px rgba(0,0,0,0.04);
   }
   .bp-card-teal {
     background: linear-gradient(135deg, #5BBAB3, #7DCFC9);
-    border-radius: 20px;
+    border-radius: var(--sq-xl);
     color: white;
   }
   .bp-card-dark {
     background: var(--color-bp-ink);
-    border-radius: 20px;
+    border-radius: var(--sq-xl);
     color: white;
     border: 1px solid rgba(255,255,255,0.08);
   }
@@ -394,15 +401,15 @@
     transform: translateY(-1px);
   }
 
-  .bp-btn-lg { font-size: 16px; padding: 14px 28px; border-radius: 14px; }
-  .bp-btn-sm { font-size: 13px; padding: 8px 16px;  border-radius: 10px; }
+  .bp-btn-lg { font-size: 16px; padding: 14px 28px; border-radius: var(--sq-sm); }
+  .bp-btn-sm { font-size: 13px; padding: 8px 16px;  border-radius: var(--sq-xs); }
 
   /* Inputs */
   .bp-input {
     width: 100%;
     padding: 12px 16px;
     border: 1.5px solid var(--color-bp-border);
-    border-radius: 12px;
+    border-radius: var(--sq-sm);
     background: white;
     font-size: 15px;
     font-weight: 500;
@@ -457,11 +464,12 @@
   .bp-stat-card {
     background: var(--color-bp-card);
     border: 1px solid var(--color-bp-border);
-    border-radius: 18px;
+    border-radius: var(--sq-lg);
     padding: 24px;
     transition: box-shadow 0.2s ease;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.04);
   }
-  .bp-stat-card:hover { box-shadow: 0 8px 24px -4px rgba(139,155,216,0.18); }
+  .bp-stat-card:hover { box-shadow: 0 8px 24px -4px rgba(139,155,216,0.18), inset 0 0 0 0.5px rgba(0,0,0,0.04); }
 
   /* Sidebar nav item */
   .bp-nav-item {
@@ -469,7 +477,7 @@
     align-items: center;
     gap: 12px;
     padding: 10px 12px;
-    border-radius: 10px;
+    border-radius: var(--sq-xs);
     font-size: 14px;
     font-weight: 500;
     color: var(--color-bp-body);

@@ -27,7 +27,7 @@ export function SidebarNav({ items, className }: SidebarNavProps) {
             key={item.href}
             href={item.href}
             className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+              'flex items-center gap-3 rounded-[var(--sq-xs)] px-3 py-2.5 text-sm font-medium transition-colors',
               active
                 ? 'bg-bp-accent/10 text-bp-accent'
                 : 'text-bp-body hover:bg-bp-surface hover:text-bp-primary'

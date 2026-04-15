@@ -20,7 +20,7 @@ export default function CalendarLoading() {
         </div>
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: 14 }, (_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+            <Skeleton key={i} className="h-20 w-full rounded-[var(--sq-xs)]" />
           ))}
         </div>
       </div>

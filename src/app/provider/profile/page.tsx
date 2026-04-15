@@ -266,14 +266,14 @@ export default function ProviderProfile() {
       />
 
       {loadingProfile ? (
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3 text-slate-500">
+        <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-slate-200 bg-slate-50 px-5 py-3 text-slate-500">
           <Loader2 size={18} className="animate-spin" />
           <p className="text-[13px] font-bold">Loading your practice profile...</p>
         </div>
       ) : null}
 
       {profileError ? (
-        <div className="flex flex-col gap-3 rounded-xl border border-rose-100 bg-rose-50 px-5 py-4 text-rose-700 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-[var(--sq-sm)] border border-rose-100 bg-rose-50 px-5 py-4 text-rose-700 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[13px] font-bold">{profileError}</p>
           <button
             type="button"
@@ -286,7 +286,7 @@ export default function ProviderProfile() {
       ) : null}
 
       {saveError ? (
-        <div className="rounded-xl border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
+        <div className="rounded-[var(--sq-sm)] border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
           <p className="text-[13px] font-bold">{saveError}</p>
         </div>
       ) : null}
@@ -297,9 +297,9 @@ export default function ProviderProfile() {
           <SectionCard role="provider" title="Clinical Identity">
             <div className="space-y-8">
               {/* Avatar Upload Hub */}
-              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-slate-50/50 rounded-[var(--sq-lg)] border border-slate-100">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl bg-white border border-slate-200 overflow-hidden flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-[var(--sq-lg)] bg-white border border-slate-200 overflow-hidden flex items-center justify-center">
                     {avatarSrc ? (
                       <Image
                         src={avatarSrc}
@@ -316,7 +316,7 @@ export default function ProviderProfile() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     aria-label="Upload profile photo"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-[var(--color-pv-ink)] text-white rounded-lg border-2 border-white flex items-center justify-center hover:bg-[var(--color-pv-primary)] transition-all shadow-lg"
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-[var(--color-pv-ink)] text-white rounded-[var(--sq-xs)] border-2 border-white flex items-center justify-center hover:bg-[var(--color-pv-primary)] transition-all shadow-lg"
                   >
                     <User size={14} />
                   </button>
@@ -349,7 +349,7 @@ export default function ProviderProfile() {
                     type="text"
                     value={formData.full_name}
                     onChange={(e) => updateFormField('full_name', e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="e.g. Dr. Jane Smith"
                   />
                 </div>
@@ -360,7 +360,7 @@ export default function ProviderProfile() {
                     type="number"
                     value={formData.consultation_fee_inr}
                     onChange={(e) => updateFormField('consultation_fee_inr', e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="e.g. 1000"
                   />
                 </div>
@@ -371,7 +371,7 @@ export default function ProviderProfile() {
                     type="number"
                     value={formData.experience_years}
                     onChange={(e) => updateFormField('experience_years', e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="e.g. 12"
                   />
                 </div>
@@ -383,7 +383,7 @@ export default function ProviderProfile() {
                       type="text"
                       value={formData.iap_registration_no ?? ''}
                       readOnly
-                      className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[14px] font-bold text-slate-500 cursor-not-allowed"
+                      className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-slate-500 cursor-not-allowed"
                       placeholder="Verified Credential"
                     />
                     <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500" size={16} />
@@ -398,7 +398,7 @@ export default function ProviderProfile() {
                   rows={5}
                   value={formData.bio}
                   onChange={(e) => updateFormField('bio', e.target.value)}
-                  className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none leading-relaxed"
+                  className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-[var(--sq-lg)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all resize-none leading-relaxed"
                   placeholder="Tell your clinical story..."
                 />
               </div>
@@ -409,7 +409,7 @@ export default function ProviderProfile() {
           <SectionCard role="provider" title="Coverage Area" kicker="SERVICE REACH">
             <div className="grid grid-cols-1 md:grid-cols-[1fr,240px] gap-8">
               <div className="space-y-6">
-                <div className="p-6 bg-[var(--color-pv-track-bg)] border border-slate-100 rounded-2xl">
+                <div className="p-6 bg-[var(--color-pv-track-bg)] border border-slate-100 rounded-[var(--sq-lg)]">
                   <div className="flex items-center gap-3 mb-4">
                     <MapPin className="text-[var(--color-pv-primary)]" size={18} />
                     <h5 className="text-[14px] font-bold text-slate-900">Verified Service Zone</h5>
@@ -418,16 +418,16 @@ export default function ProviderProfile() {
                     Home-visit zones are strictly restricted to your verified service area. Manual adjustments are disabled during operations review.
                   </p>
                   <div className="relative opacity-50">
-                    <input type="text" disabled placeholder="Syncing city clusters..." className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[12px] font-bold" />
+                    <input type="text" disabled placeholder="Syncing city clusters..." className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-[var(--sq-sm)] text-[12px] font-bold" />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-slate-100 text-[9px] font-bold uppercase tracking-widest rounded-md">Locked</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+                <div className="flex items-center gap-3 p-4 bg-indigo-50 border border-indigo-100 rounded-[var(--sq-sm)]">
                   <Activity size={18} className="text-indigo-500" />
                   <p className="text-[12px] font-bold text-indigo-700">Coverage sync alternates automatically based on your live availability status.</p>
                 </div>
               </div>
-              <div className="h-full bg-slate-50 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-6 grayscale">
+              <div className="h-full bg-slate-50 border border-dashed border-slate-200 rounded-[var(--sq-lg)] flex flex-col items-center justify-center text-center p-6 grayscale">
                 <Globe className="text-slate-300 mb-4" size={32} />
                 <h6 className="text-[13px] font-bold text-slate-400 mb-1">Interactive Map</h6>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Pending Sync</p>
@@ -444,10 +444,10 @@ export default function ProviderProfile() {
                 { label: 'KYC Sync', status: 'Active', icon: Award, ok: true },
                 { label: 'GST Logic', status: 'Required', icon: Info, ok: false }
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl hover:border-slate-200 transition-all">
+                <div key={idx} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-[var(--sq-sm)] hover:border-slate-200 transition-all">
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "w-9 h-9 rounded-lg flex items-center justify-center",
+                      "w-9 h-9 rounded-[var(--sq-xs)] flex items-center justify-center",
                       item.ok ? "bg-emerald-50 text-emerald-500" : "bg-amber-50 text-amber-500"
                     )}>
                       <item.icon size={18} />
@@ -460,7 +460,7 @@ export default function ProviderProfile() {
                   {item.ok && <Check size={14} className="text-emerald-500" />}
                 </div>
               ))}
-              <button className="w-full py-3.5 bg-[var(--color-pv-ink)] text-white rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all">
+              <button className="w-full py-3.5 bg-[var(--color-pv-ink)] text-white rounded-[var(--sq-sm)] text-[12px] font-bold uppercase tracking-widest hover:bg-[var(--color-pv-primary)] transition-all">
                 Manage Credentials
               </button>
             </div>
@@ -479,7 +479,7 @@ export default function ProviderProfile() {
                 </div>
               ))}
               <div className="pt-4 border-t border-slate-50">
-                <button className="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-600 hover:bg-slate-100 transition-all">
+                <button className="flex items-center justify-center gap-2 w-full py-3 bg-slate-50 border border-slate-100 rounded-[var(--sq-sm)] text-[12px] font-bold text-slate-600 hover:bg-slate-100 transition-all">
                   <Eye size={14} />
                   Public Preview
                 </button>
@@ -490,7 +490,7 @@ export default function ProviderProfile() {
           {saveStatus !== 'idle' && (
             <button
                onClick={handleDiscard}
-               className="flex items-center justify-center gap-2 w-full py-3 text-rose-500 text-[12px] font-bold uppercase tracking-widest hover:bg-rose-50 rounded-xl transition-all"
+               className="flex items-center justify-center gap-2 w-full py-3 text-rose-500 text-[12px] font-bold uppercase tracking-widest hover:bg-rose-50 rounded-[var(--sq-sm)] transition-all"
             >
                <Trash2 size={14} />
                Discard Draft

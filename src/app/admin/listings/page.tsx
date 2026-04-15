@@ -78,7 +78,7 @@ export default function AdminListings() {
         action={{ label: 'Export JSON', href: '#' }}
       >
         {actionMessage && (
-          <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3 text-[13px] font-bold text-slate-600 animate-in fade-in slide-in-from-top-2">
+          <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-[var(--sq-lg)] flex items-center gap-3 text-[13px] font-bold text-slate-600 animate-in fade-in slide-in-from-top-2">
             <ShieldCheck size={16} className="text-slate-400" />
             {actionMessage}
           </div>
@@ -92,7 +92,7 @@ export default function AdminListings() {
             icon={
               <div
                 id="provider-review-row"
-                className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-sm font-black border border-slate-800"
+                className="w-12 h-12 rounded-[var(--sq-lg)] bg-slate-900 flex items-center justify-center text-white text-sm font-black border border-slate-800"
               >
                 AK
               </div>
@@ -112,7 +112,7 @@ export default function AdminListings() {
             right={
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+                  "px-3 py-1 rounded-[var(--sq-xs)] text-[10px] font-black uppercase tracking-widest border",
                   reviewState === 'approved' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                   reviewState === 'rejected' ? "bg-rose-50 text-rose-600 border-rose-100" :
                   "bg-slate-50 text-slate-500 border-slate-200"

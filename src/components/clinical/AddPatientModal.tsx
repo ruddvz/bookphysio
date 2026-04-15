@@ -107,7 +107,7 @@ export function AddPatientModal({ onClose, onCreated }: AddPatientModalProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <label htmlFor="ap-phone" className={labelClass}>Contact (Verified)</label>
-              <div className="flex bg-white border-2 border-slate-100 rounded-2xl overflow-hidden focus-within:border-[var(--color-pv-primary)] transition-all">
+              <div className="flex bg-white border-2 border-slate-100 rounded-[var(--sq-lg)] overflow-hidden focus-within:border-[var(--color-pv-primary)] transition-all">
                  <span className="px-5 py-5 text-[15px] font-bold text-slate-300 bg-slate-50/50 border-r-2 border-slate-100 flex items-center gap-2 shrink-0">
                    <Phone className="w-4 h-4" />
                    +91
@@ -179,7 +179,7 @@ export function AddPatientModal({ onClose, onCreated }: AddPatientModalProps) {
           )}
 
           <div className="bg-[#FAF9FF] p-6 rounded-[32px] border border-indigo-50 flex items-start gap-4">
-             <div className="w-10 h-10 rounded-xl bg-white border border-[#EEF0F5] text-[#6B7BF5] flex items-center justify-center shrink-0 shadow-sm">
+             <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-white border border-[#EEF0F5] text-[#6B7BF5] flex items-center justify-center shrink-0 shadow-sm">
                 <Info size={18} strokeWidth={3} />
              </div>
              <p className="text-[12px] font-bold text-slate-400 leading-relaxed italic">

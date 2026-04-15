@@ -23,9 +23,11 @@ interface Step2Data {
   iapNumber: string
   stateRegistrationNumber: string
   stateName: string
-  degree: 'BPT' | 'MPT' | 'PhD' | ''
+  degree: 'BPT' | 'MPT' | 'PhD' | 'DPT' | ''
   experienceYears: string
   specialties: string[]
+  certifications: string[]
+  equipmentTags: string[]
 }
 
 interface Step3Data {
@@ -119,12 +121,14 @@ const step2Schema = z.object({
   iapNumber: z.string().optional(),
   stateRegistrationNumber: z.string().optional(),
   stateName: z.string().optional(),
-  degree: z.enum(['BPT', 'MPT', 'PhD'], { error: 'Select a degree' }),
+  degree: z.enum(['BPT', 'MPT', 'PhD', 'DPT'], { error: 'Select a degree' }),
   experienceYears: z
     .string()
     .regex(/^\d+$/, 'Enter a number')
     .refine((v) => parseInt(v) >= 0 && parseInt(v) <= 50, 'Enter valid years (0–50)'),
   specialties: z.array(z.string()).min(1, 'Select at least one specialty'),
+  certifications: z.array(z.string().trim().min(1).max(100)).max(20).default([]),
+  equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).default([]),
 }).refine(data => {
   if (data.registrationType === 'IAP') {
     return !!data.iapNumber && data.iapNumber.length >= 3
@@ -250,6 +254,85 @@ function FieldError({ msg }: { msg?: string }) {
   return <p style={{ color: '#DC2626', fontSize: '12px', marginTop: '4px' }}>{msg}</p>
 }
 
+function CertTagInput({
+  label,
+  placeholder,
+  hint,
+  values,
+  onChange,
+}: {
+  label: string
+  placeholder?: string
+  hint?: string
+  values: string[]
+  onChange: (vals: string[]) => void
+}) {
+  const [inputVal, setInputVal] = useState('')
+
+  function addTag() {
+    const trimmed = inputVal.trim()
+    if (trimmed && !values.includes(trimmed)) {
+      onChange([...values, trimmed])
+    }
+    setInputVal('')
+  }
+
+  function removeTag(tag: string) {
+    onChange(values.filter((v) => v !== tag))
+  }
+
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <Label>{label}</Label>
+      {hint && <p style={{ fontSize: '12px', color: '#555B6E', marginBottom: '8px' }}>{hint}</p>}
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <input
+          type="text"
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag() } }}
+          placeholder={placeholder}
+          style={{ ...inputStyle, flex: 1 }}
+        />
+        <button
+          type="button"
+          onClick={addTag}
+          style={{
+            height: '44px', padding: '0 14px', borderRadius: '8px',
+            border: '1px solid var(--color-bp-border)', background: 'var(--color-bp-surface)',
+            fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}
+        >
+          Add
+        </button>
+      </div>
+      {values.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+          {values.map((tag) => (
+            <span
+              key={tag}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '4px 10px', borderRadius: '20px',
+                background: 'var(--color-bp-surface)', border: '1px solid var(--color-bp-border)',
+                fontSize: '13px', fontWeight: 600, color: 'var(--color-bp-primary)',
+              }}
+            >
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(tag)}
+                aria-label={`Remove ${tag}`}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: '#999', fontSize: '14px' }}
+              >×</button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--color-bp-primary)', marginBottom: '6px' }}>
@@ -267,7 +350,7 @@ function PrimaryButton({ children, onClick, disabled }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full h-11 text-white border-none rounded-lg text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
+      className={`w-full h-11 text-white border-none rounded-[var(--sq-xs)] text-[14px] font-semibold mt-2 flex items-center justify-center gap-2 transition-colors outline-none ${
         disabled ? 'bg-bp-primary/40 cursor-not-allowed' : 'bg-bp-primary hover:bg-bp-primary-dark cursor-pointer'
       }`}
     >
@@ -690,7 +773,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
       <div style={{ marginBottom: '16px' }}>
         <Label>Degree</Label>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          {(['BPT', 'MPT', 'PhD'] as const).map((deg) => (
+          {(['BPT', 'MPT', 'PhD', 'DPT'] as const).map((deg) => (
             <label key={deg} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="radio"
@@ -736,6 +819,22 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
         </div>
         <FieldError msg={errors.specialties} />
       </div>
+
+      <CertTagInput
+        label="Certifications (optional)"
+        placeholder="e.g. Mulligan, McKenzie, NDT"
+        hint="Add technique certifications you hold"
+        values={data.certifications}
+        onChange={(vals) => onChange({ ...data, certifications: vals })}
+      />
+
+      <CertTagInput
+        label="Equipment & Modalities (optional)"
+        placeholder="e.g. TENS, Ultrasound, Traction"
+        hint="Add equipment or modalities you use"
+        values={data.equipmentTags}
+        onChange={(vals) => onChange({ ...data, equipmentTags: vals })}
+      />
 
       <PrimaryButton onClick={handleNext}>
         Next: Practice Details
@@ -1302,7 +1401,7 @@ function Step5({ email, onBack }: Step5Props) {
       </p>
 
       {/* Resend section */}
-      <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
+      <div className="rounded-[var(--sq-xs)] border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
         <p className="text-sm text-gray-500">
           Didn&apos;t receive it? Check your spam folder or resend below.
         </p>
@@ -1320,7 +1419,7 @@ function Step5({ email, onBack }: Step5Props) {
             type="button"
             onClick={handleResend}
             disabled={resendStatus === 'loading' || countdown > 0}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--sq-xs)] border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {resendStatus === 'loading' ? (
               <>
@@ -1377,6 +1476,8 @@ export default function DoctorSignupPage() {
     degree: '',
     experienceYears: '',
     specialties: [],
+    certifications: [],
+    equipmentTags: [],
   })
   const [step3, setStep3] = useState<Step3Data>({
     clinicName: '', address: '', city: '', state: '', pincode: '', visitTypes: [],
@@ -1457,7 +1558,7 @@ export default function DoctorSignupPage() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
+    <div className="bg-white rounded-[var(--sq-lg)] border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
       <div className="flex justify-center mb-6">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>

@@ -71,7 +71,7 @@ function PasswordForm() {
     <div className="min-h-screen bg-[#fffaf4] flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-bp-accent mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-[var(--sq-lg)] bg-bp-accent mb-4">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M14 3C8.477 3 4 7.477 4 13s4.477 10 10 10 10-4.477 10-10S19.523 3 14 3z" fill="white" fillOpacity="0.3"/>
               <path d="M14 7c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="white"/>
@@ -90,7 +90,7 @@ function PasswordForm() {
               placeholder="Access password"
               autoFocus
               required
-              className="w-full px-4 py-3 border border-bp-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-bp-accent/30 focus:border-bp-accent bg-white"
+              className="w-full px-4 py-3 border border-bp-border rounded-[var(--sq-sm)] text-sm focus:outline-none focus:ring-2 focus:ring-bp-accent/30 focus:border-bp-accent bg-white"
             />
           </div>
           {error && (
@@ -99,7 +99,7 @@ function PasswordForm() {
           <button
             type="submit"
             disabled={loading || !password}
-            className="w-full py-3 bg-bp-accent text-white rounded-xl text-sm font-medium hover:bg-bp-primary transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-bp-accent text-white rounded-[var(--sq-sm)] text-sm font-medium hover:bg-bp-primary transition-colors disabled:opacity-50"
           >
             {loading ? 'Checking…' : 'Enter →'}
           </button>
@@ -136,7 +136,7 @@ function RolePicker() {
   return (
     <div className="min-h-screen bg-[#fffaf4] flex flex-col items-center justify-center p-6 gap-8">
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-bp-accent mb-4">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-[var(--sq-lg)] bg-bp-accent mb-4">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
             <path d="M14 3C8.477 3 4 7.477 4 13s4.477 10 10 10 10-4.477 10-10S19.523 3 14 3z" fill="white" fillOpacity="0.3"/>
             <path d="M14 7c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="white"/>
@@ -152,7 +152,7 @@ function RolePicker() {
             key={account.role}
             onClick={() => loginAs(account.role)}
             disabled={loading !== null}
-            className={`flex flex-col items-start gap-3 p-5 border-2 rounded-2xl transition-all text-left disabled:opacity-60 ${account.color}`}
+            className={`flex flex-col items-start gap-3 p-5 border-2 rounded-[var(--sq-lg)] transition-all text-left disabled:opacity-60 ${account.color}`}
           >
             <span className="text-3xl">{account.emoji}</span>
             <div className="w-full">

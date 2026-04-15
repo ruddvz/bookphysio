@@ -118,7 +118,7 @@ export function SoapForm({ visitId, visitNumber, initialNote, onSaved }: SoapFor
         {/* Subjective Section */}
         <section>
           <div className={sectionHeaderClass}>
-             <div className="w-10 h-10 rounded-xl bg-indigo-50 text-[#6B7BF5] flex items-center justify-center shrink-0">
+             <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-indigo-50 text-[#6B7BF5] flex items-center justify-center shrink-0">
                <span className="text-[16px] font-black">S</span>
              </div>
              <div>
@@ -139,7 +139,7 @@ export function SoapForm({ visitId, visitNumber, initialNote, onSaved }: SoapFor
         {/* Objective Section */}
         <section className="pt-10 border-t border-[#EEF0F5]">
           <div className={sectionHeaderClass}>
-             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+             <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
                <span className="text-[16px] font-black">O</span>
              </div>
              <div>
@@ -210,7 +210,7 @@ export function SoapForm({ visitId, visitNumber, initialNote, onSaved }: SoapFor
         {/* Assessment Section */}
         <section className="pt-10 border-t border-[#EEF0F5]">
           <div className={sectionHeaderClass}>
-             <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-400 flex items-center justify-center shrink-0">
+             <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-orange-50 text-orange-400 flex items-center justify-center shrink-0">
                <span className="text-[16px] font-black">A</span>
              </div>
              <div>
@@ -231,7 +231,7 @@ export function SoapForm({ visitId, visitNumber, initialNote, onSaved }: SoapFor
         {/* Plan Section */}
         <section className="pt-10 border-t border-[#EEF0F5]">
           <div className={sectionHeaderClass}>
-             <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center shrink-0">
+             <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-indigo-500 text-white flex items-center justify-center shrink-0">
                <Target size={20} strokeWidth={3} />
              </div>
              <div>
@@ -255,7 +255,7 @@ export function SoapForm({ visitId, visitNumber, initialNote, onSaved }: SoapFor
              <div className="absolute top-0 left-0 w-2 h-full bg-[#6B7BF5]" />
              
              <div className={sectionHeaderClass}>
-               <div className="w-10 h-10 rounded-xl bg-white border border-[#EEF0F5] text-[#6B7BF5] flex items-center justify-center shrink-0 shadow-sm">
+               <div className="w-10 h-10 rounded-[var(--sq-sm)] bg-white border border-[#EEF0F5] text-[#6B7BF5] flex items-center justify-center shrink-0 shadow-sm">
                  <Info size={18} strokeWidth={3} />
                </div>
                <div>

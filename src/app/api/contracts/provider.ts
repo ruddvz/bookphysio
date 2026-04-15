@@ -37,6 +37,7 @@ export interface ProviderCard {
   distance?: string
   lat: number | null
   lng: number | null
+  qualification?: 'BPT' | 'MPT' | 'PhD' | 'DPT' | null
 }
 
 export interface ProviderReview {
@@ -49,7 +50,15 @@ export interface ProviderReview {
 export interface ProviderProfile extends ProviderCard {
   bio: string | null
   iap_registration_no: string | null
+  qualification: 'BPT' | 'MPT' | 'PhD' | 'DPT' | null
+  certifications: string[]
+  equipment_tags: string[]
   locations: ProviderLocation[]
   reviews?: ProviderReview[]
   gallery_images?: string[]
+}
+
+/** Restricted profile — returned only by admin and owning-provider endpoints (never from public search). */
+export interface PrivateProviderProfile extends ProviderProfile {
+  iap_member_id: string | null
 }

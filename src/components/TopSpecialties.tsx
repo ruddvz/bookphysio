@@ -56,7 +56,7 @@ export default function TopSpecialties() {
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-indigo-200 hover:text-indigo-700 transition-all group shrink-0 self-start lg:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--sq-sm)] border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-[#005A52] hover:text-[#005A52] transition-all group shrink-0 self-start lg:self-auto"
           >
             View all specialties
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -64,7 +64,8 @@ export default function TopSpecialties() {
         </div>
 
         {/* Grid — 12 items, image-first cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* Grid — 12 items, image-first cards with squircle corners */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {SPECIALTIES.map((s) => {
             const Icon = ICON_MAP[s.icon] ?? Stethoscope
             const hasImage = Boolean(s.image)
@@ -74,9 +75,10 @@ export default function TopSpecialties() {
                 key={s.slug}
                 href={`/specialties/${s.slug}`}
                 className={cn(
-                  'group flex flex-col rounded-2xl border bg-white overflow-hidden',
-                  'transition-all duration-200 hover:-translate-y-1',
-                  'hover:shadow-lg hover:shadow-slate-200/80',
+                  'group flex flex-col rounded-[var(--sq-lg)] border bg-white overflow-hidden',
+                  'transition-all duration-200 hover:scale-[1.02]',
+                  'hover:shadow-xl hover:shadow-slate-200/60',
+                  'shadow-[0_1px_3px_rgba(0,0,0,0.04),inset_0_0_0_0.5px_rgba(0,0,0,0.04)]',
                   s.tint.border,
                   s.tint.hoverBorder,
                 )}
@@ -84,21 +86,21 @@ export default function TopSpecialties() {
                 {/* Image area */}
                 {hasImage ? (
                   <div
-                    className="relative w-full h-40 overflow-hidden"
+                    className="relative w-full h-44 overflow-hidden"
                     style={{ backgroundColor: MUSTARD }}
                   >
                     <Image
                       src={s.image!}
                       alt={`${s.label} physiotherapy`}
                       fill
-                      className="object-contain object-bottom"
+                      className="object-contain object-bottom group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   </div>
                 ) : (
                   /* Fallback icon area */
-                  <div className={cn('w-full h-32 flex items-center justify-center', s.tint.bg)}>
-                    <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center', s.tint.bg, s.tint.text)}>
+                  <div className={cn('w-full h-36 flex items-center justify-center', s.tint.bg)}>
+                    <div className={cn('w-16 h-16 rounded-[var(--sq-md)] flex items-center justify-center bg-white/60', s.tint.text)}>
                       <Icon size={28} />
                     </div>
                   </div>
@@ -128,22 +130,6 @@ export default function TopSpecialties() {
               </Link>
             )
           })}
-        </div>
-
-        {/* Trust strip */}
-        <div className="mt-8 flex flex-wrap items-center gap-3 px-5 py-4 rounded-2xl bg-white border border-slate-200">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-[12px] font-semibold">
-            IAP-verified care
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
-            Home visits available
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[12px] font-semibold">
-            Same-day booking
-          </div>
-          <p className="ml-auto text-[12px] text-slate-400 font-medium hidden md:block">
-            NCAHP-recognised specialties
-          </p>
         </div>
       </div>
     </section>

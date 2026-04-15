@@ -14,6 +14,7 @@ import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 import { formatIndiaDateTime } from '@/lib/india-date'
+import { conditionSlugToSpecialtySlug } from '@/lib/conditions'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
@@ -46,6 +47,7 @@ function providerToDoctor(p: ProviderCard): Doctor {
     name: nameWithTitle,
     credentials: p.specialties.map((s) => s.name).join(', ') || 'BPT',
     specialty: p.specialties[0]?.name ?? 'Physiotherapist',
+    qualification: p.qualification ?? null,
     rating: p.rating_avg ?? 0,
     reviewCount: p.rating_count ?? 0,
     location: p.city ?? 'India',
@@ -126,6 +128,12 @@ function resolveConditionFilters(condition: string | null): {
     return { specialty: null, visitType: null, query: null }
   }
 
+  // Check slug-based conditions first (from specialty article pages)
+  const slugMapped = conditionSlugToSpecialtySlug(condition)
+  if (slugMapped) {
+    return { specialty: slugMapped, visitType: null, query: null }
+  }
+
   const normalizedCondition = normalizeConditionTerm(condition)
   const mappedSpecialty = CONDITION_SPECIALTY_MAP[normalizedCondition] ?? null
   const visitType = normalizedCondition === 'home visits' || normalizedCondition === 'home visit'
@@ -154,6 +162,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
 
   const specialty = searchParams.get('specialty') ?? conditionFilters.specialty
   const visit_type = searchParams.get('visit_type') ?? conditionFilters.visitType
+  const qualification = searchParams.get('qualification')
   const max_fee = searchParams.get('max_fee')
   const sort = searchParams.get('sort')
   const lat = searchParams.get('lat')
@@ -165,12 +174,13 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     if (specialty) apiParams.specialty_id = specialty
     if (conditionFilters.query) apiParams.query = conditionFilters.query
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
+    if (qualification) apiParams.qualification = qualification
     if (sort) apiParams.sort = sort
     if (max_fee) apiParams.max_fee_inr = max_fee
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, specialty, conditionFilters.query, visit_type, sort, max_fee, lat, lng])
+  }, [city, specialty, conditionFilters.query, visit_type, qualification, sort, max_fee, lat, lng])
 
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
     fetchUrl,
@@ -236,7 +246,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                 aria-label="Sort results"
-                className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
+                className="rounded-[var(--sq-xs)] border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
               >
                 <option value="relevance">Sort: Relevance</option>
                 <option value="rating">Highest Rated</option>
@@ -264,7 +274,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
             <div className="py-12">
               {/* Empty state — clean, modern design */}
               <div className="max-w-lg mx-auto text-center">
-                <div className="w-16 h-16 rounded-2xl bg-[#E6F4F3] flex items-center justify-center mx-auto mb-5">
+                <div className="w-16 h-16 rounded-[var(--sq-lg)] bg-[#E6F4F3] flex items-center justify-center mx-auto mb-5">
                   <SearchIcon size={28} className="text-[#00766C]" />
                 </div>
 
@@ -274,14 +284,14 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                 </p>
 
                 {error && (
-                  <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6 text-left">
+                  <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 mb-6 text-left">
                     <div className="flex-1">
                       <p className="text-[13px] font-semibold text-amber-800">{t.errorTitle}</p>
                       <p className="text-[12px] text-amber-700/80 mt-0.5">{t.errorBody}</p>
                     </div>
                     <button
                       onClick={() => { void mutate() }}
-                      className="shrink-0 flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-2 text-[12px] font-semibold text-white hover:bg-amber-700 transition-colors"
+                      className="shrink-0 flex items-center gap-1.5 rounded-[var(--sq-xs)] bg-amber-600 px-3 py-2 text-[12px] font-semibold text-white hover:bg-amber-700 transition-colors"
                     >
                       <RefreshCw size={12} />
                       {t.retrySearch}
@@ -319,14 +329,14 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
           ) : (
             <div className="flex flex-col gap-5 pb-16">
               {error && (
-                <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-left">
+                <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 text-left">
                   <div className="flex-1">
                     <p className="text-[13px] font-semibold text-amber-800">{t.errorTitle}</p>
                     <p className="text-[12px] text-amber-700/80 mt-0.5">{t.errorBodyRetrying}</p>
                   </div>
                   <button
                     onClick={() => { void mutate() }}
-                    className="shrink-0 flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-2 text-[12px] font-semibold text-white hover:bg-amber-700 transition-colors"
+                    className="shrink-0 flex items-center gap-1.5 rounded-[var(--sq-xs)] bg-amber-600 px-3 py-2 text-[12px] font-semibold text-white hover:bg-amber-700 transition-colors"
                   >
                     <RefreshCw size={12} />
                     {t.retrySearch}
