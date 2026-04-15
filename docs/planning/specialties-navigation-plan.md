@@ -129,7 +129,11 @@ CREATE POLICY provider_iap_members_owner ON provider_iap_members
 -- Audit trigger: log create/update/delete on provider_iap_members
 -- (References existing audit_log table or creates one if absent — confirm during implementation)
 CREATE OR REPLACE FUNCTION audit_provider_iap_members()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 BEGIN
   INSERT INTO audit_log (table_name, operation, row_id, actor_id, changed_at)
   VALUES (
@@ -228,7 +232,7 @@ FOR EACH ROW EXECUTE FUNCTION audit_provider_iap_members();
   It is stored in the **separate `provider_iap_members` table** (not on `providers`) because the
   `providers_public_read` RLS policy exposes entire provider rows to the public — adding `iap_member_id`
   to `providers` would make it world-readable, violating DPDPA access controls.
-  Retention: retained for provider account lifetime, archived on account deletion (cascades via FK).
+  Retention: retained for provider account lifetime, deleted on account deletion (cascades via FK).
   Access: restricted to admin role and the owning provider via a dedicated RLS policy on `provider_iap_members`.
   Logging: an audit trigger on `provider_iap_members` records create/update/delete operations in `audit_log`.
   Certifications and equipment tags are professional metadata, not personal data, and remain on `providers`.
