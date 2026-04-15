@@ -91,11 +91,11 @@ const onboardSchema = z.object({
     iapNumber: z.string().max(50).optional(),
     stateRegistrationNumber: z.string().max(50).optional(),
     stateName: z.string().max(100).optional(),
-    degree: z.string().min(1).max(100),
+    degree: z.enum(['BPT', 'MPT', 'PhD', 'DPT']),
     experienceYears: z.string().regex(/^\d{1,2}$/, 'Experience years must be a number'),
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
-    certifications: z.array(z.string().min(1).max(100)).max(20).optional().default([]),
-    equipmentTags: z.array(z.string().min(1).max(100)).max(30).optional().default([]),
+    certifications: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
+    equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).optional().default([]),
   }),
   step3: z.object({
     clinicName: z.string().min(2).max(200),
@@ -181,10 +181,7 @@ export async function POST(request: NextRequest) {
       .filter((specialty) => step2.specialties.includes(specialty.name))
       .map((specialty) => specialty.id)
 
-    const qualificationMap: Record<string, 'BPT' | 'MPT' | 'PhD' | 'DPT'> = {
-      BPT: 'BPT', MPT: 'MPT', PhD: 'PhD', DPT: 'DPT',
-    }
-    const qualificationValue = qualificationMap[step2.degree] ?? null
+    const qualificationValue = step2.degree
 
     // 2. Create provider profile
     const { error: providerError } = await supabaseAdmin

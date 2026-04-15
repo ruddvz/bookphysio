@@ -487,7 +487,7 @@ export default function ProviderSchedule() {
                     type="number"
                     value={draft.fee_inr}
                     onChange={(e) => setDraft({ ...draft, fee_inr: e.target.value })}
-                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] text-bold text-[var(--color-pv-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] text-[14px] font-bold text-[var(--color-pv-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-pv-primary)] outline-none transition-all"
                     placeholder="500"
                   />
                 </div>

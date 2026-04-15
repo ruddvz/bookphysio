@@ -76,7 +76,7 @@ export default function TopSpecialties() {
                 href={`/specialties/${s.slug}`}
                 className={cn(
                   'group flex flex-col rounded-[var(--sq-lg)] border bg-white overflow-hidden',
-                  'transition-all duration-250 hover:scale-[1.02]',
+                  'transition-all duration-200 hover:scale-[1.02]',
                   'hover:shadow-xl hover:shadow-slate-200/60',
                   'shadow-[0_1px_3px_rgba(0,0,0,0.04),inset_0_0_0_0.5px_rgba(0,0,0,0.04)]',
                   s.tint.border,

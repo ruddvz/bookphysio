@@ -20,7 +20,7 @@ COMMENT ON COLUMN providers.equipment_tags IS 'Equipment/modality tags, e.g. TEN
 -- entire rows publicly.
 CREATE TABLE IF NOT EXISTS provider_iap_members (
   provider_id uuid PRIMARY KEY REFERENCES providers(id) ON DELETE CASCADE,
-  iap_member_id text NOT NULL,
+  iap_member_id text NOT NULL UNIQUE,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );

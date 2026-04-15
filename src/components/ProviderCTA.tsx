@@ -126,7 +126,7 @@ export default function ProviderCTA() {
             <div className="flex items-center gap-3 pt-2">
               <Link
                 href="/doctor-signup"
-                className="flex items-center gap-2 px-7 py-4 bg-indigo-600 text-white rounded-[var(--sq-sm)] font-bold text-[15px] hover:bg-indigo-500 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/20 group"
+                className="flex items-center gap-2 px-7 py-4 bg-[#FF6B35] text-white rounded-[var(--sq-sm)] font-bold text-[15px] hover:bg-[#e85f2e] transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/20 group"
               >
                 List your practice
                 <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

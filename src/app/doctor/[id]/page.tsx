@@ -567,8 +567,8 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                         <div>
                           <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-2">Certifications</p>
                           <div className="flex flex-wrap gap-2">
-                            {provider.certifications.map((cert) => (
-                              <span key={cert} className="rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-[12px] font-bold text-bp-primary">
+                            {provider.certifications.map((cert, index) => (
+                              <span key={`${cert}-${index}`} className="rounded-full border border-bp-border bg-bp-surface px-3 py-1 text-[12px] font-bold text-bp-primary">
                                 {cert}
                               </span>
                             ))}
@@ -585,8 +585,8 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
                         <div>
                           <p className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest mb-2">Equipment & Modalities</p>
                           <div className="flex flex-wrap gap-2">
-                            {provider.equipment_tags.map((tag) => (
-                              <span key={tag} className="rounded-full border border-bp-border bg-white px-3 py-1 text-[12px] font-bold text-bp-body">
+                            {provider.equipment_tags.map((tag, index) => (
+                              <span key={`${tag}-${index}`} className="rounded-full border border-bp-border bg-white px-3 py-1 text-[12px] font-bold text-bp-body">
                                 {tag}
                               </span>
                             ))}
