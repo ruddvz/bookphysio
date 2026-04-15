@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-env.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:env": "node scripts/check-env.mjs",
     "ping:indexnow": "node scripts/ping-indexnow.mjs",
     "test": "vitest run",
     "test:watch": "vitest",

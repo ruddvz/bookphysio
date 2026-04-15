@@ -161,10 +161,10 @@ Respond with a JSON object (no markdown, no code fences) with exactly these fiel
 async function sendSummaryEmail(subject: string, htmlBody: string): Promise<boolean> {
   const resendKey = process.env.RESEND_API_KEY
   const adminEmail = process.env.ADMIN_EMAIL
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@bookphysio.in'
+  const fromEmail = process.env.RESEND_FROM_EMAIL
 
-  if (!resendKey || !adminEmail) {
-    console.warn('[daily-summary] RESEND_API_KEY or ADMIN_EMAIL not set — skipping email')
+  if (!resendKey || !adminEmail || !fromEmail) {
+    console.warn('[daily-summary] RESEND_API_KEY, ADMIN_EMAIL, or RESEND_FROM_EMAIL not set — skipping email')
     return false
   }
 
