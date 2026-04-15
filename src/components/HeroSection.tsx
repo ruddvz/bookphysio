@@ -5,6 +5,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SPECIALTIES } from '@/lib/specialties'
+import { INDIA_CITIES } from '@/lib/india-locations'
 
 const ROTATING_WORDS = [
   'sports rehab',
@@ -15,19 +17,16 @@ const ROTATING_WORDS = [
   'joint mobility',
 ]
 
+// Specialty labels for chip marquee — 3 rows of 4
 const HERO_CHIP_ROWS = [
-  ['Back pain', 'Neck pain', 'Shoulder pain', 'Knee pain', 'Hip pain', 'Heel pain', 'Joint stiffness'],
-  ['Sports injury', 'Post-surgery care', 'Home visit', 'Slip disc', 'Sciatica', 'Balance issues', 'Posture issues'],
-  ['Stroke recovery', 'Kids physio', 'Pregnancy pain', 'Elderly care', 'Ankle sprain', 'Hand pain', 'Wrist pain'],
+  SPECIALTIES.slice(0, 4).map((s) => s.label),
+  SPECIALTIES.slice(4, 8).map((s) => s.label),
+  SPECIALTIES.slice(8, 12).map((s) => s.label),
 ]
 
-const CONDITIONS = HERO_CHIP_ROWS.flat()
+const SPECIALTY_OPTIONS = SPECIALTIES.map((s) => s.label)
 
-const CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
-  'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Gurgaon',
-  'Noida', 'Surat', 'Nagpur', 'Indore', 'Bhopal', 'Vadodara',
-]
+const CITY_OPTIONS = INDIA_CITIES.map((c) => `${c.city}, ${c.state}`)
 
 const TRUST_STATS = [
   { value: 'IAP',     label: 'Verified providers'  },
@@ -126,10 +125,10 @@ export default function HeroSection() {
   const router = useRouter()
   const [wordIdx, setWordIdx] = useState(0)
   const [wordVisible, setWordVisible] = useState(true)
-  const [condition, setCondition] = useState('')
-  const [location, setLocation]   = useState('')
-  const [showConditions, setShowConditions] = useState(false)
-  const [showCities, setShowCities]         = useState(false)
+  const [specialty, setSpecialty] = useState('')
+  const [city, setCity]           = useState('')
+  const [showSpecialties, setShowSpecialties] = useState(false)
+  const [showCities, setShowCities]           = useState(false)
 
   useEffect(() => {
     let nestedTimeout: ReturnType<typeof setTimeout> | undefined
@@ -146,11 +145,11 @@ export default function HeroSection() {
     }
   }, [])
 
-  const handleSearch = (overrideCondition?: string) => {
+  const handleSearch = (overrideSpecialty?: string) => {
     const params = new URLSearchParams()
-    const c = overrideCondition ?? condition
-    if (c.trim()) params.set('condition', c.trim())
-    if (location.trim())  params.set('location',  location.trim())
+    const s = overrideSpecialty ?? specialty
+    if (s.trim()) params.set('specialty', s.trim())
+    if (city.trim()) params.set('city', city.trim())
     router.push(params.toString() ? `/search?${params}` : '/search')
   }
 
@@ -249,17 +248,17 @@ export default function HeroSection() {
             >
               <SearchField
                 className="rounded-[2rem] lg:rounded-full"
-                label="Condition"
-                id="hero-condition"
+                label="Specialty"
+                id="hero-specialty"
                 icon={Search}
-                value={condition}
-                onChange={setCondition}
-                placeholder="e.g. Back pain, Sports injury..."
-                options={CONDITIONS}
-                onSelect={setCondition}
-                showOptions={showConditions}
-                onOpenOptions={() => { setShowConditions(true); setShowCities(false) }}
-                onCloseOptions={() => setShowConditions(false)}
+                value={specialty}
+                onChange={setSpecialty}
+                placeholder="e.g. Orthopaedic, Sports, Neuro..."
+                options={SPECIALTY_OPTIONS}
+                onSelect={setSpecialty}
+                showOptions={showSpecialties}
+                onOpenOptions={() => { setShowSpecialties(true); setShowCities(false) }}
+                onCloseOptions={() => setShowSpecialties(false)}
               />
 
               <div className="hidden lg:block w-px bg-indigo-50 my-3 self-stretch" />
@@ -267,16 +266,16 @@ export default function HeroSection() {
 
               <SearchField
                 className="rounded-[2rem] lg:rounded-full"
-                label="Location"
-                id="hero-location"
+                label="City"
+                id="hero-city"
                 icon={MapPin}
-                value={location}
-                onChange={setLocation}
-                placeholder="City name..."
-                options={CITIES}
-                onSelect={setLocation}
+                value={city}
+                onChange={setCity}
+                placeholder="e.g. Mumbai, Surat, Delhi..."
+                options={CITY_OPTIONS}
+                onSelect={setCity}
                 showOptions={showCities}
-                onOpenOptions={() => { setShowCities(true); setShowConditions(false) }}
+                onOpenOptions={() => { setShowCities(true); setShowSpecialties(false) }}
                 onCloseOptions={() => setShowCities(false)}
               />
 
@@ -327,7 +326,7 @@ export default function HeroSection() {
                           <button
                             key={tag}
                             type="button"
-                            onClick={() => { setCondition(tag); handleSearch(tag) }}
+                            onClick={() => { setSpecialty(tag); handleSearch(tag) }}
                             className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
                           >
                             {tag}
@@ -340,7 +339,7 @@ export default function HeroSection() {
                               key={`dup-${tag}`}
                               type="button"
                               tabIndex={-1}
-                              onClick={() => { setCondition(tag); handleSearch(tag) }}
+                              onClick={() => { setSpecialty(tag); handleSearch(tag) }}
                               className="bp-hero-chip min-w-[132px] shrink-0 px-4 py-2.5 text-[13px] font-semibold"
                             >
                               {tag}
