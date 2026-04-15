@@ -215,7 +215,7 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
       {/* ── Header ── */}
       <div className="flex flex-col gap-5 mb-10 relative z-10">
         <div className="flex items-center justify-between">
-           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20/50 rounded-[var(--sq-xs)] text-[10px] font-bold text-bp-accent uppercase tracking-widest leading-none">
+           <div className="flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-[var(--sq-xs)] text-[10px] font-bold text-bp-accent uppercase tracking-widest leading-none">
               Secured Session
            </div>
            <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest leading-none">

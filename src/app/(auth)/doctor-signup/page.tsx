@@ -23,7 +23,7 @@ interface Step2Data {
   iapNumber: string
   stateRegistrationNumber: string
   stateName: string
-  degree: 'BPT' | 'MPT' | 'PhD' | ''
+  degree: 'BPT' | 'MPT' | 'PhD' | 'DPT' | ''
   experienceYears: string
   specialties: string[]
   certifications: string[]
@@ -121,12 +121,14 @@ const step2Schema = z.object({
   iapNumber: z.string().optional(),
   stateRegistrationNumber: z.string().optional(),
   stateName: z.string().optional(),
-  degree: z.enum(['BPT', 'MPT', 'PhD'], { error: 'Select a degree' }),
+  degree: z.enum(['BPT', 'MPT', 'PhD', 'DPT'], { error: 'Select a degree' }),
   experienceYears: z
     .string()
     .regex(/^\d+$/, 'Enter a number')
     .refine((v) => parseInt(v) >= 0 && parseInt(v) <= 50, 'Enter valid years (0–50)'),
   specialties: z.array(z.string()).min(1, 'Select at least one specialty'),
+  certifications: z.array(z.string().trim().min(1).max(100)).max(20).default([]),
+  equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).default([]),
 }).refine(data => {
   if (data.registrationType === 'IAP') {
     return !!data.iapNumber && data.iapNumber.length >= 3
@@ -771,7 +773,7 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
       <div style={{ marginBottom: '16px' }}>
         <Label>Degree</Label>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          {(['BPT', 'MPT', 'PhD'] as const).map((deg) => (
+          {(['BPT', 'MPT', 'PhD', 'DPT'] as const).map((deg) => (
             <label key={deg} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '15px', color: 'var(--color-bp-primary)' }}>
               <input
                 type="radio"

@@ -111,6 +111,17 @@ export async function GET(
     lng: primaryLocation?.lng ?? null,
   })
 
+  // Runtime normalizers for DB fields that may contain unexpected values
+  type ProviderQualification = 'BPT' | 'MPT' | 'PhD' | 'DPT'
+  function normalizeQualification(value: unknown): ProviderQualification | null {
+    if (value === 'BPT' || value === 'MPT' || value === 'PhD' || value === 'DPT') return value
+    return null
+  }
+  function normalizeStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) return []
+    return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+  }
+
   // Redact the registration number for public viewing
   let redactedRegNo = data.iap_registration_no || null
   if (redactedRegNo) {
@@ -139,9 +150,9 @@ export async function GET(
     city: publicLocations[0]?.city ?? null,
     bio: data.bio,
     iap_registration_no: redactedRegNo,
-    qualification: (data as { qualification?: 'BPT' | 'MPT' | 'PhD' | 'DPT' | null }).qualification ?? null,
-    certifications: (data as { certifications?: string[] }).certifications ?? [],
-    equipment_tags: (data as { equipment_tags?: string[] }).equipment_tags ?? [],
+    qualification: normalizeQualification((data as { qualification?: unknown }).qualification),
+    certifications: normalizeStringArray((data as { certifications?: unknown }).certifications),
+    equipment_tags: normalizeStringArray((data as { equipment_tags?: unknown }).equipment_tags),
     locations: publicLocations,
     verified: data.verified || false,
     lat: publicCoordinates.lat,

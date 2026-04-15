@@ -56,7 +56,7 @@ export default function TopSpecialties() {
 
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--sq-sm)] border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-indigo-200 hover:text-indigo-700 transition-all group shrink-0 self-start lg:self-auto"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--sq-sm)] border border-slate-200 bg-white text-slate-700 text-[14px] font-semibold hover:border-[#005A52] hover:text-[#005A52] transition-all group shrink-0 self-start lg:self-auto"
           >
             View all specialties
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />

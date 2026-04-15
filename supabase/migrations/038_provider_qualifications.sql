@@ -42,6 +42,21 @@ CREATE POLICY provider_iap_members_owner ON provider_iap_members
     )
   );
 
+-- ── updated_at trigger ────────────────────────────────────────────────────────
+-- Keeps updated_at current on every row update so it doesn't stay write-once.
+CREATE OR REPLACE FUNCTION set_updated_at_provider_iap_members()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_set_updated_at_provider_iap_members ON provider_iap_members;
+CREATE TRIGGER trg_set_updated_at_provider_iap_members
+BEFORE UPDATE ON provider_iap_members
+FOR EACH ROW EXECUTE FUNCTION set_updated_at_provider_iap_members();
+
 -- ── Audit trigger ─────────────────────────────────────────────────────────────
 -- Logs create/update/delete operations on iap_member_id to audit_log.
 -- Note: the audit_log table must exist before this migration is applied.

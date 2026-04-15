@@ -31,6 +31,7 @@ export const CONDITION_SLUG_TO_SPECIALTY_SLUG: Readonly<Record<string, string>> 
   'hamstring-strain': 'sports',
 
   // Paediatric
+  'paediatric-cerebral-palsy': 'paediatric',
   'developmental-delay': 'paediatric',
   'muscular-dystrophy': 'paediatric',
   'torticollis': 'paediatric',

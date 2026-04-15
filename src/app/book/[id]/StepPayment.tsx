@@ -211,7 +211,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
                      {mode.badge && (
                        <span className={cn(
                          "text-[9px] font-bold uppercase tracking-[0.2em] px-2.5 py-1 rounded-[var(--sq-xs)]",
-                         mode.available && isSelected ? "bg-bp-accent/15/50 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
+                         mode.available && isSelected ? "bg-bp-accent/15 text-bp-accent" : mode.available ? "bg-emerald-100 text-emerald-700" : "bg-bp-surface text-bp-body/40"
                        )}>
                          {mode.badge}
                        </span>

@@ -167,7 +167,7 @@ export const SPECIALTIES: readonly SpecialtyDef[] = [
     image: '/specialties/paediatric.png',
     tint: { text: 'text-sky-700', bg: 'bg-sky-50', border: 'border-sky-100', hoverBorder: 'hover:border-sky-200' },
     conditions: [
-      { name: 'Cerebral Palsy', slug: 'cerebral-palsy', description: 'Movement and posture disorder from early brain injury requiring lifelong therapy support.' },
+      { name: 'Cerebral Palsy', slug: 'paediatric-cerebral-palsy', description: 'Movement and posture disorder from early brain injury requiring lifelong therapy support.' },
       { name: 'Developmental Delay', slug: 'developmental-delay', description: 'Delayed motor milestones in infants and toddlers needing early intervention.' },
       { name: 'Muscular Dystrophy', slug: 'muscular-dystrophy', description: 'Progressive muscle weakness managed with physiotherapy to maintain function.' },
       { name: 'Torticollis', slug: 'torticollis', description: 'Infant neck muscle tightness causing head tilt and restricted rotation.' },
