@@ -1226,11 +1226,20 @@ function Step5({ email, onBack }: Step5Props) {
   useEffect(() => {
     if (!email) return
     const supabase = createClient()
-    supabase.auth.resend({ type: 'signup', email }).catch(() => {
-      // Best-effort — user can still click Resend manually
+    void (async () => {
+      const { error } = await supabase.auth.resend({ type: 'signup', email })
+      if (error) {
+        setResendError('Unable to send the confirmation email automatically. Please use the resend button below.')
+        setResendStatus('error')
+        return
+      }
+      setResendStatus('sent')
+      setCountdown(RESEND_COOLDOWN_SECONDS)
+    })().catch(() => {
+      setResendError('Network error. Please use the resend button below.')
+      setResendStatus('error')
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [email])
 
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,
