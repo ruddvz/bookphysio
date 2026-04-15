@@ -4,20 +4,16 @@ import { useCallback, useState, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { X, ChevronDown, Check, MapPin, Activity, Wallet, Home, Building2, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SPECIALTIES as SPECIALTY_DEFS } from '@/lib/specialties'
+import { INDIA_CITIES } from '@/lib/india-locations'
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-const SPECIALTIES = [
-  'Sports Physio', 'Neuro Physio', 'Ortho Physio', 'Paediatric Physio',
-  "Women's Health", 'Geriatric Physio', 'Post-Surgery Rehab', 'Pain Management',
-]
+const SPECIALTIES = SPECIALTY_DEFS.map((s) => s.label)
 
-const CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad',
-  'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Surat',
-]
+const CITIES = INDIA_CITIES.map((c) => c.city)
 
 const QUALIFICATIONS = ['BPT', 'MPT', 'PhD', 'DPT']
 const VISIT_TYPES = ['In-clinic', 'Home Visit']

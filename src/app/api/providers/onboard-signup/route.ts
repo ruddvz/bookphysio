@@ -42,16 +42,24 @@ const onboardSignupSchema = z.object({
     email: z.string().email().optional(),
   }),
   step2: z.object({
-    registrationType: z.enum(['IAP', 'STATE']).default('IAP'),
+    registrationType: z.enum(['NCAHP', 'IAP', 'STATE']).default('NCAHP'),
+    ncahpNumber: z.string().max(50).optional(),
     iapNumber: z.string().max(50).optional(),
     stateRegistrationNumber: z.string().max(50).optional(),
     stateName: z.string().max(100).optional(),
-    degree: z.enum(['BPT', 'MPT', 'PhD', 'DPT']),
+    degree: z.string().min(1).max(100),
     experienceYears: z.string().regex(/^\d{1,2}$/, 'Experience years must be a number'),
     specialties: z.array(z.string().min(1).max(100)).min(1, 'Select at least one specialty').max(20),
-    certifications: z.array(z.string().trim().min(1).max(100)).max(20).optional().default([]),
-    equipmentTags: z.array(z.string().trim().min(1).max(100)).max(30).optional().default([]),
+    certifications: z.array(z.string().min(1).max(200)).max(20).optional().default([]),
   }).superRefine((data, context) => {
+    if (data.registrationType === 'NCAHP' && !data.ncahpNumber?.trim()) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['ncahpNumber'],
+        message: 'NCAHP registration number is required',
+      })
+    }
+
     if (data.registrationType === 'IAP' && !data.iapNumber?.trim()) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
@@ -79,12 +87,38 @@ const onboardSignupSchema = z.object({
     }
   }),
   step3: z.object({
-    clinicName: z.string().min(2).max(200),
-    address: z.string().min(5).max(500),
+    visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
+    clinicName: z.string().max(200).optional(),
+    address: z.string().max(500).optional(),
     city: z.string().min(2).max(100),
     state: z.string().min(2).max(100),
-    pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode'),
-    visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
+    pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode').optional().or(z.literal('')),
+    modalities: z.array(z.string().min(1).max(200)).max(20).optional().default([]),
+  }).superRefine((data, context) => {
+    const isClinic = data.visitTypes.includes('in_clinic')
+    if (isClinic) {
+      if (!data.clinicName?.trim() || data.clinicName.trim().length < 2) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['clinicName'],
+          message: 'Clinic name is required',
+        })
+      }
+      if (!data.address?.trim() || data.address.trim().length < 5) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['address'],
+          message: 'Address is required',
+        })
+      }
+      if (!data.pincode?.trim()) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pincode'],
+          message: 'Pincode is required',
+        })
+      }
+    }
   }),
   step4: z.object({
     fees: z.record(z.string(), z.coerce.number().int().min(0).max(999999)),
@@ -283,7 +317,11 @@ export async function POST(request: NextRequest) {
 
     // 4. Create provider profile
     const providerSlug = slugifyProviderName(step1.name, userId as string)
-    const qualificationValue = step2.degree
+    const registrationRef =
+      step2.registrationType === 'NCAHP' ? (step2.ncahpNumber ?? '') :
+      step2.registrationType === 'IAP' ? (step2.iapNumber ?? '') :
+      `STATE_${step2.stateName ?? ''}_${step2.stateRegistrationNumber ?? ''}`
+
     const { error: providerError } = await supabaseAdmin
       .from('providers')
       .upsert({
@@ -291,14 +329,10 @@ export async function POST(request: NextRequest) {
         slug: providerSlug,
         title: step2.degree.toLowerCase().includes('dr') ? 'Dr.' : 'PT',
         experience_years: parseInt(step2.experienceYears),
-        iap_registration_no: step2.registrationType === 'STATE'
-          ? `STATE_${step2.stateName}_${step2.stateRegistrationNumber}`
-          : (step2.iapNumber || ''),
+        iap_registration_no: registrationRef,
         specialty_ids: selectedIds,
         consultation_fee_inr: step4.fees.in_clinic || step4.fees.home_visit || 0,
-        qualification: qualificationValue,
         certifications: step2.certifications ?? [],
-        equipment_tags: step2.equipmentTags ?? [],
         verified: false,
         active: true,
         onboarding_step: 4,
@@ -310,16 +344,18 @@ export async function POST(request: NextRequest) {
     providerCreated = true
 
     // 5. Create location
+    const isClinic = step3.visitTypes.includes('in_clinic')
     const { data: locationRow, error: locError } = await supabaseAdmin
       .from('locations')
       .insert({
         provider_id: userId,
-        name: step3.clinicName,
-        address: step3.address,
+        name: isClinic ? (step3.clinicName ?? '') : '',
+        address: isClinic ? (step3.address ?? '') : '',
         city: step3.city,
         state: step3.state,
-        pincode: step3.pincode,
+        pincode: step3.pincode ?? '',
         visit_type: step3.visitTypes,
+        modalities: step3.modalities ?? [],
       })
       .select('id')
       .single()
