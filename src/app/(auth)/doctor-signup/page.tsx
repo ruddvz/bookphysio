@@ -1203,40 +1203,49 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
 
 const RESEND_COOLDOWN_SECONDS = 60
 
-interface Step5Props {
-  email: string
-  onBack: () => void
-}
+type ResendStatus = 'idle' | 'loading' | 'sent' | 'error'
 
-function Step5({ email, onBack }: Step5Props) {
-  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle')
+function useResendConfirmation(email: string) {
+  // Initialize to 'loading' immediately when email is present so the resend
+  // button is disabled before the first useEffect fires (avoids synchronous
+  // setState inside the effect, which triggers react-hooks/set-state-in-effect).
+  const [resendStatus, setResendStatus] = useState<ResendStatus>(() => email ? 'loading' : 'idle')
   const [resendError, setResendError] = useState('')
   const [countdown, setCountdown] = useState(0)
 
+  // Countdown ticker
   useEffect(() => {
     if (countdown <= 0) return
-
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [countdown])
 
-  // Auto-send the first confirmation email on mount.
-  // admin.createUser() (used server-side) does not auto-send confirmation emails,
-  // so we trigger it here via the client-side resend() immediately when Step 5 renders.
+  // Auto-send on mount: admin.createUser() does not send confirmation emails,
+  // so we trigger one here immediately when Step 5 renders.
+  // resendStatus is already 'loading' from the lazy initializer above,
+  // preventing concurrent manual resends while the request is in-flight.
   useEffect(() => {
     if (!email) return
+    let cancelled = false
     const supabase = createClient()
-    supabase.auth.resend({ type: 'signup', email }).catch(() => {
-      // Best-effort — user can still click Resend manually
+    void (async () => {
+      const { error } = await supabase.auth.resend({ type: 'signup', email })
+      if (cancelled) return
+      if (error) {
+        setResendError('Unable to send the confirmation email automatically. Please use the resend button below.')
+        setResendStatus('error')
+        return
+      }
+      setResendStatus('sent')
+      setCountdown(RESEND_COOLDOWN_SECONDS)
+    })().catch(() => {
+      if (!cancelled) {
+        setResendError('Network error. Please use the resend button below.')
+        setResendStatus('error')
+      }
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const maskedEmail = email.replace(
-    /^(.)(.*)(@.*)$/,
-    (_match, firstChar, localPart, domainPart) =>
-      `${firstChar}${'•'.repeat(Math.min(Math.max(localPart.length, 1), 6))}${domainPart}`,
-  )
+    return () => { cancelled = true }
+  }, [email])
 
   async function handleResend() {
     if (!email || resendStatus === 'loading' || countdown > 0) return
@@ -1257,6 +1266,23 @@ function Step5({ email, onBack }: Step5Props) {
       setResendStatus('error')
     }
   }
+
+  return { resendStatus, resendError, countdown, handleResend }
+}
+
+interface Step5Props {
+  email: string
+  onBack: () => void
+}
+
+function Step5({ email, onBack }: Step5Props) {
+  const { resendStatus, resendError, countdown, handleResend } = useResendConfirmation(email)
+
+  const maskedEmail = email.replace(
+    /^(.)(.*)(@.*)$/,
+    (_match, firstChar, localPart, domainPart) =>
+      `${firstChar}${'•'.repeat(Math.min(Math.max(localPart.length, 1), 6))}${domainPart}`,
+  )
 
   return (
     <div className="text-center">

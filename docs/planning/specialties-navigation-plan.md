@@ -100,18 +100,65 @@ seoDescription: string
 
 **DB Migration** (`038_provider_qualifications.sql`):
 ```sql
+-- qualification, certifications, equipment_tags go on providers (non-sensitive, public metadata)
 ALTER TABLE providers
   ADD COLUMN qualification text CHECK (qualification IN ('BPT','MPT','PhD','DPT')),
-  ADD COLUMN iap_member_id text,
   ADD COLUMN certifications text[],   -- e.g. ['Mulligan', 'McKenzie', 'Maitland']
   ADD COLUMN equipment_tags text[];   -- e.g. ['TENS', 'Ultrasound', 'Traction']
+
+-- iap_member_id is personal data (DPDPA) and MUST NOT go on the providers table.
+-- The providers_public_read RLS policy exposes entire rows for verified+active providers,
+-- so adding iap_member_id there would make it world-readable.
+-- Instead: store it in a separate table with restrictive RLS (admin + owning provider only).
+CREATE TABLE provider_iap_members (
+  provider_id uuid PRIMARY KEY REFERENCES providers(id) ON DELETE CASCADE,
+  iap_member_id text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Only admin and the owning provider may read/write
+ALTER TABLE provider_iap_members ENABLE ROW LEVEL SECURITY;
+CREATE POLICY provider_iap_members_owner ON provider_iap_members
+  FOR ALL TO authenticated
+  USING (
+    provider_id = auth.uid()
+    OR EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Audit trigger: log create/update/delete on provider_iap_members
+-- (References existing audit_log table or creates one if absent — confirm during implementation)
+CREATE OR REPLACE FUNCTION audit_provider_iap_members()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  INSERT INTO audit_log (table_name, operation, row_id, actor_id, changed_at)
+  VALUES (
+    'provider_iap_members',
+    TG_OP,
+    COALESCE(NEW.provider_id, OLD.provider_id),
+    auth.uid(),
+    now()
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+CREATE TRIGGER trg_audit_provider_iap_members
+AFTER INSERT OR UPDATE OR DELETE ON provider_iap_members
+FOR EACH ROW EXECUTE FUNCTION audit_provider_iap_members();
 ```
 
 **TypeScript changes:**
-- `src/app/api/contracts/provider.ts` — Add `qualification`, `iap_member_id`, `certifications[]`, `equipment_tags[]` to `ProviderProfile`
-- `src/lib/validations/provider.ts` — Add Zod fields for the above
+- `src/app/api/contracts/provider.ts` — **Two separate contracts** (DPDPA boundary):
+  - `ProviderProfile` (public) — Add `qualification`, `certifications[]`, `equipment_tags[]` only. **Do NOT add `iap_member_id`** — this type is returned by public endpoints and would re-expose PII.
+  - `PrivateProviderProfile` (restricted) — Extends `ProviderProfile`, adds `iap_member_id`. Used exclusively by admin endpoints and the owning provider's settings API (`/api/providers/me`). Never returned from public search/listing endpoints.
+- `src/lib/validations/provider.ts` — Add Zod schemas for `qualification`, `certifications[]`, `equipment_tags[]` in public schema; add separate `providerIapSchema` for `iap_member_id` (used only in restricted routes)
 - `src/components/DoctorCard.tsx` — Show qualification badge (BPT/MPT/PhD/DPT) next to name
-- `src/app/provider/[id]/page.tsx` — Show certifications + equipment tags in profile
+- `src/app/provider/[id]/page.tsx` — Show certifications + equipment tags in profile (public data only)
 
 ---
 
@@ -152,12 +199,12 @@ ALTER TABLE providers
 | `src/components/specialties/SpecialtyArticle.tsx` | Add conditions grid, symptoms, treatments, modality tags, certifications sections |
 | `src/app/specialties/[slug]/page.tsx` | Use new seoTitle/seoDescription fields |
 | `src/app/api/providers/route.ts` | Support `condition` query param |
-| `src/app/api/contracts/provider.ts` | Add qualification, certifications, equipment_tags fields |
+| `src/app/api/contracts/provider.ts` | Add qualification/certifications/equipment_tags to public `ProviderProfile`; add restricted `PrivateProviderProfile` with `iap_member_id` (admin + owner only) |
 | `src/lib/validations/provider.ts` | Add Zod schema for new provider fields |
 | `src/lib/validations/search.ts` | Add qualification, certification filter params |
 | `src/app/api/providers/onboard/route.ts` | Save new qualification/certification fields |
 | `src/components/DoctorCard.tsx` | Show qualification badge |
-| `supabase/migrations/038_provider_qualifications.sql` | NEW: Add qualification columns to providers table |
+| `supabase/migrations/038_provider_qualifications.sql` | NEW: Add qualification/certifications/equipment_tags to providers; create provider_iap_members table with RLS + audit trigger |
 
 ---
 
@@ -184,7 +231,10 @@ ALTER TABLE providers
 - No changes to the navbar are needed — the Browse dropdown already works.
 - All new specialties (Geriatric, Vestibular, Industrial) need corresponding DB rows in the `specialties` table + a new migration.
 - DPDPA compliance: `iap_member_id` is a professional identifier and personal data under DPDPA.
-  Retention: retained for provider account lifetime, archived on account deletion.
-  Access: restricted to admin role and the owning provider (enforced via RLS).
-  Logging: create/update/delete operations on `iap_member_id` are audit-logged via the DB audit trail.
-  Certifications and equipment tags are professional metadata, not personal data.
+  It is stored in the **separate `provider_iap_members` table** (not on `providers`) because the
+  `providers_public_read` RLS policy exposes entire provider rows to the public — adding `iap_member_id`
+  to `providers` would make it world-readable, violating DPDPA access controls.
+  Retention: retained for provider account lifetime, deleted on account deletion (cascades via FK).
+  Access: restricted to admin role and the owning provider via a dedicated RLS policy on `provider_iap_members`.
+  Logging: an audit trigger on `provider_iap_members` records create/update/delete operations in `audit_log`.
+  Certifications and equipment tags are professional metadata, not personal data, and remain on `providers`.
