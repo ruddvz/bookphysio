@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   const provider = result.provider
-  const rawName = provider.full_name.replace(/^dr\.?\s*/i, '').trim()
+  const rawName = provider.full_name.trim().replace(/^dr\.?\s*/i, '')
   const name = `Dr. ${rawName}, PT`
   const specialty = provider.specialties[0]?.name ?? 'Physiotherapist'
   const city = provider.city ?? 'India'
@@ -290,7 +290,7 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
   const provider = providerResult.provider
 
-  const rawBaseName = provider.full_name.replace(/^dr\.?\s*/i, '').trim()
+  const rawBaseName = provider.full_name.trim().replace(/^dr\.?\s*/i, '')
   const nameWithTitle = `Dr. ${rawBaseName}, PT`
 
   const initials = rawBaseName

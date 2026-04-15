@@ -139,7 +139,7 @@ export default function HeroSection() {
     const params = new URLSearchParams()
     const s = overrideSpecialty ?? specialty
     if (s.trim()) params.set('specialty', s.trim())
-    if (city.trim()) params.set('city', city.trim())
+    if (city.trim()) params.set('city', city.split(',')[0]?.trim() ?? city.trim())
     router.push(params.toString() ? `/search?${params}` : '/search')
   }
 
@@ -319,25 +319,25 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Floating trust badges — positioned so they don't overlap stats */}
-      <div className="hidden lg:flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center gap-4 z-10 animate-fade-up delay-500">
-        {[
-          { icon: Shield, label: 'IAP/State Council Verified' },
-          { icon: Home,   label: 'Home Visits Available'      },
-          { icon: Clock,  label: 'Same-Day Slots'             },
-        ].map(({ icon: Icon, label }) => (
-          <div
-            key={label}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-[var(--sq-sm)] backdrop-blur-sm border text-[12px] font-medium"
-            style={{ background: 'rgba(255,255,255,0.75)', borderColor: '#E0DFEE', color: '#5A5880' }}
-          >
-            <Icon size={14} className="text-indigo-400" />
-            {label}
+          {/* Trust badges — inline below stats so they never overlap */}
+          <div className="hidden lg:flex justify-center items-center gap-3 mt-8 animate-fade-up delay-500">
+            {[
+              { icon: Shield, label: 'IAP/State Council Verified' },
+              { icon: Home,   label: 'Home Visits Available'      },
+              { icon: Clock,  label: 'Same-Day Slots'             },
+            ].map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-[var(--sq-sm)] backdrop-blur-sm border text-[12px] font-medium"
+                style={{ background: 'rgba(255,255,255,0.75)', borderColor: '#E0DFEE', color: '#5A5880' }}
+              >
+                <Icon size={14} className="text-indigo-400" />
+                {label}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Bottom fade */}

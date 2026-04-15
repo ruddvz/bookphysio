@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
-import CityCombobox from '@/components/CityCombobox'
+import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { INDIA_STATES } from '@/lib/india-locations'
 import { createClient } from '@/lib/supabase/client'
@@ -980,7 +980,6 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
           onChange={(city, state) => onChange({ ...data, city, state: state ?? data.state })}
           placeholder="Search city… (e.g. Surat)"
           cityOnly={false}
-          inputStyle={{ ...inputStyle }}
         />
         <FieldError msg={errors.city} />
       </div>
@@ -1235,6 +1234,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                   }
                 })
                 onChange({ ...data, availability: next })
+                setErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== 'availability' && !k.startsWith('time_'))))
               }}
               style={{
                 padding: '6px 12px',
@@ -1282,6 +1282,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                             if (d !== day) next[d] = { enabled: true, slots: slots.map((s) => ({ ...s })) }
                           })
                           onChange({ ...data, availability: next })
+                          setErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== 'availability' && !k.startsWith('time_'))))
                         }}
                         style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-bp-primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'var(--color-bp-surface)' }}
                       >
