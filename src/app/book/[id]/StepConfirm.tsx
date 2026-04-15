@@ -67,7 +67,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
       {/* Header Layout */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-lg text-[10px] font-bold uppercase text-bp-accent tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-bp-accent/10 border border-bp-accent/20 rounded-[var(--sq-xs)] text-[10px] font-bold uppercase text-bp-accent tracking-widest">
              Patient Verification
           </div>
           <h2 className="text-[36px] md:text-[48px] font-bold text-bp-primary tracking-tighter leading-tight">Patient Details</h2>
@@ -77,11 +77,11 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
         <div className="hidden lg:flex flex-col items-end">
            <div className="flex -space-x-4 mb-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-surface flex items-center justify-center text-[12px] font-bold text-bp-body/30">
+                <div key={i} className="w-10 h-10 rounded-[var(--sq-lg)] border-4 border-white bg-bp-surface flex items-center justify-center text-[12px] font-bold text-bp-body/30">
                    {String.fromCharCode(64 + i)}
                 </div>
               ))}
-              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-bp-accent flex items-center justify-center text-[12px] font-bold text-white">
+              <div className="w-10 h-10 rounded-[var(--sq-lg)] border-4 border-white bg-bp-accent flex items-center justify-center text-[12px] font-bold text-white">
                  +
               </div>
            </div>
@@ -166,7 +166,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
              <label className="text-[12px] font-bold text-bp-primary uppercase tracking-widest block">
                Communications Channel
              </label>
-             <span className="text-[10px] font-bold text-bp-body/30 uppercase tracking-widest bg-bp-surface px-2.5 py-1 rounded-lg">High Sensitivity</span>
+             <span className="text-[10px] font-bold text-bp-body/30 uppercase tracking-widest bg-bp-surface px-2.5 py-1 rounded-[var(--sq-xs)]">High Sensitivity</span>
           </div>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
@@ -324,7 +324,7 @@ export function StepConfirm({ booking, onNext }: StepConfirmProps) {
         <div className="bg-[#FBFCFD] p-10 rounded-[40px] border border-bp-border relative overflow-hidden group/hint">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-bp-accent group-hover:scale-110 transition-transform duration-1000"><ShieldCheck size={120} /></div>
           <div className="flex gap-6 items-start relative z-10">
-            <div className="w-14 h-14 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent shrink-0 border border-bp-accent/20/50">
+            <div className="w-14 h-14 bg-bp-accent/10 rounded-[var(--sq-lg)] flex items-center justify-center text-bp-accent shrink-0 border border-bp-accent/20/50">
                <Sparkles size={24} />
             </div>
             <div>

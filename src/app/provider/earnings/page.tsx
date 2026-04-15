@@ -95,11 +95,11 @@ export default function ProviderEarnings() {
     return (
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         <div className="animate-pulse space-y-8">
-          <div className="h-20 bg-slate-100 rounded-2xl w-1/3" />
+          <div className="h-20 bg-slate-100 rounded-[var(--sq-lg)] w-1/3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-slate-100 rounded-2xl" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-slate-100 rounded-[var(--sq-lg)]" />)}
           </div>
-          <div className="h-64 bg-slate-100 rounded-2xl" />
+          <div className="h-64 bg-slate-100 rounded-[var(--sq-lg)]" />
         </div>
       </div>
     )
@@ -169,7 +169,7 @@ export default function ProviderEarnings() {
              title="Revenue Growth"
              action={{ label: 'Live Analytics', href: '#' }}
           >
-             <div className="h-[240px] border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center p-8">
+             <div className="h-[240px] border-2 border-dashed border-slate-100 rounded-[var(--sq-lg)] flex flex-col items-center justify-center text-center p-8">
                 <TrendingUp className="text-slate-200 mb-4" size={32} />
                <p className="text-[14px] font-bold text-slate-400">Interactive charts will be activated after 10 confirmed sessions.</p>
              </div>
@@ -233,7 +233,7 @@ export default function ProviderEarnings() {
             <div className="space-y-3">
               <Link
                 href="/provider/bills/new"
-                className="flex items-center gap-3 w-full p-4 rounded-xl border border-slate-100 hover:border-[var(--color-pv-primary)] hover:bg-slate-50 transition-all group"
+                className="flex items-center gap-3 w-full p-4 rounded-[var(--sq-sm)] border border-slate-100 hover:border-[var(--color-pv-primary)] hover:bg-slate-50 transition-all group"
               >
                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white transition-all">
                   <FileText size={18} />
@@ -248,7 +248,7 @@ export default function ProviderEarnings() {
 
           <SectionCard role="provider" title="Payout Details">
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-[var(--color-pv-track-bg)] border border-slate-100">
+              <div className="p-4 rounded-[var(--sq-sm)] bg-[var(--color-pv-track-bg)] border border-slate-100">
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Last payout</div>
                 <div className="text-[18px] font-bold text-slate-900">₹0.00</div>
               </div>

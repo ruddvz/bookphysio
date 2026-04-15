@@ -116,7 +116,7 @@ export default function Navbar({
                   aria-expanded={browseOpen}
                   aria-controls="browse-dropdown"
                   className={cn(
-                    'flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150',
+                    'flex items-center gap-1.5 px-4 py-2.5 rounded-[var(--sq-xs)] text-[14px] font-medium transition-all duration-150',
                     browseOpen
                       ? 'bg-[#E6F4F3] text-[#00766C]'
                       : 'text-slate-600 hover:text-[#00766C] hover:bg-[#E6F4F3]/60'
@@ -133,7 +133,7 @@ export default function Navbar({
                 {browseOpen && (
                   <div
                     id="browse-dropdown"
-                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[540px] bg-white rounded-2xl border border-slate-200 shadow-2xl shadow-slate-900/10 p-5 animate-slide-down"
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[540px] bg-white rounded-[var(--sq-xl)] border border-slate-200 shadow-2xl shadow-slate-900/10 p-5 animate-slide-down"
                   >
                     <div className="flex items-center justify-between px-1 mb-4">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
@@ -151,10 +151,10 @@ export default function Navbar({
                             key={s.slug}
                             href={`/specialties/${s.slug}`}
                             onClick={() => setBrowseOpen(false)}
-                            className="group flex items-start gap-3 rounded-xl border border-transparent px-3.5 py-3 transition-all duration-150 hover:bg-slate-50 hover:border-slate-200"
+                            className="group flex items-start gap-3 rounded-[var(--sq-sm)] border border-transparent px-3.5 py-3 transition-all duration-150 hover:bg-slate-50 hover:border-slate-200"
                           >
                             <div className={cn(
-                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors',
+                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--sq-xs)] transition-colors',
                               s.tint.bg, s.tint.text,
                             )}>
                               <Icon size={18} />
@@ -175,7 +175,7 @@ export default function Navbar({
                       <Link
                         href={searchHref}
                         onClick={() => setBrowseOpen(false)}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-[#E6F4F3] transition-all group"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-[var(--sq-sm)] bg-slate-50 hover:bg-[#E6F4F3] transition-all group"
                       >
                         <span className="text-[13px] font-semibold text-slate-600 group-hover:text-[#00766C]">
                           Browse all physiotherapists
@@ -192,7 +192,7 @@ export default function Navbar({
                 <Link
                   key={label}
                   href={href === '/how-it-works' ? howItWorksHref : href}
-                  className="px-4 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60 transition-all duration-150"
+                  className="px-4 py-2.5 rounded-[var(--sq-xs)] text-[14px] font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50/60 transition-all duration-150"
                 >
                   {label}
                 </Link>
@@ -223,7 +223,7 @@ export default function Navbar({
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl border border-indigo-100 bg-white text-slate-600 hover:text-indigo-700 transition-colors"
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-[var(--sq-sm)] border border-indigo-100 bg-white text-slate-600 hover:text-indigo-700 transition-colors"
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
             >
@@ -286,11 +286,11 @@ export default function Navbar({
                     href={`/specialties/${s.slug}`}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'group flex items-center gap-3 rounded-2xl border bg-white/65 backdrop-blur-sm px-3.5 py-3 transition-all duration-150 hover:bg-white/90 hover:shadow-sm',
+                      'group flex items-center gap-3 rounded-[var(--sq-lg)] border bg-white/65 backdrop-blur-sm px-3.5 py-3 transition-all duration-150 hover:bg-white/90 hover:shadow-sm',
                       s.tint.border,
                     )}
                   >
-                    <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-xl', s.tint.bg, s.tint.text)}>
+                    <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--sq-sm)]', s.tint.bg, s.tint.text)}>
                       <Icon size={16} />
                     </div>
                     <span className="text-[13px] font-semibold text-slate-700 group-hover:text-[#00766C] transition-colors leading-tight">
@@ -305,7 +305,7 @@ export default function Navbar({
             <Link
               href={searchHref}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center justify-between px-4 py-3 mb-4 rounded-2xl bg-white/50 border border-[#00766C]/20 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-[#00766C] transition-all group"
+              className="flex items-center justify-between px-4 py-3 mb-4 rounded-[var(--sq-lg)] bg-white/50 border border-[#00766C]/20 text-[13px] font-semibold text-slate-600 hover:bg-white/80 hover:text-[#00766C] transition-all group"
             >
               Browse all physiotherapists
               <ArrowRight size={14} className="text-slate-400 group-hover:text-[#00766C] group-hover:translate-x-0.5 transition-all" />
@@ -318,14 +318,14 @@ export default function Navbar({
               <Link
                 href={howItWorksHref}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
+                className="flex items-center gap-3 px-4 py-3 rounded-[var(--sq-lg)] text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
               >
                 How it works
               </Link>
               <Link
                 href="/doctor-signup"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
+                className="flex items-center gap-3 px-4 py-3 rounded-[var(--sq-lg)] text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
               >
                 <Stethoscope size={16} className="text-indigo-400" />
                 For providers
@@ -338,7 +338,7 @@ export default function Navbar({
             <Link
               href={signupHref}
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-[var(--sq-lg)] text-white text-[15px] font-bold active:scale-[0.98] transition-transform"
               style={{
                 background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
                 boxShadow: '0 4px 24px rgba(139,155,216,0.40)',
@@ -350,7 +350,7 @@ export default function Navbar({
             <Link
               href={loginHref}
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-indigo-200 bg-white/60 text-[15px] font-bold text-slate-700 active:scale-[0.98] transition-transform"
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-[var(--sq-lg)] border border-indigo-200 bg-white/60 text-[15px] font-bold text-slate-700 active:scale-[0.98] transition-transform"
             >
               Sign in
               <ArrowRight size={16} />

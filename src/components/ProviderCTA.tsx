@@ -28,7 +28,7 @@ export default function ProviderCTA() {
           <div className="order-2 lg:order-1">
             <div className="relative group">
               {/* Glow ring */}
-              <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+              <div className="absolute -inset-px rounded-[var(--sq-lg)] bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
 
               {/* Female physio — floating above dashboard, desktop only */}
               <div className="hidden lg:block absolute -top-20 right-4 z-10 pointer-events-none select-none">
@@ -42,7 +42,7 @@ export default function ProviderCTA() {
                 />
               </div>
 
-              <div className="relative bg-slate-900 rounded-2xl border border-white/8 overflow-hidden shadow-2xl">
+              <div className="relative bg-slate-900 rounded-[var(--sq-lg)] border border-white/8 overflow-hidden shadow-2xl">
                 {/* Mock header */}
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-white/5">
                   <span className="w-3 h-3 rounded-full bg-red-500/40" />
@@ -59,7 +59,7 @@ export default function ProviderCTA() {
                       { val: '—', label: 'Rating' },
                       { val: '—', label: 'Month' },
                     ].map(({ val, label }) => (
-                      <div key={label} className="bg-white/5 rounded-xl p-4 border border-white/5">
+                      <div key={label} className="bg-white/5 rounded-[var(--sq-sm)] p-4 border border-white/5">
                         <div className="text-white font-bold text-[18px] leading-none">{val}</div>
                         <div className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest mt-1">{label}</div>
                       </div>
@@ -67,7 +67,7 @@ export default function ProviderCTA() {
                   </div>
 
                   {/* Today's schedule */}
-                  <div className="bg-white/3 rounded-xl border border-white/5 p-4 space-y-3">
+                  <div className="bg-white/3 rounded-[var(--sq-sm)] border border-white/5 p-4 space-y-3">
                     <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Today&apos;s Schedule</div>
                     {mockAppts.map(appt => (
                       <div key={appt.time} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
@@ -83,7 +83,7 @@ export default function ProviderCTA() {
                   </div>
 
                   {/* Growth badge */}
-                  <div className="flex items-center justify-between px-4 py-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+                  <div className="flex items-center justify-between px-4 py-3 bg-indigo-500/10 rounded-[var(--sq-sm)] border border-indigo-500/20">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
                       <span className="text-indigo-400 text-[12px] font-bold">Patient growth this month</span>
@@ -115,7 +115,7 @@ export default function ProviderCTA() {
             <div className="space-y-4">
               {bullets.map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                  <div className="w-9 h-9 rounded-[var(--sq-sm)] bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
                     <Icon size={16} />
                   </div>
                   <p className="text-slate-300 text-[15px] leading-relaxed">{text}</p>
@@ -126,7 +126,7 @@ export default function ProviderCTA() {
             <div className="flex items-center gap-3 pt-2">
               <Link
                 href="/doctor-signup"
-                className="flex items-center gap-2 px-7 py-4 bg-indigo-600 text-white rounded-xl font-bold text-[15px] hover:bg-indigo-500 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/20 group"
+                className="flex items-center gap-2 px-7 py-4 bg-indigo-600 text-white rounded-[var(--sq-sm)] font-bold text-[15px] hover:bg-indigo-500 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-500/20 group"
               >
                 List your practice
                 <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

@@ -91,18 +91,18 @@ export default function AdminAnalytics() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
-            <button type="button" className="px-4 py-2 text-[13px] font-semibold text-[var(--color-ad-primary)] bg-white rounded-lg shadow-sm">Real-time</button>
-            <button type="button" className="px-4 py-2 text-[13px] font-medium text-slate-500 hover:text-slate-700 transition-colors rounded-lg">Historical</button>
+          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-[var(--sq-sm)]">
+            <button type="button" className="px-4 py-2 text-[13px] font-semibold text-[var(--color-ad-primary)] bg-white rounded-[var(--sq-xs)] shadow-sm">Real-time</button>
+            <button type="button" className="px-4 py-2 text-[13px] font-medium text-slate-500 hover:text-slate-700 transition-colors rounded-[var(--sq-xs)]">Historical</button>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" title="Filter" aria-label="Filter" className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:shadow-md transition-all">
+            <button type="button" title="Filter" aria-label="Filter" className="p-2.5 rounded-[var(--sq-sm)] border border-slate-200 text-slate-600 hover:bg-white hover:shadow-md transition-all">
               <Filter size={16} />
             </button>
-            <button type="button" title="Download" aria-label="Download" className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:shadow-md transition-all">
+            <button type="button" title="Download" aria-label="Download" className="p-2.5 rounded-[var(--sq-sm)] border border-slate-200 text-slate-600 hover:bg-white hover:shadow-md transition-all">
               <Download size={16} />
             </button>
-            <button type="button" title="Share" aria-label="Share" className="p-2.5 rounded-xl bg-[var(--color-ad-primary)] text-white hover:bg-[var(--color-ad-primary-hover)] transition-all">
+            <button type="button" title="Share" aria-label="Share" className="p-2.5 rounded-[var(--sq-sm)] bg-[var(--color-ad-primary)] text-white hover:bg-[var(--color-ad-primary-hover)] transition-all">
               <Share2 size={16} />
             </button>
           </div>
@@ -113,15 +113,15 @@ export default function AdminAnalytics() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 h-36 animate-pulse" />
+            <div key={i} className="bg-white p-6 rounded-[var(--sq-lg)] border border-slate-200 h-36 animate-pulse" />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {kpis.map((stat) => (
-            <div key={stat.label} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+            <div key={stat.label} className="bg-white p-6 rounded-[var(--sq-lg)] border border-slate-200 shadow-sm hover:shadow-md transition-all group">
               <div className="flex items-center justify-between mb-4">
-                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', stat.bg, stat.color)}>
+                <div className={cn('w-10 h-10 rounded-[var(--sq-sm)] flex items-center justify-center', stat.bg, stat.color)}>
                   <stat.icon size={20} />
                 </div>
               </div>
@@ -136,7 +136,7 @@ export default function AdminAnalytics() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {/* Revenue Pulse */}
-        <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 min-h-[480px] flex flex-col">
+        <div className="xl:col-span-2 bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm p-6 md:p-8 min-h-[480px] flex flex-col">
           <div className="flex items-center justify-between mb-8">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -157,7 +157,7 @@ export default function AdminAnalytics() {
               </div>
               {isLoading && <Loader2 size={16} className="animate-spin text-slate-400" />}
               <div className="relative">
-                <select aria-label="Time period" className="appearance-none pl-3 pr-8 py-2 rounded-lg border border-slate-200 bg-slate-50 text-[12px] font-semibold text-slate-700 cursor-pointer outline-none hover:bg-white transition-all">
+                <select aria-label="Time period" className="appearance-none pl-3 pr-8 py-2 rounded-[var(--sq-xs)] border border-slate-200 bg-slate-50 text-[12px] font-semibold text-slate-700 cursor-pointer outline-none hover:bg-white transition-all">
                   <option>Monthly</option>
                   <option>Quarterly</option>
                   <option>Yearly</option>
@@ -224,7 +224,7 @@ export default function AdminAnalytics() {
         </div>
 
         {/* Acquisition Mix */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col">
+        <div className="bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col">
           <h2 className="text-[18px] font-bold text-slate-900 tracking-tight mb-6">Acquisition</h2>
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center py-8">
@@ -236,10 +236,10 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Geographic Insights */}
-      <div className="bg-slate-900 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+      <div className="bg-slate-900 rounded-[var(--sq-lg)] p-8 md:p-10 text-white relative overflow-hidden">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg border border-white/10 text-emerald-400 mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-[var(--sq-xs)] border border-white/10 text-emerald-400 mb-6">
               <MapPin size={14} />
               <span className="text-[11px] font-bold uppercase tracking-wider">Regional Density</span>
             </div>
@@ -260,7 +260,7 @@ export default function AdminAnalytics() {
                  {Array.from({ length: 16 }).map((_, i) => (
                    <div
                     key={i}
-                    className="bg-white/5 rounded-lg border border-white/10 hover:bg-emerald-500/20 transition-all cursor-crosshair"
+                    className="bg-white/5 rounded-[var(--sq-xs)] border border-white/10 hover:bg-emerald-500/20 transition-all cursor-crosshair"
                     style={{ opacity: GEO_GRID_CELL_OPACITIES[i % GEO_GRID_CELL_OPACITIES.length] }}
                    />
                  ))}

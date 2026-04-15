@@ -119,14 +119,14 @@ export default function AdminUsers() {
                      <input
                        type="text"
                        placeholder="Search records..."
-                       className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900/10 transition-all outline-none"
+                       className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-[var(--sq-lg)] text-[14px] text-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900/10 transition-all outline-none"
                      />
                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
                   </div>
                </div>
 
                {actionMessage && (
-                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl text-[13px] font-bold text-slate-600 flex items-center gap-3">
+                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-[var(--sq-sm)] text-[13px] font-bold text-slate-600 flex items-center gap-3">
                    <ShieldCheck size={16} className="text-slate-400" />
                    {actionMessage}
                  </div>
@@ -136,7 +136,7 @@ export default function AdminUsers() {
                  <ListRow
                    role="admin"
                    icon={
-                     <div className="w-11 h-11 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-sm font-black border border-slate-800">
+                     <div className="w-11 h-11 rounded-[var(--sq-lg)] bg-slate-900 text-white flex items-center justify-center text-sm font-black border border-slate-800">
                        {currentRow.initials}
                      </div>
                    }
@@ -170,7 +170,7 @@ export default function AdminUsers() {
              <div className="space-y-3">
                 <button
                   onClick={() => setActionMessage('System audit logs exported.')}
-                  className="w-full flex items-center gap-3 p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-all font-bold text-[14px] text-slate-700"
+                  className="w-full flex items-center gap-3 p-4 rounded-[var(--sq-sm)] border border-slate-100 hover:bg-slate-50 transition-all font-bold text-[14px] text-slate-700"
                 >
                   <ShieldCheck size={18} className="text-slate-400" />
                   Audit Logs

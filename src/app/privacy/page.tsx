@@ -68,7 +68,7 @@ export default function PrivacyPage() {
                       <li key={s.id}>
                         <a
                           href={`#${s.id}`}
-                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
+                          className="block rounded-[var(--sq-sm)] px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
                         >
                           {s.label}
                         </a>
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
@@ -118,37 +118,37 @@ export default function PrivacyPage() {
                     We try to collect only what is needed to deliver a booking and support you after the session. The main categories are listed below.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Account details</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         Name, mobile number, optional email, age band and gender, and your login history.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Booking details</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         Reason for visit, visit type (clinic or home), selected provider, session date, address for home visits, and booking notes you write.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Payment details</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         Razorpay transaction identifiers, amount, GST details on invoices, and refund status. We do not store your full card number or UPI PIN.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Provider profile data</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         For physiotherapists: IAP or State Council registration number, qualifications, clinic address, consultation fees and service areas.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Device and usage data</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         IP address, browser type, device identifiers, referring URL, pages viewed, and basic error logs, used for safety and debugging.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                    <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                       <h4 className="text-[14px] font-semibold text-[#1A1C29]">Support communications</h4>
                       <p className="mt-1.5 text-[13px] text-slate-600 leading-relaxed">
                         Messages and attachments you send to our support team, and our replies.
@@ -242,7 +242,7 @@ export default function PrivacyPage() {
                   <h2 className="text-[22px] lg:text-[24px] font-bold text-[#1A1C29] tracking-tight mb-4">
                     6. Security measures
                   </h2>
-                  <div className="rounded-2xl bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                  <div className="rounded-[var(--sq-lg)] bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                     <Lock className="w-6 h-6 text-[#FF6B35] mb-3" />
                     <p className="text-[14px] lg:text-[15px] leading-relaxed text-white/85">
                       We use TLS encryption for data in transit, row-level access controls on our database, signed session cookies, rate limiting on sensitive endpoints and strict secret management. Payment card details are handled entirely by Razorpay and never touch our servers.{' '}
@@ -313,7 +313,7 @@ export default function PrivacyPage() {
                   </p>
                 </section>
 
-                <section id="contact" className="scroll-mt-28 rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <section id="contact" className="scroll-mt-28 rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="flex flex-col md:flex-row gap-5 items-start text-left">
                     <div className="w-12 h-12 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center shrink-0">
                       <Sparkles className="w-6 h-6" />

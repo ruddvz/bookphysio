@@ -36,8 +36,8 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
                ))}
             </div>
             <div className="flex gap-2">
-               <button onClick={prev} aria-label="Previous image" className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-all"><ChevronLeft size={20} /></button>
-               <button onClick={next} aria-label="Next image" className="w-10 h-10 rounded-xl bg-bp-surface border border-bp-border flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
+               <button onClick={prev} aria-label="Previous image" className="w-10 h-10 rounded-[var(--sq-sm)] bg-bp-surface border border-bp-border flex items-center justify-center text-bp-body/40 hover:text-bp-accent transition-all"><ChevronLeft size={20} /></button>
+               <button onClick={next} aria-label="Next image" className="w-10 h-10 rounded-[var(--sq-sm)] bg-bp-surface border border-bp-border flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-lg active:scale-95"><ChevronRight size={20} /></button>
             </div>
          </div>
       </div>
@@ -60,17 +60,17 @@ export default function ClinicGallery({ images }: ClinicGalleryProps) {
          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
          
          <div className="absolute bottom-10 left-10 flex items-center gap-4">
-            <div className="px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl flex items-center gap-3 text-white">
+            <div className="px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 rounded-[var(--sq-lg)] flex items-center gap-3 text-white">
                <ImageIcon size={18} />
                <span className="text-[13px] font-bold uppercase tracking-widest">{index + 1} / {galleryImages.length} View</span>
             </div>
-            <button aria-label="View fullscreen" className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
+            <button aria-label="View fullscreen" className="w-12 h-12 bg-white rounded-[var(--sq-lg)] flex items-center justify-center text-bp-primary hover:bg-bp-accent hover:text-white transition-all shadow-xl active:scale-90">
                <Maximize2 size={20} />
             </button>
          </div>
          
          {/* Live Badge */}
-         <div className="absolute top-10 right-10 px-4 py-2 bg-emerald-500 rounded-xl text-white text-[11px] font-bold uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">
+         <div className="absolute top-10 right-10 px-4 py-2 bg-emerald-500 rounded-[var(--sq-sm)] text-white text-[11px] font-bold uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">
             Verified Setting
          </div>
       </div>

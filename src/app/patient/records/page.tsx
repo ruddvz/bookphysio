@@ -28,13 +28,13 @@ function formatDate(iso: string) {
 function RecordsSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
-      <Skeleton className="h-10 w-64 rounded-xl bg-slate-100" />
+      <Skeleton className="h-10 w-64 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-28 rounded-2xl bg-slate-100" />
+          <Skeleton key={i} className="h-28 rounded-[var(--sq-lg)] bg-slate-100" />
         ))}
       </div>
-      <Skeleton className="h-96 rounded-2xl bg-slate-100" />
+      <Skeleton className="h-96 rounded-[var(--sq-lg)] bg-slate-100" />
     </div>
   )
 }
@@ -175,7 +175,7 @@ export default function PatientRecordsPage() {
         <div className="xl:w-[340px] xl:shrink-0">
           <SectionCard role="patient" title="Care tips">
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex gap-3">
+              <div className="p-4 rounded-[var(--sq-sm)] bg-emerald-50/50 border border-emerald-100 flex gap-3">
                 <Activity className="h-5 w-5 text-emerald-600 shrink-0" />
                 <div className="text-[13px] text-slate-600 leading-relaxed">
                   Consistency is key for recovery. Follow your prescribed exercises daily for best results.

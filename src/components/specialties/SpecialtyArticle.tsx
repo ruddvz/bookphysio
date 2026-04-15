@@ -152,7 +152,7 @@ export default function SpecialtyArticle({
 
             {/* Overview */}
             <div className="mb-6">
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Overview</h2>
                 <h3 className="text-[22px] lg:text-[24px] font-bold text-black mb-4">What this care covers</h3>
                 <p className="text-[15px] lg:text-[16px] leading-relaxed text-[#333333]">
@@ -164,7 +164,7 @@ export default function SpecialtyArticle({
             {/* ── Conditions — rich cards with links (Phase 2) or plain list fallback ── */}
             {richConditions && richConditions.length > 0 ? (
               <div className="mb-6">
-                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                   <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
@@ -188,7 +188,7 @@ export default function SpecialtyArticle({
               </div>
             ) : data.conditions && data.conditions.length > 0 ? (
               <div className="mb-6">
-                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                   <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
                   <ul className="space-y-3">
@@ -228,7 +228,7 @@ export default function SpecialtyArticle({
             <div className="grid lg:grid-cols-2 gap-6 mb-6">
 
               {/* Treatment approaches */}
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Approach</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">How treatment is delivered</h3>
                 <ul className="space-y-3">
@@ -287,14 +287,14 @@ export default function SpecialtyArticle({
 
             {/* Benefits */}
             <div className="mb-6">
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+              <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Patient benefits</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">What better recovery looks like</h3>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {data.benefits.map((benefit) => (
                     <div
                       key={benefit}
-                      className="flex items-start gap-3 rounded-xl p-4"
+                      className="flex items-start gap-3 rounded-[var(--sq-sm)] p-4"
                       style={{ backgroundColor: `${MUSTARD}22` }}
                     >
                       <div
@@ -310,7 +310,7 @@ export default function SpecialtyArticle({
 
             {/* CTA card */}
             <div
-              className="rounded-2xl p-10 text-center"
+              className="rounded-[var(--sq-lg)] p-10 text-center"
               style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}
             >
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/15 mb-5">

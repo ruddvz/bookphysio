@@ -21,9 +21,9 @@ function FeaturedSkeleton() {
   return (
     <div
       data-testid="featured-skeleton"
-      className="animate-pulse bg-white rounded-2xl border border-bp-border p-4 flex items-center gap-3"
+      className="animate-pulse bg-white rounded-[var(--sq-lg)] border border-bp-border p-4 flex items-center gap-3"
     >
-      <div className="w-[52px] h-[52px] rounded-xl bg-bp-border/40 shrink-0" />
+      <div className="w-[52px] h-[52px] rounded-[var(--sq-sm)] bg-bp-border/40 shrink-0" />
       <div className="flex-1 space-y-2">
         <div className="h-3 bg-bp-border/40 rounded-full w-3/4" />
         <div className="h-2.5 bg-bp-border/30 rounded-full w-1/2" />
@@ -45,11 +45,11 @@ function FeaturedCard({ provider }: FeaturedCardProps) {
   return (
     <Link
       href={`/doctor/${provider.id}`}
-      className="bg-white rounded-2xl border border-bp-border p-4 flex items-center gap-3 hover:border-bp-accent/30 hover:shadow-md transition-all duration-200 group"
+      className="bg-white rounded-[var(--sq-lg)] border border-bp-border p-4 flex items-center gap-3 hover:border-bp-accent/30 hover:shadow-md transition-all duration-200 group"
     >
       <div className="relative w-[52px] h-[52px] shrink-0">
         {provider.avatar_url ? (
-          <div className="relative w-[52px] h-[52px] rounded-xl overflow-hidden">
+          <div className="relative w-[52px] h-[52px] rounded-[var(--sq-sm)] overflow-hidden">
             <Image
               src={provider.avatar_url}
               alt={nameWithTitle}
@@ -59,7 +59,7 @@ function FeaturedCard({ provider }: FeaturedCardProps) {
             />
           </div>
         ) : (
-          <div className="w-[52px] h-[52px] rounded-xl bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-bold">
+          <div className="w-[52px] h-[52px] rounded-[var(--sq-sm)] bg-gradient-to-br from-bp-accent to-bp-primary flex items-center justify-center text-white text-[18px] font-bold">
             {initials}
           </div>
         )}

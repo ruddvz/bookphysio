@@ -41,10 +41,10 @@ const STATUS_LABELS: Record<string, string> = {
 function AppointmentsSkeleton() {
   return (
     <div className="space-y-6">
-      <Skeleton className="h-10 w-48 rounded-xl bg-slate-100" />
+      <Skeleton className="h-10 w-48 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid gap-4">
         {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-20 rounded-2xl bg-slate-100" />
+          <Skeleton key={i} className="h-20 rounded-[var(--sq-lg)] bg-slate-100" />
         ))}
       </div>
     </div>
@@ -129,7 +129,7 @@ function PatientAppointmentsContent() {
           {loading ? (
             <div className="space-y-4 py-4">
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-xl bg-slate-50" />
+                <Skeleton key={i} className="h-16 w-full rounded-[var(--sq-sm)] bg-slate-50" />
               ))}
             </div>
           ) : error ? (

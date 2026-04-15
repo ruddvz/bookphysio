@@ -127,7 +127,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                   <div key={s.n} className="flex items-center">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-xl text-[15px] font-bold transition-all duration-700 border-2",
+                        "flex h-10 w-10 items-center justify-center rounded-[var(--sq-sm)] text-[15px] font-bold transition-all duration-700 border-2",
                         step === s.n ? "bg-bp-accent text-white border-bp-accent shadow-[0_12px_24px_-8px_rgba(0,118,108,0.4)] scale-110" :
                         step > s.n ? "bg-bp-accent text-white border-bp-accent" :
                         "bg-white text-gray-200 border-bp-border"
@@ -153,7 +153,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                 ))}
             </div>
             
-            <div className="flex items-center gap-3 px-4 py-2 bg-bp-surface rounded-xl border border-bp-border">
+            <div className="flex items-center gap-3 px-4 py-2 bg-bp-surface rounded-[var(--sq-sm)] border border-bp-border">
                <ShieldCheck size={16} className="text-emerald-500" />
               <span className="text-[11px] font-bold text-bp-body/40 uppercase tracking-widest leading-none">{t.protectedFlow}</span>
             </div>
@@ -168,7 +168,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
             <div className="mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
               <button 
                 onClick={() => setStep(step === 2 ? 1 : 2)}
-                className="group flex items-center gap-3 px-6 py-3 bg-white border border-bp-border rounded-2xl text-[14px] font-bold text-bp-body/40 hover:text-bp-accent hover:border-bp-accent/20 shadow-sm transition-all active:scale-95"
+                className="group flex items-center gap-3 px-6 py-3 bg-white border border-bp-border rounded-[var(--sq-lg)] text-[14px] font-bold text-bp-body/40 hover:text-bp-accent hover:border-bp-accent/20 shadow-sm transition-all active:scale-95"
               >
                 <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                 {t.returnToPrevious}
@@ -223,7 +223,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
             {/* RIGHT COLUMN: Booking Summary (Ultra Premium) */}
             {step < 3 && (
               <aside className="sticky top-[160px] animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
-                <div className="bg-white rounded-2xl border border-bp-border shadow-[0_1px_3px_rgba(15,23,42,0.04)] overflow-hidden relative group/sidebar">
+                <div className="bg-white rounded-[var(--sq-lg)] border border-bp-border shadow-[0_1px_3px_rgba(15,23,42,0.04)] overflow-hidden relative group/sidebar">
                   
                   {/* Backdrop Glow */}
                   <div className="absolute -top-32 -right-32 w-64 h-64 bg-bp-accent/10 rounded-full blur-[100px] -z-0 group-hover:scale-110 transition-transform duration-1000"></div>
@@ -238,22 +238,22 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                   
                   <div className="p-8 space-y-10 relative z-10">
                     {/* Doctor Info (High Fidelity) */}
-                    <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-2xl border border-bp-border">
+                    <div className="flex gap-5 items-center bg-bp-surface/50 p-6 rounded-[var(--sq-lg)] border border-bp-border">
                        <div className="relative">
                          {doctor.avatar_url ? (
-                           <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
+                           <Image src={doctor.avatar_url} width={80} height={80} className="w-20 h-20 rounded-[var(--sq-sm)] object-cover border-4 border-white shadow-xl shadow-bp-primary/5 transition-transform group-hover/sidebar:scale-105" alt="" />
                          ) : (
-                           <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-bold text-2xl border-4 border-white shadow-xl">
+                           <div className="w-20 h-20 rounded-[var(--sq-sm)] bg-gradient-to-br from-bp-accent/10 to-bp-accent/20 text-bp-accent flex items-center justify-center font-bold text-2xl border-4 border-white shadow-xl">
                              {doctor.name[0]}
                            </div>
                          )}
                          <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-lg border border-bp-border/50">
-                            <div className="w-6 h-6 bg-[#059669] rounded-lg flex items-center justify-center text-white"><Check size={14} strokeWidth={4} /></div>
+                            <div className="w-6 h-6 bg-[#059669] rounded-[var(--sq-xs)] flex items-center justify-center text-white"><Check size={14} strokeWidth={4} /></div>
                          </div>
                        </div>
                        <div>
                          <p className="text-[17px] font-bold text-bp-primary leading-none mb-2">{doctor.name}</p>
-                         <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-bp-accent/20 rounded-lg w-fit">
+                         <div className="flex items-center gap-1.5 px-3 py-1 bg-white border border-bp-accent/20 rounded-[var(--sq-xs)] w-fit">
                             <Award size={12} className="text-bp-accent" strokeWidth={3} />
                             <p className="text-[10px] font-bold text-bp-accent uppercase tracking-widest">{doctor.specialty.split(' ')[0]} Expert</p>
                          </div>
@@ -263,7 +263,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                     {/* Schedule (Luxury Matrix) */}
                     <div className="grid grid-cols-1 gap-6 px-2">
                        <div className="flex items-center gap-5 group/item">
-                          <div className="w-12 h-12 bg-bp-surface rounded-2xl flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
+                          <div className="w-12 h-12 bg-bp-surface rounded-[var(--sq-lg)] flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
                              <Calendar size={20} />
                           </div>
                           <div>
@@ -273,20 +273,20 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                        </div>
                        
                        <div className="flex items-center gap-5 group/item">
-                          <div className="w-12 h-12 bg-bp-surface rounded-2xl flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
+                          <div className="w-12 h-12 bg-bp-surface rounded-[var(--sq-lg)] flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
                              <Clock size={20} />
                           </div>
                           <div>
                             <p className="text-[10px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2">Duration</p>
                             <div className="flex items-center gap-2">
                                <p className="text-[16px] font-bold text-bp-primary tracking-tight">{time}</p>
-                               <span className="text-[11px] font-bold text-[#059669] bg-emerald-50 px-2.5 py-1 rounded-lg">45 MIN</span>
+                               <span className="text-[11px] font-bold text-[#059669] bg-emerald-50 px-2.5 py-1 rounded-[var(--sq-xs)]">45 MIN</span>
                             </div>
                           </div>
                        </div>
 
                        <div className="flex items-center gap-5 group/item">
-                          <div className="w-12 h-12 bg-bp-surface rounded-2xl flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
+                          <div className="w-12 h-12 bg-bp-surface rounded-[var(--sq-lg)] flex items-center justify-center text-bp-body/30 group-hover/item:text-bp-accent group-hover/item:bg-bp-accent/10 transition-all duration-300">
                              <MapPin size={20} />
                           </div>
                           <div>
@@ -301,7 +301,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                       <div className="pt-10 border-t border-bp-border animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="space-y-4">
                           <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 bg-bp-accent/10 rounded-2xl flex items-center justify-center text-bp-accent">
+                            <div className="w-12 h-12 bg-bp-accent/10 rounded-[var(--sq-lg)] flex items-center justify-center text-bp-accent">
                                <User size={20} strokeWidth={3} />
                             </div>
                             <div>
@@ -311,7 +311,7 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                           </div>
                           {visitType === 'home_visit' && patient.homeVisitAddress ? (
                             <div className="flex items-start gap-5">
-                              <div className="w-12 h-12 bg-bp-secondary/10 rounded-2xl flex items-center justify-center text-bp-secondary">
+                              <div className="w-12 h-12 bg-bp-secondary/10 rounded-[var(--sq-lg)] flex items-center justify-center text-bp-secondary">
                                  <MapPin size={20} strokeWidth={3} />
                               </div>
                               <div>
@@ -336,9 +336,9 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
                        </div>
                        <div className="flex justify-between items-center mb-8 px-2">
                           <span className="text-[14px] font-bold text-bp-body/30 uppercase tracking-widest">Platform Fee</span>
-                          <span className="text-[13px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">WAIVED</span>
+                          <span className="text-[13px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-[var(--sq-xs)]">WAIVED</span>
                        </div>
-                       <div className="flex justify-between items-center py-6 px-8 bg-bp-primary rounded-xl shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
+                       <div className="flex justify-between items-center py-6 px-8 bg-bp-primary rounded-[var(--sq-sm)] shadow-2xl shadow-gray-900/10 transform hover:scale-[1.02] transition-transform">
                           <span className="text-[14px] font-bold text-white/40 uppercase tracking-widest">{amountLabel}</span>
                           <span className="text-[26px] font-bold text-white tracking-tighter">₹{(doctor.fee + Math.round(doctor.fee * 0.18)).toLocaleString('en-IN')}</span>
                        </div>

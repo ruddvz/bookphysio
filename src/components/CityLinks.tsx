@@ -48,10 +48,10 @@ export default function CityLinks() {
         {/* City grid — all SEO links always in DOM */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {CITIES.map(city => (
-            <div key={city.name} className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-[#00766C]/30 hover:shadow-md transition-all duration-200">
+            <div key={city.name} className="bg-white rounded-[var(--sq-lg)] border border-slate-200 p-5 hover:border-[#00766C]/30 hover:shadow-md transition-all duration-200">
               {/* City header */}
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-[#E6F4F3] flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-[var(--sq-xs)] bg-[#E6F4F3] flex items-center justify-center shrink-0">
                   <MapPin size={13} className="text-[#00766C]" />
                 </div>
                 <Link

@@ -229,7 +229,7 @@ export function StepSuccess({
                     <Fingerprint size={16} className="text-bp-accent/30" />
                  </div>
                </div>
-              <div className="px-5 py-2 bg-emerald-50 text-[#059669] text-[12px] font-bold rounded-2xl uppercase tracking-[0.1em] border border-emerald-100/50 shadow-sm shadow-emerald-900/5 pulse">
+              <div className="px-5 py-2 bg-emerald-50 text-[#059669] text-[12px] font-bold rounded-[var(--sq-lg)] uppercase tracking-[0.1em] border border-emerald-100/50 shadow-sm shadow-emerald-900/5 pulse">
                 {statusLabel}
                </div>
             </div>
@@ -279,7 +279,7 @@ export function StepSuccess({
                </div>
                <div className="flex justify-between items-center bg-bp-surface/50 p-6 rounded-[32px] border border-bp-border mt-4">
                   <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-bp-body/40 border border-bp-border shadow-sm"><CreditCard size={20} /></div>
+                     <div className="w-12 h-12 bg-white rounded-[var(--sq-lg)] flex items-center justify-center text-bp-body/40 border border-bp-border shadow-sm"><CreditCard size={20} /></div>
                      <p className="text-[14px] font-bold text-bp-body/40 tracking-widest uppercase">{methodLabel[paymentMethod] ?? paymentMethod}</p>
                   </div>
                   <div className="text-right">
@@ -303,7 +303,7 @@ export function StepSuccess({
       <div className="grid grid-cols-2 gap-6 mb-10 text-[14px]">
          <button 
           onClick={handleAddToCalendar}
-          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-bold rounded-3xl hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
+          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-bold rounded-[var(--sq-xl)] hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
          >
            <span className="text-[10px] text-bp-body/30 uppercase tracking-widest leading-none mb-1">Stay Notified</span>
            <div className="flex items-center gap-2">
@@ -315,7 +315,7 @@ export function StepSuccess({
          <button
           type="button"
           onClick={handleDownloadReceipt}
-          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-bold rounded-3xl hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
+          className="h-20 flex flex-col items-center justify-center gap-1 bg-white border-2 border-bp-border text-bp-primary font-bold rounded-[var(--sq-xl)] hover:bg-[#FBFCFD] hover:border-bp-accent/20 active:scale-95 transition-all shadow-sm group/btn"
          >
             <span className="text-[10px] text-bp-body/30 uppercase tracking-widest leading-none mb-1">Proof Of Booking</span>
             <div className="flex items-center gap-2">
@@ -339,7 +339,7 @@ export function StepSuccess({
 
             <div className="space-y-6">
                <div className="flex gap-6">
-                  <div className="w-10 h-10 rounded-2xl bg-bp-accent flex items-center justify-center text-white shrink-0 font-bold text-[14px]">01</div>
+                  <div className="w-10 h-10 rounded-[var(--sq-lg)] bg-bp-accent flex items-center justify-center text-white shrink-0 font-bold text-[14px]">01</div>
                   <div>
                   <h4 className="text-[16px] font-bold text-white mb-1">Booking Recorded</h4>
                   <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">Your appointment details are now saved and available from the patient dashboard below.</p>
@@ -347,7 +347,7 @@ export function StepSuccess({
                </div>
                
                <div className="flex gap-6">
-                  <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-bold text-[14px]">02</div>
+                  <div className="w-10 h-10 rounded-[var(--sq-lg)] bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-bold text-[14px]">02</div>
                   <div>
                 <h4 className="text-[16px] font-bold text-white mb-1">{isPayAtClinic ? 'Payment on Arrival' : 'Prepare for Arrival'}</h4>
                 <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">{isPayAtClinic ? 'Please settle the consultation amount directly with the provider during the visit and keep any previous reports, scans, or prescriptions handy.' : 'Please arrive a few minutes early and keep any previous reports, scans, or prescriptions handy for the clinician.'}</p>
@@ -355,7 +355,7 @@ export function StepSuccess({
                </div>
 
                <div className="flex gap-6">
-                  <div className="w-10 h-10 rounded-2xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-bold text-[14px]">03</div>
+                  <div className="w-10 h-10 rounded-[var(--sq-lg)] bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-white shrink-0 font-bold text-[14px]">03</div>
                   <div>
                     <h4 className="text-[16px] font-bold text-white mb-1">Session Dashboard</h4>
                   <p className="text-[14px] font-bold text-bp-body/40 leading-relaxed">Use your patient portal anytime to review appointment details, reschedule within policy, or download your receipt.</p>

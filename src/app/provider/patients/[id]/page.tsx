@@ -141,7 +141,7 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
       />
 
       {visitError ? (
-        <div className="rounded-xl border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
+        <div className="rounded-[var(--sq-sm)] border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
           <p className="text-[13px] font-bold">{visitError}</p>
         </div>
       ) : null}
@@ -178,7 +178,7 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
       </div>
 
       <div className="space-y-6 lg:space-y-8">
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-2xl w-fit">
+        <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-[var(--sq-lg)] w-fit">
           {tabs.map((t) => {
             const Icon = t.icon
             const isActive = tab === t.id
@@ -187,7 +187,7 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={cn(
-                  "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all",
+                  "flex items-center gap-2 px-6 py-2.5 rounded-[var(--sq-sm)] text-[13px] font-bold transition-all",
                   isActive
                     ? "bg-white text-[var(--color-pv-primary)] shadow-sm"
                     : "text-slate-400 hover:text-slate-600"
@@ -227,7 +227,7 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
                              key={v.id}
                              onClick={() => setActiveVisitId(v.id)}
                              className={cn(
-                               "w-full text-left p-4 rounded-xl transition-all group",
+                               "w-full text-left p-4 rounded-[var(--sq-sm)] transition-all group",
                                isActive
                                  ? "bg-white border border-slate-200 shadow-sm text-[var(--color-pv-primary)]"
                                  : "hover:bg-white/50 text-slate-500"
@@ -331,7 +331,7 @@ function ProfileTab({ profileId, initialProfile }: { profileId: string, initialP
              <textarea
                 value={form[s.id as keyof typeof form]}
                 onChange={(e) => setForm(f => ({ ...f, [s.id]: e.target.value }))}
-                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all min-h-[120px] resize-none leading-relaxed"
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[var(--sq-lg)] text-[14px] font-bold text-slate-900 focus:bg-white focus:border-[var(--color-pv-primary)] outline-none transition-all min-h-[120px] resize-none leading-relaxed"
                 placeholder={s.placeholder}
              />
           </div>

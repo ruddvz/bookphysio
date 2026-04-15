@@ -43,7 +43,7 @@ export default function HindiTermsPage() {
                       <li key={section.id}>
                         <a
                           href={`#${section.id}`}
-                          className="block rounded-xl px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
+                          className="block rounded-[var(--sq-sm)] px-4 py-3 text-[14px] font-semibold text-[#1A1C29] border border-slate-200 bg-white hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/40 transition-colors"
                         >
                           {section.label}
                         </a>
@@ -52,7 +52,7 @@ export default function HindiTermsPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 lg:p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="w-11 h-11 rounded-full bg-[#E6F4F3] text-[#00766C] flex items-center justify-center">
                     <Scale className="w-5 h-5" />
                   </div>
@@ -85,7 +85,7 @@ export default function HindiTermsPage() {
                   <h2 className="text-[22px] lg:text-[24px] font-bold text-[#1A1C29] tracking-tight mb-4">
                     2. सेवा का विवरण
                   </h2>
-                  <div className="rounded-2xl bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] mb-4">
+                  <div className="rounded-[var(--sq-lg)] bg-[#00766C] text-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] mb-4">
                     <FileText className="w-6 h-6 text-[#FF6B35] mb-3" />
                     <p className="text-[14px] lg:text-[15px] leading-relaxed text-white/85">
                       BookPhysio मरीजों को फिजियोथेरेपिस्ट्स से जोड़ने वाला डिजिटल प्लेटफॉर्म है।{' '}
@@ -136,7 +136,7 @@ export default function HindiTermsPage() {
                   </p>
                 </section>
 
-                <section className="rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <section className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
                   <div className="flex flex-col md:flex-row gap-5 items-center md:items-start text-center md:text-left">
                     <div className="w-12 h-12 rounded-full bg-[#FEE9DD] text-[#FF6B35] flex items-center justify-center shrink-0">
                       <AlertCircle className="w-6 h-6" />

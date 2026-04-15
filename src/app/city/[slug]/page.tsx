@@ -143,7 +143,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               {citySignals.map(({ label, value, helper, icon: Icon, tint }) => (
                 <div
                   key={label}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
+                  className="rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
                 >
                   <div className={`flex h-11 w-11 items-center justify-center rounded-full ${tint}`}>
                     <Icon className="h-5 w-5" />
@@ -162,7 +162,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         {/* Listing */}
         <section className="py-12 lg:py-16">
           <div className="max-w-[1142px] mx-auto px-6 lg:px-10">
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_1px_3px_rgba(15,23,42,0.04)] p-12 lg:p-16 text-center">
+            <div className="bg-white border border-slate-200 rounded-[var(--sq-lg)] shadow-[0_1px_3px_rgba(15,23,42,0.04)] p-12 lg:p-16 text-center">
               <div className="w-14 h-14 rounded-full bg-[#E6F4F3] flex items-center justify-center mx-auto mb-4">
                 <Search className="w-6 h-6 text-[#00766C]" />
               </div>

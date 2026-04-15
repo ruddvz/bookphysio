@@ -158,7 +158,7 @@ export default function RescheduleModal({
         {step === 'select' && (
           <div className="flex-1 overflow-y-auto px-8 pb-8">
             {/* Current appointment info */}
-            <div className="p-4 bg-red-50 border border-red-100 rounded-2xl mb-6">
+            <div className="p-4 bg-red-50 border border-red-100 rounded-[var(--sq-lg)] mb-6">
               <p className="text-[12px] font-bold text-red-600/60 uppercase tracking-wider mb-1">Current Appointment</p>
               <p className="text-[15px] font-bold text-red-700 flex items-center gap-2">
                 <CalendarDays className="w-4 h-4" />
@@ -246,13 +246,13 @@ export default function RescheduleModal({
         {step === 'confirm' && selectedSlot && (
           <div className="flex-1 overflow-y-auto px-8 pb-8">
             <div className="space-y-4 mb-8">
-              <div className="p-4 bg-red-50 border border-red-100 rounded-2xl">
+              <div className="p-4 bg-red-50 border border-red-100 rounded-[var(--sq-lg)]">
                 <p className="text-[12px] font-bold text-red-600/60 uppercase tracking-wider mb-1">Old Time</p>
                 <p className="text-[15px] font-bold text-red-700 line-through">
                   {formatShortDate(currentSlotDate)} at {formatSlotTime(currentSlotDate)}
                 </p>
               </div>
-              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-[var(--sq-lg)]">
                 <p className="text-[12px] font-bold text-emerald-600/60 uppercase tracking-wider mb-1">New Time</p>
                 <p className="text-[15px] font-bold text-emerald-700 flex items-center gap-2">
                   <Check className="w-4 h-4" />
@@ -262,7 +262,7 @@ export default function RescheduleModal({
             </div>
 
             {rescheduleMut.isError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-2xl mb-4">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-[var(--sq-lg)] mb-4">
                 <p className="text-[14px] text-red-700 font-medium">{rescheduleMut.error.message}</p>
               </div>
             )}

@@ -74,11 +74,11 @@ export default function HealthSystems() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/search" className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] text-white rounded-xl font-semibold text-[14px] hover:bg-[#005A52] transition-colors group">
+              <Link href="/search" className="inline-flex items-center gap-2 px-6 py-3 bg-[#00766C] text-white rounded-[var(--sq-sm)] font-semibold text-[14px] hover:bg-[#005A52] transition-colors group">
                 Browse providers
                 <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <Link href="/how-it-works" className="inline-flex items-center gap-2 px-6 py-3 border border-white/15 text-slate-300 rounded-xl font-semibold text-[14px] hover:border-white/30 hover:text-white transition-colors">
+              <Link href="/how-it-works" className="inline-flex items-center gap-2 px-6 py-3 border border-white/15 text-slate-300 rounded-[var(--sq-sm)] font-semibold text-[14px] hover:border-white/30 hover:text-white transition-colors">
                 See how it works
               </Link>
             </div>
@@ -101,9 +101,9 @@ export default function HealthSystems() {
             {features.map(({ icon: Icon, title, desc, color, bg }) => (
               <div
                 key={title}
-                className="p-5 rounded-2xl border border-white/8 bg-white/5 hover:bg-white/8 hover:border-white/15 transition-all duration-200"
+                className="p-5 rounded-[var(--sq-lg)] border border-white/8 bg-white/5 hover:bg-white/8 hover:border-white/15 transition-all duration-200"
               >
-                <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-4`}>
+                <div className={`w-10 h-10 rounded-[var(--sq-sm)] ${bg} flex items-center justify-center mb-4`}>
                   <Icon size={18} className={color} />
                 </div>
                 <h3 className="text-white font-semibold text-[14px] mb-1.5">{title}</h3>

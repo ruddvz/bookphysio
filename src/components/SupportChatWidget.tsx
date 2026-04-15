@@ -129,7 +129,7 @@ export function SupportChatWidget() {
         <div
           role="dialog"
           aria-label="BookPhysio support chat"
-          className="fixed bottom-20 right-3 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-[var(--color-bp-border)] bg-white shadow-[0_25px_60px_-12px_rgba(0,0,0,0.25)] sm:right-5"
+          className="fixed bottom-20 right-3 z-50 flex w-[380px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-[var(--sq-lg)] border border-[var(--color-bp-border)] bg-white shadow-[0_25px_60px_-12px_rgba(0,0,0,0.25)] sm:right-5"
           style={{ maxHeight: 'min(600px, calc(100vh - 6rem))' }}
         >
           {/* Header */}
@@ -150,7 +150,7 @@ export function SupportChatWidget() {
               <Link
                 href="/patient/motio"
                 aria-label="Open full AI chat"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--sq-xs)] text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 title="Open full AI chat"
               >
                 <ExternalLink size={14} />
@@ -158,7 +158,7 @@ export function SupportChatWidget() {
               <button
                 type="button"
                 onClick={handleToggle}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[var(--sq-xs)] text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                 aria-label="Minimize chat"
               >
                 <Minimize2 size={14} />
@@ -196,7 +196,7 @@ export function SupportChatWidget() {
                   )}
                   <div
                     className={cn(
-                      'max-w-[80%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed',
+                      'max-w-[80%] rounded-[var(--sq-lg)] px-3.5 py-2.5 text-[13px] leading-relaxed',
                       isUser
                         ? 'rounded-br-sm bg-[var(--color-bp-primary)] text-white font-medium'
                         : 'rounded-bl-sm border border-[var(--color-bp-border-soft)] bg-white text-[var(--color-bp-body)] shadow-sm'
@@ -213,7 +213,7 @@ export function SupportChatWidget() {
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-bp-primary-light)] text-[var(--color-bp-primary)]">
                   <Stethoscope size={13} className="animate-pulse" />
                 </div>
-                <div className="rounded-2xl rounded-bl-sm border border-[var(--color-bp-border-soft)] bg-white px-3.5 py-3 shadow-sm">
+                <div className="rounded-[var(--sq-lg)] rounded-bl-sm border border-[var(--color-bp-border-soft)] bg-white px-3.5 py-3 shadow-sm">
                   <div className="flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)]" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--color-bp-primary)] [animation-delay:120ms]" />
@@ -240,7 +240,7 @@ export function SupportChatWidget() {
                         type="button"
                         onClick={() => handleQuickReply(`I have ${label.toLowerCase()}`)}
                         disabled={isLoading}
-                        className="flex items-center gap-2 rounded-xl border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3 py-2 text-[12px] font-medium text-[var(--color-bp-body)] transition-all hover:border-[var(--color-bp-primary-muted)] hover:bg-[var(--color-bp-primary-light)] hover:text-[var(--color-bp-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex items-center gap-2 rounded-[var(--sq-sm)] border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3 py-2 text-[12px] font-medium text-[var(--color-bp-body)] transition-all hover:border-[var(--color-bp-primary-muted)] hover:bg-[var(--color-bp-primary-light)] hover:text-[var(--color-bp-primary)] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <span>{emoji}</span>
                         <span className="truncate">{label}</span>
@@ -282,14 +282,14 @@ export function SupportChatWidget() {
               onChange={handleInputChange}
               placeholder={isHomePage ? 'Describe your condition…' : 'Ask a question…'}
               disabled={isLoading}
-              className="min-w-0 flex-1 rounded-xl border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3.5 py-2.5 text-[13px] text-[var(--color-bp-body)] outline-none placeholder:text-[var(--color-bp-muted)]/60 focus:border-[var(--color-bp-primary-muted)] focus:ring-1 focus:ring-[var(--color-bp-primary-muted)] transition-all"
+              className="min-w-0 flex-1 rounded-[var(--sq-sm)] border border-[var(--color-bp-border)] bg-[var(--color-bp-surface)] px-3.5 py-2.5 text-[13px] text-[var(--color-bp-body)] outline-none placeholder:text-[var(--color-bp-muted)]/60 focus:border-[var(--color-bp-primary-muted)] focus:ring-1 focus:ring-[var(--color-bp-primary-muted)] transition-all"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
               aria-label="Send message"
               className={cn(
-                'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all',
+                'flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--sq-sm)] transition-all',
                 input.trim() && !isLoading
                   ? 'bg-[var(--color-bp-primary)] text-white hover:bg-[var(--color-bp-primary-dark)] active:scale-95 shadow-sm'
                   : 'cursor-not-allowed bg-[var(--color-bp-border-soft)] text-[var(--color-bp-muted)]'
