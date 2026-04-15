@@ -36,6 +36,7 @@ export function CityCombobox({
 
   // Sync external value changes — reconstruct the full "City, State" label from
   // the bare city name so the input shows the selected label after parent re-renders.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!value) { setQuery(''); return }
     if (cityOnly) { setQuery(value); return }
