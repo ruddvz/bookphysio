@@ -1206,7 +1206,10 @@ const RESEND_COOLDOWN_SECONDS = 60
 type ResendStatus = 'idle' | 'loading' | 'sent' | 'error'
 
 function useResendConfirmation(email: string) {
-  const [resendStatus, setResendStatus] = useState<ResendStatus>('idle')
+  // Initialize to 'loading' immediately when email is present so the resend
+  // button is disabled before the first useEffect fires (avoids synchronous
+  // setState inside the effect, which triggers react-hooks/set-state-in-effect).
+  const [resendStatus, setResendStatus] = useState<ResendStatus>(() => email ? 'loading' : 'idle')
   const [resendError, setResendError] = useState('')
   const [countdown, setCountdown] = useState(0)
 
@@ -1219,12 +1222,11 @@ function useResendConfirmation(email: string) {
 
   // Auto-send on mount: admin.createUser() does not send confirmation emails,
   // so we trigger one here immediately when Step 5 renders.
-  // Sets loading state to prevent concurrent manual resends while in-flight.
+  // resendStatus is already 'loading' from the lazy initializer above,
+  // preventing concurrent manual resends while the request is in-flight.
   useEffect(() => {
     if (!email) return
     let cancelled = false
-    setResendStatus('loading')
-    setResendError('')
     const supabase = createClient()
     void (async () => {
       const { error } = await supabase.auth.resend({ type: 'signup', email })

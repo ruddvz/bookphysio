@@ -153,10 +153,12 @@ FOR EACH ROW EXECUTE FUNCTION audit_provider_iap_members();
 ```
 
 **TypeScript changes:**
-- `src/app/api/contracts/provider.ts` — Add `qualification`, `iap_member_id`, `certifications[]`, `equipment_tags[]` to `ProviderProfile`
-- `src/lib/validations/provider.ts` — Add Zod fields for the above
+- `src/app/api/contracts/provider.ts` — **Two separate contracts** (DPDPA boundary):
+  - `ProviderProfile` (public) — Add `qualification`, `certifications[]`, `equipment_tags[]` only. **Do NOT add `iap_member_id`** — this type is returned by public endpoints and would re-expose PII.
+  - `PrivateProviderProfile` (restricted) — Extends `ProviderProfile`, adds `iap_member_id`. Used exclusively by admin endpoints and the owning provider's settings API (`/api/providers/me`). Never returned from public search/listing endpoints.
+- `src/lib/validations/provider.ts` — Add Zod schemas for `qualification`, `certifications[]`, `equipment_tags[]` in public schema; add separate `providerIapSchema` for `iap_member_id` (used only in restricted routes)
 - `src/components/DoctorCard.tsx` — Show qualification badge (BPT/MPT/PhD/DPT) next to name
-- `src/app/provider/[id]/page.tsx` — Show certifications + equipment tags in profile
+- `src/app/provider/[id]/page.tsx` — Show certifications + equipment tags in profile (public data only)
 
 ---
 
@@ -197,7 +199,7 @@ FOR EACH ROW EXECUTE FUNCTION audit_provider_iap_members();
 | `src/components/specialties/SpecialtyArticle.tsx` | Add conditions grid, symptoms, treatments, modality tags, certifications sections |
 | `src/app/specialties/[slug]/page.tsx` | Use new seoTitle/seoDescription fields |
 | `src/app/api/providers/route.ts` | Support `condition` query param |
-| `src/app/api/contracts/provider.ts` | Add qualification, certifications, equipment_tags fields |
+| `src/app/api/contracts/provider.ts` | Add qualification/certifications/equipment_tags to public `ProviderProfile`; add restricted `PrivateProviderProfile` with `iap_member_id` (admin + owner only) |
 | `src/lib/validations/provider.ts` | Add Zod schema for new provider fields |
 | `src/lib/validations/search.ts` | Add qualification, certification filter params |
 | `src/app/api/providers/onboard/route.ts` | Save new qualification/certification fields |
