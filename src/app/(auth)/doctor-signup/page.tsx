@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
-import CityCombobox from '@/components/CityCombobox'
+import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { INDIA_STATES } from '@/lib/india-locations'
 import { createClient } from '@/lib/supabase/client'
@@ -161,26 +161,20 @@ const step3Schema = z.object({
   address: z.string().optional(),
   city: z.string().min(1, 'Select a city'),
   state: z.string().min(2, 'State is required'),
-  pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode'),
+  pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode').optional().or(z.literal('')),
   modalities: z.array(z.string()),
-}).refine(data => {
+}).superRefine((data, ctx) => {
   const isClinic = data.visitTypes.includes('in_clinic')
-  if (isClinic) {
-    return !!data.clinicName && data.clinicName.length >= 2
+  if (!isClinic) return
+  if (!data.clinicName?.trim() || data.clinicName.trim().length < 2) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['clinicName'], message: 'Enter your clinic name' })
   }
-  return true
-}, {
-  message: 'Enter your clinic name',
-  path: ['clinicName'],
-}).refine(data => {
-  const isClinic = data.visitTypes.includes('in_clinic')
-  if (isClinic) {
-    return !!data.address && data.address.length >= 5
+  if (!data.address?.trim() || data.address.trim().length < 5) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['address'], message: 'Enter your clinic address' })
   }
-  return true
-}, {
-  message: 'Enter your clinic address',
-  path: ['address'],
+  if (!data.pincode?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['pincode'], message: 'Enter your clinic pincode' })
+  }
 })
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -986,7 +980,6 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
           onChange={(city, state) => onChange({ ...data, city, state: state ?? data.state })}
           placeholder="Search city… (e.g. Surat)"
           cityOnly={false}
-          inputStyle={{ ...inputStyle }}
         />
         <FieldError msg={errors.city} />
       </div>
@@ -1241,6 +1234,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                   }
                 })
                 onChange({ ...data, availability: next })
+                setErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== 'availability' && !k.startsWith('time_'))))
               }}
               style={{
                 padding: '6px 12px',
@@ -1288,6 +1282,7 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
                             if (d !== day) next[d] = { enabled: true, slots: slots.map((s) => ({ ...s })) }
                           })
                           onChange({ ...data, availability: next })
+                          setErrors(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== 'availability' && !k.startsWith('time_'))))
                         }}
                         style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-bp-primary)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'var(--color-bp-surface)' }}
                       >
