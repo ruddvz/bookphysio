@@ -32,6 +32,30 @@ import {
 
 const AVAILABILITY_WEEKS = 4
 
+// Half-hour slots in 24h format (values) displayed as 12h AM/PM (labels)
+const TIME_OPTIONS: string[] = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2)
+  const m = i % 2 === 0 ? '00' : '30'
+  return `${String(h).padStart(2, '0')}:${m}`
+})
+
+function format24hTo12h(time: string): string {
+  const [hStr, mStr] = time.split(':')
+  const h = parseInt(hStr ?? '0', 10)
+  const m = mStr ?? '00'
+  const period = h < 12 ? 'AM' : 'PM'
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h
+  return `${hour12}:${m} ${period}`
+}
+
+const QUICK_PRESETS = [
+  { label: 'Mon–Fri 9am–6pm', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as DayName[], start: '09:00', end: '18:00' },
+  { label: 'Mon–Sat 9am–5pm', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as DayName[], start: '09:00', end: '17:00' },
+  { label: 'Mon–Fri 8am–8pm', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as DayName[], start: '08:00', end: '20:00' },
+]
+
+const WEEKDAYS: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+
 async function fetchExistingAvailability(startDateKey: string, endDateKey: string) {
   const response = await fetch(`/api/provider/availability?start=${startDateKey}&end=${endDateKey}`)
   if (!response.ok) throw new Error('Failed to load current availability')
@@ -169,6 +193,39 @@ export default function ProviderAvailability() {
     setHasChanges(true)
   }
 
+  function applyPreset(preset: typeof QUICK_PRESETS[number]) {
+    setSchedule((prev) => {
+      const next = { ...prev }
+      for (const day of PROVIDER_AVAILABILITY_DAYS) {
+        if (preset.days.includes(day)) {
+          next[day] = { enabled: true, slots: [{ start: preset.start, end: preset.end }] }
+        } else {
+          next[day] = { ...prev[day], enabled: false }
+        }
+      }
+      return next
+    })
+    setErrors({})
+    setSaved(false)
+    setHasChanges(true)
+  }
+
+  function copyToWeekdays(sourceDay: DayName) {
+    setSchedule((prev) => {
+      const source = prev[sourceDay]
+      const next = { ...prev }
+      for (const day of WEEKDAYS) {
+        if (day !== sourceDay) {
+          next[day] = { enabled: true, slots: source.slots.map((s) => ({ ...s })) }
+        }
+      }
+      return next
+    })
+    setErrors({})
+    setSaved(false)
+    setHasChanges(true)
+  }
+
   async function handleSave() {
     const newErrors = validateProviderSchedule(schedule)
     if (Object.keys(newErrors).length > 0) {
@@ -256,25 +313,25 @@ export default function ProviderAvailability() {
       {/* Alerts */}
       <div className="space-y-3">
         {saved && (
-          <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-[var(--sq-sm)] px-5 py-3 text-emerald-700">
+          <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-5 py-3 text-emerald-700">
             <CheckCircle2 size={18} />
             <p className="text-[13px] font-bold">Registry deployed successfully.</p>
           </div>
         )}
         {saveError && (
-          <div className="flex items-center gap-3 bg-rose-50 border border-rose-100 rounded-[var(--sq-sm)] px-5 py-3 text-rose-700">
+          <div className="flex items-center gap-3 bg-rose-50 border border-rose-100 rounded-xl px-5 py-3 text-rose-700">
             <AlertCircle size={18} />
             <p className="text-[13px] font-bold">{saveError}</p>
           </div>
         )}
         {inferenceError && (
-          <div className="flex items-center gap-3 bg-amber-50 border border-amber-100 rounded-[var(--sq-sm)] px-5 py-3 text-amber-700">
+          <div className="flex items-center gap-3 bg-amber-50 border border-amber-100 rounded-xl px-5 py-3 text-amber-700">
             <AlertCircle size={18} />
             <p className="text-[13px] font-bold">{inferenceError}</p>
           </div>
         )}
         {loadingExistingAvailability && (
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] px-5 py-3 text-slate-500">
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-500">
             <Loader2 size={18} className="animate-spin" />
             <p className="text-[13px] font-bold">Synchronizing registry data...</p>
           </div>
@@ -284,6 +341,20 @@ export default function ProviderAvailability() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr,340px] gap-6">
         <div className="space-y-6">
           <SectionCard role="provider" title="Weekly Recurring Hours">
+            {/* Quick presets */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {QUICK_PRESETS.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  disabled={disableEditing}
+                  onClick={() => applyPreset(preset)}
+                  className="text-[12px] font-bold px-3 py-1.5 rounded-lg border border-[var(--color-pv-primary)] text-[var(--color-pv-primary)] hover:bg-[var(--color-pv-primary)] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
             <div className="space-y-4">
               {PROVIDER_AVAILABILITY_DAYS.map((day) => {
                 const { enabled, slots } = schedule[day]
@@ -291,7 +362,7 @@ export default function ProviderAvailability() {
                 return (
                   <div key={day} className="group">
                     <div className={cn(
-                      "flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-5 rounded-[var(--sq-lg)] border transition-all",
+                      "flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-5 rounded-2xl border transition-all",
                       enabled ? "bg-white border-slate-200 shadow-sm" : "bg-slate-50/50 border-slate-100 opacity-60"
                     )}>
                       <div className="flex items-center gap-4">
@@ -317,22 +388,28 @@ export default function ProviderAvailability() {
                       {enabled && (
                         <div className="flex flex-col gap-3 w-full sm:w-auto">
                           {slots.map((slot, slotIndex) => (
-                            <div key={`${day}-${slotIndex}`} className="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 rounded-[var(--sq-sm)] px-3 py-2">
-                              <input
-                                type="time"
+                            <div key={`${day}-${slotIndex}`} className="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                              <select
                                 value={slot.start}
                                 disabled={disableEditing}
                                 onChange={(e) => updateSlotTime(day, slotIndex, 'start', e.target.value)}
-                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
-                              />
+                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700"
+                              >
+                                {TIME_OPTIONS.map((t) => (
+                                  <option key={t} value={t}>{format24hTo12h(t)}</option>
+                                ))}
+                              </select>
                               <span className="text-slate-300 font-bold">→</span>
-                              <input
-                                type="time"
+                              <select
                                 value={slot.end}
                                 disabled={disableEditing}
                                 onChange={(e) => updateSlotTime(day, slotIndex, 'end', e.target.value)}
-                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700 w-20"
-                              />
+                                className="bg-transparent border-none outline-none text-[13px] font-bold text-slate-700"
+                              >
+                                {TIME_OPTIONS.map((t) => (
+                                  <option key={t} value={t}>{format24hTo12h(t)}</option>
+                                ))}
+                              </select>
                               {slots.length > 1 ? (
                                 <button
                                   type="button"
@@ -345,14 +422,26 @@ export default function ProviderAvailability() {
                               ) : null}
                             </div>
                           ))}
-                          <button
-                            type="button"
-                            disabled={disableEditing}
-                            onClick={() => addSlot(day)}
-                            className="text-[12px] font-bold text-[var(--color-pv-primary)] disabled:text-slate-300"
-                          >
-                            + Add range
-                          </button>
+                          <div className="flex flex-wrap gap-3">
+                            <button
+                              type="button"
+                              disabled={disableEditing}
+                              onClick={() => addSlot(day)}
+                              className="text-[12px] font-bold text-[var(--color-pv-primary)] disabled:text-slate-300"
+                            >
+                              + Add range
+                            </button>
+                            {WEEKDAYS.includes(day) && (
+                              <button
+                                type="button"
+                                disabled={disableEditing}
+                                onClick={() => copyToWeekdays(day)}
+                                className="text-[12px] font-bold text-slate-500 hover:text-slate-700 disabled:text-slate-300"
+                              >
+                                Copy to all weekdays
+                              </button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -385,7 +474,7 @@ export default function ProviderAvailability() {
                   onClick={() => { setDuration(mins); setHasChanges(true); setSaved(false) }}
                   disabled={disableEditing}
                   className={cn(
-                    "flex items-center justify-between w-full p-4 rounded-[var(--sq-sm)] border transition-all text-left",
+                    "flex items-center justify-between w-full p-4 rounded-xl border transition-all text-left",
                     duration === mins
                       ? "bg-[var(--color-pv-primary)] border-[var(--color-pv-primary)] text-white"
                       : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
