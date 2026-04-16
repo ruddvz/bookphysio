@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import { gsap, useGSAP } from '@/lib/gsap-client'
 import {
   ArrowRight,
   Baby,
@@ -59,6 +60,15 @@ export default function Navbar({
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+
+  // Subtle mount fade-in — logo + nav bar slides down from -8px
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.from(headerRef.current, {
+      y: -8, opacity: 0, duration: 0.45, ease: 'power2.out', clearProps: 'all',
+    })
+  }, { scope: headerRef })
   const effectiveLocale = locale ?? 'en'
   const searchHref = effectiveLocale === 'hi' ? '/hi/search' : '/search'
   const loginHref  = effectiveLocale === 'hi' ? '/hi/login'  : '/login'
@@ -89,6 +99,7 @@ export default function Navbar({
   return (
     <>
       <header
+        ref={headerRef}
         className={cn(
           'fixed top-0 inset-x-0 z-[100] transition-all duration-300',
           scrolled
