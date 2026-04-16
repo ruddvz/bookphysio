@@ -19,9 +19,7 @@ ALTER TABLE public.users
   ADD CONSTRAINT users_role_check
     CHECK (role IN ('patient', 'provider', 'provider_pending', 'admin'));
 
--- ── 2. Replace handle_new_user trigger ───────────────────────────────────────
--- Whitelists provider, provider_pending; everything else (including 'admin')
--- defaults to 'patient' to prevent privilege escalation via signup metadata.
+-- ── 2. Replace handle_new_user trigger function ────────────────────────────
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
