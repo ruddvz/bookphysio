@@ -26,7 +26,7 @@
 - [~] Production smoke pass completed on apex domain; public pages, sitemap, robots, and providers API return `200`
 - [x] External follow-up: Google Search Console verification + sitemap submission
 - [x] External follow-up: Bing Webmaster Tools submission
-- [ ] External follow-up: `www.bookphysio.in` DNS still needs registrar-side configuration
+- [x] External follow-up: `www.bookphysio.in` DNS confirmed working via Vercel
 - [ ] External follow-up: production provider dataset is still empty (`/api/providers` returns zero results)
 
 ## ✅ Phase 14 — Deploy Readiness & Code Quality (DONE)

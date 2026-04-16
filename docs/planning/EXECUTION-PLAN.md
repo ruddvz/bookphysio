@@ -232,9 +232,9 @@
   - Deploy workflow now runs `npm run ping:indexnow` as a best-effort post-deploy step
 - [x] **15.5** Vercel Analytics integration (`@vercel/analytics` package)
   - Tracking is consent-gated and restricted to public marketing/search routes only
-- [~] **15.6** Domain cutover: bookphysio.in → Vercel (retire GitHub Pages)
+- [x] **15.6** Domain cutover: bookphysio.in → Vercel (retire GitHub Pages)
   - `bookphysio.in` is live on Vercel
-  - `www.bookphysio.in` still needs registrar-side DNS (`A www.bookphysio.in 76.76.21.21`) or Vercel nameservers
+  - `www.bookphysio.in` confirmed working via Vercel
 - [~] **15.7** End-to-end smoke test in production after domain cutover
   - Apex smoke checks passed for `/`, `/search`, `/sitemap.xml`, `/robots.txt`, and the IndexNow key file
   - Auth smoke checks now pass for `/login`, `/signup`, and the English-only `/hi/login` redirect
