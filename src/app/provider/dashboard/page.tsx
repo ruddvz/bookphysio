@@ -12,7 +12,6 @@ import {
   Receipt,
   Clock,
   ArrowRight,
-  Zap,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -388,7 +387,6 @@ export default function ProviderDashboardHome() {
                    { label: 'New invoice', href: '/provider/bills/new', icon: Receipt },
                    { label: 'Block time', href: '/provider/availability', icon: Clock },
                    { label: 'Open roster', href: '/provider/patients', icon: UserPlus },
-                   { label: 'AI Assistant', href: '/provider/ai-assistant', icon: Zap },
                  ].map(({ label, href, icon: Icon }) => (
                    <Link
                      key={href}
