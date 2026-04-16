@@ -12,6 +12,13 @@ interface CityComboboxProps {
   cityOnly?: boolean
 }
 
+function deriveLabelFromValue(value: string, cityOnly: boolean): string {
+  if (!value) return ''
+  if (cityOnly) return value
+  const entry = INDIA_CITIES.find((c) => c.city === value)
+  return entry ? formatCityLabel(entry) : value
+}
+
 /**
  * Searchable city picker that shows "City, State" format.
  * Selecting a city provides both the city name and state to the onChange handler.
@@ -26,23 +33,24 @@ export function CityCombobox({
   const id = useId()
   const listboxId = `${id}-listbox`
 
-  const [query, setQuery] = useState(value)
+  // Adjust-state-on-prop-change pattern (React docs):
+  // derive the displayed label from `value` during render without useEffect.
+  const [query, setQuery] = useState(() => deriveLabelFromValue(value, cityOnly))
+  const [prevValue, setPrevValue] = useState(value)
+  const [prevCityOnly, setPrevCityOnly] = useState(cityOnly)
+
+  if (value !== prevValue || cityOnly !== prevCityOnly) {
+    setPrevValue(value)
+    setPrevCityOnly(cityOnly)
+    setQuery(deriveLabelFromValue(value, cityOnly))
+  }
+
   const [open, setOpen] = useState(false)
   const [highlighted, setHighlighted] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const results = searchCities(query).slice(0, 8)
-
-  // Sync external value changes — reconstruct the full "City, State" label from
-  // the bare city name so the input shows the selected label after parent re-renders.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-    if (!value) { setQuery(''); return }
-    if (cityOnly) { setQuery(value); return }
-    const entry = INDIA_CITIES.find((c) => c.city === value)
-    setQuery(entry ? formatCityLabel(entry) : value)
-  }, [value, cityOnly])
 
   // Close on outside click
   useEffect(() => {

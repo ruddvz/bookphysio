@@ -76,14 +76,20 @@ const REQUIRED_CONDITIONAL = [
   },
 ]
 
-/** Razorpay is archived (payments temporarily disabled); mark optional but warn when present so users know. */
-const OPTIONAL_NOTE = [
-  'RAZORPAY_KEY_ID',
-  'RAZORPAY_KEY_SECRET',
-  'RAZORPAY_WEBHOOK_SECRET',
-  'MSG91_WHATSAPP_INTEGRATED_NUMBER',
-  'INDEXNOW_KEY',
-]
+/**
+ * Optional vars — not required, but documented for reference in .env.example.
+ * Razorpay is archived (payments temporarily disabled). Uncomment and use
+ * in a warning-emission pass if/when we start nudging devs about missing-but-
+ * recommended envs (e.g. INDEXNOW_KEY for search engine ping).
+ *
+ * const OPTIONAL_NOTE = [
+ *   'RAZORPAY_KEY_ID',
+ *   'RAZORPAY_KEY_SECRET',
+ *   'RAZORPAY_WEBHOOK_SECRET',
+ *   'MSG91_WHATSAPP_INTEGRATED_NUMBER',
+ *   'INDEXNOW_KEY',
+ * ]
+ */
 
 function validate(env) {
   const missing = []
