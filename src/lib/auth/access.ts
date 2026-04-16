@@ -1,4 +1,4 @@
-export type AppRole = 'patient' | 'provider' | 'admin' | null | undefined
+export type AppRole = 'patient' | 'provider' | 'provider_pending' | 'admin' | null | undefined
 
 export function isAdminPath(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/')
@@ -23,6 +23,11 @@ export function canRoleAccessPath(role: AppRole, pathname: string): boolean {
   }
 
   if (isProviderPath(pathname)) {
+    // provider_pending users may only access the pending-approval holding page.
+    // All other /provider/* routes require the fully-approved 'provider' role.
+    if (pathname === '/provider/pending' || pathname.startsWith('/provider/pending/')) {
+      return role === 'provider' || role === 'provider_pending'
+    }
     return role === 'provider'
   }
 

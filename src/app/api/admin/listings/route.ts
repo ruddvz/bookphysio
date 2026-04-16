@@ -49,8 +49,7 @@ export async function GET() {
       active,
       onboarding_step,
       created_at,
-      users!inner (full_name, phone),
-      documents (id, type, file_url, status, created_at)
+      users!inner (full_name, phone)
     `)
     .eq('verified', false)
     .order('created_at')
