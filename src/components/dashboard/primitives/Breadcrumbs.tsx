@@ -2,10 +2,10 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import type { DashRole } from '../primitives'
 
-const rolePrefix: Record<DashRole, 'pt' | 'pv' | 'ad'> = {
-  patient: 'pt',
-  provider: 'pv',
-  admin: 'ad',
+const lastCrumbClass: Record<DashRole, string> = {
+  patient: 'font-bold text-[var(--color-pt-primary)]',
+  provider: 'font-bold text-[var(--color-pv-primary)]',
+  admin: 'font-bold text-[var(--color-ad-primary)]',
 }
 
 export interface Crumb {
@@ -21,8 +21,6 @@ export interface BreadcrumbsProps {
 
 export function Breadcrumbs({ role = 'provider', items, className = '' }: BreadcrumbsProps) {
   if (items.length === 0) return null
-  const prefix = rolePrefix[role]
-  const accent = `var(--color-${prefix}-primary)`
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
@@ -32,15 +30,14 @@ export function Breadcrumbs({ role = 'provider', items, className = '' }: Breadc
           return (
             <li key={`${item.label}-${i}`} className="flex items-center gap-1">
               {item.href && !isLast ? (
-                <Link
-                  href={item.href}
-                  className="transition-colors hover:text-slate-900"
-                  style={{ color: 'inherit' }}
-                >
+                <Link href={item.href} className="transition-colors hover:text-slate-900">
                   {item.label}
                 </Link>
               ) : (
-                <span className={isLast ? 'font-bold' : ''} style={isLast ? { color: accent } : undefined}>
+                <span
+                  className={isLast ? lastCrumbClass[role] : ''}
+                  aria-current={isLast ? 'page' : undefined}
+                >
                   {item.label}
                 </span>
               )}

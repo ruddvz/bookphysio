@@ -13,9 +13,14 @@ describe('Sparkline', () => {
     expect(svg?.getAttribute('aria-label')).toBe('7-day trend')
   })
 
-  it('renders a blank placeholder when empty', () => {
-    const { container } = render(<Sparkline values={[]} />)
-    expect(container.querySelector('svg')).toBeNull()
+  it('renders an empty placeholder svg with intrinsic dimensions when values are empty', () => {
+    const { container } = render(<Sparkline values={[]} width={120} height={40} />)
+    const svg = container.querySelector('svg')
+    expect(svg).not.toBeNull()
+    expect(svg?.getAttribute('width')).toBe('120')
+    expect(svg?.getAttribute('height')).toBe('40')
+    expect(svg?.getAttribute('aria-hidden')).toBe('true')
+    expect(svg?.querySelector('path')).toBeNull()
   })
 })
 
@@ -44,7 +49,7 @@ describe('Badge', () => {
 })
 
 describe('Breadcrumbs', () => {
-  it('renders links for non-final crumbs and bold last crumb', () => {
+  it('renders links for non-final crumbs and marks the last crumb as current', () => {
     render(
       <Breadcrumbs
         role="patient"
@@ -55,7 +60,10 @@ describe('Breadcrumbs', () => {
       />,
     )
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/patient/dashboard')
-    expect(screen.getByText('Records')).toBeInTheDocument()
+    const last = screen.getByText('Records')
+    expect(last).toBeInTheDocument()
+    expect(last).toHaveClass('font-bold')
+    expect(last).toHaveAttribute('aria-current', 'page')
   })
 
   it('returns null on empty items', () => {

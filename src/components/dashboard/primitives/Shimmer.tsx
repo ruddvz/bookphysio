@@ -1,13 +1,11 @@
 export interface ShimmerProps {
   className?: string
-  style?: React.CSSProperties
 }
 
-export function Shimmer({ className = '', style }: ShimmerProps) {
+export function Shimmer({ className = '' }: ShimmerProps) {
   return (
     <div
       className={`relative overflow-hidden bg-slate-100 motion-reduce:animate-none ${className}`}
-      style={style}
       aria-hidden="true"
     >
       <div
