@@ -2,7 +2,8 @@
 -- Visit numbering is per (provider_id, patient_id) pair
 -- Patient_id may reference an existing platform user OR be a provider-owned record (patient_user_id NULL)
 
-CREATE TABLE patient_clinical_profiles (
+-- Tables
+CREATE TABLE IF NOT EXISTS patient_clinical_profiles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   provider_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   patient_user_id uuid REFERENCES users(id) ON DELETE SET NULL,
@@ -18,14 +19,7 @@ CREATE TABLE patient_clinical_profiles (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX patient_clinical_profiles_provider_user_unique
-  ON patient_clinical_profiles(provider_id, patient_user_id)
-  WHERE patient_user_id IS NOT NULL;
-
-CREATE INDEX patient_clinical_profiles_provider_idx
-  ON patient_clinical_profiles(provider_id);
-
-CREATE TABLE patient_visits (
+CREATE TABLE IF NOT EXISTS patient_visits (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id uuid NOT NULL REFERENCES patient_clinical_profiles(id) ON DELETE CASCADE,
   provider_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -35,10 +29,7 @@ CREATE TABLE patient_visits (
   UNIQUE(profile_id, visit_number)
 );
 
-CREATE INDEX patient_visits_profile_idx ON patient_visits(profile_id);
-CREATE INDEX patient_visits_provider_date_idx ON patient_visits(provider_id, visit_date DESC);
-
-CREATE TABLE clinical_notes (
+CREATE TABLE IF NOT EXISTS clinical_notes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   visit_id uuid NOT NULL UNIQUE REFERENCES patient_visits(id) ON DELETE CASCADE,
   provider_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -55,10 +46,21 @@ CREATE TABLE clinical_notes (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX clinical_notes_provider_idx ON clinical_notes(provider_id);
-CREATE INDEX clinical_notes_profile_idx ON clinical_notes(profile_id);
+-- Indexes
+CREATE UNIQUE INDEX IF NOT EXISTS patient_clinical_profiles_provider_user_unique
+  ON patient_clinical_profiles(provider_id, patient_user_id)
+  WHERE patient_user_id IS NOT NULL;
 
--- Trigger: keep updated_at fresh
+CREATE INDEX IF NOT EXISTS patient_clinical_profiles_provider_idx
+  ON patient_clinical_profiles(provider_id);
+
+CREATE INDEX IF NOT EXISTS patient_visits_profile_idx ON patient_visits(profile_id);
+CREATE INDEX IF NOT EXISTS patient_visits_provider_date_idx ON patient_visits(provider_id, visit_date DESC);
+
+CREATE INDEX IF NOT EXISTS clinical_notes_provider_idx ON clinical_notes(provider_id);
+CREATE INDEX IF NOT EXISTS clinical_notes_profile_idx ON clinical_notes(profile_id);
+
+-- Trigger helper
 CREATE OR REPLACE FUNCTION touch_updated_at()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
@@ -67,9 +69,15 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER patient_clinical_profiles_touch BEFORE UPDATE ON patient_clinical_profiles
+-- Triggers (drop then recreate for idempotency)
+DROP TRIGGER IF EXISTS patient_clinical_profiles_touch ON patient_clinical_profiles;
+CREATE TRIGGER patient_clinical_profiles_touch
+  BEFORE UPDATE ON patient_clinical_profiles
   FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
-CREATE TRIGGER clinical_notes_touch BEFORE UPDATE ON clinical_notes
+
+DROP TRIGGER IF EXISTS clinical_notes_touch ON clinical_notes;
+CREATE TRIGGER clinical_notes_touch
+  BEFORE UPDATE ON clinical_notes
   FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 
 -- RLS
@@ -77,17 +85,20 @@ ALTER TABLE patient_clinical_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE patient_visits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clinical_notes ENABLE ROW LEVEL SECURITY;
 
--- Providers full access on their own rows
+-- Policies (drop then recreate)
+DROP POLICY IF EXISTS "clinical_profiles_provider_all" ON patient_clinical_profiles;
 CREATE POLICY "clinical_profiles_provider_all" ON patient_clinical_profiles
   FOR ALL USING (provider_id = auth.uid()) WITH CHECK (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "patient_visits_provider_all" ON patient_visits;
 CREATE POLICY "patient_visits_provider_all" ON patient_visits
   FOR ALL USING (provider_id = auth.uid()) WITH CHECK (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "clinical_notes_provider_all" ON clinical_notes;
 CREATE POLICY "clinical_notes_provider_all" ON clinical_notes
   FOR ALL USING (provider_id = auth.uid()) WITH CHECK (provider_id = auth.uid());
 
--- Patients can read their own clinical_notes (server API additionally filters fields)
+DROP POLICY IF EXISTS "clinical_notes_patient_read" ON clinical_notes;
 CREATE POLICY "clinical_notes_patient_read" ON clinical_notes
   FOR SELECT USING (
     EXISTS (
@@ -97,6 +108,7 @@ CREATE POLICY "clinical_notes_patient_read" ON clinical_notes
     )
   );
 
+DROP POLICY IF EXISTS "patient_visits_patient_read" ON patient_visits;
 CREATE POLICY "patient_visits_patient_read" ON patient_visits
   FOR SELECT USING (
     EXISTS (
@@ -106,6 +118,7 @@ CREATE POLICY "patient_visits_patient_read" ON patient_visits
     )
   );
 
+DROP POLICY IF EXISTS "clinical_profiles_patient_read" ON patient_clinical_profiles;
 CREATE POLICY "clinical_profiles_patient_read" ON patient_clinical_profiles
   FOR SELECT USING (patient_user_id = auth.uid());
 
