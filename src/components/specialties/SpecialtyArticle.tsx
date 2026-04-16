@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ArrowRight, Calendar, CheckCircle2, ShieldCheck, Stethoscope } from 'lucide-react'
 import type { SpecialtyCondition } from '@/lib/specialties'
+import { SpecialtyCTARail } from './SpecialtyCTARail'
 
 export interface SpecialtyArticleData {
   title: string
@@ -149,6 +150,13 @@ export default function SpecialtyArticle({
         {/* ── Content cards on mustard background ─────────────────────── */}
         <section className="pb-24" style={{ backgroundColor: MUSTARD }}>
           <div className="mx-auto max-w-[1142px] px-6">
+
+            {/* CTA rail — flag-gated, renders only when ui-v2 is enabled */}
+            <SpecialtyCTARail
+              specialtyLabel={data.title}
+              bookingHref={bookingHref}
+              className="mb-6"
+            />
 
             {/* Overview */}
             <div className="mb-6">

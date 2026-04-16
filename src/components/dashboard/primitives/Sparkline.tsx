@@ -39,6 +39,26 @@ function buildPath(values: readonly number[], width: number, height: number): { 
   return { line, area }
 }
 
+interface FillGradientProps {
+  id: string
+  stroke: string
+  area: string
+}
+
+function FillGradient({ id, stroke, area }: FillGradientProps) {
+  return (
+    <>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={stroke} stopOpacity="0.28" />
+          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${id})`} />
+    </>
+  )
+}
+
 export function Sparkline({
   role = 'provider',
   values,
@@ -52,33 +72,25 @@ export function Sparkline({
   const prefix = rolePrefix[role]
   const stroke = `var(--color-${prefix}-primary)`
   const { line, area } = buildPath(values, width, height)
-  const gradientId = `spark-${prefix}-${values.length}-${values[0] ?? 0}-${values[values.length - 1] ?? 0}`
+  const viewBox = `0 0 ${width} ${height}`
 
   if (!line) {
-    return <div className={`inline-block ${className}`} style={{ width, height }} aria-hidden="true" />
+    return <svg className={className} width={width} height={height} viewBox={viewBox} aria-hidden="true" />
   }
+
+  const gradientId = `spark-${prefix}-${values.length}-${values[0] ?? 0}-${values[values.length - 1] ?? 0}`
 
   return (
     <svg
       className={className}
       width={width}
       height={height}
-      viewBox={`0 0 ${width} ${height}`}
+      viewBox={viewBox}
       role={ariaLabel ? 'img' : undefined}
       aria-label={ariaLabel}
       aria-hidden={ariaLabel ? undefined : 'true'}
     >
-      {fill ? (
-        <>
-          <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={stroke} stopOpacity="0.28" />
-              <stop offset="100%" stopColor={stroke} stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={area} fill={`url(#${gradientId})`} />
-        </>
-      ) : null}
+      {fill ? <FillGradient id={gradientId} stroke={stroke} area={area} /> : null}
       <path
         d={line}
         fill="none"
