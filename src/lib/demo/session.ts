@@ -230,6 +230,10 @@ function isRoleCompatibleReturnPath(role: DemoRole, returnPath: string): boolean
 }
 
 export function resolvePostAuthRedirect(role: string | null | undefined, requestedReturn: string | null | undefined): string {
+  // provider_pending users always land on the pending-approval holding page.
+  // Do this before normalizeRole() which would collapse provider_pending → patient.
+  if (role === 'provider_pending') return '/provider/pending'
+
   const normalizedRole = normalizeRole(role)
   const safeReturn = sanitizeReturnPath(requestedReturn)
 

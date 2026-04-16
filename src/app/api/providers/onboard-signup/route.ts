@@ -260,6 +260,12 @@ export async function POST(request: NextRequest) {
     //    or SMTP configuration checks. email_confirm: false means the user must
     //    confirm their email before logging in. The confirmation email is sent
     //    client-side by Step 5 via supabase.auth.resend() immediately on mount.
+    //
+    //    NOTE: role is intentionally NOT set in user_metadata here.
+    //    The handle_new_user trigger copies the metadata role into users.role, and
+    //    passing 'provider_pending' would crash the trigger on databases where
+    //    migration 040 hasn't been applied yet (CHECK constraint violation → 500).
+    //    We set the role authoritatively via the UPDATE in step 2 below.
     const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -267,8 +273,6 @@ export async function POST(request: NextRequest) {
       user_metadata: {
         full_name: step1.name,
         phone: step1.phone,
-        role: 'provider_pending',
-        provider_pending: true,
       },
     })
 
@@ -279,9 +283,9 @@ export async function POST(request: NextRequest) {
           { status: 409 },
         )
       }
-      console.error('Provider signup: admin user creation failed', adminError)
+      console.error('Provider signup: admin user creation failed', { message: adminError.message, status: adminError.status })
       return NextResponse.json(
-        { error: 'Unable to create account. Please try again.' },
+        { error: `Unable to create account: ${adminError.message}` },
         { status: 500 },
       )
     }
@@ -346,6 +350,8 @@ export async function POST(request: NextRequest) {
     providerCreated = true
 
     // 5. Create location
+    // Home-visit-only providers have no physical clinic — pass null for pincode
+    // to satisfy the DB CHECK constraint (which rejects empty strings).
     const isClinic = step3.visitTypes.includes('in_clinic')
     const { data: locationRow, error: locError } = await supabaseAdmin
       .from('locations')
@@ -355,7 +361,7 @@ export async function POST(request: NextRequest) {
         address: isClinic ? (step3.address ?? '') : '',
         city: step3.city,
         state: step3.state,
-        pincode: isClinic ? (step3.pincode ?? '') : '',
+        pincode: isClinic ? (step3.pincode || null) : null,
         visit_type: step3.visitTypes,
       })
       .select('id')
@@ -415,7 +421,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true }, { status: 201 })
 
   } catch (error: unknown) {
-    console.error('Provider onboard-signup error:', error)
+    // Surface the actual error message for easier debugging
+    const errMsg = error instanceof Error ? error.message
+      : (typeof (error as { message?: string })?.message === 'string' ? (error as { message: string }).message : String(error))
+    console.error('Provider onboard-signup error:', errMsg, error)
 
     // Best-effort rollback in reverse dependency order
     if (userId) {
@@ -446,7 +455,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Registration failed. Please try again or contact support.' },
+      { error: `Registration failed: ${errMsg}` },
       { status: 500 },
     )
   }
