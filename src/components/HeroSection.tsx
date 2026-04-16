@@ -7,6 +7,8 @@ import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lu
 import { cn } from '@/lib/utils'
 import { SPECIALTIES } from '@/lib/specialties'
 import { INDIA_CITIES } from '@/lib/india-locations'
+import { isUiV2Client } from '@/lib/feature-flags'
+import { HeroTrustStrip } from '@/components/hero/HeroTrustStrip'
 
 // SPECIALTIES is used for the options list only (not the removed chip rail).
 
@@ -121,6 +123,13 @@ export default function HeroSection() {
   const [city, setCity]           = useState('')
   const [showSpecialties, setShowSpecialties] = useState(false)
   const [showCities, setShowCities]           = useState(false)
+  const [uiV2, setUiV2] = useState(false)
+
+  // Resolve the UI v2 flag after mount to avoid SSR/CSR hydration mismatch
+  // when the `bp_ui=v2` cookie is present.
+  useEffect(() => {
+    setUiV2(isUiV2Client())
+  }, [])
 
   useEffect(() => {
     let nestedTimeout: ReturnType<typeof setTimeout> | undefined
@@ -289,6 +298,13 @@ export default function HeroSection() {
               </div>
             </form>
           </div>
+
+          {/* v2 premium trust strip — live micro-stat with sparkline */}
+          {uiV2 ? (
+            <div className="flex justify-center mb-6 animate-fade-up delay-350">
+              <HeroTrustStrip delta={8} />
+            </div>
+          ) : null}
 
           {/* Trust stats */}
           <div className="flex flex-wrap justify-center gap-8 animate-fade-up delay-400">

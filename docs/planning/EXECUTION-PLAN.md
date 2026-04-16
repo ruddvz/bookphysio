@@ -251,7 +251,7 @@
 
 - [x] **16.1** Foundations — dashboard primitives (`Sparkline`, `TrendDelta`, `Shimmer`, `Badge`, `Breadcrumbs`), `PageReveal` GSAP wrapper, `isUiV2` feature-flag resolver (PR 80)
 - [x] **16.2** Public Navbar uplift — `CommandPaletteHint` (⌘K / Ctrl+K) in the desktop Navbar, flag-gated, keyboard-shortcut wired, 7 unit tests
-- [ ] **16.3** Hero uplift — editorial headline treatment, animated trust strip
+- [x] **16.3** Hero trust strip — `HeroTrustStrip` combining `Sparkline` + `TrendDelta` from PR 80 primitives, flag-gated in `HeroSection`, props-driven so a later slice can feed live `/api/stats`, 6 unit tests
 - [ ] **16.4** Specialty page uplift — article hero, richer CTA rail
 - [ ] **16.5** Dashboard chrome — sidebar + top-pill polish across all roles
 - [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
