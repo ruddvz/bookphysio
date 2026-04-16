@@ -160,7 +160,7 @@ export default function AdminListings() {
             {listings.map((provider) => {
               const isActing = actionState?.providerId === provider.id
               const name = provider.users?.full_name ?? 'Unknown'
-              const initials = name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+              const initials = name.split(' ').filter(Boolean).map((n) => n[0] ?? '').join('').slice(0, 2).toUpperCase() || '??'
               const regNo = provider.iap_registration_no ?? '—'
               const fee = provider.consultation_fee_inr != null ? `₹${provider.consultation_fee_inr}` : '—'
               const date = formatDate(provider.created_at)
