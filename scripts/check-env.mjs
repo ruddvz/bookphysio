@@ -23,13 +23,6 @@ const REQUIRED_ALWAYS = {
     ['RESEND_API_KEY', 'Resend API key (re_xxxx)'],
     ['RESEND_FROM_EMAIL', 'Verified sender address (e.g. noreply@bookphysio.in)'],
   ],
-  'MSG91 (SMS)': [
-    ['MSG91_AUTH_KEY', 'MSG91 auth key for transactional SMS'],
-    ['MSG91_SMS_SENDER_ID', 'DLT-registered sender id (6 chars, e.g. BKPHYS)'],
-    ['MSG91_SMS_TEMPLATE_REMINDER', 'DLT template id for appointment reminders'],
-    ['MSG91_SMS_TEMPLATE_CONFIRM', 'DLT template id for booking confirmations'],
-    ['MSG91_SMS_TEMPLATE_RESCHEDULE', 'DLT template id for reschedule notifications'],
-  ],
   'Upstash (rate limiting)': [
     ['UPSTASH_REDIS_REST_URL', 'Upstash Redis REST URL'],
     ['UPSTASH_REDIS_REST_TOKEN', 'Upstash Redis REST token'],
@@ -37,12 +30,27 @@ const REQUIRED_ALWAYS = {
   'Gemini (AI)': [
     ['GOOGLE_GENERATIVE_AI_API_KEY', 'Google Generative AI API key (for patient/provider AI features)'],
   ],
+  'Auth cookie secrets': [
+    ['OTP_PENDING_COOKIE_SECRET', 'Signing secret for the pending-OTP cookie. Generate with: openssl rand -base64 32'],
+  ],
+}
+
+/**
+ * Warn-only vars — missing values print a warning but do NOT block the build.
+ * These are for optional features (SMS, cron jobs, admin reports) that degrade
+ * gracefully when unconfigured.
+ */
+const WARN_ONLY = {
+  'MSG91 (SMS)': [
+    ['MSG91_AUTH_KEY', 'MSG91 auth key for transactional SMS'],
+    ['MSG91_SMS_SENDER_ID', 'DLT-registered sender id (6 chars, e.g. BKPHYS)'],
+    ['MSG91_SMS_TEMPLATE_REMINDER', 'DLT template id for appointment reminders'],
+    ['MSG91_SMS_TEMPLATE_CONFIRM', 'DLT template id for booking confirmations'],
+    ['MSG91_SMS_TEMPLATE_RESCHEDULE', 'DLT template id for reschedule notifications'],
+  ],
   'Cron + Admin': [
     ['CRON_SECRET', 'Shared secret authenticating Vercel cron calls. Generate with: openssl rand -hex 32'],
     ['ADMIN_EMAIL', 'Admin recipient for daily AI summary reports'],
-  ],
-  'Auth cookie secrets': [
-    ['OTP_PENDING_COOKIE_SECRET', 'Signing secret for the pending-OTP cookie. Generate with: openssl rand -base64 32'],
   ],
 }
 
@@ -110,8 +118,32 @@ function validate(env) {
   return missing
 }
 
+function warnMissing(env) {
+  const warnings = []
+  for (const [group, vars] of Object.entries(WARN_ONLY)) {
+    const groupMissing = vars.filter(([name]) => !env[name])
+    if (groupMissing.length > 0) warnings.push([group, groupMissing])
+  }
+  return warnings
+}
+
 function main() {
   const missing = validate(process.env)
+
+  // Emit warnings for optional feature vars (non-blocking)
+  const warnings = warnMissing(process.env)
+  if (warnings.length > 0) {
+    console.warn('\n[check-env] Optional feature variables not set (build continues):\n')
+    for (const [group, vars] of warnings) {
+      console.warn(`  ${group}`)
+      for (const [name, desc] of vars) {
+        console.warn(`    - ${name}`)
+        console.warn(`      ${desc}`)
+      }
+      console.warn('')
+    }
+    console.warn('Set these in .env.local (dev) or your hosting provider\'s environment settings (prod).\n')
+  }
 
   if (missing.length === 0) {
     console.log('[check-env] All required environment variables are set.')
