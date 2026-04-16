@@ -67,9 +67,19 @@ export function isUiV2({ cookieHeader, searchParam }: ResolveContext = {}): bool
   return false
 }
 
+function readQueryParam(name: string): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    return new URLSearchParams(window.location.search).get(name)
+  } catch {
+    return null
+  }
+}
+
 export function isUiV2Client(): boolean {
   const envState = parseEnv(process.env.NEXT_PUBLIC_UI_V2)
   if (envState !== null) return envState
   if (typeof document === 'undefined') return false
-  return readCookie(document.cookie, 'bp_ui') === 'v2'
+  if (readCookie(document.cookie, 'bp_ui') === 'v2') return true
+  return readQueryParam('ui')?.toLowerCase() === 'v2'
 }

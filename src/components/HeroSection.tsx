@@ -7,7 +7,7 @@ import { Search, MapPin, ArrowRight, ChevronDown, Shield, Clock, Home } from 'lu
 import { cn } from '@/lib/utils'
 import { SPECIALTIES } from '@/lib/specialties'
 import { INDIA_CITIES } from '@/lib/india-locations'
-import { isUiV2Client } from '@/lib/feature-flags'
+import { useUiV2 } from '@/hooks/useUiV2'
 import { HeroTrustStrip } from '@/components/hero/HeroTrustStrip'
 
 // SPECIALTIES is used for the options list only (not the removed chip rail).
@@ -123,13 +123,7 @@ export default function HeroSection() {
   const [city, setCity]           = useState('')
   const [showSpecialties, setShowSpecialties] = useState(false)
   const [showCities, setShowCities]           = useState(false)
-  const [uiV2, setUiV2] = useState(false)
-
-  // Resolve the UI v2 flag after mount to avoid SSR/CSR hydration mismatch
-  // when the `bp_ui=v2` cookie is present.
-  useEffect(() => {
-    setUiV2(isUiV2Client())
-  }, [])
+  const uiV2 = useUiV2()
 
   useEffect(() => {
     let nestedTimeout: ReturnType<typeof setTimeout> | undefined

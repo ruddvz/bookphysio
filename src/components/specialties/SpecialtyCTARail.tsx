@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import { ArrowRight, Calendar, Phone, ShieldCheck } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
-import { isUiV2Client } from '@/lib/feature-flags'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 export interface SpecialtyCTARailProps {
   /** Human-readable specialty name, used for CTA copy, e.g. "Orthopaedic Physiotherapy". */
@@ -20,6 +19,11 @@ export interface SpecialtyCTARailProps {
 }
 
 const DEFAULT_DEMAND: readonly number[] = [18, 24, 21, 29, 33, 38, 42]
+
+function indefiniteArticle(word: string): 'a' | 'an' {
+  const first = word.trim().charAt(0).toLowerCase()
+  return 'aeiou'.includes(first) ? 'an' : 'a'
+}
 
 function computeDelta(values: readonly number[]): number | undefined {
   if (values.length < 2) return undefined
@@ -43,16 +47,12 @@ export function SpecialtyCTARail({
   advisorPhone,
   className,
 }: SpecialtyCTARailProps) {
-  const [uiV2, setUiV2] = useState(false)
-
-  useEffect(() => {
-    setUiV2(isUiV2Client())
-  }, [])
+  const uiV2 = useUiV2()
 
   if (!uiV2) return null
 
   const delta = computeDelta(demandValues)
-  const bookAriaLabel = `Book a ${specialtyLabel} session`
+  const bookAriaLabel = `Book ${indefiniteArticle(specialtyLabel)} ${specialtyLabel} session`
 
   return (
     <aside

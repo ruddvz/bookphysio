@@ -30,7 +30,7 @@ export function CommandPaletteHint({
   className,
 }: CommandPaletteHintProps) {
   const router = useRouter()
-  const isMac = useMemo(detectMac, [])
+  const isMac = useMemo(() => detectMac(), [])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

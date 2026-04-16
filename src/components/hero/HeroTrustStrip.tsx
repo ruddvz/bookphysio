@@ -44,29 +44,27 @@ export function HeroTrustStrip({
     <div
       className={cn(
         'inline-flex items-center gap-4 rounded-full bg-white/80 backdrop-blur-md',
-        'border border-indigo-100 px-5 py-3 shadow-lg shadow-indigo-200/25',
+        'border border-[var(--color-bp-primary-muted)] px-5 py-3',
+        'shadow-lg shadow-[var(--color-bp-primary)]/10',
         className,
       )}
       data-testid="hero-trust-strip"
     >
       <div className="flex flex-col items-start">
         <div className="flex items-baseline gap-2">
-          <span
-            className="text-[22px] font-bold leading-none tracking-tight tabular-nums"
-            style={{ color: '#2D2B55' }}
-          >
+          <span className="text-[22px] font-bold leading-none tracking-tight tabular-nums text-[var(--color-bp-body)]">
             {total.toLocaleString('en-IN')}
           </span>
           {typeof delta === 'number' ? <TrendDelta value={delta} /> : null}
         </div>
-        <span
-          className="text-[11px] font-medium uppercase tracking-wider mt-1"
-          style={{ color: '#9290B0' }}
-        >
+        <span className="mt-1 text-[11px] font-medium uppercase tracking-wider text-[var(--color-bp-muted)]">
           {label}
         </span>
       </div>
-      <div className="h-10 w-px bg-indigo-100/80" aria-hidden="true" />
+      <div
+        className="h-10 w-px bg-[var(--color-bp-border)]"
+        aria-hidden="true"
+      />
       <Sparkline
         role="patient"
         values={values}

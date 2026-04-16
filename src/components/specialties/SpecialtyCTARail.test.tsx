@@ -30,8 +30,15 @@ describe('SpecialtyCTARail', () => {
     render(
       <SpecialtyCTARail specialtyLabel="Orthopaedic Physiotherapy" bookingHref="/search?specialty=orthopaedic" />,
     )
-    const link = screen.getByRole('link', { name: /book a orthopaedic physiotherapy session/i })
+    const link = screen.getByRole('link', { name: /book an orthopaedic physiotherapy session/i })
     expect(link).toHaveAttribute('href', '/search?specialty=orthopaedic')
+  })
+
+  it('uses "a" for consonant-initial specialty labels', () => {
+    render(
+      <SpecialtyCTARail specialtyLabel="Sports Physiotherapy" bookingHref="/search?specialty=sports" />,
+    )
+    expect(screen.getByRole('link', { name: /book a sports physiotherapy session/i })).toBeInTheDocument()
   })
 
   it('renders the credential assurance chip', () => {

@@ -17,8 +17,12 @@ export interface BadgeProps {
   className?: string
 }
 
+// `success` uses the project teal tokens so verified / healthy states match
+// the brand primary. `warning` and `danger` keep amber/rose because they carry
+// universally understood semantic meaning (caution / error) that the brand
+// palette does not have dedicated tokens for.
 const semanticVariant: Record<Extract<BadgeVariant, 'success' | 'warning' | 'danger'>, string> = {
-  success: 'bg-emerald-50 text-emerald-700',
+  success: 'bg-[var(--color-bp-primary-light)] text-[var(--color-bp-primary-dark)]',
   warning: 'bg-amber-50 text-amber-700',
   danger: 'bg-rose-50 text-rose-700',
 }
