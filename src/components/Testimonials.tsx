@@ -1,5 +1,9 @@
+'use client'
+
+import { useRef } from 'react'
 import Image from 'next/image'
 import { ShieldCheck, Clock, Home } from 'lucide-react'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap-client'
 
 const promises = [
   {
@@ -26,13 +30,30 @@ const promises = [
 ]
 
 export default function Testimonials() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    gsap.from('[data-tl-left]', {
+      x: -32, opacity: 0, duration: 0.7, ease: 'power2.out',
+      scrollTrigger: { trigger: scope.current, start: 'top 78%', once: true },
+    })
+
+    gsap.from('[data-tl-card]', {
+      y: 28, opacity: 0, duration: 0.55, ease: 'power2.out',
+      stagger: 0.1,
+      scrollTrigger: { trigger: '[data-tl-cards]', start: 'top 80%', once: true },
+    })
+  }, { scope, dependencies: [ScrollTrigger] })
+
   return (
-    <section className="bg-[#E6F4F3] py-24 md:py-32" aria-label="Platform promises">
+    <section ref={scope} className="bg-[#E6F4F3] py-24 md:py-32" aria-label="Platform promises">
       <div className="bp-container">
         <div className="grid gap-16 lg:grid-cols-2 items-center">
 
           {/* Left: kicker + heading + quote + female physio */}
-          <div className="relative">
+          <div className="relative" data-tl-left>
             <div
               className="bp-kicker mb-4"
               style={{ background: 'rgba(0,118,108,0.1)', borderColor: 'rgba(0,118,108,0.25)', color: '#00766C' }}
@@ -72,7 +93,7 @@ export default function Testimonials() {
           </div>
 
           {/* Right: 3 promise cards */}
-          <div className="space-y-4">
+          <div className="space-y-4" data-tl-cards>
             <div className="flex items-center gap-3 mb-6">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -83,6 +104,7 @@ export default function Testimonials() {
             {promises.map(p => (
               <article
                 key={p.title}
+                data-tl-card
                 className="flex gap-4 p-6 bg-white rounded-[var(--sq-lg)] border border-[#00766C]/10 hover:border-[#00766C]/25 hover:shadow-md hover:shadow-[#00766C]/5 transition-all duration-200"
               >
                 <div className={`w-11 h-11 rounded-[var(--sq-sm)] ${p.bg} flex items-center justify-center shrink-0 mt-0.5`}>

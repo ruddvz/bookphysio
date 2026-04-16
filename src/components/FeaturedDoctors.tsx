@@ -1,9 +1,11 @@
 'use client'
 
+import { useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { Star } from 'lucide-react'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap-client'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
@@ -45,6 +47,7 @@ function FeaturedCard({ provider }: FeaturedCardProps) {
   return (
     <Link
       href={`/doctor/${provider.id}`}
+      data-featured-card
       className="bg-white rounded-[var(--sq-lg)] border border-bp-border p-4 flex items-center gap-3 hover:border-bp-accent/30 hover:shadow-md transition-all duration-200 group"
     >
       <div className="relative w-[52px] h-[52px] shrink-0">
@@ -96,12 +99,23 @@ export default function FeaturedDoctors() {
     .sort((a, b) => (b.rating_avg ?? 0) - (a.rating_avg ?? 0))
     .slice(0, FEATURED_PROVIDER_COUNT)
 
+  const scope = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    if (isLoading || providers.length === 0) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.from('[data-featured-card]', {
+      y: 20, opacity: 0, duration: 0.45, ease: 'power2.out', stagger: 0.07,
+      scrollTrigger: { trigger: scope.current, start: 'top 88%', once: true },
+    })
+  }, { scope, dependencies: [isLoading, providers.length, ScrollTrigger] })
+
   if (error || (!isLoading && providers.length === 0)) {
     return null
   }
 
   return (
-    <div className="mt-4 rounded-[28px] border border-bp-border bg-bp-surface/40 p-6">
+    <div ref={scope} className="mt-4 rounded-[28px] border border-bp-border bg-bp-surface/40 p-6">
       <div className="flex items-center gap-3 mb-4">
         <Star size={14} className="fill-[#F59E0B] text-[#F59E0B]" />
         <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-bp-body/40">

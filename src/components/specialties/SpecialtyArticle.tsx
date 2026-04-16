@@ -172,7 +172,7 @@ export default function SpecialtyArticle({
                       <Link
                         key={condition.slug}
                         href={`/search?condition=${encodeURIComponent(condition.slug)}`}
-                        className="group flex flex-col gap-1.5 rounded-xl p-4 transition-colors hover:bg-black/5"
+                        className="group flex flex-col gap-1.5 rounded-[var(--sq-md)] p-4 transition-colors hover:bg-black/5"
                         style={{ backgroundColor: `${MUSTARD}22` }}
                       >
                         <span className="text-[14px] font-semibold text-black group-hover:underline">
@@ -208,7 +208,7 @@ export default function SpecialtyArticle({
             {/* ── Symptoms ─────────────────────────────────────────────── */}
             {symptoms && symptoms.length > 0 && (
               <div className="mb-6">
-                <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
+                <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                   <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Signs & symptoms</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">When to seek help</h3>
                   <ul className="grid sm:grid-cols-2 gap-3">

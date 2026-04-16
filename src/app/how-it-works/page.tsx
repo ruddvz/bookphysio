@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap-client'
 import {
   Search,
   UserCheck,
@@ -105,6 +106,36 @@ export default function HowItWorksPage() {
   const trust = activeTab === 'patient' ? PATIENT_TRUST : PROVIDER_TRUST
   const character = activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER
 
+  const heroScope = useRef<HTMLElement>(null)
+  const stepsScope = useRef<HTMLElement>(null)
+  const ctaScope = useRef<HTMLElement>(null)
+
+  // Hero entrance — runs once on mount
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.from('[data-hiw-hero]', {
+      y: 20, opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.1,
+    })
+  }, { scope: heroScope })
+
+  // Step cards — re-animate whenever activeTab changes
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.from('[data-hiw-step]', {
+      y: 24, opacity: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08,
+      scrollTrigger: { trigger: stepsScope.current, start: 'top 82%', once: true },
+    })
+  }, { scope: stepsScope, dependencies: [activeTab, ScrollTrigger] })
+
+  // CTA reveal
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.from('[data-hiw-cta]', {
+      y: 20, opacity: 0, duration: 0.6, ease: 'power2.out',
+      scrollTrigger: { trigger: ctaScope.current, start: 'top 85%', once: true },
+    })
+  }, { scope: ctaScope, dependencies: [ScrollTrigger] })
+
   return (
     <>
       <Navbar locale="en" localeSwitchPath="/how-it-works" />
@@ -112,20 +143,20 @@ export default function HowItWorksPage() {
       <main className="bg-[#FAFAFA] min-h-screen">
 
         {/* Hero — split layout with physio character */}
-        <section className="bg-white border-b border-slate-200/70 overflow-hidden">
+        <section ref={heroScope} className="bg-white border-b border-slate-200/70 overflow-hidden">
           <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16">
             <div className="grid lg:grid-cols-[1fr_300px] gap-10 items-center">
 
               {/* Left: kicker + heading + trust points + tabs */}
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+                <div data-hiw-hero className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
                   How it works
                 </div>
-                <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight mb-4">
+                <h1 data-hiw-hero className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight mb-4">
                   How to book a physiotherapist{' '}
                   <span className="text-[#00766C]">online in India</span>
                 </h1>
-                <p className="text-[15px] lg:text-[17px] leading-relaxed max-w-[560px] text-slate-600 mb-8">
+                <p data-hiw-hero className="text-[15px] lg:text-[17px] leading-relaxed max-w-[560px] text-slate-600 mb-8">
                   Book a physio session in 4 clear steps with no calls, no waiting, and no guesswork about who to trust.
                 </p>
 
@@ -188,12 +219,13 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Steps — 2×2 grid with teal left-accent on hover */}
-        <section className="py-12 lg:py-16">
+        <section ref={stepsScope} className="py-12 lg:py-16">
           <div className="max-w-[1142px] mx-auto px-6">
             <div className="grid gap-4 sm:grid-cols-2">
               {activeSteps.map((step) => (
                 <div
                   key={step.title}
+                  data-hiw-step
                   className="relative rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group"
                 >
                   <div className="flex items-start justify-between mb-5">
@@ -218,9 +250,9 @@ export default function HowItWorksPage() {
         </section>
 
         {/* CTA — dark */}
-        <section className="pb-12 lg:pb-16">
+        <section ref={ctaScope} className="pb-12 lg:pb-16">
           <div className="max-w-[1142px] mx-auto px-6">
-            <div className="rounded-[var(--sq-xl)] bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+            <div data-hiw-cta className="rounded-[var(--sq-xl)] bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
               {/* Background glow */}
               <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
 
