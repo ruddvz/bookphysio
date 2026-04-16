@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
-import useSWR from 'swr'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ProviderCard } from '@/app/api/contracts/provider'
-import type { SearchResponse } from '@/app/api/contracts/search'
+import { describe, expect, it, vi } from 'vitest'
 import ProofSection from '@/components/ProofSection'
 
 vi.mock('next/link', () => ({
@@ -11,65 +8,33 @@ vi.mock('next/link', () => ({
   default: ({ children, href }: { children: ReactNode; href: string }) => <a href={href}>{children}</a>,
 }))
 
-vi.mock('swr', () => ({
-  __esModule: true,
-  default: vi.fn(),
-}))
-
-const mockedUseSWR = useSWR as unknown as {
-  mockReturnValue: (value: unknown) => void
-}
-
-const providers: ProviderCard[] = [
-  {
-    id: 'provider-1',
-    slug: 'dr-ravi-kumar',
-    full_name: 'Ravi Kumar',
-    title: 'Dr.',
-    avatar_url: null,
-    verified: true,
-    specialties: [{ id: 'sports', name: 'Sports Physio', slug: 'sports', icon_url: null }],
-    rating_avg: 4.9,
-    rating_count: 120,
-    experience_years: 8,
-    consultation_fee_inr: 800,
-    next_available_slot: '2026-04-13T10:00:00.000Z',
-    visit_types: ['in_clinic'],
-    city: 'Mumbai',
-    lat: null,
-    lng: null,
-  },
-]
-
-function mockSearchResponse(input: ProviderCard[]): SearchResponse {
-  return {
-    providers: input,
-    total: input.length,
-    page: 1,
-    limit: 3,
-  }
-}
-
+// GSAP relies on the DOM and window — jsdom provides enough for the hook to
+// short-circuit on prefers-reduced-motion (no matchMedia match), so no extra
+// mocking is needed.
 describe('ProofSection', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('fetches live providers instead of rendering hardcoded mock cards', () => {
-    mockedUseSWR.mockReturnValue({
-      data: mockSearchResponse(providers),
-      error: undefined,
-      isLoading: false,
-    })
-
+  it('renders three illustrative provider rows with slot timelines', () => {
     render(<ProofSection />)
 
-    expect(mockedUseSWR).toHaveBeenCalledWith(
-      '/api/providers?limit=3&sort=rating',
-      expect.any(Function),
-      { revalidateOnFocus: false },
-    )
-    expect(screen.getByText('Dr. Ravi Kumar')).toBeInTheDocument()
-    expect(screen.getByText(/sports physio · mumbai/i)).toBeInTheDocument()
+    // Each seeded provider name in the section header.
+    expect(screen.getByText(/Sports rehab/i)).toBeInTheDocument()
+    expect(screen.getByText(/Ortho rehab/i)).toBeInTheDocument()
+    expect(screen.getByText(/Neuro rehab/i)).toBeInTheDocument()
+  })
+
+  it('renders the "Book in 60s" CTA for each provider', () => {
+    const { container } = render(<ProofSection />)
+    const articles = container.querySelectorAll('article')
+    expect(articles.length).toBe(3)
+
+    const ctas = screen.getAllByText(/Book in 60s/i)
+    expect(ctas.length).toBe(3)
+  })
+
+  it('renders the scroll-reveal target hooks for GSAP', () => {
+    const { container } = render(<ProofSection />)
+    expect(container.querySelector('[data-proof-list]')).toBeTruthy()
+    expect(container.querySelectorAll('[data-proof-row]').length).toBe(3)
+    // Every row has at least one slot pill.
+    expect(container.querySelectorAll('[data-slot-pill]').length).toBeGreaterThan(0)
   })
 })

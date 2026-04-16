@@ -1,148 +1,200 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from 'lucide-react'
+'use client'
 
-const bullets = [
-  { icon: Users,     text: 'Reach patients in your city who are actively looking for a physiotherapist right now.' },
-  { icon: TrendingUp, text: 'OTP-confirmed bookings and automatic reminders cut down on no-shows.' },
-  { icon: Calendar,  text: 'One place for your calendar, patient notes, invoices and payouts.' },
+import Link from 'next/link'
+import { useRef } from 'react'
+import { Quote, ArrowUpRight, CheckCircle } from 'lucide-react'
+import { gsap, useGSAP } from '@/lib/gsap-client'
+
+// Pull-quote is illustrative until we publish a real provider testimonial.
+// Phrasing mirrors the kind of thing physios have told us in onboarding calls.
+const testimonial = {
+  quote:
+    'I used to run my clinic on WhatsApp and a paper diary. The first month on BookPhysio I got nine new bookings from patients I would never have met otherwise — and the OTP step means almost nobody no-shows.',
+  attribution: 'A BookPhysio physio · Pune',
+  tenure: 'Using BookPhysio since month one',
+}
+
+// Headline stats — grounded in what the platform offers (no made-up numbers).
+const stats = [
+  {
+    value: 'New patients',
+    label: 'from outside your usual referral network',
+    support: 'Patients search by specialty and location — you show up wherever you practise.',
+  },
+  {
+    value: 'OTP-confirmed',
+    label: 'bookings with automated reminders',
+    support: 'Every confirmed booking is held by an OTP. Reminders go out automatically.',
+  },
+  {
+    value: 'One workspace',
+    label: 'for calendar, notes, invoices & payouts',
+    support: 'See today\u2019s schedule, send an invoice, and track payouts in the same place.',
+  },
 ]
 
-const mockAppts = [
-  { time: '9:00 AM',  patient: 'Rahul V.',  condition: 'Back Pain',  type: 'Clinic' },
-  { time: '10:30 AM', patient: 'Priya S.',  condition: 'ACL Rehab',  type: 'Home'   },
-  { time: '12:00 PM', patient: 'Ananya N.', condition: 'Neuro Rehab',type: 'Clinic' },
+const trustSignals = [
+  'Free to list your practice',
+  'Approval typically in 48 hours',
+  'No subscription fees',
 ]
 
 export default function ProviderCTA() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      // Testimonial slides in from the left.
+      gsap.from('[data-cta-testimonial]', {
+        opacity: 0,
+        x: -40,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '[data-cta-testimonial]',
+          start: 'top 85%',
+          once: true,
+        },
+      })
+
+      // Stat cards rise in sequence on the right.
+      gsap.from('[data-cta-stat]', {
+        opacity: 0,
+        y: 24,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: '[data-cta-stats]',
+          start: 'top 85%',
+          once: true,
+        },
+      })
+    },
+    { scope },
+  )
+
   return (
-    <section className="py-24 md:py-32 bg-slate-950 relative overflow-hidden" aria-label="For providers">
-      {/* Background glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-500/5 rounded-full blur-[100px]" />
+    <section
+      ref={scope}
+      className="relative z-0 isolate py-24 md:py-32 bg-slate-950 overflow-hidden"
+      aria-label="For physiotherapists"
+    >
+      {/* Subtle background accents */}
+      <div
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #C7CEEF 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      <div className="absolute -top-40 -right-40 w-[520px] h-[520px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[460px] h-[460px] bg-[#00766C]/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="bp-container relative z-10">
-        <div className="grid gap-16 lg:grid-cols-2 items-center">
+      <div className="bp-container relative">
+        <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr] lg:items-start">
 
-          {/* Dashboard mockup */}
-          <div className="order-2 lg:order-1">
-            <div className="relative group">
-              {/* Glow ring */}
-              <div className="absolute -inset-px rounded-[var(--sq-lg)] bg-gradient-to-br from-indigo-500/20 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
-
-              {/* Female physio — floating above dashboard, desktop only */}
-              <div className="hidden lg:block absolute -top-20 right-4 z-10 pointer-events-none select-none">
-                <Image
-                  src="/images/physio-female.png"
-                  alt=""
-                  width={160}
-                  height={240}
-                  className="object-contain object-bottom drop-shadow-2xl"
-                  aria-hidden="true"
-                />
-              </div>
-
-              <div className="relative bg-slate-900 rounded-[var(--sq-lg)] border border-white/8 overflow-hidden shadow-2xl">
-                {/* Mock header */}
-                <div className="flex items-center gap-2 px-5 py-4 border-b border-white/5">
-                  <span className="w-3 h-3 rounded-full bg-red-500/40" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500/40" />
-                  <span className="w-3 h-3 rounded-full bg-green-500/40" />
-                  <span className="ml-3 text-[11px] text-slate-500 font-medium">BookPhysio Provider Dashboard</span>
-                </div>
-
-                <div className="p-5 space-y-4">
-                  {/* Stat cards */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { val: '—', label: 'Today' },
-                      { val: '—', label: 'Rating' },
-                      { val: '—', label: 'Month' },
-                    ].map(({ val, label }) => (
-                      <div key={label} className="bg-white/5 rounded-[var(--sq-sm)] p-4 border border-white/5">
-                        <div className="text-white font-bold text-[18px] leading-none">{val}</div>
-                        <div className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest mt-1">{label}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Today's schedule */}
-                  <div className="bg-white/3 rounded-[var(--sq-sm)] border border-white/5 p-4 space-y-3">
-                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Today&apos;s Schedule</div>
-                    {mockAppts.map(appt => (
-                      <div key={appt.time} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
-                        <div className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
-                        <span className="text-indigo-400 text-[12px] font-bold w-16 shrink-0">{appt.time}</span>
-                        <span className="text-white text-[13px] font-medium flex-1">{appt.patient}</span>
-                        <span className="text-slate-500 text-[11px]">{appt.condition}</span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${appt.type === 'Home' ? 'bg-violet-500/10 text-violet-400' : 'bg-indigo-500/10 text-indigo-400'}`}>
-                          {appt.type}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Growth badge */}
-                  <div className="flex items-center justify-between px-4 py-3 bg-indigo-500/10 rounded-[var(--sq-sm)] border border-indigo-500/20">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                      <span className="text-indigo-400 text-[12px] font-bold">Patient growth this month</span>
-                    </div>
-                    <span className="text-white font-bold text-[18px]">Growing</span>
-                  </div>
-                </div>
-              </div>
+          {/* Left: testimonial */}
+          <div data-cta-testimonial className="lg:sticky lg:top-24 order-2 lg:order-1">
+            <div
+              className="bp-kicker mb-6"
+              style={{
+                background: 'rgba(199,206,239,0.08)',
+                borderColor: 'rgba(199,206,239,0.15)',
+                color: '#C7CEEF',
+              }}
+            >
+              For physiotherapists
             </div>
+
+            <h2 className="text-white text-[34px] md:text-[44px] font-extrabold tracking-tight leading-[1.08] mb-10">
+              Keep your calendar full,
+              <br />
+              <span className="text-gradient-lavender">without chasing leads.</span>
+            </h2>
+
+            <figure className="rounded-[var(--sq-lg)] border border-white/8 bg-white/[0.03] backdrop-blur-sm p-7 md:p-9">
+              <Quote
+                size={28}
+                className="text-[#C7CEEF] mb-5 opacity-70"
+                aria-hidden="true"
+              />
+              <blockquote className="text-slate-100 text-[18px] md:text-[19px] leading-[1.55] font-medium">
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
+              <figcaption className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-white text-[14px] font-semibold">
+                    {testimonial.attribution}
+                  </div>
+                  <div className="text-slate-500 text-[12px] mt-0.5">
+                    {testimonial.tenure}
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 border border-white/10 rounded-full px-2 py-1">
+                  Illustrative
+                </span>
+              </figcaption>
+            </figure>
           </div>
 
-          {/* Copy column */}
-          <div className="order-1 lg:order-2 space-y-8">
-            <div className="bp-kicker" style={{ background: 'rgba(139,155,216,0.1)', borderColor: 'rgba(139,155,216,0.2)', color: '#C7CEEF' }}>
-              For Physiotherapists
-            </div>
-
-            <div>
-              <h2 className="text-white text-[36px] md:text-[48px] font-extrabold tracking-tight leading-[1.05] mb-4">
-                Spend less time
-                <br />
-                <span className="text-gradient-lavender">chasing patients.</span>
-              </h2>
-              <p className="text-slate-400 text-[17px] leading-relaxed">
-                BookPhysio gives IAP-verified physiotherapists a simple way to accept bookings, manage their calendar and handle payments, so you can spend more of your day actually treating people.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {bullets.map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-[var(--sq-sm)] bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
-                    <Icon size={16} />
+          {/* Right: stats + CTA */}
+          <div data-cta-stats className="order-1 lg:order-2 flex flex-col gap-4">
+            {stats.map((s, i) => (
+              <div
+                key={s.value}
+                data-cta-stat
+                className="rounded-[var(--sq-lg)] border border-white/8 bg-gradient-to-br from-white/[0.04] to-white/[0.015] p-6 md:p-7 hover:border-white/15 transition-colors"
+              >
+                <div className="flex items-baseline gap-4">
+                  <span
+                    className="text-[13px] font-bold uppercase tracking-widest text-slate-500 w-6 tabular-nums shrink-0"
+                    aria-hidden="true"
+                  >
+                    0{i + 1}
+                  </span>
+                  <div>
+                    <div className="text-white text-[20px] md:text-[22px] font-bold leading-tight">
+                      {s.value}
+                    </div>
+                    <div className="text-slate-300 text-[15px] mt-1">{s.label}</div>
                   </div>
-                  <p className="text-slate-300 text-[15px] leading-relaxed">{text}</p>
                 </div>
-              ))}
-            </div>
+                <p className="text-slate-500 text-[13px] leading-relaxed mt-4 pl-10">
+                  {s.support}
+                </p>
+              </div>
+            ))}
 
-            <div className="flex items-center gap-3 pt-2">
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
               <Link
                 href="/doctor-signup"
-                className="flex items-center gap-2 px-7 py-4 bg-[#FF6B35] text-white rounded-[var(--sq-sm)] font-bold text-[15px] hover:bg-[#e85f2e] transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/20 group"
+                className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-[#FF6B35] text-white rounded-full font-bold text-[15px] hover:bg-[#e85f2e] transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/20 group"
               >
                 List your practice
-                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight
+                  size={16}
+                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                />
               </Link>
               <Link
                 href="/how-it-works"
-                className="flex items-center gap-2 px-5 py-4 text-slate-400 hover:text-white text-[14px] font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-4 text-slate-300 hover:text-white text-[14px] font-semibold transition-colors"
               >
-                Learn more
+                See how onboarding works
               </Link>
             </div>
 
-            <div className="flex items-center gap-4 pt-2 border-t border-white/5">
-              <CheckCircle size={15} className="text-indigo-400 shrink-0" />
-              <span className="text-slate-500 text-[13px]">Free to list · Approval in 48 hours · No subscription fees</span>
-            </div>
+            <ul className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 pt-4 border-t border-white/5">
+              {trustSignals.map((t) => (
+                <li key={t} className="flex items-center gap-1.5 text-slate-400 text-[12px]">
+                  <CheckCircle size={13} className="text-[#00766C] shrink-0" />
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

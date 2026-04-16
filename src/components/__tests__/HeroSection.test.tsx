@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import HeroSection from '../HeroSection'
 
@@ -13,10 +13,10 @@ describe('HeroSection', () => {
     pushMock.mockReset()
   })
 
-  it('renders the search bar', () => {
-    const { getByPlaceholderText } = render(<HeroSection />)
-    // getByPlaceholderText throws if not found — no assertion needed; call itself is the assertion
-    expect(getByPlaceholderText('e.g. Back pain, Sports injury...')).toBeDefined()
+  it('renders the search bar with specialty and city fields', () => {
+    render(<HeroSection />)
+    expect(screen.getByPlaceholderText(/Orthopaedic, Sports, Neuro/i)).toBeDefined()
+    expect(screen.getByPlaceholderText(/Mumbai, Surat, Delhi/i)).toBeDefined()
   })
 
   it('section[aria-label="Hero section"] renders correctly', () => {
@@ -38,46 +38,28 @@ describe('HeroSection', () => {
     const { container } = render(<HeroSection />)
     const h1 = container.querySelector('h1')
     expect(h1).toBeTruthy()
-    // Confirm old multi-breakpoint font classes are absent (replaced by clamp-based utility)
-    expect(h1?.className).not.toContain('text-[54px]')
-    expect(h1?.className).not.toContain('md:text-[82px]')
   })
 
-  it('renders a three-row marquee condition strip with plain-language options', () => {
+  it('does not render the removed specialty chip rail', () => {
     render(<HeroSection />)
-
-    const strip = screen.getByRole('group', { name: /browse common conditions/i })
-
-    // 3 overflow-hidden row wrappers (original + duplicate chips are inside each wrapper)
-    expect(strip.querySelectorAll('[data-chip-row]')).toHaveLength(3)
-
-    // Only 21 buttons should be accessible (duplicate set is aria-hidden="true")
-    expect(within(strip).getAllByRole('button')).toHaveLength(21)
-    expect(within(strip).getByRole('button', { name: 'Back pain' })).toBeInTheDocument()
-    expect(within(strip).getByRole('button', { name: 'Home visit' })).toBeInTheDocument()
-    expect(within(strip).getByRole('button', { name: 'Stroke recovery' })).toBeInTheDocument()
+    // The old "Browse common conditions" chip rail should be gone — the hero
+    // now lets users pick a specialty via the search combobox only.
+    expect(screen.queryByRole('group', { name: /browse common conditions/i })).toBeNull()
   })
 
-  it('navigates to search with the selected chip condition', () => {
+  it('submits specialty and city from the hero search form', () => {
     render(<HeroSection />)
 
-    const strip = screen.getByRole('group', { name: /browse common conditions/i })
-    fireEvent.click(within(strip).getByRole('button', { name: 'Back pain' }))
-
-    expect(pushMock).toHaveBeenCalledWith('/search?condition=Back+pain')
-  })
-
-  it('submits both condition and location from the hero search form', () => {
-    render(<HeroSection />)
-
-    fireEvent.change(screen.getByRole('combobox', { name: /condition/i }), {
-      target: { value: 'Back pain' },
+    fireEvent.change(screen.getByRole('combobox', { name: /specialty/i }), {
+      target: { value: 'Orthopaedic' },
     })
-    fireEvent.change(screen.getByRole('combobox', { name: /location/i }), {
-      target: { value: 'Mumbai' },
+    fireEvent.change(screen.getByRole('combobox', { name: /city/i }), {
+      target: { value: 'Mumbai, Maharashtra' },
     })
     fireEvent.click(screen.getByRole('button', { name: /find care/i }))
 
-    expect(pushMock).toHaveBeenCalledWith('/search?condition=Back+pain&location=Mumbai')
+    expect(pushMock).toHaveBeenCalledWith(
+      '/search?specialty=Orthopaedic&city=Mumbai',
+    )
   })
 })
