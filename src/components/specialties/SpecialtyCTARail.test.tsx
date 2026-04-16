@@ -60,7 +60,7 @@ describe('SpecialtyCTARail', () => {
     expect(screen.getByRole('img', { name: /demand trend/i })).toBeInTheDocument()
   })
 
-  it('renders a tel: secondary action when advisorPhone is provided', () => {
+  it('renders a tel: secondary action when advisorPhone is a valid +91 E.164 number', () => {
     render(
       <SpecialtyCTARail
         specialtyLabel="Sports Physiotherapy"
@@ -70,5 +70,27 @@ describe('SpecialtyCTARail', () => {
     )
     const call = screen.getByRole('link', { name: /talk to an advisor/i })
     expect(call).toHaveAttribute('href', 'tel:+919000000000')
+  })
+
+  it('omits the advisor link when advisorPhone fails E.164 +91 validation', () => {
+    render(
+      <SpecialtyCTARail
+        specialtyLabel="Sports Physiotherapy"
+        bookingHref="/search?specialty=sports"
+        advisorPhone="not-a-phone"
+      />,
+    )
+    expect(screen.queryByRole('link', { name: /talk to an advisor/i })).toBeNull()
+  })
+
+  it('omits the advisor link for non-Indian numbers or sub-E.164 shapes', () => {
+    render(
+      <SpecialtyCTARail
+        specialtyLabel="Sports Physiotherapy"
+        bookingHref="/search?specialty=sports"
+        advisorPhone="+14155551234"
+      />,
+    )
+    expect(screen.queryByRole('link', { name: /talk to an advisor/i })).toBeNull()
   })
 })

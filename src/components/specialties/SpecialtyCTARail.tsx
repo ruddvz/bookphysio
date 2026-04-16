@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, Calendar, Phone, ShieldCheck } from 'lucide-react'
+import { z } from 'zod'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { useUiV2 } from '@/hooks/useUiV2'
@@ -13,10 +14,21 @@ export interface SpecialtyCTARailProps {
   bookingHref: string
   /** Optional weekly demand series; renders an inline sparkline + trend chip. */
   demandValues?: readonly number[]
-  /** Optional E.164 phone number for a secondary "Talk to an advisor" action. */
+  /**
+   * Optional India E.164 phone number for a secondary "Talk to an advisor"
+   * action. Must be `+91` followed by a 10-digit mobile number starting with
+   * 6–9. Anything else is rejected and the advisor link is omitted.
+   */
   advisorPhone?: string
   className?: string
 }
+
+/**
+ * India mobile E.164: `+91` + leading 6/7/8/9 + 9 more digits.
+ * Reused pattern from the rest of the codebase; stays inline here because
+ * it's the only place this component consumes.
+ */
+const advisorPhoneSchema = z.string().regex(/^\+91[6-9]\d{9}$/)
 
 const DEFAULT_DEMAND: readonly number[] = [18, 24, 21, 29, 33, 38, 42]
 
@@ -53,6 +65,9 @@ export function SpecialtyCTARail({
 
   const delta = computeDelta(demandValues)
   const bookAriaLabel = `Book ${indefiniteArticle(specialtyLabel)} ${specialtyLabel} session`
+  const validatedAdvisorPhone = advisorPhone
+    ? advisorPhoneSchema.safeParse(advisorPhone).data
+    : undefined
 
   return (
     <aside
@@ -84,9 +99,9 @@ export function SpecialtyCTARail({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {advisorPhone ? (
+          {validatedAdvisorPhone ? (
             <Link
-              href={`tel:${advisorPhone}`}
+              href={`tel:${validatedAdvisorPhone}`}
               className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white px-5 py-2.5 text-[13px] font-semibold text-black transition-colors hover:bg-black/5"
               aria-label="Talk to an advisor"
             >

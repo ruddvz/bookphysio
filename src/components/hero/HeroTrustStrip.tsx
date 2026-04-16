@@ -4,8 +4,9 @@ import { cn } from '@/lib/utils'
 
 export interface HeroTrustStripProps {
   /**
-   * Headline count. Displayed above the label. Rendered with a thousands
-   * separator (en-IN grouping is functionally identical to en-US here).
+   * Headline count. Displayed above the label. Formatted with the en-IN
+   * locale, which uses the Indian lakh/crore grouping (1,00,000 / 10,00,000)
+   * at higher magnitudes — this is the intended format for our audience.
    */
   total?: number
   /**
