@@ -23,6 +23,8 @@ import {
 } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
+import { CommandPaletteHint } from '@/components/nav/CommandPaletteHint'
+import { isUiV2Client } from '@/lib/feature-flags'
 import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } from '@/lib/i18n/static-pages'
 import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
@@ -59,8 +61,15 @@ export default function Navbar({
   const [browseOpen, setBrowseOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [uiV2, setUiV2] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
+
+  // Resolve the UI v2 flag after mount so SSR output matches the non-flagged
+  // default — prevents hydration mismatches when the cookie is present.
+  useEffect(() => {
+    setUiV2(isUiV2Client())
+  }, [])
 
   // Subtle mount fade-in — logo + nav bar slides down from -8px
   useGSAP(() => {
@@ -218,6 +227,7 @@ export default function Navbar({
 
             {/* Desktop Auth */}
             <div className="hidden lg:flex items-center gap-3">
+              {uiV2 ? <CommandPaletteHint href={searchHref} /> : null}
               {locale && localeSwitchPath ? (
                 <LocaleSwitcher locale={locale} path={localeSwitchPath} />
               ) : null}
