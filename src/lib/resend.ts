@@ -1,13 +1,10 @@
 import { Resend } from 'resend'
 
 if (!process.env.RESEND_API_KEY) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('RESEND_API_KEY is required in production')
-  }
-  console.warn('WARNING: RESEND_API_KEY is not set. Email features will fail.')
+  throw new Error('RESEND_API_KEY is not set')
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY ?? '')
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 /** Escape HTML special characters to prevent injection in email templates. */
 function escapeHtml(str: string): string {

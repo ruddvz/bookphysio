@@ -712,6 +712,3 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   )
 }
 
-function Awards({ size, className, strokeWidth }: { size: number; className?: string; strokeWidth?: number }) {
-  return <Award size={size} className={className} strokeWidth={strokeWidth} />
-}

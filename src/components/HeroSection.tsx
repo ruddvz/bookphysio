@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils'
 import { SPECIALTIES } from '@/lib/specialties'
 import { INDIA_CITIES } from '@/lib/india-locations'
 
+// SPECIALTIES is used for the options list only (not the removed chip rail).
+
 const ROTATING_WORDS = [
   'sports rehab',
   'home visits',
@@ -143,10 +145,6 @@ export default function HeroSection() {
     router.push(params.toString() ? `/search?${params}` : '/search')
   }
 
-  const handleSpecialtyChip = (slug: string) => {
-    router.push(`/specialties/${slug}`)
-  }
-
   return (
     <section
       className="relative min-h-[100svh] flex flex-col justify-center"
@@ -205,8 +203,9 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="bp-container relative z-10 pt-24 pb-28">
+      {/* Content — z-30 so the search-field dropdown (z-50 within this context)
+          floats above any section rendered below the hero. */}
+      <div className="bp-container relative z-30 pt-24 pb-28">
         <div className="max-w-3xl mx-auto text-center">
 
           {/* Headline */}
@@ -236,27 +235,8 @@ export default function HeroSection() {
             {' '}Pick a time, confirm with an OTP, and you are done.
           </p>
 
-          {/* Static specialty chips — above the search bar */}
-          <div className="mb-6 animate-fade-up delay-250" role="group" aria-label="Browse specialties">
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#9290B0' }}>
-              Browse by specialty
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {SPECIALTIES.map((s) => (
-                <button
-                  key={s.slug}
-                  type="button"
-                  onClick={() => handleSpecialtyChip(s.slug)}
-                  className="bp-hero-chip px-4 py-2 text-[13px] font-semibold shrink-0"
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Search bar — below chips, narrower */}
-          <div className="animate-fade-up delay-300 mb-10">
+          {/* Search bar */}
+          <div className="mt-10 animate-fade-up delay-300 mb-10">
             <form
               onSubmit={e => { e.preventDefault(); handleSearch() }}
               className="flex flex-col lg:flex-row bg-white/90 backdrop-blur-md rounded-[2.5rem] lg:rounded-full overflow-visible border border-indigo-100 max-w-2xl mx-auto shadow-xl shadow-indigo-200/40 p-2"

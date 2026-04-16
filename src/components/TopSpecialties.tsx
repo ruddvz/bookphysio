@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRef } from 'react'
 import {
   ArrowRight,
   Baby,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react'
 import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
+import { gsap, useGSAP } from '@/lib/gsap-client'
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   Bone,
@@ -38,8 +40,32 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 const MUSTARD = '#F5A623'
 
 export default function TopSpecialties() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      // Staggered rise-and-fade for specialty cards as the grid scrolls
+      // into view. Respect reduced-motion — skip entirely.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      gsap.from('[data-specialty-card]', {
+        opacity: 0,
+        y: 32,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: { each: 0.06, from: 'start' },
+        scrollTrigger: {
+          trigger: '[data-specialty-grid]',
+          start: 'top 85%',
+          once: true,
+        },
+      })
+    },
+    { scope },
+  )
+
   return (
-    <section className="bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
+    <section ref={scope} className="relative z-0 isolate bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
       <div className="bp-container">
 
         {/* Header */}
@@ -65,7 +91,7 @@ export default function TopSpecialties() {
 
         {/* Grid — 12 items, image-first cards */}
         {/* Grid — 12 items, image-first cards with squircle corners */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div data-specialty-grid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {SPECIALTIES.map((s) => {
             const Icon = ICON_MAP[s.icon] ?? Stethoscope
             const hasImage = Boolean(s.image)
@@ -73,6 +99,7 @@ export default function TopSpecialties() {
             return (
               <Link
                 key={s.slug}
+                data-specialty-card
                 href={`/specialties/${s.slug}`}
                 className={cn(
                   'group flex flex-col rounded-[var(--sq-lg)] border bg-white overflow-hidden',

@@ -45,11 +45,10 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
 }
 
 function getPendingOtpCookieSecret(): string | null {
-  return (
-    process.env.OTP_PENDING_COOKIE_SECRET ??
-    process.env.DEMO_COOKIE_SECRET ??
-    (process.env.NODE_ENV === 'production' ? null : 'local-otp-cookie-secret')
-  )
+  // OTP_PENDING_COOKIE_SECRET is the dedicated signing secret. DEMO_COOKIE_SECRET is
+  // accepted as a fallback since it's a server-only signing key of equivalent strength.
+  // No hardcoded dev fallback — set OTP_PENDING_COOKIE_SECRET in your .env file.
+  return process.env.OTP_PENDING_COOKIE_SECRET ?? process.env.DEMO_COOKIE_SECRET ?? null
 }
 
 function readCookieValueFromHeader(headerValue: string | null | undefined, name: string): string | null {

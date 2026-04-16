@@ -30,10 +30,32 @@ jobs:
 
       - name: Build
         env:
+          # Supabase
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
           SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
-          GOOGLE_GENERATIVE_AI_API_KEY: placeholder-ai-key
+          # App URLs
+          NEXT_PUBLIC_APP_URL: https://bookphysio.in
+          NEXT_PUBLIC_SITE_URL: https://bookphysio.in
+          # Resend (email)
           RESEND_API_KEY: placeholder-resend-key
+          RESEND_FROM_EMAIL: noreply@bookphysio.in
+          # MSG91 (SMS)
+          MSG91_AUTH_KEY: placeholder-msg91-auth-key
+          MSG91_SMS_SENDER_ID: BKPHYS
+          MSG91_SMS_TEMPLATE_REMINDER: placeholder-reminder-template
+          MSG91_SMS_TEMPLATE_CONFIRM: placeholder-confirm-template
+          MSG91_SMS_TEMPLATE_RESCHEDULE: placeholder-reschedule-template
+          # Upstash (rate limiting)
+          UPSTASH_REDIS_REST_URL: https://placeholder.upstash.io
+          UPSTASH_REDIS_REST_TOKEN: placeholder-upstash-token
+          # Gemini
+          GOOGLE_GENERATIVE_AI_API_KEY: placeholder-ai-key
+          # Cron + Admin
+          CRON_SECRET: placeholder-cron-secret
+          ADMIN_EMAIL: admin@bookphysio.in
+          # Auth cookie secrets
+          OTP_PENDING_COOKIE_SECRET: placeholder-otp-cookie-secret-minimum-32-chars-abcdef
+          # Misc
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build

@@ -1,6 +1,24 @@
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 
+// jsdom does not implement matchMedia — GSAP's ScrollTrigger calls it at
+// registration. Return a stub that reports "no match" so the plugin is happy.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }),
+  })
+}
+
 // Mock next/navigation
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = await importOriginal() as Record<string, unknown>

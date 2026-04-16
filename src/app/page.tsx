@@ -4,6 +4,7 @@ import TopSpecialties from '@/components/TopSpecialties'
 import ProofSection from '@/components/ProofSection'
 import ProviderCTA from '@/components/ProviderCTA'
 import FAQ from '@/components/FAQ'
+import WhereWeOperate from '@/components/WhereWeOperate'
 import Footer from '@/components/Footer'
 
 const organizationSchema = {
@@ -70,6 +71,7 @@ export default function Home() {
         <ProofSection />
         <ProviderCTA />
         <FAQ />
+        <WhereWeOperate />
       </main>
       <Footer />
     </>

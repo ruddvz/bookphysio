@@ -1,149 +1,281 @@
 'use client'
 
-import Image from 'next/image'
-import { ShieldCheck, Clock, Home, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { useRef } from 'react'
+import { Home as HomeIcon, Stethoscope, ShieldCheck, ArrowRight, Calendar } from 'lucide-react'
+import { gsap, useGSAP } from '@/lib/gsap-client'
 
-// Swap this path once the "presenting" character pose is ready
-const PROOF_CHARACTER = '/images/physio-female.png'
+// Illustrative slot data — matches what real search results render.
+// Each slot keys off a known "shape" (same-day, tomorrow, later this week)
+// so users can see availability at a glance without clicking into a profile.
+interface Slot {
+  day: string      // e.g. "Today", "Tomorrow", "Thu"
+  time: string     // e.g. "6:30 PM"
+  kind: 'clinic' | 'home'
+  taken?: boolean  // greys out the pill — shows realistic availability
+}
 
-const providers = [
-  { initials: 'SP', name: 'Sports Physio',  specialty: 'ACL · Runner rehab',    city: 'Mumbai',    fee: 800, slot: 'Same-day slots',    rating: 4.9 },
-  { initials: 'OR', name: 'Ortho Rehab',    specialty: 'Joint · Back pain',     city: 'Delhi',     fee: 700, slot: 'Next-day available', rating: 4.8 },
-  { initials: 'NP', name: 'Neuro Physio',   specialty: 'Stroke · Parkinson\'s', city: 'Bengaluru', fee: 900, slot: 'Home visits',         rating: 5.0 },
+interface TimelineProvider {
+  initials: string
+  name: string
+  specialty: string
+  city: string
+  feeInr: number
+  rating: number
+  yearsExp: number
+  slots: Slot[]
+}
+
+const providers: TimelineProvider[] = [
+  {
+    initials: 'DR',
+    name: 'Dr. R. — Sports rehab',
+    specialty: 'ACL, rotator cuff, runners',
+    city: 'Mumbai · Bandra',
+    feeInr: 800,
+    rating: 4.9,
+    yearsExp: 8,
+    slots: [
+      { day: 'Today',    time: '6:30 PM', kind: 'clinic' },
+      { day: 'Today',    time: '7:30 PM', kind: 'home' },
+      { day: 'Tomorrow', time: '9:00 AM', kind: 'clinic', taken: true },
+      { day: 'Tomorrow', time: '11:00 AM', kind: 'clinic' },
+      { day: 'Thu',      time: '5:00 PM', kind: 'home' },
+    ],
+  },
+  {
+    initials: 'DK',
+    name: 'Dr. K. — Ortho rehab',
+    specialty: 'Joint, back, post-surgery',
+    city: 'Delhi · Saket',
+    feeInr: 700,
+    rating: 4.8,
+    yearsExp: 12,
+    slots: [
+      { day: 'Today',    time: '4:00 PM', kind: 'clinic', taken: true },
+      { day: 'Tomorrow', time: '10:00 AM', kind: 'clinic' },
+      { day: 'Tomorrow', time: '1:00 PM', kind: 'home' },
+      { day: 'Wed',      time: '6:00 PM', kind: 'clinic' },
+      { day: 'Thu',      time: '11:00 AM', kind: 'home' },
+    ],
+  },
+  {
+    initials: 'DM',
+    name: 'Dr. M. — Neuro rehab',
+    specialty: 'Stroke, Parkinson\u2019s, MS',
+    city: 'Bengaluru · Indiranagar',
+    feeInr: 900,
+    rating: 5.0,
+    yearsExp: 15,
+    slots: [
+      { day: 'Tomorrow', time: '8:30 AM', kind: 'home' },
+      { day: 'Tomorrow', time: '2:00 PM', kind: 'clinic' },
+      { day: 'Wed',      time: '9:00 AM', kind: 'clinic', taken: true },
+      { day: 'Thu',      time: '4:30 PM', kind: 'home' },
+      { day: 'Fri',      time: '10:30 AM', kind: 'clinic' },
+    ],
+  },
 ]
 
-const features = [
-  {
-    icon: ShieldCheck,
-    title: '3-step credential check',
-    desc: 'Every provider is verified against IAP records, degree uploads, and ID before going live.',
-  },
-  {
-    icon: Clock,
-    title: 'Instant confirmation',
-    desc: 'No callbacks. Your slot is held the moment you confirm.',
-  },
-  {
-    icon: Home,
-    title: 'Home visits included',
-    desc: 'Filter by in-clinic or home visit and compare side-by-side.',
-  },
-]
+function SlotPill({ slot }: { slot: Slot }) {
+  const base = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap border transition-colors'
+  if (slot.taken) {
+    return (
+      <span data-slot-pill className={`${base} border-slate-200 bg-slate-50 text-slate-400 line-through decoration-slate-300`}>
+        {slot.time}
+      </span>
+    )
+  }
+  if (slot.kind === 'home') {
+    return (
+      <span data-slot-pill className={`${base} border-[#00766C]/25 bg-[#E6F4F3] text-[#00766C]`}>
+        <HomeIcon size={11} strokeWidth={2.5} />
+        {slot.time}
+      </span>
+    )
+  }
+  return (
+    <span data-slot-pill className={`${base} border-indigo-200 bg-indigo-50 text-indigo-700`}>
+      <Stethoscope size={11} strokeWidth={2.5} />
+      {slot.time}
+    </span>
+  )
+}
 
 export default function ProofSection() {
+  const scope = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      // Provider rows rise in as the list enters view.
+      gsap.from('[data-proof-row]', {
+        opacity: 0,
+        y: 28,
+        duration: 0.65,
+        ease: 'power3.out',
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: '[data-proof-list]',
+          start: 'top 80%',
+          once: true,
+        },
+      })
+
+      // Slot pills ripple in after the row they belong to. Short, subtle,
+      // scoped per-row so the effect feels local to each provider.
+      gsap.utils.toArray<HTMLElement>('[data-proof-row]').forEach((row) => {
+        const pills = row.querySelectorAll('[data-slot-pill]')
+        if (pills.length === 0) return
+        gsap.from(pills, {
+          opacity: 0,
+          scale: 0.85,
+          duration: 0.4,
+          ease: 'back.out(1.4)',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: row,
+            start: 'top 75%',
+            once: true,
+          },
+        })
+      })
+    },
+    { scope },
+  )
+
   return (
-    <section className="bg-[#F7F8F9] py-20 md:py-28" aria-label="Network transparency">
+    <section
+      ref={scope}
+      className="relative z-0 isolate bg-white py-24 md:py-32"
+      aria-label="Real availability across providers"
+    >
       <div className="bp-container">
-        {/* Section header */}
-        <div className="max-w-2xl mb-14">
-          <div className="bp-kicker mb-4" style={{ background: 'rgba(0,118,108,0.08)', borderColor: 'rgba(0,118,108,0.2)', color: '#00766C' }}>
-            Straightforward booking
+        <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end mb-14">
+          <div className="max-w-2xl">
+            <div
+              className="bp-kicker mb-4"
+              style={{
+                background: 'rgba(0,118,108,0.08)',
+                borderColor: 'rgba(0,118,108,0.2)',
+                color: '#00766C',
+              }}
+            >
+              Real slots, not callbacks
+            </div>
+            <h2 className="text-slate-900 mb-3">
+              What is actually open this week.
+            </h2>
+            <p className="text-slate-500 text-[17px] leading-relaxed">
+              Every pill below is a slot the physiotherapist has opened themselves. No phone tag,
+              no &ldquo;we&rsquo;ll call you back.&rdquo; Pick one, confirm with an OTP, done.
+            </p>
           </div>
-          <h2 className="text-slate-900 mb-3">Real availability, no guesswork</h2>
-          <p className="text-slate-500 text-[17px] leading-relaxed">
-            Every slot you see is one the physiotherapist has actually opened. Fees, timings, and credentials are shown upfront — no surprises.
-          </p>
+
+          <div className="flex flex-wrap items-center gap-4 text-[12px] font-semibold">
+            <span className="flex items-center gap-1.5 text-indigo-700">
+              <span className="w-3 h-3 rounded-full border border-indigo-200 bg-indigo-50" />
+              Clinic
+            </span>
+            <span className="flex items-center gap-1.5 text-[#00766C]">
+              <span className="w-3 h-3 rounded-full border border-[#00766C]/25 bg-[#E6F4F3]" />
+              Home visit
+            </span>
+            <span className="flex items-center gap-1.5 text-slate-400">
+              <span className="w-3 h-3 rounded-full border border-slate-200 bg-slate-50" />
+              Booked
+            </span>
+          </div>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-[1fr_380px] items-start">
-
-          {/* Live provider cards */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[13px] font-semibold text-slate-500">Example provider categories</span>
-              </div>
-              <Link
-                href="/search"
-                className="text-[13px] font-semibold text-[#00766C] hover:text-[#005A52] flex items-center gap-1 group"
-              >
-                Browse all
-                <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-
-            {providers.map((p) => (
-              <Link
-                key={p.name}
-                href="/search"
-                className="group flex items-center gap-5 p-5 rounded-[var(--sq-lg)] border border-[#00766C]/20 bg-white hover:shadow-lg hover:shadow-[#00766C]/5 hover:border-[#00766C]/40 hover:scale-[1.01] transition-all duration-200 shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.04)]"
-              >
-                {/* Avatar */}
-                <div className="w-14 h-14 rounded-[var(--sq-md)] bg-[#E6F4F3] flex items-center justify-center text-[16px] font-bold text-[#00766C] group-hover:bg-[#00766C] group-hover:text-white transition-colors shrink-0">
-                  {p.initials}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-slate-900 text-[15px]">{p.name}</span>
-                    <ShieldCheck size={14} className="text-[#00766C] shrink-0" />
-                  </div>
-                  <div className="text-[13px] text-slate-500">
-                    {p.specialty} · {p.city}
-                  </div>
-                  <div className="flex items-center gap-1 mt-1">
-                    {/* Math.round: ratings cluster 4.8–5.0; rounding up shows accurate stars (4.9→5★) */}
-                    {'★★★★★'.split('').map((s, i) => (
-                      <span key={i} className={`text-[11px] ${i < Math.round(p.rating) ? 'text-amber-400' : 'text-slate-200'}`}>★</span>
-                    ))}
-                    <span className="text-[12px] text-slate-400 ml-1">{p.rating}</span>
-                  </div>
-                </div>
-
-                {/* Price + slot */}
-                <div className="text-right shrink-0">
-                  <div className="text-[17px] font-bold text-slate-900">₹{p.fee}</div>
-                  <div className="text-[12px] font-semibold text-[#00766C] mt-1">{p.slot}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Trust panel — character + features + CTA */}
-          <div className="space-y-6 lg:sticky lg:top-28">
-            {/* Physio character */}
-            <div className="relative rounded-[var(--sq-lg)] bg-[#E6F4F3] overflow-hidden flex justify-center" style={{ minHeight: 200 }}>
-              <Image
-                src={PROOF_CHARACTER}
-                alt=""
-                aria-hidden="true"
-                width={180}
-                height={240}
-                className="object-contain object-bottom"
-                sizes="(min-width: 1024px) 180px, 0px"
-              />
-            </div>
-
-            <div>
-              <h3 className="text-slate-900 text-[20px] font-bold mb-2">Why you can trust the list</h3>
-              <p className="text-slate-500 text-[14px] leading-relaxed">
-                Every provider has been checked by our team. We focus only on physiotherapy.
-              </p>
-            </div>
-
-            {features.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex gap-4">
-                <div className="w-10 h-10 rounded-[var(--sq-xs)] bg-[#E6F4F3] flex items-center justify-center shrink-0">
-                  <Icon size={18} className="text-[#00766C]" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-900 text-[14px] mb-0.5">{title}</h4>
-                  <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
-                </div>
-              </div>
-            ))}
-
-            <Link
-              href="/search"
-              className="mt-2 w-full flex items-center justify-center gap-2 py-4 bg-[#00766C] text-white rounded-[var(--sq-sm)] font-semibold text-[15px] hover:bg-[#005A52] transition-colors group"
+        <div data-proof-list className="space-y-4">
+          {providers.map((p) => (
+            <article
+              key={p.name}
+              data-proof-row
+              className="group rounded-[var(--sq-lg)] border border-slate-200 bg-white p-5 md:p-6 transition-all hover:border-[#00766C]/30 hover:shadow-lg hover:shadow-slate-200/50"
             >
-              Search verified physios
-              <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
+                {/* Identity */}
+                <div className="flex items-center gap-4 lg:w-[320px] lg:shrink-0">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--sq-md)] bg-[#E6F4F3] text-[15px] font-bold text-[#00766C] transition-colors group-hover:bg-[#00766C] group-hover:text-white">
+                    {p.initials}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-slate-900 text-[15px] truncate">
+                        {p.name}
+                      </span>
+                      <ShieldCheck size={13} className="text-[#00766C] shrink-0" />
+                    </div>
+                    <div className="text-[13px] text-slate-500 truncate">{p.specialty}</div>
+                    <div className="flex items-center gap-2 mt-0.5 text-[12px] text-slate-400">
+                      <span>{p.city}</span>
+                      <span className="h-0.5 w-0.5 rounded-full bg-slate-300" />
+                      <span>{p.yearsExp} yrs</span>
+                      <span className="h-0.5 w-0.5 rounded-full bg-slate-300" />
+                      <span className="text-amber-500 font-semibold">★ {p.rating}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex gap-3 overflow-x-auto pb-1 lg:pb-0 -mx-1 px-1">
+                    {p.slots.map((slot, i) => (
+                      <div
+                        key={i}
+                        className="flex flex-col items-start gap-1.5 shrink-0 min-w-[92px]"
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          {slot.day}
+                        </span>
+                        <SlotPill slot={slot} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fee + CTA */}
+                <div className="flex items-center justify-between gap-4 lg:flex-col lg:items-end lg:justify-center lg:gap-2 lg:w-[140px] lg:shrink-0">
+                  <div className="text-right">
+                    <div className="text-[20px] font-bold text-slate-900 leading-none">
+                      ₹{p.feeInr}
+                    </div>
+                    <div className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mt-1">
+                      per session
+                    </div>
+                  </div>
+                  <Link
+                    href="/search"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#00766C] text-white rounded-full text-[13px] font-semibold hover:bg-[#005A52] transition-colors"
+                  >
+                    Book in 60s
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Footer band */}
+        <div className="mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-[var(--sq-lg)] bg-slate-50 border border-slate-100 px-6 py-5">
+          <div className="flex items-center gap-3">
+            <Calendar size={18} className="text-[#00766C] shrink-0" />
+            <p className="text-[14px] text-slate-600">
+              Availability refreshes every few minutes. Slots you see here are the ones
+              providers are actually holding open.
+            </p>
           </div>
+          <Link
+            href="/search"
+            className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#00766C] hover:text-[#005A52] shrink-0 group"
+          >
+            Browse every provider
+            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
       </div>
     </section>
