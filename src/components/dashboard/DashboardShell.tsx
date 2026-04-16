@@ -12,6 +12,7 @@ import {
   Receipt,
   ShieldCheck,
   BarChart3,
+  Sparkles,
 } from 'lucide-react'
 import TopPillNav, { type NavItem, type NavRole } from '@/components/dashboard/TopPillNav'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
@@ -41,6 +42,7 @@ const NAV_CONFIG: Record<
   provider: {
     items: [
       { href: '/provider/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
+      { href: '/provider/ai-assistant', label: 'AI', icon: Sparkles },
       { href: '/provider/calendar', label: 'Schedule', icon: Calendar },
       { href: '/provider/patients', label: 'Patients', icon: Users },
       { href: '/provider/earnings', label: 'Earnings', icon: TrendingUp },
