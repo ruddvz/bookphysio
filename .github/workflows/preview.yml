@@ -54,7 +54,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Install Vercel CLI
-        run: npm i -g vercel@39.5.2
+        run: npm i -g vercel@latest
 
       - name: Pull Vercel Environment
         env:
