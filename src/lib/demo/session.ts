@@ -380,3 +380,21 @@ export async function getDemoSessionFromCookies(cookies: DemoCookieReader): Prom
 
   return parseDemoCookie(cookies.get(DEMO_SESSION_COOKIE)?.value)
 }
+
+/** Clear demo session and set suppression so real-auth users never see demo data. */
+export function clearDemoSessionCookies(response: { cookies: { set: (name: string, value: string, opts: object) => void } }): void {
+  const isProduction = process.env.NODE_ENV === 'production'
+  response.cookies.set(DEMO_SESSION_COOKIE, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/',
+    expires: new Date(0),
+  })
+  response.cookies.set(DEMO_SESSION_SUPPRESSION_COOKIE, '1', {
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/',
+    maxAge: 30 * 24 * 60 * 60,
+  })
+}

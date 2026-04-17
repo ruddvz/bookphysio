@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse, type NextRequest } from 'next/server'
-import { resolvePostAuthRedirect } from '@/lib/demo/session'
+import { resolvePostAuthRedirect, clearDemoSessionCookies } from '@/lib/demo/session'
 
 async function resolveUserRole(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -32,7 +32,9 @@ export async function GET(request: NextRequest) {
     if (!error) {
       const role = await resolveUserRole(supabase, data.user?.id, data.user?.user_metadata?.role as string | undefined)
       const redirectTo = resolvePostAuthRedirect(role, next)
-      return NextResponse.redirect(new URL(redirectTo, request.url))
+      const response = NextResponse.redirect(new URL(redirectTo, request.url))
+      clearDemoSessionCookies(response)
+      return response
     }
     
     console.error('Auth callback error:', error)

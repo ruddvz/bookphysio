@@ -6,6 +6,7 @@ import { otpVerifySchema } from '@/lib/validations/auth'
 import { createClient } from '@/lib/supabase/server'
 import {
   createDemoCookiePayload,
+  clearDemoSessionCookies,
   DEMO_SESSION_COOKIE,
   DEMO_SESSION_SUPPRESSION_COOKIE,
   encodeDemoCookie,
@@ -146,6 +147,6 @@ export async function POST(request: NextRequest) {
   if (pendingOtp.flow !== 'provider_signup') {
     clearPendingOtpCookie(response)
   }
-
+  clearDemoSessionCookies(response)
   return response
 }

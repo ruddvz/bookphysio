@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { loginSchema } from '@/lib/validations/auth'
-import { sanitizeReturnPath, resolvePostAuthRedirect } from '@/lib/demo/session'
+import { sanitizeReturnPath, resolvePostAuthRedirect, clearDemoSessionCookies } from '@/lib/demo/session'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 
@@ -56,8 +56,10 @@ export async function POST(request: NextRequest) {
   const role = profile?.role ?? 'patient'
   const returnTo = sanitizeReturnPath(typeof body.return_to === 'string' ? body.return_to : null)
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     role,
     redirectTo: resolvePostAuthRedirect(role, returnTo),
   })
+  clearDemoSessionCookies(response)
+  return response
 }
