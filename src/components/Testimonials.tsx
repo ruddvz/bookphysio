@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import Image from 'next/image'
 import { ShieldCheck, Clock, Home } from 'lucide-react'
-import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap-client'
+import { ScrollTrigger, revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 const promises = [
   {
@@ -33,17 +33,22 @@ export default function Testimonials() {
   const scope = useRef<HTMLElement>(null)
 
   useGSAP(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    gsap.from('[data-tl-left]', {
-      x: -32, opacity: 0, duration: 0.7, ease: 'power2.out',
-      scrollTrigger: { trigger: scope.current, start: 'top 78%', once: true },
+    revealOnScroll('[data-tl-left]', {
+      y: 0,
+      x: -32,
+      duration: 0.7,
+      ease: 'power2.out',
+      trigger: scope.current,
+      start: 'top 78%',
     })
 
-    gsap.from('[data-tl-card]', {
-      y: 28, opacity: 0, duration: 0.55, ease: 'power2.out',
+    revealOnScroll('[data-tl-card]', {
+      y: 28,
+      duration: 0.55,
+      ease: 'power2.out',
       stagger: 0.1,
-      scrollTrigger: { trigger: '[data-tl-cards]', start: 'top 80%', once: true },
+      trigger: '[data-tl-cards]',
+      start: 'top 80%',
     })
   }, { scope, dependencies: [ScrollTrigger] })
 
