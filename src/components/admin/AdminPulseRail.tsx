@@ -33,8 +33,8 @@ const DEFAULT_PATIENTS_TREND: readonly number[] = [180, 220, 240, 280, 310, 360,
 const DEFAULT_GMV_TREND: readonly number[] = [42, 55, 61, 73, 78, 92, 104]
 
 function formatCompactInr(amount: number): string {
-  if (amount >= 100_000) return `₹${(amount / 100_000).toFixed(1)}L`
-  if (amount >= 1_000) return `₹${(amount / 1_000).toFixed(1)}K`
+  if (amount >= 100_000) return `₹${Math.trunc(amount / 100_000)}L`
+  if (amount >= 1_000) return `₹${Math.trunc(amount / 1_000)}K`
   return `₹${amount.toLocaleString('en-IN')}`
 }
 
@@ -86,12 +86,92 @@ function KpiPill({ icon: Icon, label, value, values, trailing, inverseDelta = fa
   )
 }
 
-/**
- * Flag-gated ops pulse rail for the admin dashboard. Surfaces the four
- * platform KPIs with inline sparklines + trend chips and a primary review
- * CTA. Props-driven so a later slice can feed a live `/api/admin/trends`
- * payload; defaults render a plausible preview until then.
- */
+interface PulseHeaderProps {
+  reviewHref: string
+}
+
+function AdminPulseHeader({ reviewHref }: PulseHeaderProps) {
+  return (
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-ad-muted)]">
+          Ops pulse · Last 7 days
+        </div>
+        <div className="mt-1 text-[15px] font-semibold text-[var(--color-ad-ink)]">
+          Platform health at a glance
+        </div>
+      </div>
+      <Link
+        href={reviewHref}
+        className="group inline-flex items-center justify-center gap-2 self-start rounded-full bg-[var(--color-ad-primary)] px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-85 md:self-auto"
+        aria-label="Open verification queue"
+      >
+        Review queue
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+      </Link>
+    </div>
+  )
+}
+
+interface KpiGridProps {
+  activeProviders: number
+  pendingApprovals: number
+  totalPatients: number
+  gmvMtd: number
+  providersTrend: readonly number[]
+  approvalsTrend: readonly number[]
+  patientsTrend: readonly number[]
+  gmvTrend: readonly number[]
+}
+
+function AdminPulseKpiGrid({
+  activeProviders,
+  pendingApprovals,
+  totalPatients,
+  gmvMtd,
+  providersTrend,
+  approvalsTrend,
+  patientsTrend,
+  gmvTrend,
+}: KpiGridProps) {
+  return (
+    <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <KpiPill
+        icon={Users}
+        label="Active providers"
+        value={activeProviders.toLocaleString('en-IN')}
+        values={providersTrend}
+      />
+      <KpiPill
+        icon={ShieldCheck}
+        label="Pending approvals"
+        value={pendingApprovals.toLocaleString('en-IN')}
+        values={approvalsTrend}
+        inverseDelta
+        trailing={
+          pendingApprovals > 0 ? (
+            <Badge role="admin" variant="warning">
+              Action
+            </Badge>
+          ) : null
+        }
+      />
+      <KpiPill
+        icon={User}
+        label="Total patients"
+        value={totalPatients.toLocaleString('en-IN')}
+        values={patientsTrend}
+      />
+      <KpiPill
+        icon={IndianRupee}
+        label="Completed GMV"
+        value={formatCompactInr(gmvMtd)}
+        values={gmvTrend}
+      />
+    </div>
+  )
+}
+
 export function AdminPulseRail({
   activeProviders,
   pendingApprovals,
@@ -114,61 +194,17 @@ export function AdminPulseRail({
       data-testid="admin-pulse-rail"
       aria-label="Platform ops pulse"
     >
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-ad-muted)]">
-            Ops pulse · Last 7 days
-          </div>
-          <div className="mt-1 text-[15px] font-semibold text-[var(--color-ad-ink)]">
-            Platform health at a glance
-          </div>
-        </div>
-        <Link
-          href={reviewHref}
-          className="group inline-flex items-center justify-center gap-2 self-start rounded-full bg-[var(--color-ad-primary)] px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-85 md:self-auto"
-          aria-label="Open verification queue"
-        >
-          Review queue
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-        </Link>
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiPill
-          icon={Users}
-          label="Active providers"
-          value={activeProviders.toLocaleString('en-IN')}
-          values={providersTrend}
-        />
-        <KpiPill
-          icon={ShieldCheck}
-          label="Pending approvals"
-          value={pendingApprovals.toLocaleString('en-IN')}
-          values={approvalsTrend}
-          inverseDelta
-          trailing={
-            pendingApprovals > 0 ? (
-              <Badge role="admin" variant="warning">
-                Action
-              </Badge>
-            ) : null
-          }
-        />
-        <KpiPill
-          icon={User}
-          label="Total patients"
-          value={totalPatients.toLocaleString('en-IN')}
-          values={patientsTrend}
-        />
-        <KpiPill
-          icon={IndianRupee}
-          label="Completed GMV"
-          value={formatCompactInr(gmvMtd)}
-          values={gmvTrend}
-        />
-      </div>
+      <AdminPulseHeader reviewHref={reviewHref} />
+      <AdminPulseKpiGrid
+        activeProviders={activeProviders}
+        pendingApprovals={pendingApprovals}
+        totalPatients={totalPatients}
+        gmvMtd={gmvMtd}
+        providersTrend={providersTrend}
+        approvalsTrend={approvalsTrend}
+        patientsTrend={patientsTrend}
+        gmvTrend={gmvTrend}
+      />
     </aside>
   )
 }
-
-export default AdminPulseRail

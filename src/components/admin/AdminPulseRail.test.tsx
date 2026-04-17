@@ -15,12 +15,17 @@ const BASE_STATS = {
 }
 
 describe('AdminPulseRail', () => {
+  let prevUiV2: string | undefined
+
   beforeEach(() => {
+    prevUiV2 = process.env.NEXT_PUBLIC_UI_V2
     delete process.env.NEXT_PUBLIC_UI_V2
     setUiV2Cookie(true)
   })
 
   afterEach(() => {
+    if (prevUiV2 === undefined) delete process.env.NEXT_PUBLIC_UI_V2
+    else process.env.NEXT_PUBLIC_UI_V2 = prevUiV2
     setUiV2Cookie(false)
     cleanup()
   })
@@ -45,14 +50,14 @@ describe('AdminPulseRail', () => {
     expect(screen.getByText('8,921')).toBeInTheDocument()
   })
 
-  it('formats GMV with a compact lakh/thousand suffix', () => {
+  it('formats GMV with a compact lakh/thousand suffix using integer rupees', () => {
     render(<AdminPulseRail {...BASE_STATS} />)
-    expect(screen.getByText('₹12.4L')).toBeInTheDocument()
+    expect(screen.getByText('₹12L')).toBeInTheDocument()
   })
 
-  it('compacts GMV values below one lakh with a K suffix', () => {
+  it('compacts GMV values below one lakh with a K suffix (integer only)', () => {
     render(<AdminPulseRail {...BASE_STATS} gmvMtd={42_500} />)
-    expect(screen.getByText('₹42.5K')).toBeInTheDocument()
+    expect(screen.getByText('₹42K')).toBeInTheDocument()
   })
 
   it('renders the primary review CTA pointing to the approval queue', () => {
