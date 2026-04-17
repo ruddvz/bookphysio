@@ -261,6 +261,7 @@
 - [ ] **16.8** Provider dashboard redesign
   - [x] `ProviderPulse` — flag-gated rail card with 4-week forward booking load sparkline, `TrendDelta` (first-half vs second-half avg), first-visit pipeline count, and status badge (`In session` / `Busy week` / `Quiet week` / `Open diary` / `Steady`); driven by `bucketScheduleByWeek` + `countFirstVisitsInSchedule` helpers in `provider-dashboard-utils.ts` (India-time aware, snapped to India midnight), wired into the right aside of `/provider/dashboard`, 31 unit tests
 - [ ] **16.9** Admin dashboard redesign
+  - [x] `AdminPulse` — flag-gated rail card with monthly appointment volume sparkline, `TrendDelta` (first-half vs second-half avg), completion-rate tile, and status badge (`No activity` / `Watch list` / `Cooling` / `Healthy` / `Steady`); driven by `computePlatformTrend` + `getPlatformStatus` helpers colocated in `AdminPulse.tsx`, fed by a dedicated `/api/admin/analytics` query on `/admin`, wired into the top of the right rail, 20 unit tests
 - [ ] Command palette (full implementation, replaces the hint)
 - [ ] Notification drawer
 - [ ] Recharts integration for analytics surfaces
