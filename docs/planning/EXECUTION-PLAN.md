@@ -257,6 +257,7 @@
   - [x] Flag-gated `DashboardBreadcrumbs` strip wired into `TopPillNav` (role-aware trail from pathname, accepts `items` override for dynamic segments), 12 unit tests
 - [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
 - [ ] **16.7** Patient dashboard redesign
+  - [x] `PatientCarePulse` — flag-gated rail card with visit cadence sparkline, `TrendDelta` (first-half vs second-half avg), care team size, and status badge (`On track` / `Stay engaged` / `Time to book`); driven by `bucketVisitsByWeek` + `daysUntil` helpers in `dashboard-utils.ts`, wired into the right rail of `/patient/dashboard`, 30 unit tests
 - [ ] **16.8** Provider dashboard redesign
 - [ ] **16.9** Admin dashboard redesign
 - [ ] Command palette (full implementation, replaces the hint)

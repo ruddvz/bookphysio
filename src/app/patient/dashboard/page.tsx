@@ -30,7 +30,10 @@ import {
 import { formatIndiaDate } from '@/lib/india-date'
 import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
 import type { PatientFacingRecord } from '@/lib/clinical/types'
+import { PatientCarePulse } from '@/components/dashboard/PatientCarePulse'
 import {
+  bucketVisitsByWeek,
+  daysUntil,
   formatAppointmentDateTime,
   getNextAppointment,
   getPatientAppointmentProviderName,
@@ -214,6 +217,8 @@ export default function PatientDashboardHome() {
   const canCancelNext = nextAppointment
     ? canPatientCancelAppointment(nextAppointment.status, nextStartsAt)
     : false
+  const weeklyVisits = bucketVisitsByWeek(records, 8)
+  const nextAppointmentInDays = daysUntil(nextStartsAt)
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
@@ -407,6 +412,12 @@ export default function PatientDashboardHome() {
 
         {/* Right rail */}
         <div className="xl:w-[340px] xl:shrink-0 space-y-6">
+          <PatientCarePulse
+            weeklyVisits={weeklyVisits}
+            careTeamSize={uniqueProviders}
+            nextAppointmentInDays={nextAppointmentInDays}
+          />
+
           <DashCard role="patient">
             <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
               Quick actions
