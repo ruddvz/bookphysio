@@ -9,7 +9,6 @@ import BpLogo from '@/components/BpLogo'
 import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { INDIA_STATES } from '@/lib/india-locations'
-import { createClient } from '@/lib/supabase/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1407,76 +1406,10 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
   )
 }
 
-// ─── Step 5 ───────────────────────────────────────────────────────────────────
+// ─── Step 5 — Email OTP verification ─────────────────────────────────────────
 
+const OTP_LENGTH = 6
 const RESEND_COOLDOWN_SECONDS = 60
-
-type ResendStatus = 'idle' | 'loading' | 'sent' | 'error'
-
-function useResendConfirmation(email: string) {
-  // Initialize to 'loading' immediately when email is present so the resend
-  // button is disabled before the first useEffect fires (avoids synchronous
-  // setState inside the effect, which triggers react-hooks/set-state-in-effect).
-  const [resendStatus, setResendStatus] = useState<ResendStatus>(() => email ? 'loading' : 'idle')
-  const [resendError, setResendError] = useState('')
-  const [countdown, setCountdown] = useState(0)
-
-  // Countdown ticker
-  useEffect(() => {
-    if (countdown <= 0) return
-    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
-    return () => clearTimeout(timer)
-  }, [countdown])
-
-  // Auto-send on mount: admin.createUser() does not send confirmation emails,
-  // so we trigger one here immediately when Step 5 renders.
-  // resendStatus is already 'loading' from the lazy initializer above,
-  // preventing concurrent manual resends while the request is in-flight.
-  useEffect(() => {
-    if (!email) return
-    let cancelled = false
-    const supabase = createClient()
-    void (async () => {
-      const { error } = await supabase.auth.resend({ type: 'signup', email })
-      if (cancelled) return
-      if (error) {
-        setResendError('Unable to send the confirmation email automatically. Please use the resend button below.')
-        setResendStatus('error')
-        return
-      }
-      setResendStatus('sent')
-      setCountdown(RESEND_COOLDOWN_SECONDS)
-    })().catch(() => {
-      if (!cancelled) {
-        setResendError('Network error. Please use the resend button below.')
-        setResendStatus('error')
-      }
-    })
-    return () => { cancelled = true }
-  }, [email])
-
-  async function handleResend() {
-    if (!email || resendStatus === 'loading' || countdown > 0) return
-    setResendStatus('loading')
-    setResendError('')
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.resend({ type: 'signup', email })
-      if (error) {
-        setResendError('Unable to resend the email right now. Please try again.')
-        setResendStatus('error')
-        return
-      }
-      setResendStatus('sent')
-      setCountdown(RESEND_COOLDOWN_SECONDS)
-    } catch {
-      setResendError('Network error. Please try again.')
-      setResendStatus('error')
-    }
-  }
-
-  return { resendStatus, resendError, countdown, handleResend }
-}
 
 interface Step5Props {
   email: string
@@ -1484,13 +1417,133 @@ interface Step5Props {
 }
 
 function Step5({ email, onBack }: Step5Props) {
-  const { resendStatus, resendError, countdown, handleResend } = useResendConfirmation(email)
+  const router = useRouter()
+  const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
+  const [verifyError, setVerifyError] = useState('')
+  const [verifyLoading, setVerifyLoading] = useState(false)
+  const [verified, setVerified] = useState(false)
+
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSent, setResendSent] = useState(false)
+  const [resendError, setResendError] = useState('')
+  const [countdown, setCountdown] = useState(RESEND_COOLDOWN_SECONDS)
+
+  const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(OTP_LENGTH).fill(null))
+
+  // Countdown ticker — the OTP email was already sent by onboard-signup
+  useEffect(() => {
+    if (countdown <= 0) return
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [countdown])
+
+  function handleDigitChange(index: number, value: string) {
+    // Handle paste of full code
+    if (value.length > 1) {
+      const clean = value.replace(/\D/g, '').slice(0, OTP_LENGTH)
+      const next = [...digits]
+      for (let i = 0; i < OTP_LENGTH; i++) {
+        next[i] = clean[i] ?? ''
+      }
+      setDigits(next)
+      inputRefs.current[Math.min(clean.length, OTP_LENGTH - 1)]?.focus()
+      return
+    }
+    const digit = value.replace(/\D/g, '').slice(-1)
+    const next = [...digits]
+    next[index] = digit
+    setDigits(next)
+    if (digit && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Backspace' && !digits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
+  }
+
+  async function handleVerify() {
+    const code = digits.join('')
+    if (code.length !== OTP_LENGTH) {
+      setVerifyError('Enter all 6 digits of your verification code.')
+      return
+    }
+    setVerifyError('')
+    setVerifyLoading(true)
+    try {
+      const res = await fetch('/api/auth/email-otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        setVerifyError(data.error ?? 'Invalid code. Please try again.')
+        return
+      }
+      setVerified(true)
+    } catch {
+      setVerifyError('Network error. Please try again.')
+    } finally {
+      setVerifyLoading(false)
+    }
+  }
+
+  async function handleResend() {
+    if (resendLoading || countdown > 0) return
+    setResendLoading(true)
+    setResendError('')
+    setResendSent(false)
+    try {
+      const res = await fetch('/api/auth/email-otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        setResendError(data.error ?? 'Unable to resend. Please try again.')
+        return
+      }
+      setResendSent(true)
+      setCountdown(RESEND_COOLDOWN_SECONDS)
+      setDigits(Array(OTP_LENGTH).fill(''))
+      inputRefs.current[0]?.focus()
+    } catch {
+      setResendError('Network error. Please try again.')
+    } finally {
+      setResendLoading(false)
+    }
+  }
 
   const maskedEmail = email.replace(
     /^(.)(.*)(@.*)$/,
-    (_match, firstChar, localPart, domainPart) =>
-      `${firstChar}${'•'.repeat(Math.min(Math.max(localPart.length, 1), 6))}${domainPart}`,
+    (_m, first, local, domain) => `${first}${'•'.repeat(Math.min(Math.max(local.length, 1), 6))}${domain}`,
   )
+
+  if (verified) {
+    return (
+      <div className="text-center">
+        <div className="w-20 h-20 mx-auto rounded-[24px] bg-bp-accent/10 flex items-center justify-center mb-6">
+          <CheckCircle2 className="w-10 h-10 text-bp-accent" />
+        </div>
+        <h2 className="text-[22px] font-bold text-bp-primary mb-2">Email verified!</h2>
+        <p className="text-[14px] text-gray-600 mb-6 leading-relaxed">
+          Your email has been confirmed. Our team will review your credentials and you&apos;ll receive an email once your provider account is approved.
+        </p>
+        <button
+          type="button"
+          onClick={() => router.push('/login')}
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-bold text-white bg-bp-primary hover:bg-bp-primary-dark rounded-[24px] transition-all"
+        >
+          Go to Login
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="text-center">
@@ -1499,62 +1552,86 @@ function Step5({ email, onBack }: Step5Props) {
           <Mail className="w-8 h-8 text-bp-primary" />
         </div>
       </div>
-      <h2 className="text-[22px] font-bold text-bp-primary mb-2">Check your email!</h2>
-      <p className="text-[14px] text-gray-600 mb-1">
-        We&apos;ve sent a confirmation link to
-      </p>
+      <h2 className="text-[22px] font-bold text-bp-primary mb-2">Check your email</h2>
+      <p className="text-[14px] text-gray-600 mb-1">We sent a 6-digit code to</p>
       <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
-      <p className="text-[13px] text-gray-500 mb-6 leading-relaxed">
-        Click the link in the email to activate your account. Once our team approves your credentials, you&apos;ll get access to the provider dashboard.
-        Check your spam folder if you don&apos;t see it within a few minutes.
-      </p>
+
+      {/* OTP digit inputs */}
+      <div className="flex justify-center gap-2 mb-4">
+        {digits.map((d, i) => (
+          <input
+            key={i}
+            ref={(el) => { inputRefs.current[i] = el }}
+            type="text"
+            inputMode="numeric"
+            maxLength={OTP_LENGTH}
+            value={d}
+            onChange={(e) => handleDigitChange(i, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(i, e)}
+            onFocus={(e) => e.target.select()}
+            style={{
+              width: '44px',
+              height: '52px',
+              textAlign: 'center',
+              fontSize: '22px',
+              fontWeight: 700,
+              border: `2px solid ${verifyError ? '#FCA5A5' : d ? 'var(--color-bp-primary)' : 'var(--color-bp-border)'}`,
+              borderRadius: '10px',
+              color: 'var(--color-bp-primary)',
+              outline: 'none',
+              background: d ? 'var(--color-bp-light)' : '#fff',
+              transition: 'border-color 0.15s, background 0.15s',
+            }}
+          />
+        ))}
+      </div>
+
+      {verifyError && (
+        <p className="text-[12px] font-medium text-red-500 mb-3">{verifyError}</p>
+      )}
+
+      <PrimaryButton onClick={handleVerify} disabled={verifyLoading}>
+        {verifyLoading ? 'Verifying…' : (
+          <>
+            Verify Email
+            <ArrowRight className="w-4 h-4" />
+          </>
+        )}
+      </PrimaryButton>
 
       {/* Resend section */}
-      <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-4 text-center space-y-3 mb-6">
-        <p className="text-sm text-gray-500">
-          Didn&apos;t receive it? Check your spam folder or resend below.
-        </p>
+      <div className="mt-5 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-center space-y-2">
+        <p className="text-sm text-gray-500">Didn&apos;t receive it? Check spam or resend.</p>
 
-        {resendStatus === 'sent' && countdown > 0 ? (
+        {resendSent && countdown > 0 ? (
           <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-600">
             <CheckCircle2 className="h-4 w-4" />
-            <span>Email resent!</span>
-            <span className="text-gray-400 font-normal">
-              (resend again in {countdown}s)
-            </span>
+            <span>New code sent!</span>
+            <span className="text-gray-400 font-normal">(resend in {countdown}s)</span>
           </div>
         ) : (
           <button
             type="button"
             onClick={handleResend}
-            disabled={resendStatus === 'loading' || countdown > 0}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={resendLoading || countdown > 0}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
           >
-            {resendStatus === 'loading' ? (
-              <>
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                Resending…
-              </>
+            {resendLoading ? (
+              <><RefreshCw className="h-4 w-4 animate-spin" />Resending…</>
             ) : countdown > 0 ? (
-              <>
-                <RefreshCw className="h-4 w-4" />
-                Resend in {countdown}s
-              </>
+              <><RefreshCw className="h-4 w-4" />Resend in {countdown}s</>
             ) : (
-              <>
-                <RefreshCw className="h-4 w-4" />
-                Resend confirmation email
-              </>
+              <><RefreshCw className="h-4 w-4" />Resend code</>
             )}
           </button>
         )}
 
-        {resendStatus === 'error' && resendError && (
+        {resendError && (
           <p className="text-xs font-medium text-red-500">{resendError}</p>
         )}
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-4">
         <BackLink onClick={onBack} />
       </div>
     </div>
@@ -1667,11 +1744,6 @@ export default function DoctorSignupPage() {
     setCurrentStep((s) => Math.max(s - 1, 1) as StepNumber)
   }
 
-  // Redirect to login from Step 5 (user must confirm email first)
-  function handleLoginRedirect() {
-    router.push('/login')
-  }
-
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
       <div className="flex justify-center mb-6">
@@ -1704,20 +1776,6 @@ export default function DoctorSignupPage() {
           email={step1.email}
           onBack={() => router.push('/login')}
         />
-      )}
-
-      {/* Show login redirect hint in Step 5 */}
-      {currentStep === 5 && (
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Already confirmed?{' '}
-          <button
-            type="button"
-            onClick={handleLoginRedirect}
-            className="font-semibold text-bp-primary hover:text-bp-primary-dark transition-colors bg-transparent border-none cursor-pointer p-0"
-          >
-            Sign in
-          </button>
-        </p>
       )}
     </div>
   )
