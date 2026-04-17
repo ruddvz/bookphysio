@@ -253,9 +253,9 @@
 - [x] **16.2** Public Navbar uplift — `CommandPaletteHint` (⌘K / Ctrl+K) in the desktop Navbar, flag-gated, keyboard-shortcut wired, 7 unit tests
 - [x] **16.3** Hero trust strip — `HeroTrustStrip` combining `Sparkline` + `TrendDelta` from PR 80 primitives, flag-gated in `HeroSection`, props-driven so a later slice can feed live `/api/stats`, 6 unit tests
 - [x] **16.4** Specialty page uplift — `SpecialtyCTARail` with NCAHP credential chip, demand sparkline (role=patient), optional advisor tel: link, and primary booking CTA; flag-gated via `isUiV2Client()`, wired into `SpecialtyArticle` above the content cards, 5 unit tests
-- [ ] **16.5** Dashboard chrome — sidebar + top-pill polish across all roles
+- [x] **16.5** Dashboard chrome — `DashboardContextStrip` (flag-gated role-aware chrome: date eyebrow, weekday headline, role-specific tip, status badge) wired into `DashboardShell` between `PWAInstallPrompt` and `children`, active for patient/provider/admin; 6 unit tests covering flag off + all three role variants + India date locale + accessible region
 - [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
-- [ ] **16.7** Patient dashboard redesign
+- [x] **16.7** Patient dashboard redesign — `PatientInsightsStrip` (flag-gated care-cadence strip: visits-per-week sparkline, care-gap badge on-track/check-in/book-soon thresholds at 14d/45d, 3-tile insights grid for upcoming visits / care team / visit summaries, primary Book CTA) wired into the LEFT column of `/patient/dashboard` above the Upcoming appointment card; 9 unit tests including flag off, gap-badge thresholds, and book CTA override
 - [ ] **16.8** Provider dashboard redesign
 - [x] **16.9** Admin dashboard redesign — `AdminPulseRail` (flag-gated ops pulse with 4 KPI sparklines, trend chips, pending-approvals warning badge, primary review-queue CTA) wired above the existing stat row; 10 unit tests
 - [ ] Command palette (full implementation, replaces the hint)
