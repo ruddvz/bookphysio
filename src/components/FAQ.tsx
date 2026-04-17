@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { gsap, useGSAP } from '@/lib/gsap-client'
+import { gsap, revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 type CategoryId = 'booking' | 'payments' | 'providers' | 'privacy'
 
@@ -153,22 +153,18 @@ export default function FAQ() {
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
       // Each category group fades and rises as it enters view. Headings drive
       // the trigger so the reveal feels tied to the section title.
       gsap.utils.toArray<HTMLElement>('[data-faq-group]').forEach((group) => {
-        gsap.from(group.querySelectorAll('[data-faq-item]'), {
-          opacity: 0,
+        const items = group.querySelectorAll<HTMLElement>('[data-faq-item]')
+        if (items.length === 0) return
+        revealOnScroll(items, {
           y: 20,
           duration: 0.5,
           ease: 'power2.out',
           stagger: 0.08,
-          scrollTrigger: {
-            trigger: group,
-            start: 'top 80%',
-            once: true,
-          },
+          trigger: group,
+          start: 'top 80%',
         })
       })
     },

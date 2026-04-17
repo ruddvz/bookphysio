@@ -6,9 +6,48 @@
 
 ---
 
-## ✅ COMPLETION STATUS: Phase 14 complete, Phase 15 in final launch window ✓
+## ✅ COMPLETION STATUS: Phases 14 + 15 live in production; Phase 16 (ui-v2) in full redesign rollout ✓
 
-**Last updated:** 2026-04-08
+**Last updated:** 2026-04-17
+
+---
+
+## 🎨 Phase 16 — Premium UI/UX Redesign (ui-v2) — ACTIVE
+
+> Flag-gated behind `NEXT_PUBLIC_UI_V2` / `bp_ui=v2` cookie / `?ui=v2`. See `docs/planning/EXECUTION-PLAN.md` Phase 16 for the full checklist.
+
+### Shipped (Part A — 10 slices complete)
+- [x] **16.1 – 16.4** Foundations, public Navbar, hero trust strip, specialty CTA rail
+- [x] **16.5** Dashboard chrome — breadcrumbs + context strip
+- [x] **16.6** Provider AI elevation
+- [x] **16.7** Patient dashboard — `PatientCarePulse` + `PatientInsightsStrip`
+- [x] **16.8** Provider dashboard — `ProviderPulse`
+- [x] **16.9** Admin dashboard — `AdminPulse` + `AdminPulseRail`
+- [x] **16.10** Homepage reveal safety — `revealOnScroll()` helper; fixes blank-sections-below-hero regression
+
+### In progress (Part B — page redesign gaps)
+**Priority 1 (public + auth, highest blast radius):**
+- [ ] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
+- [ ] **16.12** `/search` result cards
+- [ ] **16.13** `/how-it-works`
+- [ ] **16.14** `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
+- [ ] **16.15** `/book/[id]` booking flow
+
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments, payments, records, messages, notifications, profile, pai/motio, search, specialty images
+
+**Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
+
+**Priority 4 (admin):** 16.33–16.35 — listings, users, analytics (+ Recharts)
+
+**Priority 5 (static + Hindi):** 16.36–16.37
+
+**Priority 6 (cross-cutting):** 16.38 Recharts · 16.39 Command palette · 16.40 Notification drawer · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
+
+### Blockers / inbound
+- Specialty hero images + "after" treatment images — uploading in 2–3 days (slice **16.23** waits for this)
+- PR #83 (`claude/version-16.9-NV2gO`) — dashboard chrome + patient insights + admin pulse rail — open, both CodeRabbit findings resolved in commit `9c40b81`; ready to merge
+
+---
 
 ## Hosting
 - [x] Production hosting target is Vercel; GitHub Pages is legacy and should be retired after the cutover is verified.

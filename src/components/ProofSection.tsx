@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { Home as HomeIcon, Stethoscope, ShieldCheck, ArrowRight, Calendar } from 'lucide-react'
-import { gsap, useGSAP } from '@/lib/gsap-client'
+import { gsap, revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 // Illustrative slot data — matches what real search results render.
 // Each slot keys off a known "shape" (same-day, tomorrow, later this week)
@@ -107,38 +107,27 @@ export default function ProofSection() {
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-      // Provider rows rise in as the list enters view.
-      gsap.from('[data-proof-row]', {
-        opacity: 0,
+      revealOnScroll('[data-proof-row]', {
         y: 28,
         duration: 0.65,
-        ease: 'power3.out',
         stagger: 0.12,
-        scrollTrigger: {
-          trigger: '[data-proof-list]',
-          start: 'top 80%',
-          once: true,
-        },
+        trigger: '[data-proof-list]',
+        start: 'top 80%',
       })
 
       // Slot pills ripple in after the row they belong to. Short, subtle,
       // scoped per-row so the effect feels local to each provider.
       gsap.utils.toArray<HTMLElement>('[data-proof-row]').forEach((row) => {
-        const pills = row.querySelectorAll('[data-slot-pill]')
+        const pills = row.querySelectorAll<HTMLElement>('[data-slot-pill]')
         if (pills.length === 0) return
-        gsap.from(pills, {
-          opacity: 0,
+        revealOnScroll(pills, {
+          y: 0,
           scale: 0.85,
           duration: 0.4,
           ease: 'back.out(1.4)',
           stagger: 0.05,
-          scrollTrigger: {
-            trigger: row,
-            start: 'top 75%',
-            once: true,
-          },
+          trigger: row,
+          start: 'top 75%',
         })
       })
     },
