@@ -259,6 +259,7 @@
 - [ ] **16.7** Patient dashboard redesign
   - [x] `PatientCarePulse` — flag-gated rail card with visit cadence sparkline, `TrendDelta` (first-half vs second-half avg), care team size, and status badge (`On track` / `Stay engaged` / `Time to book`); driven by `bucketVisitsByWeek` + `daysUntil` helpers in `dashboard-utils.ts`, wired into the right rail of `/patient/dashboard`, 30 unit tests
 - [ ] **16.8** Provider dashboard redesign
+  - [x] `ProviderPulse` — flag-gated rail card with 4-week forward booking load sparkline, `TrendDelta` (first-half vs second-half avg), first-visit pipeline count, and status badge (`In session` / `Busy week` / `Quiet week` / `Open diary` / `Steady`); driven by `bucketScheduleByWeek` + `countFirstVisitsInSchedule` helpers in `provider-dashboard-utils.ts` (India-time aware, snapped to India midnight), wired into the right aside of `/provider/dashboard`, 31 unit tests
 - [ ] **16.9** Admin dashboard redesign
 - [ ] Command palette (full implementation, replaces the hint)
 - [ ] Notification drawer

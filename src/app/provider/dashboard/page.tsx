@@ -26,7 +26,10 @@ import {
   EmptyState,
   DashCard,
 } from '@/components/dashboard/primitives'
+import { ProviderPulse } from '@/components/dashboard/ProviderPulse'
 import {
+  bucketScheduleByWeek,
+  countFirstVisitsInSchedule,
   countRemainingVisitsToday,
   filterScheduleEntriesThisWeek,
   getNextScheduledVisit,
@@ -181,6 +184,10 @@ export default function ProviderDashboardHome() {
   const firstVisitPatients = patients.filter((patient) => patient.visit_count === 1).length
   const scheduledFeesThisWeek = sumScheduledFees(thisWeekEntries)
   const weekSessions = thisWeekEntries.length
+  // 4-week forward bucket matches the SCHEDULE_LOOKAHEAD_DAYS (30) window
+  // the page already fetches — anything beyond that isn't in `entries`.
+  const weeklyLoad = bucketScheduleByWeek(entries, 4, today)
+  const firstVisitPipeline = countFirstVisitsInSchedule(entries)
   const recentPatients = [...patients]
     .sort((left, right) => {
       if (!left.last_visit_date && !right.last_visit_date) {
@@ -378,6 +385,12 @@ export default function ProviderDashboardHome() {
         </div>
 
         <aside className="space-y-6">
+           <ProviderPulse
+             weeklyLoad={weeklyLoad}
+             remainingToday={remainingToday}
+             firstVisitCount={firstVisitPipeline}
+           />
+
            <DashCard role="provider">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 Quick actions
