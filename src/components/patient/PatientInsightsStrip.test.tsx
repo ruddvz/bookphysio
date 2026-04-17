@@ -74,6 +74,17 @@ describe('PatientInsightsStrip', () => {
     expect(screen.getByText(/no visits yet/i)).toBeInTheDocument()
   })
 
+  it('falls back to "no visits yet" for an unparseable ISO string', () => {
+    render(<PatientInsightsStrip {...BASE} lastVisitIso="not-a-real-date" />)
+    expect(screen.getByText(/no visits yet/i)).toBeInTheDocument()
+  })
+
+  it('falls back to "no visits yet" for a future timestamp', () => {
+    const future = new Date(NOW + 5 * 86_400_000).toISOString()
+    render(<PatientInsightsStrip {...BASE} lastVisitIso={future} />)
+    expect(screen.getByText(/no visits yet/i)).toBeInTheDocument()
+  })
+
   it('renders the book CTA with the expected href', () => {
     render(<PatientInsightsStrip {...BASE} />)
     const cta = screen.getByRole('link', { name: /book next session/i })

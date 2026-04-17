@@ -60,6 +60,11 @@ describe('AdminPulseRail', () => {
     expect(screen.getByText('₹42K')).toBeInTheDocument()
   })
 
+  it('truncates fractional rupees before formatting so no paise leak through', () => {
+    render(<AdminPulseRail {...BASE_STATS} gmvMtd={999.5} />)
+    expect(screen.getByText('₹999')).toBeInTheDocument()
+  })
+
   it('renders the primary review CTA pointing to the approval queue', () => {
     render(<AdminPulseRail {...BASE_STATS} />)
     const cta = screen.getByRole('link', { name: /open verification queue/i })

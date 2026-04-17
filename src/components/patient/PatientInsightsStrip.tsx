@@ -25,15 +25,20 @@ interface GapBadge {
   variant: 'success' | 'warning' | 'danger'
 }
 
-function daysSince(iso: string): number {
-  const diff = Date.now() - Date.parse(iso)
-  if (!Number.isFinite(diff) || diff < 0) return 0
+function daysSince(iso: string): number | undefined {
+  const parsed = Date.parse(iso)
+  if (!Number.isFinite(parsed)) return undefined
+  const diff = Date.now() - parsed
+  // Future timestamps are treated as missing rather than healthy so a
+  // bad server clock never masquerades as an on-track cadence.
+  if (diff < 0) return undefined
   return Math.floor(diff / DAY_MS)
 }
 
 function gapBadge(lastVisitIso?: string | null): GapBadge {
   if (!lastVisitIso) return { label: 'No visits yet', variant: 'warning' }
   const days = daysSince(lastVisitIso)
+  if (typeof days !== 'number') return { label: 'No visits yet', variant: 'warning' }
   if (days <= 14) return { label: `${days}d ago · on track`, variant: 'success' }
   if (days <= 45) return { label: `${days}d ago · check in`, variant: 'warning' }
   return { label: `${days}d ago · book soon`, variant: 'danger' }

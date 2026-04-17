@@ -33,9 +33,13 @@ const DEFAULT_PATIENTS_TREND: readonly number[] = [180, 220, 240, 280, 310, 360,
 const DEFAULT_GMV_TREND: readonly number[] = [42, 55, 61, 73, 78, 92, 104]
 
 function formatCompactInr(amount: number): string {
-  if (amount >= 100_000) return `₹${Math.trunc(amount / 100_000)}L`
-  if (amount >= 1_000) return `₹${Math.trunc(amount / 1_000)}K`
-  return `₹${amount.toLocaleString('en-IN')}`
+  // Truncate to whole rupees first so no branch can emit paise for
+  // fractional inputs (e.g. ₹999.5) — India currency display rule is
+  // integer rupees only.
+  const rupees = Math.trunc(amount)
+  if (rupees >= 100_000) return `₹${Math.trunc(rupees / 100_000)}L`
+  if (rupees >= 1_000) return `₹${Math.trunc(rupees / 1_000)}K`
+  return `₹${rupees.toLocaleString('en-IN')}`
 }
 
 function computeDelta(values: readonly number[]): number | undefined {
