@@ -38,6 +38,7 @@ import {
   getNextAppointment,
   getPatientAppointmentProviderName,
   getPatientAppointmentVisitLabel,
+  isWithinWeeks,
 } from './dashboard-utils'
 import type { AppointmentItem } from '../appointments/appointments-utils'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
@@ -218,6 +219,12 @@ export default function PatientDashboardHome() {
     ? canPatientCancelAppointment(nextAppointment.status, nextStartsAt)
     : false
   const weeklyVisits = bucketVisitsByWeek(records, 8)
+  // Care Pulse reports engagement over the trailing 8-week window, so the
+  // provider count it shows must respect the same boundary. `uniqueProviders`
+  // above is all-time on purpose for the "Care team" StatTile.
+  const windowedCareTeamSize = new Set(
+    records.filter((r) => isWithinWeeks(r.visit_date, 8)).map((r) => r.provider_name),
+  ).size
   const nextAppointmentInDays = daysUntil(nextStartsAt)
 
   return (
@@ -414,7 +421,7 @@ export default function PatientDashboardHome() {
         <div className="xl:w-[340px] xl:shrink-0 space-y-6">
           <PatientCarePulse
             weeklyVisits={weeklyVisits}
-            careTeamSize={uniqueProviders}
+            careTeamSize={windowedCareTeamSize}
             nextAppointmentInDays={nextAppointmentInDays}
           />
 

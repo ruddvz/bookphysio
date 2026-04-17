@@ -66,6 +66,17 @@ describe('getCareStatus', () => {
     const status = getCareStatus({ nextAppointmentInDays: null, weeklyVisits: [] })
     expect(status.label).toBe('Time to book')
   })
+
+  it('ignores visits that sit outside the trailing recency window', () => {
+    // 8-week series, visits only in the two oldest buckets. The trailing
+    // 3-bucket window is empty, so the badge must nudge toward booking
+    // rather than celebrate stale engagement.
+    const status = getCareStatus({
+      nextAppointmentInDays: null,
+      weeklyVisits: [1, 1, 0, 0, 0, 0, 0, 0],
+    })
+    expect(status.label).toBe('Time to book')
+  })
 })
 
 describe('<PatientCarePulse />', () => {
@@ -167,6 +178,18 @@ describe('<PatientCarePulse />', () => {
       />,
     )
     expect(screen.queryByText(/%/)).toBeNull()
+  })
+
+  it('hides the sparkline and swaps the headline when every weekly count is zero', () => {
+    render(
+      <PatientCarePulse
+        weeklyVisits={[0, 0, 0, 0, 0, 0, 0, 0]}
+        careTeamSize={0}
+        nextAppointmentInDays={null}
+      />,
+    )
+    expect(screen.queryByRole('img', { name: /visit cadence/i })).toBeNull()
+    expect(screen.getByText(/no recent visits/i)).toBeInTheDocument()
   })
 
   it('shows "Next visit today" when the next appointment is in 0 days', () => {

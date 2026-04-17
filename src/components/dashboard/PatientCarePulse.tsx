@@ -55,10 +55,18 @@ interface CareStatusInput {
 }
 
 /**
+ * How many trailing buckets count as "recent" for the status nudge.
+ * A visit in the 8-week window but older than this threshold no longer
+ * suppresses the "Time to book" copy, so the badge matches the actual
+ * engagement signal rather than any non-zero entry in the series.
+ */
+const RECENT_BUCKET_WINDOW = 3
+
+/**
  * Map the care signal into a status tone, headline, and supporting copy.
  *
  * - Booked appointment → success / "On track"
- * - No booking but recent visits → soft / "Stay engaged"
+ * - No booking but recent visits (in the trailing window) → soft / "Stay engaged"
  * - No booking and no recent visits → warning / "Time to book"
  */
 export function getCareStatus({ nextAppointmentInDays, weeklyVisits }: CareStatusInput): CareStatus {
@@ -69,7 +77,7 @@ export function getCareStatus({ nextAppointmentInDays, weeklyVisits }: CareStatu
       description: nextVisitDescription(nextAppointmentInDays),
     }
   }
-  const hasRecent = weeklyVisits.some((v) => v > 0)
+  const hasRecent = weeklyVisits.slice(-RECENT_BUCKET_WINDOW).some((v) => v > 0)
   if (hasRecent) {
     return {
       tone: 'soft',
@@ -90,9 +98,12 @@ function nextVisitDescription(days: number): string {
   return `Next visit in ${days} days.`
 }
 
+// `soft` uses the outline variant so it reads as visually distinct from
+// the brand-teal `success` chip — without outline they collide on the
+// patient palette and "Stay engaged" would look identical to "On track".
 const TONE_TO_BADGE_VARIANT = {
   success: 'success',
-  soft: 'soft',
+  soft: 'outline',
   warning: 'warning',
 } as const
 
@@ -114,6 +125,10 @@ export function PatientCarePulse({
   const trend = computeVisitTrend(weeklyVisits)
   const status = getCareStatus({ nextAppointmentInDays, weeklyVisits })
   const careTeamCopy = `${careTeamSize} ${careTeamSize === 1 ? 'provider' : 'providers'}`
+  // A fixed-length zero-filled series still has `length > 0`, so gate the
+  // sparkline + cadence headline on any non-zero entry instead — otherwise
+  // a flat-zero baseline contradicts the "Time to book" nudge underneath.
+  const hasAnyVisits = weeklyVisits.some((v) => v > 0)
 
   return (
     <aside
@@ -138,11 +153,11 @@ export function PatientCarePulse({
               Visit cadence
             </div>
             <div className="text-[13px] font-bold text-[var(--color-pt-ink)]">
-              {weeklyVisits.length > 0 ? `${weeklyVisits.length}-week trend` : 'No recent visits'}
+              {hasAnyVisits ? `${weeklyVisits.length}-week trend` : 'No recent visits'}
             </div>
           </div>
         </div>
-        {weeklyVisits.length > 0 ? (
+        {hasAnyVisits ? (
           <Sparkline
             role="patient"
             values={weeklyVisits}
