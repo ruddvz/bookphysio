@@ -36,7 +36,7 @@ The user has every API key/token in env except Razorpay + MSG91 (out of scope). 
 - `src/app/(auth)/forgot-password/page.tsx:50` — replace `supabase.auth.resetPasswordForEmail()` with fetch to new endpoint
 - `src/app/(auth)/doctor-signup/page.tsx:1435-1479,1486-1600` — replace Step 5 magic-link with OTP input; swap `useResendConfirmation` → `useEmailOtp`
 - `src/app/api/providers/onboard-signup/route.ts:260-310` — trigger email-OTP send on Step 4 completion instead of relying on Step 5 client resend
-- `src/app/api/admin/stats/route.ts:25-26` + `src/app/api/admin/analytics/route.ts:13-14` — gate demo fallback behind explicit `NEXT_PUBLIC_DEMO_ENABLED` flag so stale demo cookies don't override real admin data
+- `src/app/api/admin/stats/route.ts:25-26` + `src/app/api/admin/analytics/route.ts:13-14` — gate demo fallback behind explicit `DEMO_ADMIN_FALLBACK_ENABLED` flag so stale demo cookies don't override real admin data
 - `src/app/api/admin/listings/route.ts:54,73-118` — filter by `approval_status='pending'`; set `approval_status='rejected'` on decline (keep row visible under a "Rejected" tab)
 - `src/app/admin/listings/page.tsx` — add tabs: Pending / Approved / Rejected; show rejected list
 - `src/app/auth/callback/route.ts:23-43` + `src/app/api/auth/callback/route.ts` — clear `DEMO_SESSION_COOKIE` on successful OAuth/code exchange; ensure `resolvePostAuthRedirect` doesn't re-push to `/verify-otp` for OAuth users with `app_metadata.provider === 'google'`
@@ -54,7 +54,7 @@ The user has every API key/token in env except Razorpay + MSG91 (out of scope). 
 2. Create `POST /api/auth/password-reset`:
    - Zod-validate `{ email }` (use existing `src/lib/validations/auth.ts`).
    - Rate-limit via existing `otpRatelimit` (`src/lib/upstash.ts`).
-   - Call `supabaseAdmin.auth.admin.generateLink({ type: 'recovery', email, options: { redirectTo: `${APP_URL}/auth/callback?next=/update-password` }})`.
+   - Call `supabaseAdmin.auth.admin.generateLink` with `type: 'recovery'`, `email`, and `redirectTo: APP_URL + '/auth/callback?next=/update-password'`.
    - Extract `data.properties.action_link` and forward it via `sendPasswordResetEmail()`.
    - Always return `200 { ok: true }` to prevent enumeration.
 3. Swap `src/app/(auth)/forgot-password/page.tsx:50` from `supabase.auth.resetPasswordForEmail(...)` → `fetch('/api/auth/password-reset', { method: 'POST', body: { email } })`.
@@ -130,6 +130,9 @@ Root cause: `src/app/api/admin/stats/route.ts:25` falls back to `getDemoAdminSta
 ### Phase 6 — Shared: email infrastructure consolidation
 
 - In `src/lib/resend.ts`, introduce `renderAuthEmail({ title, preheader, bodyHtml, cta })` helper so `sendPasswordResetEmail` / `sendEmailOtp` / `sendAdminNewProviderAlert` share the same BookPhysio chrome and the user sees consistent branding.
+- Update codemaps (`docs/CODEMAPS/api.md`, `lib.md`) to document new auth email endpoints and helpers.
+- Update `docs/planning/EXECUTION-PLAN.md` — tick off completed phases, mark Phase 6 done.
+- Update `docs/planning/ACTIVE.md` — close this task, surface next open items.
 
 ---
 
@@ -170,7 +173,7 @@ Razorpay / MSG91 remain untouched per user instruction.
 **Manual (user side)**
 1. Forgot password → enter email → receive mail from `RESEND_FROM_EMAIL` (not supabase.co) → click → land on `/update-password` → set new password → login works.
 2. Doctor signup → Step 5 → receive 6-digit email from `RESEND_FROM_EMAIL` → type code → see "awaiting admin approval" → admin gets notification email.
-3. Sign in as real admin (after clearing demo cookie via logout) → `/admin` shows real DB numbers (not 128/12/1840/12.4L). Signup a test provider → appears at `/admin/listings` under "Pending" tab → click Approve → provider promoted to `role='provider'`, moves to Approved tab → can log into provider dashboard.
+3. Sign in as real admin (after clearing demo cookie via logout) → `/admin` shows real DB numbers (not 128/12/1840/12.4L). Sign up a test provider → appears at `/admin/listings` under "Pending" tab → click Approve → provider promoted to `role='provider'`, moves to Approved tab → can log into provider dashboard.
 4. Decline a test provider → moves to Rejected tab, stays visible, can be re-approved.
 5. Google sign-in → single click → lands directly on `/patient/dashboard` (no OTP prompt).
 
