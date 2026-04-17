@@ -257,7 +257,7 @@
 - [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
 - [ ] **16.7** Patient dashboard redesign
 - [ ] **16.8** Provider dashboard redesign
-- [ ] **16.9** Admin dashboard redesign
+- [x] **16.9** Admin dashboard redesign — `AdminPulseRail` (flag-gated ops pulse with 4 KPI sparklines, trend chips, pending-approvals warning badge, primary review-queue CTA) wired above the existing stat row; 10 unit tests
 - [ ] Command palette (full implementation, replaces the hint)
 - [ ] Notification drawer
 - [ ] Recharts integration for analytics surfaces

@@ -29,6 +29,7 @@ import {
   DashCard,
 } from '@/components/dashboard/primitives'
 import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
+import { AdminPulseRail } from '@/components/admin/AdminPulseRail'
 
 interface AdminStats {
   activeProviders: number
@@ -367,6 +368,13 @@ export default function AdminDashboardHome() {
         title="Platform overview"
         subtitle={stats.pendingApprovals > 0 ? `${stats.pendingApprovals} approvals are waiting for review.` : fmtToday(new Date())}
         action={{ label: 'Review approvals', href: '/admin/listings' }}
+      />
+
+      <AdminPulseRail
+        activeProviders={stats.activeProviders}
+        pendingApprovals={stats.pendingApprovals}
+        totalPatients={stats.totalPatients}
+        gmvMtd={stats.gmvMtd}
       />
 
       {/* Stat row */}
