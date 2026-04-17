@@ -254,10 +254,14 @@
 - [x] **16.3** Hero trust strip — `HeroTrustStrip` combining `Sparkline` + `TrendDelta` from PR 80 primitives, flag-gated in `HeroSection`, props-driven so a later slice can feed live `/api/stats`, 6 unit tests
 - [x] **16.4** Specialty page uplift — `SpecialtyCTARail` with NCAHP credential chip, demand sparkline (role=patient), optional advisor tel: link, and primary booking CTA; flag-gated via `isUiV2Client()`, wired into `SpecialtyArticle` above the content cards, 5 unit tests
 - [ ] **16.5** Dashboard chrome — sidebar + top-pill polish across all roles
+  - [x] Flag-gated `DashboardBreadcrumbs` strip wired into `TopPillNav` (role-aware trail from pathname, accepts `items` override for dynamic segments), 12 unit tests
 - [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
 - [ ] **16.7** Patient dashboard redesign
+  - [x] `PatientCarePulse` — flag-gated rail card with visit cadence sparkline, `TrendDelta` (first-half vs second-half avg), care team size, and status badge (`On track` / `Stay engaged` / `Time to book`); driven by `bucketVisitsByWeek` + `daysUntil` helpers in `dashboard-utils.ts`, wired into the right rail of `/patient/dashboard`, 30 unit tests
 - [ ] **16.8** Provider dashboard redesign
+  - [x] `ProviderPulse` — flag-gated rail card with 4-week forward booking load sparkline, `TrendDelta` (first-half vs second-half avg), first-visit pipeline count, and status badge (`In session` / `Busy week` / `Quiet week` / `Open diary` / `Steady`); driven by `bucketScheduleByWeek` + `countFirstVisitsInSchedule` helpers in `provider-dashboard-utils.ts` (India-time aware, snapped to India midnight), wired into the right aside of `/provider/dashboard`, 31 unit tests
 - [ ] **16.9** Admin dashboard redesign
+  - [x] `AdminPulse` — flag-gated rail card with monthly appointment volume sparkline, `TrendDelta` (first-half vs second-half avg), completion-rate tile, and status badge (`No activity` / `Watch list` / `Cooling` / `Healthy` / `Steady`); driven by `computePlatformTrend` + `getPlatformStatus` helpers colocated in `AdminPulse.tsx`, fed by a dedicated `/api/admin/analytics` query on `/admin`, wired into the top of the right rail, 20 unit tests
 - [ ] Command palette (full implementation, replaces the hint)
 - [ ] Notification drawer
 - [ ] Recharts integration for analytics surfaces

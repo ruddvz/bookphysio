@@ -9,6 +9,7 @@ import { Bell, LogOut, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 import BpLogo from '@/components/BpLogo'
+import { DashboardBreadcrumbs } from '@/components/dashboard/DashboardBreadcrumbs'
 
 export interface NavItem {
   href: string
@@ -268,6 +269,12 @@ export default function TopPillNav({
           </div>
         </div>
       </header>
+
+      {/* ── UI v2 breadcrumb strip (hidden on root, hidden when flag off) */}
+      <DashboardBreadcrumbs
+        role={role}
+        className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4"
+      />
 
       {/* ── Main content ─────────────────────────────────────── */}
       <main className="relative pb-28 lg:pb-10">{children}</main>
