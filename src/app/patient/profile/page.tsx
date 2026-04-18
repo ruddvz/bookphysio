@@ -20,6 +20,8 @@ import {
   SectionCard,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientProfileV2 } from './PatientProfileV2'
 
 interface ProfileData {
   id: string
@@ -31,6 +33,7 @@ interface ProfileData {
 }
 
 export default function PatientProfile() {
+  const isV2 = useUiV2()
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [initialised, setInitialised] = useState(false)
@@ -69,6 +72,8 @@ export default function PatientProfile() {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
+
+  if (isV2) return <PatientProfileV2 />
 
   if (isLoading) {
     return (

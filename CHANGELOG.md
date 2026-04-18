@@ -44,6 +44,15 @@
 - Next up: 16.20 `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles, ≥ 6 unit tests
 - Notes: Additive overlay pattern — `PatientMessagesV2` and `PatientNotificationsV2` both self-gate via `useUiV2()`, return `null` in v1 mode, and are injected into their respective `page.tsx` files via an early-return guard (after all hooks). `PatientMessagesV2` delivers: conversation sidebar with day/time stamps, `Badge` unread count chip (success for 1-4 / warning for 5+), initials avatar, day-grouped thread dividers, "Available" status Badge on the thread header, and `scrollIntoView` on new messages. `PatientNotificationsV2` delivers: day-grouped notification sections (Today / Yesterday / formatted date, newest first), per-notification type Badge chip (Confirmed/Cancelled/Payment/Message/Verified) with semantic variant (danger for cancelled, success for confirmed/payment, warning for new_message), unread dot per item, unread count Badge in header, "Mark all read" action. `Badge` component updated to extend `HTMLAttributes<HTMLSpanElement>` so `data-testid` / `aria-*` attributes pass through. jsdom shim added for `scrollIntoView` in the messages test file.
 
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.20 Patient profile v2
+- Commit: (pending)
+- Files touched: src/app/patient/profile/PatientProfileV2.tsx (new), src/app/patient/profile/profile-v2.test.tsx (new), src/app/patient/profile/page.tsx
+- Tests added / changed: +14 (profile-v2.test.tsx). Full suite: 656/667 passing; 11 pre-existing failures unrelated to this slice.
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- Notes: Additive overlay component `PatientProfileV2` self-gates via `useUiV2()`. The v1 page keeps all its hooks running; the `if (isV2) return` guard fires after all hooks so no rules-of-hooks violations. v2 features: initials avatar with PS/initial derivation (first+last word initials), role `Badge` + `Phone Verified` badge, editable name field pre-filled from API, read-only pill fields for phone (with Verified badge) and email, consent toggles (marketing email + appointment SMS, client-state only for now — no API wired), security card with `Secure account` Badge + `Coming soon` 2FA badge, trust/privacy card.
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
 - Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
 - Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx
