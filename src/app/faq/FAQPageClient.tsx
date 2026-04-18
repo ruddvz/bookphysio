@@ -122,7 +122,7 @@ export function FAQPageClient() {
   const hero = (
     <section className="bg-white border-b border-slate-200/70">
       <div className="max-w-[1142px] mx-auto px-6 py-12 lg:py-16 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+        <div className="sr-only inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
           Support Desk
         </div>
         <h1 className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
@@ -150,7 +150,7 @@ export function FAQPageClient() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
                 <aside className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
                   <div>
-                    <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-4">
+                    <h2 className="sr-only text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-4">
                       Categories
                     </h2>
                     <ul className="space-y-2">

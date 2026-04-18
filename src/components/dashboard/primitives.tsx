@@ -167,7 +167,10 @@ export function PageHeader({
     <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
       <div>
         {kicker ? (
-          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+          <div
+            data-kicker
+            className="sr-only"
+          >
             {kicker}
           </div>
         ) : null}
@@ -249,7 +252,10 @@ export function SectionCard({
         <div className="px-4 sm:px-5 lg:px-6 pt-4 sm:pt-5 lg:pt-6 pb-4 sm:pb-5 flex items-start justify-between gap-3 sm:gap-4">
           <div>
             {kicker ? (
-              <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-1">
+              <div
+                data-kicker
+                className="sr-only"
+              >
                 {kicker}
               </div>
             ) : null}

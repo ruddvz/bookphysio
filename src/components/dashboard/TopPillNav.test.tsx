@@ -64,7 +64,27 @@ describe('TopPillNav', () => {
 
     expect(screen.getByTestId('admin-avatar-icon')).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument()
-    expect(screen.getByText('Administrator')).toBeInTheDocument()
     expect(screen.queryByText('AK')).not.toBeInTheDocument()
+  })
+
+  it('does not render the old visible greeting text for dashboard users', () => {
+    const { container } = render(
+      <TopPillNav
+        role="patient"
+        items={[
+          { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+          { href: '/patient/alerts', label: 'Alerts', icon: Bell },
+        ]}
+        notificationsHref="/patient/notifications"
+        messagesHref="/patient/messages"
+        profileHref="/patient/profile"
+        roleLabel="Patient"
+      >
+        <div>Dashboard content</div>
+      </TopPillNav>,
+    )
+
+    expect(screen.queryByText('Aarav Kapoor')).not.toBeInTheDocument()
+    expect(container.textContent).not.toMatch(/good morning|good afternoon|good evening/i)
   })
 })

@@ -17,7 +17,6 @@ import {
 } from 'lucide-react'
 import TopPillNav, { type NavItem, type NavRole } from '@/components/dashboard/TopPillNav'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
-import { DashboardContextStrip } from '@/components/dashboard/DashboardContextStrip'
 
 const NAV_CONFIG: Record<
   NavRole,
@@ -88,7 +87,6 @@ export function DashboardShell({
       roleLabel={config.roleLabel}
     >
       <PWAInstallPrompt role={role} />
-      {role === 'admin' ? null : <DashboardContextStrip role={role} className="mb-4" />}
       {children}
     </TopPillNav>
   )
