@@ -4,8 +4,6 @@ import { Activity, CalendarHeart, Users } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface PatientCarePulseProps {
   /**
    * Weekly visit counts in chronological order (oldest → newest). The
@@ -119,9 +117,6 @@ export function PatientCarePulse({
   nextAppointmentInDays,
   className = '',
 }: PatientCarePulseProps) {
-  const uiV2 = useUiV2()
-  if (!uiV2) return null
-
   const trend = computeVisitTrend(weeklyVisits)
   const status = getCareStatus({ nextAppointmentInDays, weeklyVisits })
   const careTeamCopy = `${careTeamSize} ${careTeamSize === 1 ? 'provider' : 'providers'}`

@@ -12,8 +12,6 @@ import {
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface AdminPulseRailProps {
   activeProviders: number
   pendingApprovals: number
@@ -188,10 +186,6 @@ export function AdminPulseRail({
   reviewHref = '/admin/listings',
   className,
 }: AdminPulseRailProps) {
-  const uiV2 = useUiV2()
-
-  if (!uiV2) return null
-
   return (
     <aside
       className={`rounded-[var(--sq-lg)] border border-[var(--color-ad-border)] bg-[var(--color-ad-surface)] p-4 sm:p-5 ${className ?? ''}`}

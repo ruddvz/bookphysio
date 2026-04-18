@@ -2,11 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { PatientInsightsStrip } from './PatientInsightsStrip'
 
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
-
 const BASE = {
   upcomingVisits: 2,
   careTeam: 3,
@@ -17,28 +12,14 @@ const BASE = {
 const NOW = new Date('2026-04-17T12:00:00+05:30').getTime()
 
 describe('PatientInsightsStrip', () => {
-  let prevUiV2: string | undefined
-
   beforeEach(() => {
-    prevUiV2 = process.env.NEXT_PUBLIC_UI_V2
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
     vi.useFakeTimers()
     vi.setSystemTime(NOW)
   })
 
   afterEach(() => {
-    if (prevUiV2 === undefined) delete process.env.NEXT_PUBLIC_UI_V2
-    else process.env.NEXT_PUBLIC_UI_V2 = prevUiV2
-    setUiV2Cookie(false)
     vi.useRealTimers()
     cleanup()
-  })
-
-  it('renders nothing when the ui-v2 flag is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(<PatientInsightsStrip {...BASE} />)
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders the three insight tiles with their values', () => {

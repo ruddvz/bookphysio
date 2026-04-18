@@ -2,9 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { NotificationDrawer } from './NotificationDrawer'
 
-const useUiV2Mock = vi.fn(() => true)
-vi.mock('@/hooks/useUiV2', () => ({ useUiV2: () => useUiV2Mock() }))
-
 let mockUser: { id: string } | null = { id: 'u1' }
 vi.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ user: mockUser }),
@@ -55,17 +52,10 @@ vi.mock('@tanstack/react-query', async (orig) => {
 
 describe('NotificationDrawer', () => {
   beforeEach(() => {
-    useUiV2Mock.mockReturnValue(true)
     mockUser = { id: 'u1' }
     profileRole = 'patient'
     mutateMock.mockClear()
     invalidateMock.mockClear()
-  })
-
-  it('renders nothing when ui-v2 is off', () => {
-    useUiV2Mock.mockReturnValue(false)
-    const { container } = render(<NotificationDrawer />)
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders nothing for guest', () => {

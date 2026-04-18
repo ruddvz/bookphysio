@@ -14,11 +14,6 @@ vi.mock('next/navigation', async (importOriginal) => {
   }
 })
 
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
-
 describe('buildCrumbsFromPath', () => {
   it('returns null on the role root (provider)', () => {
     expect(buildCrumbsFromPath('/provider/dashboard', 'provider')).toBeNull()
@@ -63,21 +58,12 @@ describe('buildCrumbsFromPath', () => {
 
 describe('<DashboardBreadcrumbs />', () => {
   beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
     usePathnameMock.mockReturnValue('/provider/patients/123')
   })
 
   afterEach(() => {
-    setUiV2Cookie(false)
     usePathnameMock.mockReset()
     cleanup()
-  })
-
-  it('renders nothing when UI v2 is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(<DashboardBreadcrumbs role="provider" />)
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders nothing on the role root', () => {

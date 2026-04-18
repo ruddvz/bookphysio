@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin)
+## 👉 NEXT UP: **Slice 16.23** — Specialty hero + after-image slots (blocked on asset uploads)
 
-**Patient:** delete the `<PatientInsightsStrip>` block (lines 276–281) from `src/app/patient/dashboard/page.tsx` and its import — keep `<PatientCarePulse>` in the right rail.
-**Admin:** delete the `<AdminPulse>` block (lines 549–555) from `src/app/admin/page.tsx` and its import — keep `<AdminPulseRail>` above the stat row.
-No component files are deleted. Run `npm run build` + `npm test` after. Full spec in `EXECUTION-PLAN.md` → Phase 16 → Remaining → 16.41.
+Slices **16.41** (pulse de-dupe) and **16.42** (default-on flag flip + useUiV2 guard strip) are ✅ done on branch `cursor/simplify-phase-16-plan-8f67` (PR #110).
+
+Phase 16 is now fully complete except **16.23** which is blocked on incoming specialty hero images.
 
 Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #108). Next open slice: **16.41**.
 

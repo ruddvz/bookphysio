@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { ArrowRight, CalendarCheck2, HeartPulse, Users } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface PatientInsightsStripProps {
   upcomingVisits: number
   careTeam: number
@@ -77,10 +75,6 @@ export function PatientInsightsStrip({
   bookHref = '/search',
   className,
 }: PatientInsightsStripProps) {
-  const uiV2 = useUiV2()
-
-  if (!uiV2) return null
-
   const gap = gapBadge(lastVisitIso)
 
   return (

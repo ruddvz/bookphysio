@@ -4,8 +4,6 @@ import { Activity, CheckCircle2, TrendingUp } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface AdminPulseProps {
   /**
    * Monthly appointment counts in chronological order (oldest → newest).
@@ -144,9 +142,6 @@ export function AdminPulse({
   totalAppointments,
   className = '',
 }: AdminPulseProps) {
-  const uiV2 = useUiV2()
-  if (!uiV2) return null
-
   const trend = computePlatformTrend(monthlyAppointments)
   const status = getPlatformStatus({ monthlyAppointments, completionRate, totalAppointments })
   const completionCopy = `${completionRate.toFixed(1)}%`

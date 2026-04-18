@@ -13,7 +13,6 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-import { useUiV2 } from '@/hooks/useUiV2'
 import { Badge } from '@/components/dashboard/primitives/Badge'
 import {
   formatRelativeTime,
@@ -50,7 +49,6 @@ async function markOneRead(id: string) {
 }
 
 export function NotificationDrawer() {
-  const uiV2 = useUiV2()
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -68,7 +66,6 @@ export function NotificationDrawer() {
 
   const role = profile?.role
   const show =
-    uiV2 &&
     user &&
     (role === 'patient' || role === 'provider')
 

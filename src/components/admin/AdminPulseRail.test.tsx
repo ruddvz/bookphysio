@@ -1,11 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { AdminPulseRail } from './AdminPulseRail'
-
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
 
 const BASE_STATS = {
   activeProviders: 342,
@@ -15,28 +10,11 @@ const BASE_STATS = {
 }
 
 describe('AdminPulseRail', () => {
-  let prevUiV2: string | undefined
-
-  beforeEach(() => {
-    prevUiV2 = process.env.NEXT_PUBLIC_UI_V2
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    if (prevUiV2 === undefined) delete process.env.NEXT_PUBLIC_UI_V2
-    else process.env.NEXT_PUBLIC_UI_V2 = prevUiV2
-    setUiV2Cookie(false)
     cleanup()
   })
 
-  it('renders nothing when the ui-v2 flag is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(<AdminPulseRail {...BASE_STATS} />)
-    expect(container.firstChild).toBeNull()
-  })
-
-  it('renders the four KPI labels when ui-v2 is on', () => {
+  it('renders the four KPI labels', () => {
     render(<AdminPulseRail {...BASE_STATS} />)
     expect(screen.getByText(/active providers/i)).toBeInTheDocument()
     expect(screen.getByText(/pending approvals/i)).toBeInTheDocument()

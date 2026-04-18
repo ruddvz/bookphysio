@@ -2,9 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CommandPalette } from './CommandPalette'
 
-const useUiV2Mock = vi.fn(() => true)
-vi.mock('@/hooks/useUiV2', () => ({ useUiV2: () => useUiV2Mock() }))
-
 vi.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ user: null, loading: false }),
 }))
@@ -25,14 +22,7 @@ vi.mock('next/navigation', () => ({
 
 describe('CommandPalette', () => {
   beforeEach(() => {
-    useUiV2Mock.mockReturnValue(true)
     pushMock.mockClear()
-  })
-
-  it('renders nothing when ui-v2 is off', () => {
-    useUiV2Mock.mockReturnValue(false)
-    const { container } = render(<CommandPalette />)
-    expect(container.firstChild).toBeNull()
   })
 
   it('opens on ⌘K and closes on Escape', () => {

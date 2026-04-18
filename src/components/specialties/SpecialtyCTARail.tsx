@@ -5,8 +5,6 @@ import { ArrowRight, Calendar, Phone, ShieldCheck } from 'lucide-react'
 import { z } from 'zod'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface SpecialtyCTARailProps {
   /** Human-readable specialty name, used for CTA copy, e.g. "Orthopaedic Physiotherapy". */
   specialtyLabel: string
@@ -59,10 +57,6 @@ export function SpecialtyCTARail({
   advisorPhone,
   className,
 }: SpecialtyCTARailProps) {
-  const uiV2 = useUiV2()
-
-  if (!uiV2) return null
-
   const delta = computeDelta(demandValues)
   const bookAriaLabel = `Book ${indefiniteArticle(specialtyLabel)} ${specialtyLabel} session`
   const validatedAdvisorPhone = advisorPhone
