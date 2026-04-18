@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Simplify Phase 16 planning docs
+- Commit: 24f448f (docs: simplify Phase 16 plan (table + remaining slices))
+- Files touched: docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.41 — dashboard pulse de-duplication (patient + admin)
+- Notes: Per-slice detail now deferred to CHANGELOG/git; remaining work is 16.23, 16.41, 16.42 only.
+
 ## 2026-04-18 — pr-107 — CHANGELOG handoff fix (16.37 commit sha)
 - Commit: 39a87ce (docs: fix CHANGELOG commit sha for slice 16.37)
 - Files touched: CHANGELOG.md
