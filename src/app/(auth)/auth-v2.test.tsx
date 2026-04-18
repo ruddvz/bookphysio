@@ -90,6 +90,7 @@ function setV2(value: boolean) {
 }
 
 beforeEach(() => {
+  vi.unstubAllGlobals()
   push.mockReset()
   back.mockReset()
   mockV2 = false
@@ -434,20 +435,26 @@ describe('VerifyOtpPage — v2 flag', () => {
   })
 
   it('OTP verification still works in v2 mode', async () => {
-    setV2(true)
-    window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: vi.fn().mockResolvedValue({ role: 'patient' }),
-    }))
-    render(<VerifyOtpPage />)
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/patient/dashboard')
-    })
+    vi.useFakeTimers()
+    try {
+      setV2(true)
+      window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({ role: 'patient' }),
+      }))
+      render(<VerifyOtpPage />)
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
+      })
+      fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
+      vi.advanceTimersByTime(800)
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith('/patient/dashboard')
+      })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

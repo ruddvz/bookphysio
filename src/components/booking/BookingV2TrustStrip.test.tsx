@@ -1,6 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { BookingV2TrustStrip } from './BookingV2TrustStrip'
+
+const originalUiV2Env = process.env.NEXT_PUBLIC_UI_V2
 
 function setUiV2Cookie(on: boolean) {
   if (typeof document === 'undefined') return
@@ -16,6 +18,14 @@ describe('BookingV2TrustStrip', () => {
   afterEach(() => {
     setUiV2Cookie(false)
     cleanup()
+  })
+
+  afterAll(() => {
+    if (originalUiV2Env === undefined) {
+      delete process.env.NEXT_PUBLIC_UI_V2
+    } else {
+      process.env.NEXT_PUBLIC_UI_V2 = originalUiV2Env
+    }
   })
 
   it('renders nothing when the ui-v2 flag is off', () => {

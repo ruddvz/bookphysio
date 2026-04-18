@@ -122,7 +122,7 @@ export default function LoginPage() {
   const inputBase = 'flex-1 border-none bg-transparent py-4 text-[15px] text-gray-900 outline-none placeholder:text-gray-400'
 
   const cardClass = isV2
-    ? 'bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+    ? 'bg-white rounded-[8px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
     : 'w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500'
 
   return (

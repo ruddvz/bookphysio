@@ -1748,7 +1748,7 @@ export default function DoctorSignupPage() {
   }
 
   const cardClass = isV2
-    ? 'bg-white rounded-[40px] p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+    ? 'bg-white rounded-[8px] p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
     : 'bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500'
 
   return (

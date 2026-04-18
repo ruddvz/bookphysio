@@ -4,13 +4,18 @@ import React from 'react'
 
 // ── flag mock ──────────────────────────────────────────────────────────────
 let mockV2 = false
+let mockSearchParams = ''
 vi.mock('@/hooks/useUiV2', () => ({ useUiV2: () => mockV2 }))
 function setV2(value: boolean) { mockV2 = value }
-beforeEach(() => { mockV2 = false })
+function setSearchParams(value: string) { mockSearchParams = value }
+beforeEach(() => {
+  mockV2 = false
+  mockSearchParams = ''
+})
 
 // ── dependency mocks ───────────────────────────────────────────────────────
 vi.mock('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(mockSearchParams),
   useRouter: () => ({ push: vi.fn() }),
 }))
 
@@ -90,13 +95,17 @@ describe('SearchContent — sort controls', () => {
 
 describe('SearchContent — SpecialtyCTARail', () => {
   it('v1: does not render SpecialtyCTARail even with specialty param', () => {
-    vi.doMock('next/navigation', () => ({
-      useSearchParams: () => new URLSearchParams('specialty=Ortho+Physio'),
-      useRouter: () => ({ push: vi.fn() }),
-    }))
+    setSearchParams('specialty=Ortho+Physio')
     setV2(false)
     render(<SearchContent />)
     expect(screen.queryByTestId('specialty-cta-rail')).toBeNull()
+  })
+
+  it('v2 with specialty: renders SpecialtyCTARail', () => {
+    setSearchParams('specialty=Ortho+Physio')
+    setV2(true)
+    render(<SearchContent />)
+    expect(screen.getByTestId('specialty-cta-rail')).toBeTruthy()
   })
 
   it('v2 without specialty: no SpecialtyCTARail', () => {
