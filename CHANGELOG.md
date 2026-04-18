@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
-- Commit: <pending> (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
+- Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
 - Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx
 - Tests added / changed: +8 (BookingV2TrustStrip.test.tsx). All green. Existing book/[id] step tests still 6/6 pass.
 - Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox); CI validates.
