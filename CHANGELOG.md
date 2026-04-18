@@ -35,8 +35,17 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.30 provider messages + notifications v2
+- Commit: (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19)) — short SHA omitted (self-referential in amend)
+- Files touched: src/app/provider/messages/ProviderMessagesV2.tsx, src/app/provider/messages/messages-v2.test.tsx, src/app/provider/messages/page.tsx, src/app/provider/notifications/ProviderNotificationsV2.tsx, src/app/provider/notifications/notifications-v2.test.tsx, src/app/provider/notifications/page.tsx
+- Tests added / changed: +12 (messages-v2.test.tsx + notifications-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.31 `/provider/bills/new` v2 invoice builder OR merge PR #100 branch to main
+- Notes: Reuses patient `messages-v2-utils` / `notifications-v2-utils`; query keys `provider-conversations` / `provider-messages` preserved. v1 split into `ProviderMessagesV1` / `ProviderNotificationsV1` for hook order.
+
 ## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.29 provider AI assistant v2
-- Commit: (pending) (feat(ui-v2): slice 16.29 — provider AI-assistant v2 shell + capability chips)
+- Commit: 88d8ed3 (feat(ui-v2): slice 16.29 — provider AI-assistant v2 shell + capability chips)
 - Files touched: src/app/provider/ai-assistant/ProviderAIAssistantV2.tsx, src/app/provider/ai-assistant/ai-assistant-v2.test.tsx, src/app/provider/ai-assistant/page.tsx
 - Tests added / changed: +5 (ai-assistant-v2.test.tsx)
 - Build: type-check pass (`tsc --noEmit`)

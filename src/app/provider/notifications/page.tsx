@@ -14,6 +14,8 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderNotificationsV2 } from './ProviderNotificationsV2'
 import {
   PageHeader,
   SectionCard,
@@ -83,7 +85,7 @@ async function markOneRead(id: string) {
   return res.json()
 }
 
-export default function ProviderNotifications() {
+function ProviderNotificationsV1() {
   const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
@@ -169,4 +171,10 @@ export default function ProviderNotifications() {
       </div>
     </div>
   )
+}
+
+export default function ProviderNotifications() {
+  const isV2 = useUiV2()
+  if (isV2) return <ProviderNotificationsV2 />
+  return <ProviderNotificationsV1 />
 }

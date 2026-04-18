@@ -16,6 +16,8 @@ import {
   ChevronLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderMessagesV2 } from './ProviderMessagesV2'
 import type { Conversation, Message } from '@/app/api/contracts/message'
 import {
   formatConversationDateDivider,
@@ -31,7 +33,7 @@ import {
 
 const EMPTY_MESSAGES: Message[] = []
 
-export default function ProviderMessages() {
+function ProviderMessagesV1() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [messageText, setMessageText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -327,4 +329,10 @@ export default function ProviderMessages() {
       </div>
     </div>
   )
+}
+
+export default function ProviderMessages() {
+  const isV2 = useUiV2()
+  if (isV2) return <ProviderMessagesV2 />
+  return <ProviderMessagesV1 />
 }
