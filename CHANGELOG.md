@@ -35,8 +35,17 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — pr-107 — CHANGELOG handoff fix (16.37 commit sha)
+- Commit: 39a87ce (docs: fix CHANGELOG commit sha for slice 16.37)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.41 — dashboard pulse de-duplication
+- Notes: Amended 16.37 entry to point at amended commit `a417990`.
+
 ## 2026-04-18 — pr-107 — Slice 16.37 Hindi static mirrors + plan checkboxes
-- Commit: 5997f59 (feat(ui-v2): slice 16.37 — Hindi /hi about, faq, privacy, terms v2 chrome parity)
+- Commit: a417990 (feat(ui-v2): slice 16.37 — Hindi /hi about, faq, privacy, terms v2 chrome parity)
 - Files touched: src/app/hi/about/*, src/app/hi/faq/*, src/app/hi/privacy/*, src/app/hi/terms/*, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
 - Tests added / changed: 0 new (smoke via existing patterns)
 - Build: `npm run type-check` pass (full `next build` needs env in CI)
