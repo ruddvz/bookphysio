@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (ADMIN_ALERT_EMAIL doc commit)
+- Commit: aa7a728 (docs: fix CHANGELOG sha for ADMIN_ALERT_EMAIL commit)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Corrects the SHA in the previous handoff entry.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Document ADMIN_ALERT_EMAIL in env + check-env
 - Commit: e64bdc1 (docs: document ADMIN_ALERT_EMAIL in env example and check-env)
 - Files touched: .env.example, scripts/check-env.mjs, CHANGELOG.md
