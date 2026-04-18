@@ -137,9 +137,32 @@ function FilterPill({
 // Main export
 // ---------------------------------------------------------------------------
 
-export default function SearchFilters({ total = 0, basePath = '/search' }: { total?: number; basePath?: string }) {
+export default function SearchFilters({
+  total = 0,
+  basePath = '/search',
+  drawerOpen: drawerOpenControlled,
+  onDrawerOpenChange,
+  hideMobileFilterBar = false,
+}: {
+  total?: number
+  basePath?: string
+  drawerOpen?: boolean
+  onDrawerOpenChange?: (open: boolean) => void
+  /** When true, the full-width mobile "Filters" row is not rendered (e.g. header chip opens the drawer). */
+  hideMobileFilterBar?: boolean
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  const [drawerOpenInternal, setDrawerOpenInternal] = useState(false)
+  const drawerOpen = onDrawerOpenChange ? (drawerOpenControlled ?? false) : drawerOpenInternal
+  const setDrawerOpen = (next: boolean) => {
+    if (onDrawerOpenChange) {
+      onDrawerOpenChange(next)
+    } else {
+      setDrawerOpenInternal(next)
+    }
+  }
 
   const currentCity = searchParams.get('city') ?? DEFAULT_CITY
   const currentVisitTypeRaw = searchParams.get('visit_type') ?? ''
@@ -297,23 +320,26 @@ export default function SearchFilters({ total = 0, basePath = '/search' }: { tot
       </div>
 
       {/* ── Mobile Filter Button ── */}
-      <div className="md:hidden">
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="inline-flex items-center justify-between w-full h-12 px-4 rounded-[var(--sq-sm)] border border-[#E5E7EB] bg-white text-[14px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
-        >
-          <div className="flex items-center gap-2.5">
-            <SlidersHorizontal size={16} className="text-[#00766C]" />
-            <span>Filters</span>
-            {activeCount > 0 && (
-              <span className="flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full bg-[#00766C] text-white text-[10px] font-bold">
-                {activeCount}
-              </span>
-            )}
-          </div>
-          <span className="text-[12px] text-[#999] font-medium">{total} results</span>
-        </button>
-      </div>
+      {!hideMobileFilterBar && (
+        <div className="md:hidden">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="inline-flex items-center justify-between w-full h-12 px-4 rounded-[var(--sq-sm)] border border-[#E5E7EB] bg-white text-[14px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center gap-2.5">
+              <SlidersHorizontal size={16} className="text-[#00766C]" />
+              <span>Filters</span>
+              {activeCount > 0 && (
+                <span className="flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full bg-[#00766C] text-white text-[10px] font-bold">
+                  {activeCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[12px] text-[#999] font-medium">{total} results</span>
+          </button>
+        </div>
+      )}
 
       {/* ── Mobile Drawer ── */}
       {drawerOpen && (
