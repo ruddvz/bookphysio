@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (merge commit)
+- Commit: 51ac344 (docs: fix CHANGELOG commit sha for merge commit)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #113
+- Notes: Handoff SHA for merge commit 146e5d3.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Merge origin/main into PR 113 (resolve conflicts)
 - Commit: 146e5d3 (merge: origin/main into PR 113 (resolve CHANGELOG + auth test conflicts))
 - Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx (+ merged main changes elsewhere)
