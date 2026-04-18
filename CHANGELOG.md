@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.11 auth surfaces v2 redesign
+- Commit: c9b8514 (feat(ui-v2): slice 16.11 — auth surfaces v2 card chrome + OTP keypad polish)
+- Files touched: src/app/(auth)/login/page.tsx, signup/page.tsx, verify-email/page.tsx, forgot-password/page.tsx, update-password/page.tsx, verify-otp/page.tsx, doctor-signup/page.tsx, auth-v2.test.tsx (new)
+- Tests added / changed: +42 (auth-v2.test.tsx — 6 per surface × 7 surfaces)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.12 Search results redesign — v2 provider result cards on /search (availability pills, price chip, distance badge, "Book in 60s" CTA, sort chips)
+- Notes: All 7 auth pages flag-gated via useUiV2(). login/signup/verify-email/doctor-signup get full card chrome upgrade (rounded-[40px], bp-border, shadow-2xl) in v2 mode. forgot-password/update-password/verify-otp already had deep-pine chrome — v2 adds trust badge + data-ui-version attr only. Badge primitive used for "Secure · India's physio platform" trust chip. verify-otp OTP keypad gets data-testid="v2-otp-keypad" in v2 mode. Production byte-identical until bp_ui=v2.
+
 ## 2026-04-18 — claude/next-phases-2t7bI — Phases 4-6 auth+admin fixes
 - Commit: b6a1728 (feat(auth+admin): phases 4-6 — OAuth role fix, approval state machine, admin email alerts)
 - Files touched: src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/app/api/admin/listings/route.ts, src/app/admin/listings/page.tsx, src/lib/resend.ts, src/app/api/providers/onboard-signup/route.ts, supabase/migrations/042_provider_approval_state.sql, supabase/migrations/043_oauth_role_default.sql

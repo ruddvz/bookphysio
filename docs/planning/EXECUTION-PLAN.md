@@ -268,7 +268,7 @@
 
 #### Priority 1 — High-traffic public + auth
 
-- [ ] **16.11** Auth surfaces redesign — v2 card chrome + OTP keypad polish on `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`; reuse `Badge` + `Sparkline` primitives where relevant; keep `+91` phone input + Zod validation; ≥ 6 unit tests per surface
+- [x] **16.11** Auth surfaces redesign — v2 card chrome + OTP keypad polish on `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`; reuse `Badge` + `Sparkline` primitives where relevant; keep `+91` phone input + Zod validation; ≥ 6 unit tests per surface
 - [ ] **16.12** Search results redesign — provider result cards on `/search` use v2 tile primitives (availability pills, price chip, distance badge, "Book in 60s" CTA); adds pulse-style sort chips; keep `SpecialtyCTARail` integration
 - [ ] **16.13** How-it-works redesign — step timeline with `Sparkline`-style progress indicators, provider / patient role toggle, v2 CTA footer
 - [ ] **16.14** Provider detail + city pages — `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]` shift to v2 card chrome, availability strip, trust chips, "Book in 60s" primary CTA
