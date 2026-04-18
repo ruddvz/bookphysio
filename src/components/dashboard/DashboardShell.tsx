@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   BarChart3,
   Sparkles,
+  Search,
 } from 'lucide-react'
 import TopPillNav, { type NavItem, type NavRole } from '@/components/dashboard/TopPillNav'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
@@ -31,6 +32,7 @@ const NAV_CONFIG: Record<
   patient: {
     items: [
       { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+      { href: '/patient/search', label: 'Find care', icon: Search },
       { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
       { href: '/patient/records', label: 'Records', icon: FileText },
       { href: '/patient/payments', label: 'Payments', icon: CreditCard },

@@ -205,6 +205,15 @@ function getSessionState(sessionId: string): DemoProviderClinicalState {
   return nextState
 }
 
+/** Visit dates (YYYY-MM-DD) for a profile, newest first — for roster sparkline series. */
+export function getDemoPatientVisitDates(sessionId: string, profileId: string): string[] {
+  const state = getSessionState(sessionId)
+  return state.visits
+    .filter((v) => v.profile_id === profileId)
+    .sort(compareVisitsDesc)
+    .map((v) => v.visit_date)
+}
+
 export function getDemoProviderPatients(sessionId: string): PatientRosterRow[] {
   const state = getSessionState(sessionId)
 

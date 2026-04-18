@@ -89,6 +89,114 @@
 - Next up: 16.32 — /provider/pending v2 onboarding stepper
 - Notes: GstLineItemChips + BillV2Sidebar gated with useUiV2().
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(planning): 16.28–16.30 complete + NEXT UP 16.31
+- Commit: d59f3d9 (docs(planning): mark slices 16.28-16.30 complete; NEXT UP 16.31)
+- Files touched: docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.31 `/provider/bills/new` — v2 invoice builder
+- Notes: EXECUTION-PLAN Phase 16 items 16.28–16.30 set to [x].
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(changelog): slice 16.30 entry short SHA
+- Commit: db9439e (docs(changelog): add short SHA for slice 16.30 entry)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: planning tick commit (see entry above)
+- Notes: Records fc75bb7 for slice 16.30 (could not embed in amend commit message).
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.30 provider messages + notifications v2
+- Commit: fc75bb7 (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19))
+- Files touched: src/app/provider/messages/ProviderMessagesV2.tsx, src/app/provider/messages/messages-v2.test.tsx, src/app/provider/messages/page.tsx, src/app/provider/notifications/ProviderNotificationsV2.tsx, src/app/provider/notifications/notifications-v2.test.tsx, src/app/provider/notifications/page.tsx
+- Tests added / changed: +12 (messages-v2.test.tsx + notifications-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.31 `/provider/bills/new` v2 invoice builder OR merge PR #100 branch to main
+- Notes: Reuses patient `messages-v2-utils` / `notifications-v2-utils`; query keys `provider-conversations` / `provider-messages` preserved. v1 split into `ProviderMessagesV1` / `ProviderNotificationsV1` for hook order.
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.29 provider AI assistant v2
+- Commit: 88d8ed3 (feat(ui-v2): slice 16.29 — provider AI-assistant v2 shell + capability chips)
+- Files touched: src/app/provider/ai-assistant/ProviderAIAssistantV2.tsx, src/app/provider/ai-assistant/ai-assistant-v2.test.tsx, src/app/provider/ai-assistant/page.tsx
+- Tests added / changed: +5 (ai-assistant-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.30 `/provider/messages` + `/provider/notifications` v2
+- Notes: `next/dynamic` mock in tests; v1 remains default export path when flag off.
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.28 provider profile v2
+- Commit: dcbd856 (feat(ui-v2): slice 16.28 — provider profile v2 with credential chip + public preview CTA)
+- Files touched: src/app/provider/profile/ProviderProfileV2.tsx, src/app/provider/profile/profile-v2.test.tsx, src/app/provider/profile/page.tsx, src/app/provider/profile/page.test.tsx
+- Tests added / changed: +10 (profile-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.29 `/provider/ai-assistant` — v2 assistant shell + capability chips
+- Notes: v2 gate via `useUiV2()`; v1 extracted as `ProviderProfileV1` to satisfy Rules of Hooks. Public CTA links to `/doctor/:userId`.
+
+## 2026-04-18 — cursor/slices-16-21-to-16-27-spec-f324 — Consolidate PR #97/#98/#99 into PR #101
+- Commit: de8d139 (merge: fold PR 99 rollup into PR 101; dedupe superseded v2 stubs)
+- Files touched: merge of rollup branch + deletions of duplicate `*V2` files from earlier PR #101-only attempt; `docs/planning/slices-16-21-to-16-27-spec.md` retained
+- Tests added / changed: net = rollup tests (PR #99); removed obsolete tests tied to deleted duplicates
+- Build: run `npm run type-check` + eslint after merge
+- Status: done
+- Next up: **16.28** `/provider/profile` — v2 form chrome
+- Notes: Close **PR #97**, **PR #98**, **PR #99** as superseded by **PR #101** (single merge). PR #97/98/99 implemented overlapping slices; PR #101 branch now contains the full integrated implementation + implementation spec doc.
+
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.27 provider patients v2
+- Commit: 9d0539e (feat(ui-v2): slice 16.27 — provider patients roster + chart v2 chrome)
+- Files touched: `src/app/api/provider/patients/route.ts`, `src/lib/clinical/types.ts`, `src/lib/clinical/provider-patients-utils.ts`, `ProviderPatientsRosterCardV2.tsx`, `ProviderPatientChartV2Chrome.tsx`, patient pages, demo helper, tests, planning docs, `docs/CODEMAPS/pages.md`
+- Tests added / changed: +3 files (utils + roster card + chart chrome)
+- Build: `tsc --noEmit` + targeted vitest pass (full `next build` needs env in CI)
+- Status: done
+- Next up: 16.28 `/provider/profile` v2 (or 16.23 specialty images when assets land)
+- Notes: `includeVisitSeries=1` adds `visit_series_6m` to roster rows; `getDemoPatientVisitDates` for demo parity.
+
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.26 provider earnings v2
+- Commit: 228a796 (feat(ui-v2): slice 16.26 — provider earnings v2 tiles + monthly sparkline)
+- Files touched: src/app/provider/earnings/ProviderEarningsV2Chrome.tsx (new), provider-earnings-utils.ts (new), tests, page.tsx, docs/planning/*, docs/CODEMAPS/pages.md
+- Tests added / changed: +4
+- Build: type-check + lint 0 errors
+- Status: done
+- Next up: 16.27 provider patients v2 or 16.23 specialty images — same rollup branch
+- Notes: Monthly settled net from visit dates (India months) via formatIndiaDateInput; ProviderEarningsV2Chrome self-gates useUiV2(); payout cadence badge Thu (matches sidebar copy).
+
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.25 provider calendar + availability v2 chrome
+- Commit: ef8c7e8 (feat(ui-v2): slice 16.25 — provider calendar + availability v2 chrome)
+- Files touched: src/app/provider/calendar/ProviderCalendarV2Chrome.tsx (new), provider-calendar-v2-chrome.test.tsx (new), page.tsx; src/app/provider/availability/ProviderAvailabilityV2Chrome.tsx (new), provider-availability-v2-chrome.test.tsx (new), page.tsx; docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, docs/CODEMAPS/pages.md
+- Tests added / changed: +4 (2 chrome test files)
+- Build: type-check + lint 0 errors
+- Status: done
+- Next up: 16.23 specialty images (when assets) or 16.26 provider earnings v2 — same rollup branch `cursor/phase-16-slices-21-25-9290`
+- Notes: Self-gated via useUiV2(). Calendar: weekly bookings sparkline + week revenue Badge; desktop grid cells show booking count Badge. Availability: weekday window-count sparkline + duration cadence Badge; day rows show window count Badge.
+
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.24 provider appointments v2 + provider_set_status API
+- Commit: 3fe82f3 (feat(ui-v2): slice 16.24 — provider appointments timeline + status actions)
+- Files touched: src/app/api/appointments/[id]/route.ts, src/lib/validations/booking.ts, src/app/provider/appointments/* (ProviderAppointmentsTimelineV2, provider-appointments-utils, page, [id]/page), provider-appointments-utils.test.ts, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
+- Tests added / changed: +2 (provider-appointments-utils.test.ts)
+- Build: type-check + lint 0 errors
+- Status: done
+- Next up: 16.25 provider calendar + availability v2 (same PR branch)
+- Notes: PATCH `action: provider_set_status` with `confirmed` | `completed` | `no_show` (provider-owned appointment, RLS). Outcome buttons only after slot start. Reschedule link goes to `?reschedule=true` (UI placeholder until booking flow wires provider reschedule).
+
+## 2026-04-18 — cursor/slice-16-22-patient-search-9290 — Slice 16.22 patient search v2 filter rail
+- Commit: 44996b3 (feat(ui-v2): slice 16.22 — patient search v2 rail + optional pincode search)
+- Files touched: src/app/patient/search/PatientSearchFiltersRail.tsx (new), src/app/patient/search/patient-search-filters-rail.test.tsx (new), src/app/patient/search/page.tsx, src/app/search/SearchContent.tsx, src/app/api/providers/route.ts, src/lib/validations/search.ts, src/components/dashboard/DashboardShell.tsx, src/app/patient/appointments/page.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md, docs/CODEMAPS/pages.md
+- Tests added / changed: +6 (patient-search-filters-rail.test.tsx)
+- Build: type-check pass; lint 0 errors (pre-existing warnings elsewhere)
+- Status: done
+- Next up: 16.23 speciality page hero + after-image slots (rollup PR: slices 16.21–16.25 on branch `cursor/phase-16-slices-21-25-9290`)
+- Notes: `SearchContent` gains `variant="patient"`. `PatientSearchFiltersRail` when `useUiV2()` + patient variant. Optional `pincode` on GET /api/providers — relational fallback + `locations.pincode`. Changelog docs commit on 16.22 branch: d97c68f.
+
+## 2026-04-18 — cursor/slice-16-21-patient-ai-shell-9290 — Slice 16.21 patient PAI + Motio v2 AI shell
+- Commit: d2cd03b (feat(ui-v2): slice 16.21 — patient PAI/Motio AI shell with pulse strip)
+- Files touched: src/app/patient/ai/PatientAIShellV2.tsx (new), src/app/patient/ai/patient-ai-shell-v2.test.tsx (new), src/app/patient/pai/page.tsx, src/app/patient/motio/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: +4 (patient-ai-shell-v2.test.tsx)
+- Build: type-check pass (`npm run type-check`). `next build` not run — env vars missing in sandbox (prebuild check-env). Lint: 0 errors.
+- Status: done
+- Next up: (same rollup) 16.22+ on `cursor/phase-16-slices-21-25-9290`
+- Notes: PatientAIShellV2 self-gates via useUiV2(); pulse uses role=patient Sparkline + TrendDelta + Badge. PatientAppointmentsTimeline requires nowMs from parent — fixes react-hooks/purity.
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
