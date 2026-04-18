@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Precise actionable specs for 16.41 + 16.42
+- Commit: (docs: expand 16.41 + 16.42 specs with exact file:line instructions)
+- Files touched: docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a (docs only)
+- Status: done
+- Next up: 16.41 — remove PatientInsightsStrip from patient dashboard + AdminPulse from admin dashboard
+- Notes: 16.41 spec names exact files and lines to change. 16.42 spec splits into (a) .env.example + (b) strip early-return useUiV2 guards only; conditional-branch uses are left intact.
+
 ## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Simplify Phase 16 planning docs
 - Commit: 24f448f (docs: simplify Phase 16 plan (table + remaining slices))
 - Files touched: docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md

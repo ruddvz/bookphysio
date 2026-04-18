@@ -15,7 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin) per `EXECUTION-PLAN.md` Phase 16
+## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin)
+
+**Patient:** delete the `<PatientInsightsStrip>` block (lines 276–281) from `src/app/patient/dashboard/page.tsx` and its import — keep `<PatientCarePulse>` in the right rail.
+**Admin:** delete the `<AdminPulse>` block (lines 549–555) from `src/app/admin/page.tsx` and its import — keep `<AdminPulseRail>` above the stat row.
+No component files are deleted. Run `npm run build` + `npm test` after. Full spec in `EXECUTION-PLAN.md` → Phase 16 → Remaining → 16.41.
 
 Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #108). Next open slice: **16.41**.
 

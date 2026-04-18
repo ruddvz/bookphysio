@@ -266,8 +266,8 @@ Per-slice detail and PR references live in `CHANGELOG.md` and git history.
 ### Remaining
 
 - [ ] **16.23** Specialty hero + after-image slots — wire uploads into `SPECIALTIES` / `SpecialtyCTARail` when assets arrive; tune per-specialty backgrounds *(often blocked on incoming uploads)*.
-- [ ] **16.41** Pulse de-dupe — one clear cadence story on patient dashboard (`PatientCarePulse` vs `PatientInsightsStrip`) and admin (`AdminPulse` vs `AdminPulseRail`); trim overlap.
-- [ ] **16.42** Default-on — `NEXT_PUBLIC_UI_V2=true`, then strip `useUiV2()` gates after **16.23** + **16.41** land.
+- [ ] **16.41** Pulse de-dupe — **patient:** remove `<PatientInsightsStrip>` from `src/app/patient/dashboard/page.tsx` (lines 276–281); keep `<PatientCarePulse>` in the right rail (already there at line 429). `PatientInsightsStrip` and its test file stay on disk — they are not deleted. **admin:** remove `<AdminPulse>` from the right rail in `src/app/admin/page.tsx` (lines 549–555); keep `<AdminPulseRail>` above the stat row (already at line 400). `AdminPulse` and its test file stay on disk. No new components needed; only dashboard page files change.
+- [ ] **16.42** Default-on — two steps, in order: **(a)** Set `NEXT_PUBLIC_UI_V2=true` in `.env.example` (add line `NEXT_PUBLIC_UI_V2=true` under the feature-flags comment). **(b)** Strip `useUiV2()` guards: for every `'use client'` component that does `const uiV2 = useUiV2(); if (!uiV2) return null` — delete those two lines and the `useUiV2` import. Run `npm run build` + `npm test` to verify zero regressions. **Scope:** ~90 files import `useUiV2`; only touch the ones that use it purely as an early-return guard (pattern: `if (!uiV2) return null`). Leave any file that uses `uiV2` for conditional branching (e.g. rendering different variants) as-is.
 
 ---
 
