@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.19 Patient messages + notifications v2
-- Commit: (pending — see git log)
+- Commit: 3d82794 (feat(ui-v2): slice 16.19 — patient messages + notifications v2 thread layout + unread Badge)
 - Files touched: src/app/patient/messages/PatientMessagesV2.tsx (new), src/app/patient/messages/messages-v2-utils.ts (new), src/app/patient/messages/messages-v2.test.tsx (new), src/app/patient/messages/page.tsx, src/app/patient/notifications/PatientNotificationsV2.tsx (new), src/app/patient/notifications/notifications-v2-utils.ts (new), src/app/patient/notifications/notifications-v2.test.tsx (new), src/app/patient/notifications/page.tsx, src/components/dashboard/primitives/Badge.tsx
 - Tests added / changed: +43 (22 messages-v2 + 21 notifications-v2). Full suite: 642/653 passing; 11 failing are pre-existing unrelated to this slice.
 - Build: type-check pass (`tsc --noEmit` clean).
