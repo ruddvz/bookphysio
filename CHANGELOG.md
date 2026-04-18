@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Document ADMIN_ALERT_EMAIL in env + check-env
-- Commit: (docs: document ADMIN_ALERT_EMAIL for admin alerts)
+- Commit: e64bdc1 (docs: document ADMIN_ALERT_EMAIL in env example and check-env)
 - Files touched: .env.example, scripts/check-env.mjs, CHANGELOG.md
 - Tests added / changed: 0
 - Build: n/a
