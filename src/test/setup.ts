@@ -30,14 +30,17 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
 
 if (typeof globalThis.IntersectionObserver === 'undefined') {
   globalThis.IntersectionObserver = class IntersectionObserver {
+    readonly root: Element | null = null
+    readonly rootMargin = ''
+    readonly thresholds: ReadonlyArray<number> = []
     constructor() {}
     observe() {}
     unobserve() {}
     disconnect() {}
-    takeRecords() {
+    takeRecords(): IntersectionObserverEntry[] {
       return []
     }
-  }
+  } as typeof IntersectionObserver
 }
 
 // Mock next/navigation
