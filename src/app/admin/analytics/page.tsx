@@ -1,10 +1,23 @@
 'use client'
 
+import { useId } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, DollarSign, Activity, Download, Loader2, Filter, Share2 } from 'lucide-react'
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { cn } from '@/lib/utils'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { AdminPulseRail } from '@/components/admin/AdminPulseRail'
+import { RECHARTS_BAR_FILL, RECHARTS_FILL, RECHARTS_PRIMARY } from '@/components/dashboard/charts/recharts-theme'
 
 interface AnalyticsData {
   kpis: {
@@ -19,28 +32,8 @@ interface AnalyticsData {
   monthlyAppointments: { label: string; count: number }[]
 }
 
-function buildChartPath(data: { revenue: number }[], width = 1000, height = 350, pad = 25): { line: string; area: string; dots: { x: number; y: number }[] } {
-  if (data.length < 2) return { line: '', area: '', dots: [] }
-  const max = Math.max(...data.map(d => d.revenue), 1)
-  const xs = data.map((_, i) => (i / (data.length - 1)) * width)
-  const ys = data.map(d => pad + (1 - d.revenue / max) * (height - pad * 2))
-  const pairs = xs.map((x, i) => `${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' L')
-  const dots = xs.map((x, i) => ({ x, y: ys[i] }))
-  return {
-    line: `M${pairs}`,
-    area: `M${pairs} L${width},${height} L0,${height} Z`,
-    dots
-  }
-}
-
-const GEO_GRID_CELL_OPACITIES = [
-  0.14, 0.22, 0.31, 0.18,
-  0.27, 0.38, 0.24, 0.45,
-  0.19, 0.34, 0.28, 0.41,
-  0.16, 0.29, 0.36, 0.21,
-]
-
 export default function AdminAnalytics() {
+  const revenueGradId = useId().replace(/:/g, '')
   const uiV2 = useUiV2()
   const { data, isLoading } = useQuery<AnalyticsData>({
     queryKey: ['admin-analytics'],
@@ -61,13 +54,26 @@ export default function AdminAnalytics() {
       ]
     : []
 
-  const fallbackLine = 'M0,300 L167,220 L333,260 L500,140 L667,180 L833,80 L1000,110'
-  const fallbackArea = 'M0,300 L167,220 L333,260 L500,140 L667,180 L833,80 L1000,110 L1000,350 L0,350 Z'
-  const { line: chartLine, area: chartArea, dots: chartDots } = data?.monthlyRevenue
-    ? buildChartPath(data.monthlyRevenue)
-    : { line: fallbackLine, area: fallbackArea, dots: [] }
+  const revenueSeries =
+    data?.monthlyRevenue?.length
+      ? data.monthlyRevenue.map((d) => ({ name: d.label, revenue: d.revenue }))
+      : [
+          { name: 'Jan', revenue: 120 },
+          { name: 'Feb', revenue: 180 },
+          { name: 'Mar', revenue: 150 },
+          { name: 'Apr', revenue: 220 },
+          { name: 'May', revenue: 190 },
+          { name: 'Jun', revenue: 240 },
+          { name: 'Jul', revenue: 210 },
+        ]
 
-  const xLabels = data?.monthlyRevenue.map(d => d.label) ?? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']
+  const appointmentSeries =
+    data?.monthlyAppointments?.length
+      ? data.monthlyAppointments.map((d) => ({ name: d.label, appointments: d.count }))
+      : revenueSeries.map((row, i) => ({
+          name: row.name,
+          appointments: 40 + (i % 4) * 12,
+        }))
 
   return (
     <div className="flex flex-col gap-8 pb-16 px-6 py-6 max-w-6xl mx-auto">
@@ -180,70 +186,67 @@ export default function AdminAnalytics() {
             </div>
           </div>
 
-          <div className="flex-1 relative mt-2">
-            <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 350" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0A0A0A" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#0A0A0A" stopOpacity="0" />
-                </linearGradient>
-                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
-                  <feOffset dx="0" dy="10" result="offsetblur" />
-                  <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.3" />
-                  </feComponentTransfer>
-                  <feMerge>
-                    <feMergeNode />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Grid Lines */}
-              {[0, 1, 2, 3].map(i => (
-                <line key={i} x1="0" y1={i * 100 + 25} x2="1000" y2={i * 100 + 25} stroke="#F1F5F9" strokeWidth="1.5" />
-              ))}
-
-              {/* Area & Line */}
-              {chartArea && <path d={chartArea} fill="url(#chartGradient)" className="transition-all duration-1000" />}
-              {chartLine && (
-                <path
-                  d={chartLine}
-                  fill="none"
-                  stroke="#0A0A0A"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  filter="url(#shadow)"
-                  className="transition-all duration-1000"
+          <div className="flex-1 relative mt-2 min-h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueSeries} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id={revenueGradId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={RECHARTS_PRIMARY} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={RECHARTS_FILL} stopOpacity={0.08} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={false}
+                  tickLine={false}
                 />
-              )}
-
-              {/* Dots */}
-              {chartDots.map((dot, i) => (
-                <g key={i} className="group/dot cursor-pointer">
-                  <circle cx={dot.x} cy={dot.y} r="5" fill="white" stroke="#0A0A0A" strokeWidth="2.5" />
-                  <circle cx={dot.x} cy={dot.y} r="12" fill="#0A0A0A" fillOpacity="0" className="group-hover/dot:fill-opacity-10 transition-all duration-300" />
-                </g>
-              ))}
-            </svg>
-            <div className="flex justify-between mt-8 border-t border-slate-100 pt-4">
-              {xLabels.map(m => (
-                <span key={m} className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{m}</span>
-              ))}
-            </div>
+                <YAxis
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `₹${Number(v).toLocaleString('en-IN')}`}
+                />
+                <Tooltip
+                  formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Revenue']}
+                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke={RECHARTS_PRIMARY}
+                  strokeWidth={2.5}
+                  fill={`url(#${revenueGradId})`}
+                  dot={{ r: 4, fill: '#fff', stroke: RECHARTS_PRIMARY, strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Acquisition Mix */}
-        <div className="bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col">
-          <h2 className="text-[18px] font-bold text-slate-900 tracking-tight mb-6">Acquisition</h2>
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center py-8">
-              <BarChart3 size={32} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-[14px] text-slate-500">Acquisition data will appear as traffic grows.</p>
-            </div>
+        {/* Monthly appointments */}
+        <div className="bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col min-h-[480px]">
+          <h2 className="text-[18px] font-bold text-slate-900 tracking-tight mb-1">Appointments</h2>
+          <p className="text-[12px] font-medium text-slate-400 uppercase tracking-wider mb-6">By month</p>
+          <div className="flex-1 min-h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={appointmentSeries} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 11, fill: '#94a3b8' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  formatter={(value: number) => [value, 'Appointments']}
+                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                />
+                <Bar dataKey="appointments" fill={RECHARTS_BAR_FILL} radius={[6, 6, 0, 0]} maxBarSize={48} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -268,20 +271,16 @@ export default function AdminAnalytics() {
           </div>
 
           <div className="hidden lg:flex justify-center relative">
-            <div className="w-[360px] h-[360px] rounded-full border border-white/5 flex items-center justify-center p-8">
-               <div className="grid grid-cols-4 gap-3 w-full h-full opacity-50">
-                 {Array.from({ length: 16 }).map((_, i) => (
-                   <div
-                    key={i}
-                    className="bg-white/5 rounded-[var(--sq-xs)] border border-white/10 hover:bg-emerald-500/20 transition-all cursor-crosshair"
-                    style={{ opacity: GEO_GRID_CELL_OPACITIES[i % GEO_GRID_CELL_OPACITIES.length] }}
-                   />
-                 ))}
-               </div>
-               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-12 h-12 bg-blue-500/30 rounded-full blur-2xl animate-pulse" />
-                  <MapPin size={40} className="text-blue-400 drop-shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
-               </div>
+            <div className="relative flex h-[280px] w-[280px] items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
+              <div className="absolute inset-8 rounded-full border border-dashed border-white/15" />
+              <div className="absolute inset-16 rounded-full border border-white/10" />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="h-14 w-14 rounded-full bg-blue-500/25 blur-2xl" />
+                <MapPin
+                  size={40}
+                  className="relative text-blue-400 drop-shadow-[0_0_15px_rgba(37,99,235,0.5)]"
+                />
+              </div>
             </div>
           </div>
         </div>

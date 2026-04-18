@@ -31,6 +31,30 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
   })
 }
 
+// Recharts ResponsiveContainer uses ResizeObserver (jsdom has none)
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+}
+
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  globalThis.IntersectionObserver = class IntersectionObserver {
+    readonly root: Element | null = null
+    readonly rootMargin = ''
+    readonly thresholds: ReadonlyArray<number> = []
+    constructor() {}
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return []
+    }
+  } as typeof IntersectionObserver
+}
+
 // Mock next/navigation
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = await importOriginal() as Record<string, unknown>

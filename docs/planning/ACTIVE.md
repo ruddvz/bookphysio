@@ -15,9 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.21** — `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)
+## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin) per `EXECUTION-PLAN.md` Phase 16
 
-Phase **17.1–17.5** is implemented on branch `cursor/phase-17-search-fixes-5f15` (provider approval gate + search UX + migrations 044/045). **Ops:** apply migrations `044` + `045` in Supabase after merge/deploy.
+Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #108). Next open slice: **16.41**.
+
+Phase **17.1–17.5** is also implemented on branch `cursor/phase-17-search-fixes-5f15` (provider approval gate + search UX + migrations 044/045). **Ops:** apply migrations `044` + `045` in Supabase after merge/deploy.
 
 Full Phase 17 spec (reference): `docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md`
 
@@ -63,9 +65,9 @@ Before starting 16.21: read `CHANGELOG.md` newest entry for any WIP handoff.
 
 **Priority 4 (admin):** **16.33–16.35** listings, users, analytics ✓ (full Recharts charts → **16.38**)
 
-**Priority 5 (static + Hindi):** 16.36–16.37
+**Priority 5 (static + Hindi):** 16.36–16.37 ✓
 
-**Priority 6 (cross-cutting):** 16.38 Recharts · 16.39 Command palette · 16.40 Notification drawer · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
+**Priority 6 (cross-cutting):** 16.38 Recharts ✓ · 16.39 Command palette ✓ · 16.40 Notification drawer ✓ · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
 
 ### Blockers / inbound
 - Specialty hero images + "after" treatment images — uploading in 2–3 days (slice **16.23** waits for this)

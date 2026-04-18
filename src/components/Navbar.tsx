@@ -23,7 +23,8 @@ import {
 } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
-import { CommandPaletteHint } from '@/components/nav/CommandPaletteHint'
+import { CommandPalette } from '@/components/nav/CommandPalette'
+import { NotificationDrawer } from '@/components/nav/NotificationDrawer'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { getLocalizedStaticHref, type LocalizedStaticPath, type StaticLocale } from '@/lib/i18n/static-pages'
 import { SPECIALTIES } from '@/lib/specialties'
@@ -221,7 +222,12 @@ export default function Navbar({
 
             {/* Desktop Auth */}
             <div className="hidden lg:flex items-center gap-3">
-              {uiV2 ? <CommandPaletteHint href={searchHref} /> : null}
+              {uiV2 ? (
+                <div className="flex items-center gap-2">
+                  <NotificationDrawer />
+                  <CommandPalette locale={effectiveLocale} />
+                </div>
+              ) : null}
               {locale && localeSwitchPath ? (
                 <LocaleSwitcher locale={locale} path={localeSwitchPath} />
               ) : null}

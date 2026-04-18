@@ -1,6 +1,25 @@
+import type { ReactNode } from 'react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import AdminAnalytics from './page'
+
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: ReactNode }) => (
+    <div data-testid="recharts-responsive">{children}</div>
+  ),
+  AreaChart: ({ children }: { children: ReactNode }) => (
+    <div data-testid="recharts-area-chart">{children}</div>
+  ),
+  BarChart: ({ children }: { children: ReactNode }) => (
+    <div data-testid="recharts-bar-chart">{children}</div>
+  ),
+  Area: () => null,
+  Bar: () => null,
+  CartesianGrid: () => null,
+  XAxis: () => null,
+  YAxis: () => null,
+  Tooltip: () => null,
+}))
 
 const useUiV2Mock = vi.fn<() => boolean>(() => true)
 
@@ -98,5 +117,12 @@ describe('AdminAnalytics AdminPulseRail', () => {
     expect(rail).toHaveAttribute('data-active-providers', '0')
     expect(rail).toHaveAttribute('data-total-patients', '0')
     expect(rail).toHaveAttribute('data-gmv', '0')
+  })
+
+  it('renders Recharts area and bar chart shells', () => {
+    useUiV2Mock.mockReturnValue(true)
+    render(<AdminAnalytics />)
+    expect(screen.getByTestId('recharts-area-chart')).toBeInTheDocument()
+    expect(screen.getByTestId('recharts-bar-chart')).toBeInTheDocument()
   })
 })

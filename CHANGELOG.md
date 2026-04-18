@@ -35,6 +35,51 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — pr-107 — CHANGELOG handoff fix (16.37 commit sha)
+- Commit: 39a87ce (docs: fix CHANGELOG commit sha for slice 16.37)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.41 — dashboard pulse de-duplication
+- Notes: Amended 16.37 entry to point at amended commit `a417990`.
+
+## 2026-04-18 — pr-107 — Slice 16.37 Hindi static mirrors + plan checkboxes
+- Commit: a417990 (feat(ui-v2): slice 16.37 — Hindi /hi about, faq, privacy, terms v2 chrome parity)
+- Files touched: src/app/hi/about/*, src/app/hi/faq/*, src/app/hi/privacy/*, src/app/hi/terms/*, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
+- Tests added / changed: 0 new (smoke via existing patterns)
+- Build: `npm run type-check` pass (full `next build` needs env in CI)
+- Status: done
+- Next up: 16.41 — dashboard pulse de-duplication (patient + admin)
+- Notes: Hi privacy/terms add section `id="contact"` for v2 TOC; `/hi/how-it-works` and `/hi/search` unchanged (already locale-aware or SearchContent).
+
+## 2026-04-18 — pr-107 — Slices 16.39–16.40 CommandPalette + NotificationDrawer
+- Commit: 8b84cf9 (feat(ui-v2): slices 16.39–16.40 — command palette + notification drawer in Navbar)
+- Files touched: src/components/nav/CommandPalette.tsx, NotificationDrawer.tsx, command-palette-config.ts, tests, Navbar.tsx, src/test/setup.ts (IntersectionObserver stub)
+- Tests added / changed: +8 (CommandPalette.test.tsx, NotificationDrawer.test.tsx)
+- Build: `npm run type-check` pass
+- Status: done
+- Next up: 16.37 Hindi mirrors
+- Notes: Replaces CommandPaletteHint when ui-v2; role from GET /api/profile; recent routes in localStorage `bp_cmd_recent`.
+
+## 2026-04-18 — pr-107 — Slice 16.36 static pages v2 chrome
+- Commit: 90a77db (feat(ui-v2): slice 16.36 — static pages long-form chrome + TOC + last-updated Badge)
+- Files touched: src/components/static/*, src/app/about/*, faq/*, privacy/*, terms/*, tests, src/test/setup.ts
+- Tests added / changed: +8 (about, faq, privacy, terms page tests)
+- Build: `npm run type-check` pass
+- Status: done
+- Next up: 16.39 command palette
+- Notes: StaticLegalHero hides duplicate last-updated line in v2 for privacy/terms; About v1 has no section ids (only when v2).
+
+## 2026-04-18 — pr-107 — Slice 16.38 Recharts
+- Commit: 4796bae (feat(ui-v2): slice 16.38 — Recharts integration for analytics, earnings, records)
+- Files touched: package.json, admin analytics page, ProviderEarningsV2Chrome, PatientRecordsSummaryV2, records-utils, analytics-v2.test.tsx, test setup (ResizeObserver)
+- Tests added / changed: +1 analytics test (recharts mock)
+- Build: `npm run type-check` pass
+- Status: done
+- Next up: 16.36 static pages
+- Notes: Geographic mock grid replaced with simple decorative circle; Appointment bar chart added.
+
 ## 2026-04-18 — claude/organize-file-structure-2B6D3 — File structure cleanup + placement enforcement
 - Commit: 2dc7765 (chore: organize file structure + enforce placement rules)
 - Files touched: 19 files — moves, deletes, new rule doc, new hook script, settings.json, CLAUDE.md
