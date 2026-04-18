@@ -15,13 +15,23 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP (after consolidation PR merges): **Slice 16.21 `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)**
+## 👉 NEXT UP: **Phase 17 — Search Fixes + ID Compaction (5 slices)**
 
-Slices 16.16–16.20 complete. Next is **16.21**: `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens. ≥ 6 unit tests.
+Branch: `claude/fix-search-mobile-ui-sxKR6` (PR #103 — plan merged, no code yet)
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.21.
+Execute slices **17.1 → 17.5** in order. Full spec + file/line targets in:
+`docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md`
 
-Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
+Quick summary:
+- **17.1** Tighten fallback provider filter (add `verified=true` + `approval_status=approved`) + migration 044
+- **17.2** Compact search header — sr-only breadcrumb + BreadcrumbList JSON-LD + `N physios · City` h1
+- **17.3** City filter typeahead — `CitySearchCombobox` (12 popular chips + useDeferredValue, cap 20)
+- **17.4** Mobile reels snap-scroll (ui-v2 gate) — `SearchResultsReels` + `DoctorCardCompact`
+- **17.5** Shorten display IDs — migration 045 (6-digit providers, 7-digit patients)
+
+Phase 16 parallel track: **16.21** `/patient/pai` + `/patient/motio` v2 AI shell is next when returning to ui-v2 rollout.
+
+Before starting: read `CHANGELOG.md` newest entry for any WIP handoff.
 
 ---
 

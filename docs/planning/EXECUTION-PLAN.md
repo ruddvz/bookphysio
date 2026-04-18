@@ -318,6 +318,20 @@
 
 ---
 
+## PHASE 17 — Search Fixes + ID Compaction
+
+> Source plan: `docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md`
+> Branch: `claude/fix-search-mobile-ui-sxKR6` (PR #103)
+> Execute slices in order. Each slice = one commit.
+
+- [ ] **17.1** Fix unapproved provider leak — add `.eq('verified', true).eq('approval_status', 'approved')` to fallback in `src/app/api/providers/route.ts:282`; extract `applyPublicProviderFilters()` to `src/app/api/providers/filters.ts`; new migration `044_search_providers_approval_gate.sql`
+- [ ] **17.2** Compact search header — `sr-only` breadcrumb + `BreadcrumbList` JSON-LD + single-line h1 (`N physios · City`) + mobile filter chip (`src/app/search/SearchContent.tsx:229–254`)
+- [ ] **17.3** City filter typeahead — new `src/components/search/CitySearchCombobox.tsx` (12 popular chips + `useDeferredValue` typeahead, cap 20); replace flat `CITIES` list in `src/app/search/SearchFilters.tsx:16,216,370`
+- [ ] **17.4** Mobile reels snap-scroll (ui-v2 only) — new `src/app/search/SearchResultsReels.tsx` + `src/components/DoctorCardCompact.tsx`; branch in `SearchContent.tsx` results section (`isV2 && < md` → reels, otherwise existing grid)
+- [ ] **17.5** Shorten display IDs — new migration `045_shorter_display_ids.sql` (providers 6-digit `100000+`, patients 7-digit `1000000+`); safe DO block guards existing rows
+
+---
+
 ## ROADMAP (future)
 - Mobile app (React Native / Expo)
 - Multi-language support (Hindi, regional languages)
