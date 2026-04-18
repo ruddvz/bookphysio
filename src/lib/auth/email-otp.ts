@@ -75,9 +75,8 @@ export async function createAndSendEmailOtp(
   if (sendError) {
     console.error('Resend send error:', sendError)
     // Clean up the orphaned OTP record so it cannot be verified
-    await supabaseAdmin.from('email_otps').delete().eq('id', inserted.id).catch((e: unknown) => {
-      console.error('email_otps cleanup failed:', e)
-    })
+    const { error: cleanupError } = await supabaseAdmin.from('email_otps').delete().eq('id', inserted.id)
+    if (cleanupError) console.error('email_otps cleanup failed:', cleanupError)
     return { ok: false, error: 'Failed to send verification email' }
   }
 

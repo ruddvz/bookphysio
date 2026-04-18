@@ -126,11 +126,11 @@ export async function PATCH(request: NextRequest) {
     }
   } else {
     // Rejection: revert user role to provider_pending so they remain in review state
-    await supabaseAdmin
+    const { error: revertError } = await supabaseAdmin
       .from('users')
       .update({ role: 'provider_pending' })
       .eq('id', provider_id)
-      .catch((e: unknown) => console.error('[admin/listings] Role revert on rejection failed:', e))
+    if (revertError) console.error('[admin/listings] Role revert on rejection failed:', revertError)
   }
 
   return NextResponse.json({ success: true })

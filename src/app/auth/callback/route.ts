@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       // Belt-and-braces: ensure new Google OAuth users get role='patient'
       // (guard against trigger edge cases where no public.users row was created yet)
       if (data.user?.app_metadata?.provider === 'google' && data.user.id) {
-        await supabaseAdmin
+        const { error: upsertError } = await supabaseAdmin
           .from('users')
           .upsert(
             {
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             },
             { onConflict: 'id', ignoreDuplicates: true },
           )
-          .catch((e: unknown) => console.error('[auth/callback] Google upsert failed:', e))
+        if (upsertError) console.error('[auth/callback] Google upsert failed:', upsertError)
       }
 
       const role = await resolveUserRole(supabase, data.user?.id, data.user?.user_metadata?.role as string | undefined)
