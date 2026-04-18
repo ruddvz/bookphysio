@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — PR #91 CI fixes (16.11 + 16.12 unblock)
-- Commit: <pending> (fix(ci): PR #91 TS2739 SpecialtyCTARail props + jsx-a11y combobox ARIA)
+- Commit: 3807e72 (fix(ci): PR #91 TS2739 SpecialtyCTARail props + jsx-a11y combobox ARIA)
 - Files touched: src/app/search/SearchContent.tsx, src/app/(auth)/auth-v2.test.tsx
 - Tests added / changed: 0 (CI unblock — build + lint only; tests from 16.11/16.12 remain green)
 - Build: not run (node_modules absent in sandbox; CI validates)
