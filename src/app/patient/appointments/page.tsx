@@ -17,6 +17,7 @@ import {
   parseTab,
   formatApptDate,
   providerDisplayName,
+  STATUS_LABEL,
   type AppointmentItem,
   type AppointmentTab,
 } from './appointments-utils'
@@ -32,13 +33,6 @@ const STATUS_COLORS: Record<string, string> = {
   no_show: 'bg-slate-50 text-slate-400 border-slate-200',
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
-  confirmed: 'Confirmed',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-  no_show: 'No Show',
-}
 
 function AppointmentsSkeleton() {
   return (
@@ -175,7 +169,7 @@ function PatientAppointmentsContent() {
                         </Link>
                       )}
                       <div className={cn("px-2.5 py-0.5 rounded-full text-[11px] font-semibold border", STATUS_COLORS[appt.status])}>
-                        {STATUS_LABELS[appt.status] || appt.status}
+                        {STATUS_LABEL[appt.status] ?? appt.status}
                       </div>
                       <Link
                         href={`/patient/appointments/${appt.id}`}

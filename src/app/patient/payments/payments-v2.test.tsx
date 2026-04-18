@@ -40,7 +40,8 @@ function makePayment(overrides: Partial<PaymentItem> & { id: string }): PaymentI
     razorpay_payment_id: overrides.razorpay_payment_id ?? null,
     created_at: overrides.created_at ?? '2026-04-10T10:00:00.000Z',
     visit_type: overrides.visit_type ?? 'in_clinic',
-    provider_name: overrides.provider_name ?? 'Priya Sharma',
+    // Use 'provider_name' in overrides check to allow explicit null
+    provider_name: 'provider_name' in overrides ? overrides.provider_name ?? null : 'Priya Sharma',
     starts_at: overrides.starts_at ?? '2026-04-10T09:00:00.000Z',
   }
 }

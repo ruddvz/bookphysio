@@ -74,7 +74,7 @@ export function PatientPaymentsLedger({ payments }: PatientPaymentsLedgerProps) 
           {/* Payment rows */}
           <div className="flex flex-col divide-y divide-[var(--color-pt-border-soft)] overflow-hidden rounded-[var(--sq-lg)] border border-[var(--color-pt-border-soft)] bg-white">
             {month.items.map((payment) => {
-              const status = payment.status as string
+              const status = payment.status
               const statusLabel = PAYMENT_STATUS_LABEL[status] ?? status
               const variant = statusBadgeVariant(status)
               const base = payment.amount_inr - payment.gst_amount_inr

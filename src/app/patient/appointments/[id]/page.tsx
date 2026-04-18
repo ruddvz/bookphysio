@@ -139,6 +139,17 @@ export default function PatientAppointmentDetail() {
           : `Consultation ₹${appt.fee_inr.toLocaleString('en-IN')} + GST ₹${gst.toLocaleString('en-IN')} · Pay during the visit`
   const providerNotes = appt.provider_notes ?? appt.notes
 
+  const rescheduleModal = showReschedule && canCancel ? (
+    <RescheduleModal
+      appointmentId={appt.id}
+      providerId={appt.provider_id}
+      providerName={doctorName}
+      currentSlotDate={appt.availabilities.starts_at}
+      onClose={() => setShowReschedule(false)}
+      onSuccess={() => setShowReschedule(false)}
+    />
+  ) : null
+
   if (uiV2) {
     return (
       <>
@@ -154,16 +165,7 @@ export default function PatientAppointmentDetail() {
           onConfirmCancel={() => cancelMut.mutate()}
           cancelPending={cancelMut.isPending}
         />
-        {showReschedule && canCancel ? (
-          <RescheduleModal
-            appointmentId={appt.id}
-            providerId={appt.provider_id}
-            providerName={doctorName}
-            currentSlotDate={appt.availabilities.starts_at}
-            onClose={() => setShowReschedule(false)}
-            onSuccess={() => setShowReschedule(false)}
-          />
-        ) : null}
+        {rescheduleModal}
       </>
     )
   }
@@ -351,17 +353,7 @@ export default function PatientAppointmentDetail() {
         </div>
       )}
 
-      {/* Reschedule modal */}
-      {showReschedule && canCancel && (
-        <RescheduleModal
-          appointmentId={appt.id}
-          providerId={appt.provider_id}
-          providerName={doctorName}
-          currentSlotDate={appt.availabilities.starts_at}
-          onClose={() => setShowReschedule(false)}
-          onSuccess={() => setShowReschedule(false)}
-        />
-      )}
+      {rescheduleModal}
     </div>
   )
 }

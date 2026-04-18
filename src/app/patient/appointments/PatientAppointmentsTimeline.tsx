@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { ArrowRight, Calendar, RefreshCw, Video } from 'lucide-react'
 import { Badge } from '@/components/dashboard/primitives/Badge'
@@ -46,7 +44,9 @@ export function PatientAppointmentsTimeline({
   tab,
   nowMs,
 }: PatientAppointmentsTimelineProps) {
-  const days = groupApptsByDay(appointments, tab, nowMs)
+  const resolvedNowMs = nowMs ?? Date.now()
+  const days = groupApptsByDay(appointments, tab, resolvedNowMs)
+  const nowDate = new Date(resolvedNowMs)
 
   if (days.length === 0) return null
 
@@ -85,7 +85,7 @@ export function PatientAppointmentsTimeline({
               const canReschedule =
                 tab === 'upcoming' &&
                 appt.payment_status !== 'paid' &&
-                canPatientCancelAppointment(appt.status, appt.availabilities?.starts_at)
+                canPatientCancelAppointment(appt.status, appt.availabilities?.starts_at, nowDate)
 
               return (
                 <article
