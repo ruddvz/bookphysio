@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slice-16-22-patient-search-9290 — Slice 16.22 patient search v2 filter rail
+- Commit: 44996b3 (feat(ui-v2): slice 16.22 — patient search v2 rail + optional pincode search)
+- Files touched: src/app/patient/search/PatientSearchFiltersRail.tsx (new), src/app/patient/search/patient-search-filters-rail.test.tsx (new), src/app/patient/search/page.tsx, src/app/search/SearchContent.tsx, src/app/api/providers/route.ts, src/lib/validations/search.ts, src/components/dashboard/DashboardShell.tsx, src/app/patient/appointments/page.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md, docs/CODEMAPS/pages.md
+- Tests added / changed: +6 (patient-search-filters-rail.test.tsx)
+- Build: type-check pass; lint 0 errors (pre-existing warnings elsewhere)
+- Status: done
+- Next up: 16.23 speciality page hero + after-image slots
+- Notes: `SearchContent` gains `variant="patient"` (dashboard sticky header, breadcrumb to /patient/dashboard). `PatientSearchFiltersRail` when `useUiV2()` + patient variant. Optional `pincode` query param on GET /api/providers — Zod-validated 6 digits; forces relational fallback and filters `locations.pincode`. Timeline: required `nowMs` from parent for react-hooks/purity.
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
