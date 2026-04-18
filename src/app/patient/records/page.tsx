@@ -10,6 +10,8 @@ import {
   ListRow,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientRecordsSummaryV2 } from './PatientRecordsSummaryV2'
 
 async function fetchRecords(): Promise<{ records: PatientFacingRecord[] }> {
   const res = await fetch('/api/patient/records')
@@ -44,6 +46,7 @@ function Skeleton({ className }: { className: string }) {
 }
 
 export default function PatientRecordsPage() {
+  const uiV2 = useUiV2()
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['patient-records'],
     queryFn: fetchRecords,
@@ -112,8 +115,8 @@ export default function PatientRecordsPage() {
 
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1 space-y-6">
-          <SectionCard role="patient" title="Visit history">
-            {records.length === 0 ? (
+          {uiV2 ? (
+            records.length === 0 ? (
               <EmptyState
                 role="patient"
                 icon={FileText}
@@ -122,54 +125,68 @@ export default function PatientRecordsPage() {
                 cta={{ label: 'Book a visit', href: '/search' }}
               />
             ) : (
-              <div className="divide-y divide-[var(--color-pt-border-soft)]">
-                {records.map((r) => (
-                  <div key={r.visit_id} className="py-6 first:pt-0 last:pb-0">
-                    <ListRow
-                      role="patient"
-                      icon={FileText}
-                      tone={1}
-                      primary={r.provider_name}
-                      secondary={
-                        <>
-                          <span>Visit {r.visit_number}</span>
-                          <span aria-hidden="true" className="mx-1">•</span>
-                          <span>{formatDate(r.visit_date)}</span>
-                        </>
-                      }
-                    />
-                    <div className="mt-4 pl-13 space-y-4">
-                      {r.patient_summary ? (
-                        <div>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                            Physio Notes
+              <PatientRecordsSummaryV2 records={records} />
+            )
+          ) : (
+            <SectionCard role="patient" title="Visit history">
+              {records.length === 0 ? (
+                <EmptyState
+                  role="patient"
+                  icon={FileText}
+                  title="No visit summaries yet"
+                  description="After your next physio session, your provider can share a simple summary here."
+                  cta={{ label: 'Book a visit', href: '/search' }}
+                />
+              ) : (
+                <div className="divide-y divide-[var(--color-pt-border-soft)]">
+                  {records.map((r) => (
+                    <div key={r.visit_id} className="py-6 first:pt-0 last:pb-0">
+                      <ListRow
+                        role="patient"
+                        icon={FileText}
+                        tone={1}
+                        primary={r.provider_name}
+                        secondary={
+                          <>
+                            <span>Visit {r.visit_number}</span>
+                            <span aria-hidden="true" className="mx-1">•</span>
+                            <span>{formatDate(r.visit_date)}</span>
+                          </>
+                        }
+                      />
+                      <div className="mt-4 pl-13 space-y-4">
+                        {r.patient_summary ? (
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                              Physio Notes
+                            </p>
+                            <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">
+                              {r.patient_summary}
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-[12px] text-slate-400 italic">
+                            Your provider hasn&apos;t shared a summary for this visit yet.
                           </p>
-                          <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">
-                            {r.patient_summary}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-[12px] text-slate-400 italic">
-                          Your provider hasn&apos;t shared a summary for this visit yet.
-                        </p>
-                      )}
-                      
-                      {r.plan && (
-                        <div className="pt-3 border-t border-slate-50">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                            What&apos;s next
-                          </p>
-                          <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">
-                            {r.plan}
-                          </p>
-                        </div>
-                      )}
+                        )}
+
+                        {r.plan && (
+                          <div className="pt-3 border-t border-slate-50">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                              What&apos;s next
+                            </p>
+                            <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">
+                              {r.plan}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </SectionCard>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
+          )}
         </div>
 
         <div className="xl:w-[340px] xl:shrink-0">
