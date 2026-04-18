@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { requireProviderAccess } from '@/app/api/provider/_lib/access'
-import { createDemoProviderPatient, getDemoProviderPatients } from '@/lib/demo/provider-clinical'
+import {
+  createDemoProviderPatient,
+  getDemoPatientVisitDates,
+  getDemoProviderPatients,
+} from '@/lib/demo/provider-clinical'
+import { monthlyVisitCountSeries } from '@/lib/clinical/provider-patients-utils'
 import { addPatientSchema, type PatientRosterRow } from '@/lib/clinical/types'
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
@@ -8,13 +13,23 @@ const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
 export async function GET(request: NextRequest) {
   const access = await requireProviderAccess(request)
   const dashboardView = request.nextUrl.searchParams.get('view') === 'dashboard'
+  const includeVisitSeries = request.nextUrl.searchParams.get('includeVisitSeries') === '1'
 
   if (access instanceof NextResponse) {
     return access
   }
 
   if (access.isDemo) {
-    const demoPatients = getDemoProviderPatients(access.demoSessionId ?? '')
+    const sessionId = access.demoSessionId ?? ''
+    let demoPatients = getDemoProviderPatients(sessionId)
+
+    if (includeVisitSeries && !dashboardView) {
+      const refMs = Date.now()
+      demoPatients = demoPatients.map((patient) => ({
+        ...patient,
+        visit_series_6m: monthlyVisitCountSeries(getDemoPatientVisitDates(sessionId, patient.profile_id), refMs, 6),
+      }))
+    }
 
     return NextResponse.json({
       patients: dashboardView
@@ -43,6 +58,7 @@ export async function GET(request: NextRequest) {
 
   const profileIds = (profiles ?? []).map((p) => p.id)
   const visitMap = new Map<string, { count: number; last: string | null }>()
+  const visitDatesByProfile = new Map<string, string[]>()
 
   if (profileIds.length > 0) {
     const { data: visits, error: visitsError } = await supabase
@@ -62,12 +78,18 @@ export async function GET(request: NextRequest) {
         count: cur.count + 1,
         last: cur.last ?? v.visit_date,
       })
+      if (includeVisitSeries) {
+        const list = visitDatesByProfile.get(v.profile_id) ?? []
+        list.push(v.visit_date)
+        visitDatesByProfile.set(v.profile_id, list)
+      }
     }
   }
 
+  const refMs = Date.now()
   const rows: PatientRosterRow[] = (profiles ?? []).map((p) => {
     const v = visitMap.get(p.id)
-    return {
+    const base: PatientRosterRow = {
       profile_id: p.id,
       patient_name: p.patient_name,
       patient_phone: p.patient_phone,
@@ -76,6 +98,13 @@ export async function GET(request: NextRequest) {
       visit_count: v?.count ?? 0,
       last_visit_date: v?.last ?? null,
     }
+    if (includeVisitSeries) {
+      return {
+        ...base,
+        visit_series_6m: monthlyVisitCountSeries(visitDatesByProfile.get(p.id) ?? [], refMs, 6),
+      }
+    }
+    return base
   })
 
   return NextResponse.json({

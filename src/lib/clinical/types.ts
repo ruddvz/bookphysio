@@ -106,6 +106,8 @@ export interface PatientRosterRow {
   chief_complaint: string | null
   visit_count: number
   last_visit_date: string | null
+  /** Oldest→newest monthly visit counts (India months), last 6 — when API is called with `includeVisitSeries=1`. */
+  visit_series_6m?: readonly number[]
 }
 
 export interface PatientChart {

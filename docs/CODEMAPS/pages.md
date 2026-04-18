@@ -43,7 +43,7 @@
 | `/patient/payments` | `app/patient/payments/page.tsx` | Server | Table: Date, Doctor, Amount ₹, GST, Total, Status |
 | `/patient/notifications` | `app/patient/notifications/page.tsx` | Server | Notification list with unread dots |
 | `/patient/messages` | `app/patient/messages/page.tsx` | Client | Message threads (stub) |
-| `/patient/search` | `app/patient/search/page.tsx` | Server | In-dashboard doctor search |
+| `/patient/search` | `app/patient/search/page.tsx` | Client | In-dashboard provider search — reuses `SearchContent` (`variant="patient"`) + v2 `PatientSearchFiltersRail` when ui-v2 |
 | Layout | `app/patient/layout.tsx` | Server | SidebarNav + header |
 
 ## Provider Portal (owner: `bp-ui-provider`)
@@ -51,13 +51,13 @@
 | Route | File | Type | Notes |
 |-------|------|------|-------|
 | `/provider/dashboard` | `app/provider/dashboard/page.tsx` | Server | Today's summary stats + schedule timeline |
-| `/provider/calendar` | `app/provider/calendar/page.tsx` | Client | 7-day grid, 30-min blocks |
+| `/provider/calendar` | `app/provider/calendar/page.tsx` | Client | 7-day grid; ui-v2: `ProviderCalendarV2Chrome` + per-cell booking `Badge` |
 | `/provider/appointments` | `app/provider/appointments/page.tsx` | Server | Table: Patient, Date, Time, Type, Status |
 | `/provider/appointments/[id]` | `app/provider/appointments/[id]/page.tsx` | Server | Appointment detail |
-| `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search |
-| `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history |
-| `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration, working hours |
-| `/provider/earnings` | `app/provider/earnings/page.tsx` | Server | Monthly ₹ total, GST, payouts, transactions |
+| `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search; ui-v2: `ProviderPatientsRosterCardV2`, fetches `?includeVisitSeries=1` for 6-month visit sparkline |
+| `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history; ui-v2: `ProviderPatientChartV2Chrome` (cadence sparkline, vitals chips, quick note → profile tab) |
+| `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration; ui-v2: `ProviderAvailabilityV2Chrome` + day window `Badge` |
+| `/provider/earnings` | `app/provider/earnings/page.tsx` | Client | Ledger from appointments; ui-v2: `ProviderEarningsV2Chrome` + sparkline tiles + `Badge` status |
 | `/provider/profile` | `app/provider/profile/page.tsx` | Client | Practice profile form |
 | `/provider/messages` | `app/provider/messages/page.tsx` | Client | Message threads (stub) |
 | `/provider/notifications` | `app/provider/notifications/page.tsx` | Server | Notifications (stub) |

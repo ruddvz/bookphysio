@@ -32,4 +32,10 @@ export const updateNotesSchema = z.object({
   notes: z.string().max(2000),
 })
 
+/** Provider-only: set appointment outcome after the scheduled start time (or confirm a pending request). */
+export const providerSetStatusSchema = z.object({
+  action: z.literal('provider_set_status'),
+  status: z.enum(['confirmed', 'completed', 'no_show']),
+})
+
 export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>
