@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.12 — Search results redesign (Part B P1)**
+## 👉 NEXT UP: **Slice 16.13 — How-it-works redesign (Part B P1)**
 
-Scope: `/search` provider result cards — v2 tile primitives (availability pills, price chip, distance badge, "Book in 60s" CTA); pulse-style sort chips; keep `SpecialtyCTARail` integration.
+Scope: `/how-it-works` — step timeline with Sparkline-style progress indicators, provider/patient role toggle, v2 CTA footer.
 Flag-gated via `useUiV2()`. ≥ 6 unit tests.
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.12.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.13.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -47,7 +47,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 ### In progress (Part B — page redesign gaps)
 **Priority 1 (public + auth, highest blast radius):**
 - [x] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
-- [ ] **16.12** `/search` result cards
+- [x] **16.12** `/search` result cards
 - [ ] **16.13** `/how-it-works`
 - [ ] **16.14** `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
 - [ ] **16.15** `/book/[id]` booking flow

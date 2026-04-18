@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.12 Search results redesign
+- Commit: ed14c3e (feat(ui-v2): slice 16.12 — search result cards + sort chips + SpecialtyCTARail)
+- Files touched: src/components/DoctorCard.tsx, src/app/search/SearchContent.tsx, src/app/search/search-v2.test.tsx (new)
+- Tests added / changed: +9 (search-v2.test.tsx)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.13 How-it-works redesign — step timeline + Sparkline progress indicators + provider/patient role toggle + v2 CTA footer
+- Notes: DoctorCard v2 — useUiV2 gate, data-ui-version attr, distance Badge (soft/provider tone), price chip (rounded-full bg-bp-primary/10, data-testid="price-chip"), "Book in 60s" + Zap icon CTA. SearchContent v2 — SORT_OPTIONS constant, pill sort chips with aria-pressed replaces <select>, SpecialtyCTARail mounted below SearchFilters when specialty param active + isV2. All v1 behaviour byte-identical until bp_ui=v2.
+
 ## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.11 auth surfaces v2 redesign
 - Commit: c9b8514 (feat(ui-v2): slice 16.11 — auth surfaces v2 card chrome + OTP keypad polish)
 - Files touched: src/app/(auth)/login/page.tsx, signup/page.tsx, verify-email/page.tsx, forgot-password/page.tsx, update-password/page.tsx, verify-otp/page.tsx, doctor-signup/page.tsx, auth-v2.test.tsx (new)
