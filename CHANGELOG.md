@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
+- Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
+- Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
+- Tests added / changed: 0 new (1 pre-existing test bug fixed in payments-v2.test.tsx makePayment helper)
+- Build: type-check pass (`tsc --noEmit` clean). Full suite: 741/752 passing; 11 pre-existing failures only.
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- Notes: CodeRabbit fixes: (1) Removed `'use client'` from PatientAppointmentsTimeline — no hooks/events, Server Component candidate; (2) Extracted shared `rescheduleModal` variable in appointments/[id]/page.tsx to de-duplicate the RescheduleModal JSX used by both v1 and v2 branches; (3) Removed local `STATUS_LABELS` map from appointments/page.tsx — now imports `STATUS_LABEL` from appointments-utils (single source of truth, standardized `No-show`); (4) Removed redundant `as string` cast from PatientPaymentsLedger.tsx line 77; (5) Passed `nowDate` (derived from `nowMs`) to `canPatientCancelAppointment` in Timeline so reschedule eligibility uses the same reference time as day-grouping. Also fixed pre-existing test bug in payments-v2.test.tsx `makePayment` helper — `??` was overwriting explicit `null` provider_name with the default; changed to `'provider_name' in overrides` guard.
+
 ## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.20 Patient profile v2
 - Commit: 114d38e (feat(ui-v2): slice 16.20 — patient profile v2 form chrome + consent toggles + role Badge)
 - Files touched: src/app/patient/profile/PatientProfileV2.tsx (new), src/app/patient/profile/profile-v2.test.tsx (new), src/app/patient/profile/page.tsx
