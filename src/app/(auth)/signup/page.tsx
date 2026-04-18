@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Smartphone, User } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { Badge } from '@/components/dashboard/primitives/Badge'
 import { sanitizeReturnPath } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 const signupSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters'),
@@ -33,6 +35,7 @@ interface SignupErrors {
 }
 
 export default function SignupPage() {
+  const isV2 = useUiV2()
   const router = useRouter()
   const id = useId()
   const [form, setForm] = useState<SignupForm>({ name: '', email: '', password: '', phone: '' })
@@ -130,14 +133,18 @@ export default function SignupPage() {
   const iconClass = (field: keyof SignupForm) =>
     cn('h-4 w-4 transition-colors', focused === field ? 'text-bp-primary' : 'text-gray-400')
 
+  const cardClass = isV2
+    ? 'bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+    : 'w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500'
+
   return (
-    <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className={cardClass} data-ui-version={isV2 ? 'v2' : 'v1'}>
       <div className="space-y-6">
 
         {/* Logo + heading */}
         <div className="flex flex-col items-center text-center space-y-2">
           <BpLogo href="/" size="auth" className="h-10 w-[200px]" linkClassName="justify-center" />
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className={cn('mt-1 text-2xl font-bold tracking-tight', isV2 ? 'text-bp-primary' : 'text-gray-900')}>
             Create your account
           </h1>
           <p className="text-sm text-gray-500">We&apos;ll send a confirmation link to your email</p>
@@ -292,6 +299,12 @@ export default function SignupPage() {
             Sign in
           </Link>
         </p>
+
+        {isV2 && (
+          <div className="flex justify-center pt-2">
+            <Badge variant="success">Secure · India&apos;s physio platform</Badge>
+          </div>
+        )}
 
       </div>
     </div>

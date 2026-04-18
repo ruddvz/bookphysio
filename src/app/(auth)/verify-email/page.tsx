@@ -5,11 +5,14 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, RefreshCw, CheckCircle2 } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { Badge } from '@/components/dashboard/primitives/Badge'
 import { createClient } from '@/lib/supabase/client'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 const RESEND_COOLDOWN_SECONDS = 60
 
 function VerifyEmailContent() {
+  const isV2 = useUiV2()
   const searchParams = useSearchParams()
   const email = searchParams.get('email')
   const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle')
@@ -58,8 +61,12 @@ function VerifyEmailContent() {
       )
     : null
 
+  const cardClass = isV2
+    ? 'bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+    : 'w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500'
+
   return (
-    <div className="w-full rounded-[var(--sq-lg)] border border-gray-200 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className={cardClass} data-ui-version={isV2 ? 'v2' : 'v1'}>
       <div className="space-y-6">
 
         {/* Logo */}
@@ -139,6 +146,12 @@ function VerifyEmailContent() {
             Sign up again
           </Link>
         </p>
+
+        {isV2 && (
+          <div className="flex justify-center pt-2">
+            <Badge variant="success">Secure · India&apos;s physio platform</Badge>
+          </div>
+        )}
 
       </div>
     </div>

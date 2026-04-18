@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { Mail, ArrowLeft, KeyRound, RotateCcw, ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { Badge } from '@/components/dashboard/primitives/Badge'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
 import { cn } from '@/lib/utils'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 const forgotSchema = z.object({
   identifier: z
@@ -20,6 +22,7 @@ const forgotSchema = z.object({
 })
 
 export default function ForgotPasswordPage() {
+  const isV2 = useUiV2()
   const router = useRouter()
   const [identifier, setIdentifier] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -101,7 +104,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700" data-ui-version={isV2 ? 'v2' : 'v1'}>
       <div className="flex justify-center">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>
@@ -198,6 +201,12 @@ export default function ForgotPasswordPage() {
           Back to Login
         </Link>
       </div>
+
+      {isV2 && (
+        <div className="flex justify-center mt-6">
+          <Badge variant="success">Secure · India&apos;s physio platform</Badge>
+        </div>
+      )}
     </div>
   )
 }

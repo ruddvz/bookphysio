@@ -4,16 +4,19 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, CheckCircle2, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { Badge } from '@/components/dashboard/primitives/Badge'
 import OtpInput from '@/components/OtpInput'
 import { clearPendingOtp, readPendingOtp } from '@/lib/auth/pending-otp'
 import { resolvePostAuthRedirect } from '@/lib/demo/session'
 import { cn } from '@/lib/utils'
 import { AUTH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 const OTP_LENGTH = 6
 const COUNTDOWN_SECONDS = 45
 
 function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
+  const isV2 = useUiV2()
   const t = AUTH_COPY[locale ?? 'en']
   const router = useRouter()
   const [pendingOtp, setPendingOtp] = useState<ReturnType<typeof readPendingOtp>>(null)
@@ -55,9 +58,11 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   }
 
 
+  const cardClass = 'bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+
   if (!hasLoadedPendingOtp) {
     return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className={cardClass} data-ui-version={isV2 ? 'v2' : 'v1'}>
         <div className="flex justify-center">
           <BpLogo href="/" size="auth" />
         </div>
@@ -175,7 +180,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
   if (verified) {
     return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in zoom-in-95 fade-in duration-500 flex flex-col items-center justify-center py-16">
+      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in zoom-in-95 fade-in duration-500 flex flex-col items-center justify-center py-16" data-ui-version={isV2 ? 'v2' : 'v1'}>
         <div className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-6 animate-in zoom-in-50 duration-300">
           <CheckCircle2 className="w-10 h-10 text-emerald-500" strokeWidth={2.5} />
         </div>
@@ -187,7 +192,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
   if (!flowId) {
     return (
-      <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700 text-center">
+      <div className={cn(cardClass, 'text-center')} data-ui-version={isV2 ? 'v2' : 'v1'}>
         <div className="flex justify-center">
           <BpLogo href="/" size="auth" />
         </div>
@@ -216,7 +221,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
   }
 
   return (
-    <div className="bg-white rounded-[40px] p-8 pb-10 sm:p-12 sm:pb-12 max-w-[440px] w-full shadow-2xl shadow-black/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className={cardClass} data-ui-version={isV2 ? 'v2' : 'v1'}>
       <div className="relative">
       <div className="flex justify-center">
         <BpLogo href="/" size="auth" />
@@ -230,7 +235,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       </p>
 
       {/* OTP digit inputs */}
-      <div className="mb-8">
+      <div className={cn('mb-8', isV2 && 'v2-otp-keypad')} data-testid={isV2 ? 'v2-otp-keypad' : undefined}>
         <OtpInput
           value={otp}
           onChange={setOtp}
@@ -314,6 +319,12 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
           {t.otpBack}
         </button>
       </div>
+
+      {isV2 && (
+        <div className="flex justify-center mt-6">
+          <Badge variant="success">Secure · India&apos;s physio platform</Badge>
+        </div>
+      )}
       </div>
     </div>
   )
