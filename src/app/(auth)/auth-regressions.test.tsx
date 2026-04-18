@@ -11,7 +11,6 @@ import DoctorSignupPage from './doctor-signup/page'
 import { metadata as doctorSignupMetadata } from './doctor-signup/layout'
 import { metadata as loginMetadata } from './login/layout'
 import { metadata as signupMetadata } from './signup/layout'
-import { metadata as updatePasswordMetadata } from './update-password/layout'
 import { metadata as verifyOtpMetadata } from './verify-otp/layout'
 import { clearPendingOtp, readPendingOtp, savePendingOtp } from '@/lib/auth/pending-otp'
 
@@ -299,8 +298,6 @@ describe('Auth regressions', () => {
     expect(forgotPasswordMetadata.alternates).toEqual({ canonical: '/forgot-password' })
     expect(doctorSignupMetadata.title).toBe('Join as a Physiotherapist — BookPhysio')
     expect(doctorSignupMetadata.alternates).toEqual({ canonical: '/doctor-signup' })
-    expect(updatePasswordMetadata.title).toBe('Set a new password — BookPhysio')
-    expect(updatePasswordMetadata.alternates).toEqual({ canonical: '/update-password' })
   })
 
   it('advances provider signup to email confirmation after availability is completed', async () => {
@@ -386,16 +383,16 @@ describe('Auth regressions', () => {
       target: { value: '9876543210' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /reset password/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue/i }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
     })
 
     expect(readPendingOtp()).toEqual({
-      flow: 'login',
+      flow: 'password_reset_phone',
       flowId: expect.any(String),
-      returnTo: '/update-password',
+      returnTo: '/forgot-password',
     })
   })
 

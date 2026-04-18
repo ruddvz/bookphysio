@@ -44,7 +44,7 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
 
   const deliveryLabel = pendingOtp?.flow === 'signup' ? t.otpSubheading : t.otpLoginSubheading
   const flowId = queryFlowId ?? pendingOtp?.flowId
-  const restartHref = pendingOtp?.returnTo === '/update-password'
+  const restartHref = pendingOtp?.returnTo === '/forgot-password' || pendingOtp?.flow === 'password_reset_phone'
     ? '/forgot-password'
     : pendingOtp?.flow === 'signup'
       ? '/signup'
@@ -138,7 +138,10 @@ function VerifyOtpContent({ locale }: { locale?: StaticLocale } = {}) {
       }
 
       const fallbackRole = pendingOtp?.flow === 'signup' ? 'patient' : data.role
-      const redirectTo = data.redirectTo ?? resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo)
+      const redirectTo =
+        pendingOtp?.flow === 'password_reset_phone'
+          ? '/forgot-password?after_otp=1'
+          : (data.redirectTo ?? resolvePostAuthRedirect(fallbackRole, pendingOtp?.returnTo))
 
       // Brief success flash before redirect
       setVerified(true)

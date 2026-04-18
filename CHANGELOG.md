@@ -35,6 +35,24 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (merge commit)
+- Commit: 51ac344 (docs: fix CHANGELOG commit sha for merge commit)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #113
+- Notes: Handoff SHA for merge commit 146e5d3.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Merge origin/main into PR 113 (resolve conflicts)
+- Commit: 146e5d3 (merge: origin/main into PR 113 (resolve CHANGELOG + auth test conflicts))
+- Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx (+ merged main changes elsewhere)
+- Tests added / changed: auth-v2 + auth-regressions 58/58 passing after resolution
+- Build: n/a (merge commit)
+- Status: done
+- Next up: Merge PR #113 to main; apply migration `046_password_reset_otps.sql` in Supabase if not already
+- Notes: Reconciled CHANGELOG with main (PR 112 + admin polish entries). Combined auth mocks: `useRouter` includes `replace`; verify-email `useSearchParams` uses long local part for 6-bullet mask; doctor signup regression uses real `CityCombobox` listbox flow from main + forgot-password `password_reset_phone` expectations.
+
 ## 2026-04-18 — cursor/fix-pr-112-tests-8913 — PR 112 test + testimonials fixes
 - Commit: test: fix PR 112 regressions (availability selects, auth, testimonials)
 - Files touched: src/app/provider/availability/Availability.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/doctor-signup/page.tsx, src/components/Testimonials.tsx, CHANGELOG.md
@@ -70,6 +88,69 @@
 - Status: done
 - Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
 - Notes: Admin-only chrome now hides the breadcrumb strip and context strip, page headers show only primary headlines, admin nav avatar is a fixed ShieldCheck icon treatment, admin home renders the main heading immediately while stats load, approvals page no longer exposes raw server error text, and `/admin/users` now uses live `/api/admin/users` + `/api/admin/stats` data with pending-aware badges and simple pagination instead of fake placeholder records.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (main feature commit)
+- Commit: 2df3ba6 (docs: fix CHANGELOG commit sha for provider OTP + password reset)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Apply migration `046_password_reset_otps.sql` in Supabase; smoke-test flows
+- Notes: Updates handoff SHA after e73ff83.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Provider signup OTP + resume + password-reset OTP (PR #113 plan)
+- Commit: e73ff83 (feat: provider signup OTP resume, pending email state, password-reset OTP)
+- Files touched: `src/lib/email/preflight.ts`, `src/lib/auth/password-reset-otp.ts`, `src/lib/auth/lookup-user.ts`, `src/app/api/providers/onboard-signup/route.ts`, `src/app/(auth)/doctor-signup/page.tsx`, `src/app/api/auth/login/route.ts`, `src/app/api/auth/me/onboarding-status/route.ts`, `src/app/provider/pending/page.tsx`, `ProviderPendingClient.tsx`, `src/app/api/auth/password-reset/route.ts`, `src/app/api/auth/password-reset/verify/route.ts`, `src/app/(auth)/forgot-password/page.tsx`, `src/app/(auth)/login/page.tsx`, `src/app/(auth)/verify-otp/page.tsx`, `src/lib/auth/pending-otp.ts`, `src/lib/resend.ts`, `src/lib/auth/email-otp.ts`, `src/app/api/auth/email-otp/send/route.ts`, `src/lib/demo/session.ts`, tests, `supabase/migrations/046_password_reset_otps.sql`, plan doc; removed `src/app/(auth)/update-password/*`
+- Tests added / changed: `src/lib/email/preflight.test.ts` (2); updated auth/regression/pending tests
+- Build: `npm run type-check` pass; `npm run build` blocked in sandbox without full `.env` (prebuild lists missing vars — expected)
+- Status: done
+- Next up: Apply migration `046_password_reset_otps.sql` in Supabase; smoke-test doctor signup Step 5, login resume, forgot-password email + phone paths; optional Playwright specs from plan
+- Notes: Migration number is **046** (045 already used). Password reset uses Resend + `password_reset_otps` table; `/update-password` removed — use `/forgot-password` (phone OTP lands on `/forgot-password?after_otp=1`). Unconfirmed `provider_pending` logins redirect to `/doctor-signup?resume=1&email=…`.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (ADMIN_ALERT_EMAIL doc commit)
+- Commit: aa7a728 (docs: fix CHANGELOG sha for ADMIN_ALERT_EMAIL commit)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Corrects the SHA in the previous handoff entry.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Document ADMIN_ALERT_EMAIL in env + check-env
+- Commit: e64bdc1 (docs: document ADMIN_ALERT_EMAIL in env example and check-env)
+- Files touched: .env.example, scripts/check-env.mjs, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Code already used `ADMIN_ALERT_EMAIL` in `sendAdminNewProviderAlert`; it was missing from `.env.example` and warn-only env check.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG handoff (OtpDigits commit sha)
+- Commit: c35cd62 (docs: fix CHANGELOG commit sha for OtpDigits slice)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Corrects the SHA in the previous handoff entry after the first push.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Slice 1: extract OtpDigits shared component
+- Commit: da7e4a5 (feat: extract OtpDigits shared component for doctor signup Step 5)
+- Files touched: src/components/auth/OtpDigits.tsx, src/app/(auth)/doctor-signup/page.tsx
+- Tests added / changed: 0 (refactor only; existing tests cover doctor-signup)
+- Build: not run (eslint unavailable in sandbox — `npm run lint` failed: eslint not found)
+- Status: wip
+- Next up: Slice 2 from `docs/planning/plans/2026-04-18-provider-signup-otp-and-password-reset-fix.md` — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: PR #113 execution started. Shared 6-digit grid + paste/backspace behavior lives in `OtpDigits` for reuse by forgot-password Step 2 in a later slice.
+
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Plan: provider signup OTP + password reset fix
+- Commit: (docs: plan for provider signup OTP, resume-onboarding, and 6-digit password-reset rewrite)
+- Files touched: docs/planning/plans/2026-04-18-provider-signup-otp-and-password-reset-fix.md, CHANGELOG.md
+- Tests added / changed: 0 (plan only — tests listed in the plan to be added during execution)
+- Build: n/a (docs only)
+- Status: done (plan); implementation not yet started
+- Next up: Execute slices 1–5 from the plan on this branch — start with Slice 1 (extract `OtpDigits` shared component) then Slice 2 (email/preflight + Step 5 banner + 503 on missing Resend env)
+- Notes: User reported provider Step 5 OTP never arrives, no resend, no resume path, and forgot-password broken. Plan (a) adds 503 preflight on missing Resend env to prevent orphan auth users, (b) surfaces send-failure banner on Step 5, (c) routes unconfirmed `provider_pending` logins back to `/doctor-signup?resume=1&email=…` with auto-resend, (d) replaces Supabase recovery-link with a 6-digit OTP flow (new migration `045_password_reset_otps.sql`). Delete `/update-password` page. Operator prerequisite: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_APP_URL` set and Resend sender-domain verified.
 
 ## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
 - Commit: 8ec94e7 (fix: resend OTP and email system)

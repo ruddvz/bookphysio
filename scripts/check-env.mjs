@@ -51,6 +51,7 @@ const WARN_ONLY = {
   'Cron + Admin': [
     ['CRON_SECRET', 'Shared secret authenticating Vercel cron calls. Generate with: openssl rand -hex 32'],
     ['ADMIN_EMAIL', 'Admin recipient for daily AI summary reports'],
+    ['ADMIN_ALERT_EMAIL', 'Inbound recipient for transactional admin alerts (e.g. new provider applications via Resend)'],
   ],
 }
 

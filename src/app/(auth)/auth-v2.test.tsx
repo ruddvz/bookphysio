@@ -14,7 +14,7 @@ const push = vi.fn()
 const back = vi.fn()
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push, back, refresh: vi.fn() }),
+  useRouter: () => ({ push, back, refresh: vi.fn(), replace: vi.fn() }),
   // Long local part so masked display uses 6 bullets (matches verify-email mask rules)
   useSearchParams: () => new URLSearchParams('email=testuser%40example.com'),
 }))
@@ -103,7 +103,6 @@ import LoginPage from './login/page'
 import SignupPage from './signup/page'
 import VerifyEmailPage from './verify-email/page'
 import ForgotPasswordPage from './forgot-password/page'
-import UpdatePasswordPage from './update-password/page'
 import VerifyOtpPage from './verify-otp/page'
 import DoctorSignupPage from './doctor-signup/page'
 
@@ -262,10 +261,12 @@ describe('VerifyEmailPage — v2 flag', () => {
     expect(screen.queryByText(/secure · india's physio platform/i)).not.toBeInTheDocument()
   })
 
-  it('shows the masked email in v2 mode', () => {
+  it('shows the masked email in v2 mode', async () => {
     setV2(true)
     render(<VerifyEmailPage />)
-    expect(screen.getByText(/t••••••@example\.com/i)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/t••••••@example\.com/i)).toBeInTheDocument()
+    })
   })
 
   it('resend button and sign up again link present in v2 mode', () => {
@@ -310,7 +311,7 @@ describe('ForgotPasswordPage — v2 flag', () => {
   it('Zod validation rejects empty submit in v2 mode', async () => {
     setV2(true)
     render(<ForgotPasswordPage />)
-    fireEvent.click(screen.getByRole('button', { name: /reset password/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue/i }))
     await waitFor(() => {
       expect(screen.getByText(/please enter your mobile number or email/i)).toBeInTheDocument()
     })
@@ -321,63 +322,9 @@ describe('ForgotPasswordPage — v2 flag', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: vi.fn().mockResolvedValue({}) }))
     render(<ForgotPasswordPage />)
     fireEvent.change(screen.getByLabelText(/mobile number or email/i), { target: { value: '9876543210' } })
-    fireEvent.click(screen.getByRole('button', { name: /reset password/i }))
+    fireEvent.click(screen.getByRole('button', { name: /continue/i }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/verify-otp\?flow=/))
-    })
-  })
-})
-
-// ══════════════════════════════════════════════════════════════════════════════
-// UPDATE PASSWORD
-// ══════════════════════════════════════════════════════════════════════════════
-
-describe('UpdatePasswordPage — v2 flag', () => {
-  it('renders v1 data attr when flag is off', () => {
-    setV2(false)
-    render(<UpdatePasswordPage />)
-    const card = screen.getByRole('heading', { name: /set a new password/i }).closest('[data-ui-version]')
-    expect(card).toHaveAttribute('data-ui-version', 'v1')
-  })
-
-  it('renders v2 data attr when flag is on', () => {
-    setV2(true)
-    render(<UpdatePasswordPage />)
-    const card = screen.getByRole('heading', { name: /set a new password/i }).closest('[data-ui-version]')
-    expect(card).toHaveAttribute('data-ui-version', 'v2')
-  })
-
-  it('shows trust badge in v2 mode', () => {
-    setV2(true)
-    render(<UpdatePasswordPage />)
-    expect(screen.getByText(/secure · india's physio platform/i)).toBeInTheDocument()
-  })
-
-  it('does not show trust badge in v1 mode', () => {
-    setV2(false)
-    render(<UpdatePasswordPage />)
-    expect(screen.queryByText(/secure · india's physio platform/i)).not.toBeInTheDocument()
-  })
-
-  it('validates minimum password length in v2 mode', async () => {
-    setV2(true)
-    render(<UpdatePasswordPage />)
-    fireEvent.change(screen.getByLabelText(/new password/i), { target: { value: 'short' } })
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'short' } })
-    fireEvent.click(screen.getByRole('button', { name: /update password/i }))
-    await waitFor(() => {
-      expect(screen.getByText(/at least 8 characters/i)).toBeInTheDocument()
-    })
-  })
-
-  it('validates passwords match in v2 mode', async () => {
-    setV2(true)
-    render(<UpdatePasswordPage />)
-    fireEvent.change(screen.getByLabelText(/new password/i), { target: { value: 'password123' } })
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'different123' } })
-    fireEvent.click(screen.getByRole('button', { name: /update password/i }))
-    await waitFor(() => {
-      expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument()
     })
   })
 })
@@ -496,6 +443,9 @@ describe('DoctorSignupPage — v2 flag', () => {
   it('step 1 Zod validation rejects empty name in v2 mode', async () => {
     setV2(true)
     render(<DoctorSignupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /next: professional details/i })).toBeInTheDocument()
+    })
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
     await waitFor(() => {
       expect(screen.getByText(/Name must be at least 2 characters/i)).toBeInTheDocument()
