@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG handoff (OtpDigits commit sha)
+- Commit: c35cd62 (docs: fix CHANGELOG commit sha for OtpDigits slice)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Corrects the SHA in the previous handoff entry after the first push.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Slice 1: extract OtpDigits shared component
 - Commit: da7e4a5 (feat: extract OtpDigits shared component for doctor signup Step 5)
 - Files touched: src/components/auth/OtpDigits.tsx, src/app/(auth)/doctor-signup/page.tsx
