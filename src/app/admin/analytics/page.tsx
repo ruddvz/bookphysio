@@ -3,6 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, Users, BarChart3, MapPin, ChevronDown, DollarSign, Activity, Download, Loader2, Filter, Share2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { AdminPulseRail } from '@/components/admin/AdminPulseRail'
 
 interface AnalyticsData {
   kpis: {
@@ -39,6 +41,7 @@ const GEO_GRID_CELL_OPACITIES = [
 ]
 
 export default function AdminAnalytics() {
+  const uiV2 = useUiV2()
   const { data, isLoading } = useQuery<AnalyticsData>({
     queryKey: ['admin-analytics'],
     queryFn: async () => {
@@ -68,6 +71,16 @@ export default function AdminAnalytics() {
 
   return (
     <div className="flex flex-col gap-8 pb-16 px-6 py-6 max-w-6xl mx-auto">
+
+      {uiV2 ? (
+        <AdminPulseRail
+          activeProviders={data?.kpis.totalProviders ?? 0}
+          pendingApprovals={0}
+          totalPatients={data?.kpis.activePatients ?? 0}
+          gmvMtd={data?.kpis.totalGmv ?? 0}
+          reviewHref="/admin/listings"
+        />
+      ) : null}
 
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

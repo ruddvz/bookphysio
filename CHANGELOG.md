@@ -35,6 +35,60 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Test fix analytics-v2 tsc
+- Commit: f7fc6b8 (fix(test): satisfy tsc for AdminAnalytics missing-data mock)
+- Files touched: src/app/admin/analytics/analytics-v2.test.tsx
+- Tests added / changed: 0 new
+- Build: `npm run type-check` pass
+- Status: done
+- Next up: merge PR #102 or continue Phase 16 per EXECUTION-PLAN
+- Notes: `as never` on useQuery mock with undefined data for strict TS.
+
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.35 /admin/analytics v2 + plan docs
+- Commit: 6e90b5b (docs: mark Phase 16 slices 16.31–16.35 complete + CHANGELOG handoff); implementation: a43f142 (AdminPulseRail)
+- Files touched: src/app/admin/analytics/page.tsx, src/app/admin/analytics/analytics-v2.test.tsx, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
+- Tests added / changed: +6 (analytics-v2.test.tsx)
+- Build: see final verification entry
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell (or next open Phase 16 slice per EXECUTION-PLAN)
+- Notes: AdminPulseRail receives KPIs from `/api/admin/analytics` when `useUiV2()`; 16.35 Recharts deferred per PR #102 brief.
+
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.34 /admin/users v2
+- Commit: 40ad358 (feat(ui-v2): slice 16.34 — /admin/users v2 RoleBadge + LastActiveDelta)
+- Files touched: src/app/admin/users/UsersV2.tsx, src/app/admin/users/users-v2.test.tsx, src/app/admin/users/page.tsx
+- Tests added / changed: +7 (users-v2.test.tsx)
+- Build: pending
+- Status: done
+- Next up: 16.35 — /admin/analytics v2 AdminPulseRail
+- Notes: RoleBadge + LastActiveDelta in ListRow right slot when useUiV2().
+
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.33 /admin/listings v2
+- Commit: 6a918c5 (feat(ui-v2): slice 16.33 — /admin/listings v2 ApprovalStatusBadge + SLA sparkline)
+- Files touched: src/app/admin/listings/ListingsV2.tsx, src/app/admin/listings/listings-v2.test.tsx, src/app/admin/listings/page.tsx, src/components/dashboard/primitives.tsx (StatTile optional children)
+- Tests added / changed: +6 (listings-v2.test.tsx)
+- Build: pending
+- Status: done
+- Next up: 16.34 — /admin/users v2 RoleBadge + LastActiveDelta
+- Notes: SlaSparkline in third StatTile when ui-v2; row status uses ApprovalStatusBadge when ui-v2.
+
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.32 /provider/pending v2
+- Commit: 8c4c6fb (feat(ui-v2): slice 16.32 — /provider/pending v2 onboarding stepper with Badge states)
+- Files touched: src/app/provider/pending/PendingV2.tsx, src/app/provider/pending/pending-v2.test.tsx, src/app/provider/pending/page.tsx
+- Tests added / changed: +6 (pending-v2.test.tsx)
+- Build: pending (full verify after 16.35)
+- Status: done
+- Next up: 16.33 — /admin/listings v2 ApprovalStatusBadge + SLA sparkline
+- Notes: PendingStepperV2 replaces inline step list when useUiV2(); sign-out unchanged.
+
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.31 /provider/bills/new v2
+- Commit: 8011b1c (feat(ui-v2): slice 16.31 — /provider/bills/new v2 GST chips + billing sidebar)
+- Files touched: src/app/provider/bills/new/BillsV2.tsx, src/app/provider/bills/new/bills-v2.test.tsx, src/app/provider/bills/new/page.tsx
+- Tests added / changed: +6 (bills-v2.test.tsx)
+- Build: pending (full verify after 16.35)
+- Status: done
+- Next up: 16.32 — /provider/pending v2 onboarding stepper
+- Notes: GstLineItemChips + BillV2Sidebar gated with useUiV2().
+
 ## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(planning): 16.28–16.30 complete + NEXT UP 16.31
 - Commit: d59f3d9 (docs(planning): mark slices 16.28-16.30 complete; NEXT UP 16.31)
 - Files touched: docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
