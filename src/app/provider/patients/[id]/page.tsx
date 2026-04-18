@@ -30,6 +30,7 @@ import {
   StatTile,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { ProviderPatientDetailV2 } from './ProviderPatientDetailV2'
 
 type Tab = 'profile' | 'visits' | 'bills'
 
@@ -63,6 +64,22 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
 
   const profile = data?.profile
   const visits = useMemo(() => data?.visits ?? [], [data?.visits])
+  const rosterForV2 = useMemo(() => {
+    if (!profile) return null
+    const sortedVisits = [...visits].sort(
+      (a, b) => new Date(b.visit_date).getTime() - new Date(a.visit_date).getTime(),
+    )
+    return {
+      profile_id: profile.id,
+      patient_name: profile.patient_name,
+      patient_phone: profile.patient_phone,
+      patient_age: profile.patient_age,
+      chief_complaint: profile.chief_complaint,
+      visit_count: visits.length,
+      last_visit_date: sortedVisits[0]?.visit_date ?? null,
+      visit_dates: visits.map((v) => v.visit_date),
+    }
+  }, [profile, visits])
   const activeVisit = useMemo<PatientVisit | null>(
     () => visits.find((v) => v.id === activeVisitId) ?? visits[0] ?? null,
     [visits, activeVisitId]
@@ -126,6 +143,8 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
         <ArrowLeft size={14} />
         Back to Registry
       </Link>
+
+      {rosterForV2 ? <ProviderPatientDetailV2 patient={rosterForV2} /> : null}
 
       <PageHeader
         role="provider"

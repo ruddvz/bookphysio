@@ -16,6 +16,7 @@ import {
   SectionCard,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { ProviderEarningsV2 } from './ProviderEarningsV2'
 
 interface AppointmentRow {
   id: string
@@ -121,6 +122,8 @@ export default function ProviderEarnings() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <ProviderEarningsV2 transactions={transactions} />
+
       <PageHeader
         role="provider"
         kicker="FINANCIALS"

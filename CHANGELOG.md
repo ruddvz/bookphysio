@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/implement-slices-16-21-27-b5cb — Slices 16.21–16.22 + 16.24–16.27 ui-v2 implementation
+- Commit: feat(ui-v2): slices 16.21–16.22, 16.24–16.27 — patient AI shells, search rail, provider surfaces (short SHA: run `git log -1 --oneline` on this branch)
+- Files touched: src/app/patient/pai/*, src/app/patient/motio/*, src/app/patient/search/*, src/app/provider/appointments/*, src/app/provider/calendar/*, src/app/provider/availability/*, src/app/provider/earnings/*, src/app/provider/patients/*, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: +42 (pai-v2, search-v2, appointments-v2, calendar-v2, earnings-v2, roster-v2)
+- Build: type-check pass (`npm run type-check`). Full `next build` not run — env check script requires `.env` secrets in this workspace.
+- Status: done
+- Next up: **16.28** `/provider/profile` — v2 form chrome (16.23 remains blocked on specialty image uploads)
+- Notes: Implements `docs/planning/slices-16-21-to-16-27-spec.md` on top of PR #101 spec branch. Patient roster v2 uses `visit_count` + optional `visit_dates` from chart visits for sparkline on detail; list page passes empty `visit_dates` (flat sparkline until API adds visit dates to roster). Synced EXECUTION-PLAN checkboxes for 16.17–16.18 with main (were stale).
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx

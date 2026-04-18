@@ -15,11 +15,9 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP (after consolidation PR merges): **Slice 16.21 `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)**
+## 👉 NEXT UP: **Slice 16.28 `/provider/profile` — v2 form chrome (Part B P3)**
 
-Slices 16.16–16.20 complete. Next is **16.21**: `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens. ≥ 6 unit tests.
-
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.21.
+Slices **16.21–16.22** and **16.24–16.27** implemented (16.23 still blocked on specialty image uploads). Next is **16.28** per `docs/planning/EXECUTION-PLAN.md`.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 

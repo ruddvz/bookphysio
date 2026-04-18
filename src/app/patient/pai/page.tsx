@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import type { BookPhysioAIMessage } from '@/components/BookPhysioAIChat'
+import { PaiV2Shell } from './PaiV2Shell'
 
 const BookPhysioAIChat = dynamic(
   () => import('@/components/BookPhysioAIChat').then((mod) => mod.BookPhysioAIChat),
@@ -26,6 +27,9 @@ const INITIAL_MESSAGES: BookPhysioAIMessage[] = [
 
 export default function PAIPage() {
   return (
-    <BookPhysioAIChat variant="pai" api="/api/ai/pai" initialMessages={INITIAL_MESSAGES} />
+    <>
+      <PaiV2Shell />
+      <BookPhysioAIChat variant="pai" api="/api/ai/pai" initialMessages={INITIAL_MESSAGES} />
+    </>
   )
 }

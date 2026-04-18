@@ -12,6 +12,7 @@ import {
   EmptyState,
 } from '@/components/dashboard/primitives'
 import Image from 'next/image'
+import { ProviderAppointmentsTimelineV2 } from './ProviderAppointmentsTimelineV2'
 
 const STATUS_STYLES: Record<string, { label: string; color: string }> = {
   confirmed: { label: 'Confirmed', color: 'text-emerald-600 bg-emerald-50' },
@@ -133,6 +134,8 @@ function ProviderAppointmentsContent() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
       </div>
+
+      <ProviderAppointmentsTimelineV2 appointments={filtered} tab={activeTab} />
 
       <SectionCard role="provider" title={`${activeTab} Sessions`}>
         {isLoading ? (

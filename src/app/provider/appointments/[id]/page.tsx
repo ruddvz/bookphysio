@@ -27,6 +27,7 @@ import {
   StatTile,
   type TileTone,
 } from '@/components/dashboard/primitives'
+import { ProviderAppointmentDetailV2 } from './ProviderAppointmentDetailV2'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -133,6 +134,8 @@ export default function ProviderAppointmentDetail() {
         <ArrowLeft size={14} />
         Back to Registry
       </Link>
+
+      <ProviderAppointmentDetailV2 appointment={appt} />
 
       <PageHeader
         role="provider"

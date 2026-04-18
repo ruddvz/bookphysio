@@ -1,15 +1,25 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight } from 'lucide-react'
+import { PatientSearchV2Rail } from './PatientSearchV2Rail'
 
 export default function PatientSearch() {
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null)
+  const [selectedMode, setSelectedMode] = useState<'clinic' | 'home_visit' | 'video' | null>(null)
+  const [pincode, setPincode] = useState('')
+
   return (
     <div className="max-w-[1040px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
-      <h1 className="text-[32px] font-bold text-slate-900 tracking-tight mb-3">
-        Find a Physiotherapist
-      </h1>
-      <p className="text-[15px] text-slate-500 mb-8">
-        Search for experts by condition, specialty, or clinic name.
-      </p>
+      <PatientSearchV2Rail
+        selectedSpecialty={selectedSpecialty ?? undefined}
+        onSpecialtyChange={setSelectedSpecialty}
+        selectedMode={selectedMode ?? undefined}
+        onModeChange={setSelectedMode}
+        pincode={pincode}
+        onPincodeChange={setPincode}
+      />
 
       <div className="bg-white rounded-[var(--sq-lg)] border border-slate-200 shadow-sm py-16 px-8 text-center">
         <div className="w-16 h-16 mx-auto rounded-full bg-blue-50 flex items-center justify-center mb-5">

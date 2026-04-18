@@ -277,20 +277,20 @@
 #### Priority 2 — Patient surfaces
 
 - [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens (flag-gated via `useUiV2()`; `PatientAppointmentsTimeline` + `PatientAppointmentDetailV2`; 23 new unit tests)
-- [ ] **16.17** `/patient/payments` — v2 ledger card with `₹` integer formatter, `Badge` for paid/refunded, GST line items
-- [ ] **16.18** `/patient/records` + visit-summary view — v2 summary tiles with `Sparkline` for progress signals
+- [x] **16.17** `/patient/payments` — v2 ledger card with `₹` integer formatter, `Badge` for paid/refunded, GST line items
+- [x] **16.18** `/patient/records` + visit-summary view — v2 summary tiles with `Sparkline` for progress signals
 - [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread `Badge`, empty-state illustrations
 - [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
-- [ ] **16.21** `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
-- [ ] **16.22** `/patient/search` — v2 filter rail (specialty, pincode, mode, availability) aligned with `/search` redesign
+- [x] **16.21** `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- [x] **16.22** `/patient/search` — v2 filter rail (specialty, pincode, mode, availability) aligned with `/search` redesign
 - [ ] **16.23** Speciality page image + after-image slots — accept image uploads (incoming in 2–3 days), wire into `SPECIALTIES` + `SpecialtyCTARail`, tune mustard-yellow canvas backgrounds per specialty
 
 #### Priority 3 — Provider surfaces
 
-- [ ] **16.24** `/provider/appointments` + `/provider/appointments/[id]` — v2 timeline with provider pulse tokens, quick actions (complete, reschedule, no-show)
-- [ ] **16.25** `/provider/calendar` + `/provider/availability` — v2 grid chrome, day-template editor, `Badge` for bookings per slot; preserve existing India-time bucketing
-- [ ] **16.26** `/provider/earnings` — v2 earnings tiles with `Sparkline` + `TrendDelta`, payout cadence badge, `₹` integer rupees (never paise)
-- [ ] **16.27** `/provider/patients` + `/provider/patients/[id]` — v2 patient card with visit history sparkline, vitals chips, quick-note action
+- [x] **16.24** `/provider/appointments` + `/provider/appointments/[id]` — v2 timeline with provider pulse tokens, quick actions (complete, reschedule, no-show)
+- [x] **16.25** `/provider/calendar` + `/provider/availability` — v2 grid chrome, day-template editor, `Badge` for bookings per slot; preserve existing India-time bucketing
+- [x] **16.26** `/provider/earnings` — v2 earnings tiles with `Sparkline` + `TrendDelta`, payout cadence badge, `₹` integer rupees (never paise)
+- [x] **16.27** `/provider/patients` + `/provider/patients/[id]` — v2 patient card with visit history sparkline, vitals chips, quick-note action
 - [ ] **16.28** `/provider/profile` — v2 form chrome, NCAHP credential chip reuse, preview-on-public-page CTA
 - [ ] **16.29** `/provider/ai-assistant` — v2 assistant shell with provider pulse tokens, visit-note autodraft CTA alignment
 - [ ] **16.30** `/provider/messages` + `/provider/notifications` — parity with patient 16.19 but provider tokens

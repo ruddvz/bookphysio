@@ -19,6 +19,7 @@ import {
   PageHeader,
   SectionCard,
 } from '@/components/dashboard/primitives'
+import { CalendarV2Header } from './CalendarV2Header'
 
 async function fetchSchedule(start: string, end: string): Promise<ScheduleEntry[]> {
   const res = await fetch(`/api/provider/schedule?start=${start}&end=${end}`)
@@ -164,6 +165,7 @@ export default function ProviderSchedule() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <CalendarV2Header />
       <PageHeader
         role="provider"
         kicker="CLINICAL HOURS"

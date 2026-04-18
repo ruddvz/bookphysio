@@ -12,6 +12,7 @@ import {
   ListRow,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { ProviderPatientRosterV2 } from './ProviderPatientRosterV2'
 
 async function fetchRoster(): Promise<{ patients: PatientRosterRow[] }> {
   const res = await fetch('/api/provider/patients')
@@ -87,6 +88,8 @@ export default function ProviderPatients() {
            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[var(--color-pv-primary)] transition-colors" />
         </div>
       </div>
+
+      <ProviderPatientRosterV2 patients={allPatients.map((p) => ({ ...p, visit_dates: [] }))} />
 
       <SectionCard role="provider" title="Active roster">
         {isLoading ? (

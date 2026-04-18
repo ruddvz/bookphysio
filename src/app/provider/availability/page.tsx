@@ -29,6 +29,7 @@ import {
   SectionCard,
   StatTile,
 } from '@/components/dashboard/primitives'
+import { AvailabilityV2StatusBar } from './AvailabilityV2StatusBar'
 
 const AVAILABILITY_WEEKS = 4
 
@@ -261,6 +262,7 @@ export default function ProviderAvailability() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
+      <AvailabilityV2StatusBar />
       <PageHeader
         role="provider"
         kicker="CLINIC OPERATIONS"
