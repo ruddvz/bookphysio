@@ -91,7 +91,7 @@ describe('AdminAnalytics AdminPulseRail', () => {
   })
 
   it('passes zero KPIs when analytics data is missing', () => {
-    useQueryMock.mockReturnValue({ data: undefined, isLoading: true })
+    useQueryMock.mockReturnValue({ data: undefined, isLoading: true } as never)
     useUiV2Mock.mockReturnValue(true)
     render(<AdminAnalytics />)
     const rail = screen.getByTestId('admin-pulse-rail')
