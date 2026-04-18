@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/next-phases-2t7bI — PR-86 security fixes
+- Commit: c1e212c (fix(auth): address PR-86 CodeRabbit security findings)
+- Files touched: src/lib/auth/email-otp.ts, src/app/api/auth/email-otp/verify/route.ts, src/app/api/auth/email-otp/send/route.ts, src/app/api/auth/password-reset/route.ts
+- Tests added / changed: 0 (server-only security fixes — logic-layer, no component changes)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1 (flag-gated v2 card chrome + OTP keypad polish across 7 auth pages)
+- Notes: Merged PR-86 branch (server-side password reset + email OTP) and fixed 4 CodeRabbit issues: crypto.randomInt, mark-used abort-on-fail (replay prevention), orphaned OTP cleanup, Zod validation on 3 routes.
+
 ## 2026-04-18 — claude/fix-pr-81-tests-Cdyms — Session-handoff system
 - Commit: 2dacec8 (chore(handoff): add CHANGELOG.md + session-handoff protocol)
 - Files touched: CHANGELOG.md (new), CLAUDE.md, docs/planning/ACTIVE.md
