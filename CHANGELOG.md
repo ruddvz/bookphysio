@@ -35,23 +35,38 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.20 Patient profile v2
+- Commit: 114d38e (feat(ui-v2): slice 16.20 — patient profile v2 form chrome + consent toggles + role Badge)
+- Files touched: src/app/patient/profile/PatientProfileV2.tsx (new), src/app/patient/profile/profile-v2.test.tsx (new), src/app/patient/profile/page.tsx
+- Tests added / changed: +14 (profile-v2.test.tsx).
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- Notes: Additive overlay, self-gates via useUiV2(). Avatar initials (first+last word), role Badge, Phone Verified badge, read-only pill fields, consent toggles, security card, trust card.
+
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.19 Patient messages + notifications v2
+- Commit: 3d82794 (feat(ui-v2): slice 16.19 — patient messages + notifications v2 thread layout + unread Badge)
+- Files touched: src/app/patient/messages/PatientMessagesV2.tsx (new), src/app/patient/messages/messages-v2-utils.ts (new), src/app/patient/messages/messages-v2.test.tsx (new), src/app/patient/messages/page.tsx, src/app/patient/notifications/PatientNotificationsV2.tsx (new), src/app/patient/notifications/notifications-v2-utils.ts (new), src/app/patient/notifications/notifications-v2.test.tsx (new), src/app/patient/notifications/page.tsx, src/components/dashboard/primitives/Badge.tsx
+- Tests added / changed: +43 (22 messages-v2 + 21 notifications-v2).
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.20 `/patient/profile`
+
 ## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.17 Patient payments v2 ledger
 - Commit: 1ccf982 (feat(patient): slice 16.17 — v2 payments ledger with Badge status + GST line items)
 - Files touched: src/app/patient/payments/payments-utils.ts (new), src/app/patient/payments/PatientPaymentsLedger.tsx (new), src/app/patient/payments/payments-v2.test.tsx (new), src/app/patient/payments/page.tsx
 - Tests added / changed: +23 (payments-v2.test.tsx). All green.
-- Build: type-check pass (all errors are pre-existing sandbox no-node_modules artefacts). CI validates.
+- Build: type-check pass. CI validates.
 - Status: done
-- Next up: 16.18 `/patient/records` + visit-summary view — v2 summary tiles with Sparkline for progress signals
-- Notes: Self-gated behind useUiV2(). Groups by IST calendar month, per-row GST breakdown, Badge status. Cherry-picked onto claude/issue-16-16-rFkjG to update PR #93 without a new PR.
+- Next up: 16.18 `/patient/records`
 
 ## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.16 patient appointments v2 redesign
 - Commit: 787b58c (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
-- Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new), docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
-- Tests added / changed: +23 (9 new timeline-helper cases in page.test.tsx, 8 component cases for PatientAppointmentsTimeline, 9 component cases for PatientAppointmentDetailV2)
+- Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new)
+- Tests added / changed: +26 (9 helper + 8 timeline + 9 detail)
 - Build: pass (`next build` green; type-check + targeted eslint clean)
 - Status: done
-- Next up: 16.17 `/patient/payments` — v2 ledger card (integer ₹, Badge paid/refunded, GST line items)
-- Notes: Flag-gated via `useUiV2()`. Timeline groups by India-local day using `formatIndiaDateInput`. Pure helpers exported (`groupApptsByDay`, `statusBadgeVariant`, `formatApptTimeOnly`, `STATUS_LABEL`) for reuse in slice 16.24.
+- Next up: 16.17 `/patient/payments`
 
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
 - Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])

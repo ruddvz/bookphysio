@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import type { DashRole, TileTone } from '../primitives'
 
 const rolePrefix: Record<DashRole, 'pt' | 'pv' | 'ad'> = {
@@ -9,7 +9,7 @@ const rolePrefix: Record<DashRole, 'pt' | 'pv' | 'ad'> = {
 
 export type BadgeVariant = 'solid' | 'soft' | 'outline' | 'success' | 'warning' | 'danger'
 
-export interface BadgeProps {
+export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'role'> {
   role?: DashRole
   tone?: TileTone
   variant?: BadgeVariant
@@ -78,8 +78,8 @@ function variantClass(variant: BadgeVariant, prefix: 'pt' | 'pv' | 'ad', tone: T
   return softVariant[prefix][tone]
 }
 
-export function Badge({ role = 'provider', tone = 1, variant = 'soft', children, className = '' }: BadgeProps) {
+export function Badge({ role = 'provider', tone = 1, variant = 'soft', children, className = '', ...rest }: BadgeProps) {
   const prefix = rolePrefix[role]
   const variantClasses = variantClass(variant, prefix, tone)
-  return <span className={`${BASE} ${variantClasses} ${className}`}>{children}</span>
+  return <span className={`${BASE} ${variantClasses} ${className}`} {...rest}>{children}</span>
 }
