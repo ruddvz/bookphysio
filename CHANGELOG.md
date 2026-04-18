@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.27 provider patients v2
-- Commit: (pending)
+- Commit: 9d0539e (feat(ui-v2): slice 16.27 — provider patients roster + chart v2 chrome)
 - Files touched: `src/app/api/provider/patients/route.ts`, `src/lib/clinical/types.ts`, `src/lib/clinical/provider-patients-utils.ts`, `ProviderPatientsRosterCardV2.tsx`, `ProviderPatientChartV2Chrome.tsx`, patient pages, demo helper, tests, planning docs, `docs/CODEMAPS/pages.md`
 - Tests added / changed: +3 files (utils + roster card + chart chrome)
 - Build: `tsc --noEmit` + targeted vitest pass (full `next build` needs env in CI)
