@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { CityV2TrustChips } from '@/components/specialties/CityV2TrustChips'
-import { House, IndianRupee, MapPin, Search, ShieldCheck } from 'lucide-react'
+import { House, IndianRupee, Search, ShieldCheck } from 'lucide-react'
 
 export async function generateStaticParams() {
   return [
@@ -129,10 +129,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         {/* Hero */}
         <section className="bg-white border-b border-slate-200/70">
           <div className="max-w-[1142px] mx-auto px-6 lg:px-10 py-12 lg:py-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F4F3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
-              <MapPin className="h-3.5 w-3.5" />
-              Local recovery network
-            </div>
+            <span className="sr-only">Local recovery network</span>
             <h1 className="mt-5 text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
               Physiotherapists in {city.label}
             </h1>
@@ -149,10 +146,8 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                   <div className={`flex h-11 w-11 items-center justify-center rounded-full ${tint}`}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    {label}
-                  </p>
-                  <p className="mt-1 text-[24px] font-bold tracking-tight text-[#1A1C29]">{value}</p>
+                  <span className="sr-only">{label}</span>
+                  <p className="mt-4 text-[24px] font-bold tracking-tight text-[#1A1C29]">{value}</p>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{helper}</p>
                 </div>
               ))}

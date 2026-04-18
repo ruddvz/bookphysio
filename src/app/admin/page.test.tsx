@@ -41,6 +41,8 @@ describe('AdminDashboardHome page', () => {
 
     expect(await screen.findByText("We couldn't load platform metrics")).toBeInTheDocument()
     expect(screen.queryByText('Completed GMV')).not.toBeInTheDocument()
+    expect(screen.queryByText('PLATFORM')).not.toBeInTheDocument()
+    expect(screen.queryByText('Live admin stats are temporarily unavailable.')).not.toBeInTheDocument()
   })
 
   it('hides cached admin metrics when the dashboard refresh fails', async () => {
@@ -68,5 +70,14 @@ describe('AdminDashboardHome page', () => {
 
     expect(await screen.findByText("We couldn't load platform metrics")).toBeInTheDocument()
     expect(screen.queryAllByText('14')).toHaveLength(0)
+  })
+
+  it('renders the primary heading immediately while stats load', () => {
+    vi.mocked(fetch).mockImplementation(() => new Promise(() => {}))
+
+    renderDashboard()
+
+    expect(screen.getByRole('heading', { name: 'Platform overview' })).toBeInTheDocument()
+    expect(screen.queryByText('PLATFORM')).not.toBeInTheDocument()
   })
 })

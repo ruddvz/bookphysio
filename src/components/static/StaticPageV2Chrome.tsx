@@ -72,7 +72,7 @@ export function StaticPageV2Chrome({
     <>
       <div className="relative pb-14 lg:pb-16">
         {hero}
-        <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 flex w-full max-w-[720px] -translate-x-1/2 justify-center px-6">
+        <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 flex w-full max-w-[720px] -translate-x-1/2 justify-center px-6 sr-only">
           <Badge role="patient" variant="soft" tone={1} className="pointer-events-auto normal-case tracking-normal">
             Last updated: {lastUpdated}
           </Badge>
@@ -88,7 +88,7 @@ export function StaticPageV2Chrome({
         >
           {hasToc && tocItems ? (
             <aside className="mb-10 lg:mb-0 lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:sticky">
-              <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+              <h2 className="sr-only">
                 On this page
               </h2>
               <nav aria-label="Page sections">

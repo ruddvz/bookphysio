@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { ArrowRight, Calendar, CheckCircle2, ShieldCheck, Stethoscope } from 'lucide-react'
+import { ArrowRight, Calendar, CheckCircle2, Stethoscope } from 'lucide-react'
 import type { SpecialtyCondition } from '@/lib/specialties'
 import { SpecialtyCTARail } from './SpecialtyCTARail'
 
@@ -71,21 +71,10 @@ export default function SpecialtyArticle({
               {/* Left — text */}
               <div className="flex-1 py-14 lg:py-20 lg:pr-12 z-10">
                 {/* NCAHP badge */}
-                {data.ncahpName && (
-                  <div className="inline-flex items-center gap-2 rounded-full border border-black/20 bg-black/10 px-3 py-1 mb-6">
-                    <ShieldCheck className="h-3.5 w-3.5 text-black/70" />
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/70">
-                      NCAHP: {data.ncahpName}
-                    </span>
-                  </div>
-                )}
+                {data.ncahpName ? <span className="sr-only">NCAHP: {data.ncahpName}</span> : null}
 
                 {/* Sub-label */}
-                {subLabel && (
-                  <p className="text-[14px] font-bold uppercase tracking-[0.22em] text-black/60 mb-2">
-                    {subLabel}
-                  </p>
-                )}
+                {subLabel ? <span className="sr-only">{subLabel}</span> : null}
 
                 {/* Title */}
                 <h1 className="text-[36px] lg:text-[52px] font-black tracking-tight leading-[1.05] text-black mb-5">

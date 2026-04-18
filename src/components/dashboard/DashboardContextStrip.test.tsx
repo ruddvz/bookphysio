@@ -12,31 +12,33 @@ describe('DashboardContextStrip', () => {
 
   it('renders the patient copy when on the patient dashboard', () => {
     render(<DashboardContextStrip role="patient" now={FIXED_DATE} />)
-    expect(screen.getByText(/your care/i)).toBeInTheDocument()
     expect(screen.getByText(/friday snapshot/i)).toBeInTheDocument()
-    expect(screen.getByText(/pre-visit form/i)).toBeInTheDocument()
     expect(screen.getByText(/on track/i)).toBeInTheDocument()
   })
 
   it('renders the provider copy when on the provider dashboard', () => {
     render(<DashboardContextStrip role="provider" now={FIXED_DATE} />)
-    expect(screen.getByText(/practice pulse/i)).toBeInTheDocument()
     expect(screen.getByText(/friday rundown/i)).toBeInTheDocument()
-    expect(screen.getByText(/auto-draft visit notes/i)).toBeInTheDocument()
     expect(screen.getByText(/all set/i)).toBeInTheDocument()
   })
 
   it('renders the admin copy when on the admin dashboard', () => {
     render(<DashboardContextStrip role="admin" now={FIXED_DATE} />)
-    expect(screen.getByText(/ops console/i)).toBeInTheDocument()
     expect(screen.getByText(/friday review/i)).toBeInTheDocument()
-    expect(screen.getByText(/auto-refresh/i)).toBeInTheDocument()
     expect(screen.getByText(/live/i)).toBeInTheDocument()
   })
 
   it('formats the date in India locale', () => {
     render(<DashboardContextStrip role="patient" now={FIXED_DATE} />)
     expect(screen.getByText(/17 apr 2026/i)).toBeInTheDocument()
+  })
+
+  it('keeps eyebrow and helper tip visually hidden', () => {
+    const { container } = render(<DashboardContextStrip role="patient" now={FIXED_DATE} />)
+    const hiddenBits = container.querySelectorAll('.sr-only')
+    expect(hiddenBits.length).toBeGreaterThan(0)
+    expect(screen.queryByText(/your care/i)).toBeInTheDocument()
+    expect(screen.queryByText(/pre-visit form/i)).toBeInTheDocument()
   })
 
   it('exposes an aria-labeled region', () => {

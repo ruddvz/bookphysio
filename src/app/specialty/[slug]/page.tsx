@@ -113,10 +113,7 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
         {/* Hero */}
         <section className="bg-white border-b border-slate-200/70">
           <div className="max-w-[1142px] mx-auto px-6 lg:px-10 py-12 lg:py-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F4F3] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#00766C]">
-              <Stethoscope className="h-3.5 w-3.5" />
-              Verified specialisation
-            </div>
+            <span className="sr-only">Verified specialisation</span>
             <h1 className="mt-5 text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight">
               {specialty.label}
             </h1>
@@ -133,10 +130,8 @@ export default async function SpecialtyPage({ params }: { params: Promise<{ slug
                   <div className={`flex h-11 w-11 items-center justify-center rounded-full ${tint}`}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    {label}
-                  </p>
-                  <p className="mt-1 text-[24px] font-bold tracking-tight text-[#1A1C29]">{value}</p>
+                  <span className="sr-only">{label}</span>
+                  <p className="mt-4 text-[24px] font-bold tracking-tight text-[#1A1C29]">{value}</p>
                   <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600">{helper}</p>
                 </div>
               ))}

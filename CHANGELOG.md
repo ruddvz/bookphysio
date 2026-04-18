@@ -35,6 +35,51 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Merge origin/main into PR 113 (resolve conflicts)
+- Commit: (merge: origin/main into provider OTP branch)
+- Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx (+ merged main changes elsewhere)
+- Tests added / changed: auth-v2 + auth-regressions 58/58 passing after resolution
+- Build: n/a (merge commit)
+- Status: done
+- Next up: Merge PR #113 to main; apply migration `046_password_reset_otps.sql` in Supabase if not already
+- Notes: Reconciled CHANGELOG with main (PR 112 + admin polish entries). Combined auth mocks: `useRouter` includes `replace`; verify-email `useSearchParams` uses long local part for 6-bullet mask; doctor signup regression uses real `CityCombobox` listbox flow from main + forgot-password `password_reset_phone` expectations.
+
+## 2026-04-18 — cursor/fix-pr-112-tests-8913 — PR 112 test + testimonials fixes
+- Commit: test: fix PR 112 regressions (availability selects, auth, testimonials)
+- Files touched: src/app/provider/availability/Availability.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/doctor-signup/page.tsx, src/components/Testimonials.tsx, CHANGELOG.md
+- Tests added / changed: 859 passing (Availability + auth + Testimonials suites updated)
+- Build: not run in CI sandbox (prebuild requires full `.env`; `npm test` pass)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Provider availability UI uses `<select>` for times — tests now drive selects. Doctor signup step 1 name field has `aria-label`; regression test selects IAP, In-clinic, city from combobox via `mouseDown`, expects step 5 heading “Check your email”. Verify-email mock uses longer local part for mask. OTP v2 test drops fake timers (async redirect). Testimonials loads `/api/reviews?limit=3` via SWR when data exists.
+
+## 2026-04-18 21:34 UTC — cursor/admin-dashboard-polish-fe31 — public detail chrome cleanup
+- Commit: <pending> (fix: hide remaining visible chrome everywhere else)
+- Files touched: src/components/dashboard/primitives.tsx, src/components/dashboard/primitives.test.tsx, src/app/city/[slug]/page.tsx, src/app/specialty/[slug]/page.tsx, src/components/specialties/SpecialtyArticle.tsx
+- Tests added / changed: 1 file changed (primitives.test.tsx)
+- Build: pass (`npm run lint` on touched files, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Extended the hidden-chrome cleanup beyond shared/static pages to public city and specialty detail heroes plus SpecialtyArticle. Shared dashboard `PageHeader` subtitle is now visually hidden too, so patient/provider pages match the admin treatment and keep only the primary headline visible.
+
+## 2026-04-18 21:22 UTC — cursor/admin-dashboard-polish-fe31 — site-wide hidden chrome pass
+- Commit: 951a869 (fix: hide visible chrome across site)
+- Files touched: src/app/about/AboutPageClient.tsx, src/app/faq/FAQPageClient.tsx, src/app/globals.css, src/app/hi/about/HiAboutPageClient.tsx, src/app/hi/faq/HiFAQPageClient.tsx, src/app/hi/how-it-works/page.tsx, src/app/hi/privacy/HiPrivacyHero.tsx, src/app/hi/terms/HiTermsHero.tsx, src/app/how-it-works/page.tsx, src/app/privacy/PrivacyHero.tsx, src/app/terms/TermsHero.tsx, src/components/dashboard/DashboardContextStrip.tsx, src/components/dashboard/DashboardShell.tsx, src/components/dashboard/TopPillNav.tsx, src/components/dashboard/primitives.tsx, src/components/static/StaticPageV2Chrome.tsx, src/components/dashboard/DashboardContextStrip.test.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/primitives.test.tsx, src/components/homepage-regressions.test.tsx
+- Tests added / changed: 8 files changed (primitives.test.tsx, TopPillNav.test.tsx, DashboardContextStrip.test.tsx, homepage-regressions.test.tsx, about-page.test.tsx, privacy-page.test.tsx, terms-page.test.tsx, how-it-works/page.v2.test.tsx)
+- Build: pass (focused `vitest` 31/31, `npm run lint` on touched files, `npm run type-check`)
+- Status: done
+- Next up: Sweep specialty/city/provider-detail/public detail pages for any remaining visible eyebrow labels not covered by shared primitives, or continue with 16.23 once assets arrive
+- Notes: Public/static hero pills on About/FAQ/How It Works/Privacy/Terms and Hindi mirrors are now visually hidden; dashboard breadcrumbs/context strip/greeting/kicker chrome are hidden site-wide; static v2 TOC helper heading and floating last-updated badge are hidden visually while JSON-LD, metadata, nav links, and headings remain intact.
+
+## 2026-04-18 20:55 UTC — cursor/admin-dashboard-polish-fe31 — admin dashboard chrome + live registry cleanup
+- Commit: 946f0bf (fix: polish admin dashboard chrome and registry)
+- Files touched: src/components/dashboard/TopPillNav.tsx, src/components/dashboard/DashboardShell.tsx, src/app/admin/page.tsx, src/app/admin/listings/page.tsx, src/app/admin/users/page.tsx, src/app/admin/users/UsersV2.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/DashboardBreadcrumbs.test.tsx, src/app/admin/page.test.tsx, src/app/admin/users/users-v2.test.tsx
+- Tests added / changed: 4 files changed (DashboardBreadcrumbs.test.tsx, TopPillNav.test.tsx, page.test.tsx, users-v2.test.tsx)
+- Build: pass (`npm run lint` on touched files, focused `vitest` 23/23, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Admin-only chrome now hides the breadcrumb strip and context strip, page headers show only primary headlines, admin nav avatar is a fixed ShieldCheck icon treatment, admin home renders the main heading immediately while stats load, approvals page no longer exposes raw server error text, and `/admin/users` now uses live `/api/admin/users` + `/api/admin/stats` data with pending-aware badges and simple pagination instead of fake placeholder records.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (main feature commit)
 - Commit: 2df3ba6 (docs: fix CHANGELOG commit sha for provider OTP + password reset)
 - Files touched: CHANGELOG.md

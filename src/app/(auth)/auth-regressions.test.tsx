@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import AuthLayout from './layout'
 import { metadata as forgotPasswordMetadata } from './forgot-password/layout'
@@ -28,27 +28,6 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/components/BpLogo', () => ({
   default: ({ href }: { href?: string }) => (href ? <a href={href}>BookPhysio Logo</a> : <div>BookPhysio Logo</div>),
-}))
-
-vi.mock('@/components/CityCombobox', () => ({
-  CityCombobox: ({
-    value,
-    onChange,
-    placeholder,
-  }: {
-    value: string
-    onChange: (city: string, state?: string) => void
-    placeholder?: string
-  }) => (
-    <input
-      role="combobox"
-      aria-controls="city-combobox-listbox"
-      aria-expanded={false}
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => onChange(e.target.value, 'Maharashtra')}
-    />
-  ),
 }))
 
 vi.mock('@/components/OtpInput', () => ({
@@ -330,8 +309,8 @@ describe('Auth regressions', () => {
 
     render(<DoctorSignupPage />)
 
-    fireEvent.change(screen.getByPlaceholderText('Priya Sharma'), {
-      target: { value: 'Dr. Meera Shah' },
+    fireEvent.change(screen.getByLabelText(/Your name \(without Dr\. prefix\)/i), {
+      target: { value: 'Meera Shah' },
     })
     fireEvent.change(screen.getByPlaceholderText('98765 43210'), {
       target: { value: '9876543210' },
@@ -344,8 +323,9 @@ describe('Auth regressions', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
 
-    fireEvent.change(screen.getByPlaceholderText('e.g. NCAHP/PT/2024/12345'), {
-      target: { value: 'NCAHP/PT/2024/12345' },
+    fireEvent.click(screen.getByRole('button', { name: /^IAP$/ }))
+    fireEvent.change(screen.getByPlaceholderText('e.g. L-12345'), {
+      target: { value: 'IAP-12345' },
     })
     fireEvent.change(screen.getByPlaceholderText('5'), {
       target: { value: '8' },
@@ -361,9 +341,13 @@ describe('Auth regressions', () => {
     fireEvent.change(screen.getByPlaceholderText('Shop 12, Green Park Main Road'), {
       target: { value: '12 Marine Drive' },
     })
-    fireEvent.change(screen.getByPlaceholderText(/search city/i), {
-      target: { value: 'Mumbai' },
+    const cityInput = screen.getByPlaceholderText(/Search city/i)
+    fireEvent.change(cityInput, { target: { value: 'Mumbai' } })
+    const cityList = await screen.findByRole('listbox')
+    await waitFor(() => {
+      expect(within(cityList).getAllByRole('option').length).toBeGreaterThan(0)
     })
+    fireEvent.mouseDown(within(cityList).getAllByRole('option')[0]!)
     fireEvent.change(screen.getByPlaceholderText('110001'), {
       target: { value: '400001' },
     })
@@ -376,13 +360,13 @@ describe('Auth regressions', () => {
     fireEvent.click(screen.getByRole('button', { name: /complete registration/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/check your email/i)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /check your email/i })).toBeInTheDocument()
     })
 
     expect(fetchMock).toHaveBeenCalledWith('/api/providers/onboard-signup', expect.objectContaining({
       method: 'POST',
     }))
-  })
+  }, 15000)
 
   it('routes phone recovery to the OTP screen after the OTP request succeeds', async () => {
     vi.stubGlobal(
