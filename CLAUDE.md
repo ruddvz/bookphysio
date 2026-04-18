@@ -332,6 +332,24 @@ Run `code-reviewer` + `security-reviewer` **in parallel** (they're independent).
 - Server Components by default — `'use client'` only when needed
 - `src/components/shared/` owned by `bp-ui-public` — others read-only
 
+### File Placement (enforced by PreToolUse hook)
+
+Full rules: `.claude/rules/common/file-organization.md`
+
+| What | Where |
+|------|-------|
+| Planning docs, specs, backlogs | `docs/planning/` |
+| Research PDFs, competitor notes | `docs/research/` |
+| Architecture decisions, audits | `docs/` |
+| Pre-deploy / ops checklists | `docs/operations/` |
+| Screenshots, non-public images | `docs/assets/screenshots/` |
+| Public images / icons | `public/images/` or `public/` |
+| Utility / migration scripts | `scripts/` |
+| E2E tests | `e2e/` |
+| DB migrations | `supabase/migrations/` |
+
+**Root is locked.** Only these files belong there: `CLAUDE.md`, `CHANGELOG.md`, `AGENTS.md`, config files (`package.json`, `tsconfig.json`, `next.config.ts`, `tailwind.config.ts`, `eslint.config.mjs`, `playwright.config.ts`, `vitest.config.ts`, `components.json`, `vercel.json`, `next-env.d.ts`, `.env.example`, `.gitignore`, `.mcp.json`). Nothing else.
+
 ---
 
 ## Planning Docs
