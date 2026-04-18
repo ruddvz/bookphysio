@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.27 provider patients v2
+- Commit: (pending)
+- Files touched: `src/app/api/provider/patients/route.ts`, `src/lib/clinical/types.ts`, `src/lib/clinical/provider-patients-utils.ts`, `ProviderPatientsRosterCardV2.tsx`, `ProviderPatientChartV2Chrome.tsx`, patient pages, demo helper, tests, planning docs, `docs/CODEMAPS/pages.md`
+- Tests added / changed: +3 files (utils + roster card + chart chrome)
+- Build: `tsc --noEmit` + targeted vitest pass (full `next build` needs env in CI)
+- Status: done
+- Next up: 16.28 `/provider/profile` v2 (or 16.23 specialty images when assets land)
+- Notes: `includeVisitSeries=1` adds `visit_series_6m` to roster rows; `getDemoPatientVisitDates` for demo parity.
+
 ## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.26 provider earnings v2
 - Commit: 228a796 (feat(ui-v2): slice 16.26 — provider earnings v2 tiles + monthly sparkline)
 - Files touched: src/app/provider/earnings/ProviderEarningsV2Chrome.tsx (new), provider-earnings-utils.ts (new), tests, page.tsx, docs/planning/*, docs/CODEMAPS/pages.md

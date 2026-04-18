@@ -54,8 +54,8 @@
 | `/provider/calendar` | `app/provider/calendar/page.tsx` | Client | 7-day grid; ui-v2: `ProviderCalendarV2Chrome` + per-cell booking `Badge` |
 | `/provider/appointments` | `app/provider/appointments/page.tsx` | Server | Table: Patient, Date, Time, Type, Status |
 | `/provider/appointments/[id]` | `app/provider/appointments/[id]/page.tsx` | Server | Appointment detail |
-| `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search |
-| `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history |
+| `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search; ui-v2: `ProviderPatientsRosterCardV2`, fetches `?includeVisitSeries=1` for 6-month visit sparkline |
+| `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history; ui-v2: `ProviderPatientChartV2Chrome` (cadence sparkline, vitals chips, quick note → profile tab) |
 | `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration; ui-v2: `ProviderAvailabilityV2Chrome` + day window `Badge` |
 | `/provider/earnings` | `app/provider/earnings/page.tsx` | Client | Ledger from appointments; ui-v2: `ProviderEarningsV2Chrome` + sparkline tiles + `Badge` status |
 | `/provider/profile` | `app/provider/profile/page.tsx` | Client | Practice profile form |
