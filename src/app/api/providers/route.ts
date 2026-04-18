@@ -8,6 +8,7 @@ import type { ProviderCard } from '@/app/api/contracts/provider'
 import { formatPublicProviderDistance, getPublicProviderCoordinates } from '@/lib/providers/public'
 import { hasPublicSupabaseEnv } from '@/lib/supabase/env'
 import { formatIndiaDateInput, formatIndiaTime } from '@/lib/india-date'
+import { applyPublicProviderFilters } from '@/app/api/providers/filters'
 
 const SEARCH_CACHE_TTL_SECONDS = 60
 
@@ -264,9 +265,10 @@ async function searchProvidersWithoutRpc({
   query?: string
 }): Promise<{ data: SearchProviderRpcRow[]; error: unknown }> {
   const maximumFee = max_fee_inr ?? 2000000
-  let fallbackQuery = supabase
-    .from('providers')
-    .select(`
+  let fallbackQuery = applyPublicProviderFilters(
+    supabase
+      .from('providers')
+      .select(`
       id,
       slug,
       title,
@@ -278,8 +280,8 @@ async function searchProvidersWithoutRpc({
       verified,
       users!inner (full_name, avatar_url),
       locations (id, city, lat, lng, visit_type)
-    `)
-    .eq('active', true)
+    `),
+  )
     .gte('rating_avg', min_rating ?? 0)
     .lte('consultation_fee_inr', maximumFee)
     .order('rating_avg', { ascending: false })
