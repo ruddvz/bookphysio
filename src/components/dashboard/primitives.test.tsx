@@ -16,6 +16,7 @@ describe('PageHeader', () => {
     expect(document.querySelector('[data-kicker]')).toHaveClass('sr-only')
     expect(screen.getByText('YOUR HEALTH', { selector: '[data-kicker]' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
-    expect(screen.getByText('Care at a glance')).toBeInTheDocument()
+    expect(document.querySelector('[data-subtitle]')).toHaveClass('sr-only')
+    expect(screen.getByText('Care at a glance', { selector: '[data-subtitle]' })).toBeInTheDocument()
   })
 })

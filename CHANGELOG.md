@@ -35,8 +35,17 @@
 
 ## Log (newest first)
 
+## 2026-04-18 21:34 UTC — cursor/admin-dashboard-polish-fe31 — public detail chrome cleanup
+- Commit: <pending> (fix: hide remaining visible chrome everywhere else)
+- Files touched: src/components/dashboard/primitives.tsx, src/components/dashboard/primitives.test.tsx, src/app/city/[slug]/page.tsx, src/app/specialty/[slug]/page.tsx, src/components/specialties/SpecialtyArticle.tsx
+- Tests added / changed: 1 file changed (primitives.test.tsx)
+- Build: pass (`npm run lint` on touched files, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Extended the hidden-chrome cleanup beyond shared/static pages to public city and specialty detail heroes plus SpecialtyArticle. Shared dashboard `PageHeader` subtitle is now visually hidden too, so patient/provider pages match the admin treatment and keep only the primary headline visible.
+
 ## 2026-04-18 21:22 UTC — cursor/admin-dashboard-polish-fe31 — site-wide hidden chrome pass
-- Commit: <pending> (fix: hide visible helper chrome across public and dashboard pages)
+- Commit: 951a869 (fix: hide visible chrome across site)
 - Files touched: src/app/about/AboutPageClient.tsx, src/app/faq/FAQPageClient.tsx, src/app/globals.css, src/app/hi/about/HiAboutPageClient.tsx, src/app/hi/faq/HiFAQPageClient.tsx, src/app/hi/how-it-works/page.tsx, src/app/hi/privacy/HiPrivacyHero.tsx, src/app/hi/terms/HiTermsHero.tsx, src/app/how-it-works/page.tsx, src/app/privacy/PrivacyHero.tsx, src/app/terms/TermsHero.tsx, src/components/dashboard/DashboardContextStrip.tsx, src/components/dashboard/DashboardShell.tsx, src/components/dashboard/TopPillNav.tsx, src/components/dashboard/primitives.tsx, src/components/static/StaticPageV2Chrome.tsx, src/components/dashboard/DashboardContextStrip.test.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/primitives.test.tsx, src/components/homepage-regressions.test.tsx
 - Tests added / changed: 8 files changed (primitives.test.tsx, TopPillNav.test.tsx, DashboardContextStrip.test.tsx, homepage-regressions.test.tsx, about-page.test.tsx, privacy-page.test.tsx, terms-page.test.tsx, how-it-works/page.v2.test.tsx)
 - Build: pass (focused `vitest` 31/31, `npm run lint` on touched files, `npm run type-check`)

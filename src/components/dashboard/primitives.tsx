@@ -181,7 +181,12 @@ export function PageHeader({
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1 text-[13px] sm:text-[15px] font-medium text-slate-500">{subtitle}</p>
+          <p
+            data-subtitle
+            className="sr-only"
+          >
+            {subtitle}
+          </p>
         ) : null}
       </div>
       {action ? (
@@ -236,7 +241,6 @@ export function SectionCard({
   noPadding = false,
   children,
 }: SectionCardProps) {
-  const hasHeader = Boolean(title || kicker || action);
   const ActionIcon = action?.icon;
   const actionContent = (
     <>
@@ -246,9 +250,11 @@ export function SectionCard({
     </>
   );
 
+  const hasVisibleHeader = Boolean(title || action)
+
   return (
     <DashCard role={role} className={`p-0 ${className}`.trim()}>
-      {hasHeader ? (
+      {hasVisibleHeader ? (
         <div className="px-4 sm:px-5 lg:px-6 pt-4 sm:pt-5 lg:pt-6 pb-4 sm:pb-5 flex items-start justify-between gap-3 sm:gap-4">
           <div>
             {kicker ? (
@@ -295,7 +301,7 @@ export function SectionCard({
         className={
           noPadding
             ? ''
-            : hasHeader
+            : hasVisibleHeader
               ? 'px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5 lg:pb-6'
               : 'p-4 sm:p-5 lg:p-6'
         }
