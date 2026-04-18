@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.28** — `/provider/profile` v2 (or **16.23** when assets land)
+## 👉 NEXT UP: **Slice 16.31 `/provider/bills/new` — v2 invoice builder (GST chips, integer ₹)**
 
-Rollup branch **`cursor/phase-16-slices-21-25-9290`** — **16.27** complete: `/provider/patients` + chart — `GET /api/provider/patients?includeVisitSeries=1` (6-month India-month visit counts per patient when ui-v2 roster loads), `ProviderPatientsRosterCardV2` (sparkline + `TrendDelta`), `ProviderPatientChartV2Chrome` (visit cadence strip, vitals `Badge` chips, Quick note → Clinical Profile tab).
+Slices 16.28–16.30 (provider profile, AI assistant, messages/notifications v2) landed on branch `cursor/slices-16.28-16.30-spec-56c7` (PR #100). Next provider slice per `EXECUTION-PLAN.md`: **16.31**.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Priority 3 → 16.31.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 

@@ -35,6 +35,51 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(planning): 16.28–16.30 complete + NEXT UP 16.31
+- Commit: d59f3d9 (docs(planning): mark slices 16.28-16.30 complete; NEXT UP 16.31)
+- Files touched: docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.31 `/provider/bills/new` — v2 invoice builder
+- Notes: EXECUTION-PLAN Phase 16 items 16.28–16.30 set to [x].
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(changelog): slice 16.30 entry short SHA
+- Commit: db9439e (docs(changelog): add short SHA for slice 16.30 entry)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: planning tick commit (see entry above)
+- Notes: Records fc75bb7 for slice 16.30 (could not embed in amend commit message).
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.30 provider messages + notifications v2
+- Commit: fc75bb7 (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19))
+- Files touched: src/app/provider/messages/ProviderMessagesV2.tsx, src/app/provider/messages/messages-v2.test.tsx, src/app/provider/messages/page.tsx, src/app/provider/notifications/ProviderNotificationsV2.tsx, src/app/provider/notifications/notifications-v2.test.tsx, src/app/provider/notifications/page.tsx
+- Tests added / changed: +12 (messages-v2.test.tsx + notifications-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.31 `/provider/bills/new` v2 invoice builder OR merge PR #100 branch to main
+- Notes: Reuses patient `messages-v2-utils` / `notifications-v2-utils`; query keys `provider-conversations` / `provider-messages` preserved. v1 split into `ProviderMessagesV1` / `ProviderNotificationsV1` for hook order.
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.29 provider AI assistant v2
+- Commit: 88d8ed3 (feat(ui-v2): slice 16.29 — provider AI-assistant v2 shell + capability chips)
+- Files touched: src/app/provider/ai-assistant/ProviderAIAssistantV2.tsx, src/app/provider/ai-assistant/ai-assistant-v2.test.tsx, src/app/provider/ai-assistant/page.tsx
+- Tests added / changed: +5 (ai-assistant-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.30 `/provider/messages` + `/provider/notifications` v2
+- Notes: `next/dynamic` mock in tests; v1 remains default export path when flag off.
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.28 provider profile v2
+- Commit: dcbd856 (feat(ui-v2): slice 16.28 — provider profile v2 with credential chip + public preview CTA)
+- Files touched: src/app/provider/profile/ProviderProfileV2.tsx, src/app/provider/profile/profile-v2.test.tsx, src/app/provider/profile/page.tsx, src/app/provider/profile/page.test.tsx
+- Tests added / changed: +10 (profile-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.29 `/provider/ai-assistant` — v2 assistant shell + capability chips
+- Notes: v2 gate via `useUiV2()`; v1 extracted as `ProviderProfileV1` to satisfy Rules of Hooks. Public CTA links to `/doctor/:userId`.
+
 ## 2026-04-18 — cursor/slices-16-21-to-16-27-spec-f324 — Consolidate PR #97/#98/#99 into PR #101
 - Commit: de8d139 (merge: fold PR 99 rollup into PR 101; dedupe superseded v2 stubs)
 - Files touched: merge of rollup branch + deletions of duplicate `*V2` files from earlier PR #101-only attempt; `docs/planning/slices-16-21-to-16-27-spec.md` retained

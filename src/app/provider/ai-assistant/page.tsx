@@ -1,6 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderAIAssistantV2 } from './ProviderAIAssistantV2'
 import type { BookPhysioAIMessage } from '@/components/BookPhysioAIChat'
 
 const BookPhysioAIChat = dynamic(() => import('@/components/BookPhysioAIChat').then(mod => mod.BookPhysioAIChat), {
@@ -18,5 +20,8 @@ const INITIAL_MESSAGES: BookPhysioAIMessage[] = [
 ]
 
 export default function MotioAssistant() {
+  const isV2 = useUiV2()
+  if (isV2) return <ProviderAIAssistantV2 />
+
   return <BookPhysioAIChat variant="provider" api="/api/ai/provider" initialMessages={INITIAL_MESSAGES} />
 }

@@ -291,9 +291,9 @@
 - [x] **16.25** `/provider/calendar` + `/provider/availability` — v2 grid chrome, day-template editor, `Badge` for bookings per slot; preserve existing India-time bucketing
 - [x] **16.26** `/provider/earnings` — v2 earnings tiles with `Sparkline` + `TrendDelta`, payout cadence badge, `₹` integer rupees (never paise)
 - [x] **16.27** `/provider/patients` + `/provider/patients/[id]` — v2 patient card with visit history sparkline, vitals chips, quick-note action
-- [ ] **16.28** `/provider/profile` — v2 form chrome, NCAHP credential chip reuse, preview-on-public-page CTA
-- [ ] **16.29** `/provider/ai-assistant` — v2 assistant shell with provider pulse tokens, visit-note autodraft CTA alignment
-- [ ] **16.30** `/provider/messages` + `/provider/notifications` — parity with patient 16.19 but provider tokens
+- [x] **16.28** `/provider/profile` — v2 form chrome, NCAHP credential chip reuse, preview-on-public-page CTA
+- [x] **16.29** `/provider/ai-assistant` — v2 assistant shell with provider pulse tokens, visit-note autodraft CTA alignment
+- [x] **16.30** `/provider/messages` + `/provider/notifications` — parity with patient 16.19 but provider tokens
 - [ ] **16.31** `/provider/bills/new` — v2 invoice builder, GST line-item chips, integer `₹` only
 - [ ] **16.32** `/provider/pending` — v2 onboarding-progress stepper, document-status `Badge`s
 
