@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.25 provider calendar + availability v2 chrome
+- Commit: ef8c7e8 (feat(ui-v2): slice 16.25 — provider calendar + availability v2 chrome)
+- Files touched: src/app/provider/calendar/ProviderCalendarV2Chrome.tsx (new), provider-calendar-v2-chrome.test.tsx (new), page.tsx; src/app/provider/availability/ProviderAvailabilityV2Chrome.tsx (new), provider-availability-v2-chrome.test.tsx (new), page.tsx; docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, docs/CODEMAPS/pages.md
+- Tests added / changed: +4 (2 chrome test files)
+- Build: type-check + lint 0 errors
+- Status: done
+- Next up: 16.23 specialty images (when assets) or 16.26 provider earnings v2 — same rollup branch `cursor/phase-16-slices-21-25-9290`
+- Notes: Self-gated via useUiV2(). Calendar: weekly bookings sparkline + week revenue Badge; desktop grid cells show booking count Badge. Availability: weekday window-count sparkline + duration cadence Badge; day rows show window count Badge.
+
 ## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.24 provider appointments v2 + provider_set_status API
 - Commit: 3fe82f3 (feat(ui-v2): slice 16.24 — provider appointments timeline + status actions)
 - Files touched: src/app/api/appointments/[id]/route.ts, src/lib/validations/booking.ts, src/app/provider/appointments/* (ProviderAppointmentsTimelineV2, provider-appointments-utils, page, [id]/page), provider-appointments-utils.test.ts, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
