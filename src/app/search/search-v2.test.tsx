@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import React from 'react'
 
 // ── flag mock ──────────────────────────────────────────────────────────────
@@ -71,14 +71,14 @@ describe('SearchContent — sort controls', () => {
   it('v2: chip count matches SORT_OPTIONS (4)', () => {
     setV2(true)
     render(<SearchContent />)
-    const chips = screen.getAllByRole('button', { name: /Relevance|Top Rated|Price/i })
+    const chips = within(screen.getByTestId('sort-chips')).getAllByRole('button')
     expect(chips.length).toBe(4)
   })
 
   it('v2: active chip has aria-pressed=true, others false', () => {
     setV2(true)
     render(<SearchContent />)
-    const chips = screen.getAllByRole('button', { name: /Relevance|Top Rated|Price/i })
+    const chips = within(screen.getByTestId('sort-chips')).getAllByRole('button')
     const active = chips.find((c) => c.getAttribute('aria-pressed') === 'true')
     expect(active).toBeTruthy()
     expect(active?.textContent).toBe('Relevance')
