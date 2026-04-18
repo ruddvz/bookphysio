@@ -6,6 +6,15 @@
 
 ---
 
+## ✅ DONE: Auth/Admin fixes plan (2026-04-17-auth-email-admin-fixes.md) — All 6 phases complete
+- Phase 1: Password reset via Resend ✓ (PR #86)
+- Phase 2: Doctor signup email OTP in Step 5 ✓ (PR #86)
+- Phase 3: Admin dashboard real data only ✓ (PR #86)
+- Phase 4: Google OAuth no OTP re-prompt ✓ (b6a1728)
+- Phase 5: Provider approval state machine ✓ (b6a1728)
+- Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
+- **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
+
 ## 👉 NEXT UP: **Slice 16.11 — Auth surfaces redesign (Part B P1)**
 
 Scope: `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`.

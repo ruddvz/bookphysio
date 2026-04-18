@@ -35,6 +35,24 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/next-phases-2t7bI — Phases 4-6 auth+admin fixes
+- Commit: b6a1728 (feat(auth+admin): phases 4-6 — OAuth role fix, approval state machine, admin email alerts)
+- Files touched: src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/app/api/admin/listings/route.ts, src/app/admin/listings/page.tsx, src/lib/resend.ts, src/app/api/providers/onboard-signup/route.ts, supabase/migrations/042_provider_approval_state.sql, supabase/migrations/043_oauth_role_default.sql
+- Tests added / changed: 0 (server-side logic + UI tabs — CI validates)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1 (flag-gated v2 card chrome + OTP keypad polish across 7 auth pages)
+- Notes: Phase 4 — Google OAuth always gets role='patient' (migration 043 backfill + trigger + belt-and-braces upsert in both callback routes). Phase 5 — provider_approval_status ENUM (migration 042), admin listings API now accepts ?status=pending|approved|rejected, PATCH sets approval_status + reverts role on rejection, UI has 3-tab layout. Phase 6 — renderAuthEmail() shared HTML helper + sendAdminNewProviderAlert() wired into onboard-signup step 9. User must apply migrations 042+043 in Supabase dashboard and set ADMIN_ALERT_EMAIL env var.
+
+## 2026-04-18 — claude/next-phases-2t7bI — PR-86 security fixes
+- Commit: c1e212c (fix(auth): address PR-86 CodeRabbit security findings)
+- Files touched: src/lib/auth/email-otp.ts, src/app/api/auth/email-otp/verify/route.ts, src/app/api/auth/email-otp/send/route.ts, src/app/api/auth/password-reset/route.ts
+- Tests added / changed: 0 (server-only security fixes — logic-layer, no component changes)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1 (flag-gated v2 card chrome + OTP keypad polish across 7 auth pages)
+- Notes: Merged PR-86 branch (server-side password reset + email OTP) and fixed 4 CodeRabbit issues: crypto.randomInt, mark-used abort-on-fail (replay prevention), orphaned OTP cleanup, Zod validation on 3 routes.
+
 ## 2026-04-18 — claude/fix-pr-81-tests-Cdyms — Session-handoff system
 - Commit: 2dacec8 (chore(handoff): add CHANGELOG.md + session-handoff protocol)
 - Files touched: CHANGELOG.md (new), CLAUDE.md, docs/planning/ACTIVE.md

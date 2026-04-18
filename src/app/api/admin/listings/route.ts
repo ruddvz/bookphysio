@@ -9,6 +9,8 @@ const approveSchema = z.object({
   approved: z.boolean(),
 })
 
+const statusParam = z.enum(['pending', 'approved', 'rejected']).default('pending')
+
 async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
@@ -25,7 +27,7 @@ async function enforceAdminRateLimit(scope: string, adminId: string) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const admin = await requireAdmin(supabase)
   if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -34,6 +36,13 @@ export async function GET() {
   if (!rateLimitOk) {
     return NextResponse.json({ error: 'Too many requests. Please try again shortly.' }, { status: 429 })
   }
+
+  const rawStatus = request.nextUrl.searchParams.get('status') ?? 'pending'
+  const parsedStatus = statusParam.safeParse(rawStatus)
+  if (!parsedStatus.success) {
+    return NextResponse.json({ error: 'Invalid status parameter' }, { status: 400 })
+  }
+  const status = parsedStatus.data
 
   const { data } = await supabaseAdmin
     .from('providers')
@@ -47,11 +56,12 @@ export async function GET() {
       consultation_fee_inr,
       verified,
       active,
+      approval_status,
       onboarding_step,
       created_at,
       users!inner (full_name, phone)
     `)
-    .eq('verified', false)
+    .eq('approval_status', status)
     .order('created_at')
 
   return NextResponse.json({ listings: data ?? [] })
@@ -67,13 +77,15 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Too many requests. Please try again shortly.' }, { status: 429 })
   }
 
-  const parsed = approveSchema.safeParse(await request.json())
+  const parsed = approveSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
 
   const { provider_id, approved } = parsed.data
+  const approvalStatus = approved ? 'approved' : 'rejected'
+
   const { error } = await supabaseAdmin
     .from('providers')
-    .update({ verified: approved, active: approved })
+    .update({ verified: approved, active: approved, approval_status: approvalStatus })
     .eq('id', provider_id)
 
   if (error) return NextResponse.json({ error: 'Update failed' }, { status: 500 })
@@ -87,7 +99,7 @@ export async function PATCH(request: NextRequest) {
     if (userError) {
       await supabaseAdmin
         .from('providers')
-        .update({ verified: false, active: false })
+        .update({ verified: false, active: false, approval_status: 'pending' })
         .eq('id', provider_id)
       return NextResponse.json({ error: 'User role update failed' }, { status: 500 })
     }
@@ -103,7 +115,7 @@ export async function PATCH(request: NextRequest) {
       await Promise.allSettled([
         supabaseAdmin
           .from('providers')
-          .update({ verified: false, active: false })
+          .update({ verified: false, active: false, approval_status: 'pending' })
           .eq('id', provider_id),
         supabaseAdmin
           .from('users')
@@ -112,6 +124,13 @@ export async function PATCH(request: NextRequest) {
       ])
       return NextResponse.json({ error: 'Auth role update failed' }, { status: 500 })
     }
+  } else {
+    // Rejection: revert user role to provider_pending so they remain in review state
+    await supabaseAdmin
+      .from('users')
+      .update({ role: 'provider_pending' })
+      .eq('id', provider_id)
+      .catch((e: unknown) => console.error('[admin/listings] Role revert on rejection failed:', e))
   }
 
   return NextResponse.json({ success: true })

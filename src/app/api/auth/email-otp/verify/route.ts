@@ -1,25 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 
+const verifySchema = z.object({
+  email: z.string().email('Valid email is required'),
+  code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code from your email'),
+})
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
-  const email =
-    typeof body === 'object' && body && typeof (body as { email?: unknown }).email === 'string'
-      ? (body as { email: string }).email.trim().toLowerCase()
-      : null
-  const code =
-    typeof body === 'object' && body && typeof (body as { code?: unknown }).code === 'string'
-      ? (body as { code: string }).code.trim()
-      : null
-
-  if (!email || !email.includes('@')) {
-    return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
+  const parsed = verifySchema.safeParse(body)
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message ?? 'Invalid request'
+    return NextResponse.json({ error: msg }, { status: 400 })
   }
-  if (!code || !/^\d{6}$/.test(code)) {
-    return NextResponse.json({ error: 'Enter the 6-digit code from your email' }, { status: 400 })
-  }
+  const { email, code } = { email: parsed.data.email.trim().toLowerCase(), code: parsed.data.code.trim() }
 
   // Rate limit verify attempts to prevent brute-force of the 6-digit space
   const ip = getRequestIpAddress(request)
@@ -57,15 +54,16 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Mark the OTP as used immediately to prevent replay
+  // Mark the OTP as used — abort if this fails to prevent replay attacks
   const { error: markError } = await supabaseAdmin
     .from('email_otps')
     .update({ used_at: new Date().toISOString() })
     .eq('id', otp.id)
+    .is('used_at', null)
 
   if (markError) {
     console.error('email_otps mark-used failed:', markError)
-    // Non-fatal — continue to confirm the email
+    return NextResponse.json({ error: 'Verification failed. Please try again.' }, { status: 500 })
   }
 
   // Confirm the user's email in Supabase Auth

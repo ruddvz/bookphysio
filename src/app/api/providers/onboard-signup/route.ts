@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { parseIndiaDate } from '@/lib/india-date'
 import { createAndSendEmailOtp } from '@/lib/auth/email-otp'
+import { sendAdminNewProviderAlert } from '@/lib/resend'
 import { z } from 'zod'
 import {
   buildAvailabilitySlotsInIndia,
@@ -423,6 +424,13 @@ export async function POST(request: NextRequest) {
     if (!otpResult.ok) {
       console.error('Provider signup: OTP send failed after user creation', otpResult.error)
     }
+
+    // 9. Notify admin of new provider application (fire-and-forget).
+    void sendAdminNewProviderAlert({
+      providerName: step1.name,
+      email,
+      submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    })
 
     return NextResponse.json({ success: true }, { status: 201 })
 
