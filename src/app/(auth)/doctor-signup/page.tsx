@@ -11,6 +11,11 @@ import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { INDIA_STATES } from '@/lib/india-locations'
+import {
+  DEFAULT_OTP_LENGTH,
+  OtpDigits,
+  type OtpDigitsHandle,
+} from '@/components/auth/OtpDigits'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1410,7 +1415,6 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
 
 // ─── Step 5 — Email OTP verification ─────────────────────────────────────────
 
-const OTP_LENGTH = 6
 const RESEND_COOLDOWN_SECONDS = 60
 
 interface Step5Props {
@@ -1420,7 +1424,7 @@ interface Step5Props {
 
 function Step5({ email, onBack }: Step5Props) {
   const router = useRouter()
-  const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
+  const [digits, setDigits] = useState<string[]>(Array(DEFAULT_OTP_LENGTH).fill(''))
   const [verifyError, setVerifyError] = useState('')
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [verified, setVerified] = useState(false)
@@ -1430,7 +1434,7 @@ function Step5({ email, onBack }: Step5Props) {
   const [resendError, setResendError] = useState('')
   const [countdown, setCountdown] = useState(RESEND_COOLDOWN_SECONDS)
 
-  const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(OTP_LENGTH).fill(null))
+  const otpDigitsRef = useRef<OtpDigitsHandle | null>(null)
 
   // Countdown ticker — the OTP email was already sent by onboard-signup
   useEffect(() => {
@@ -1439,36 +1443,9 @@ function Step5({ email, onBack }: Step5Props) {
     return () => clearTimeout(timer)
   }, [countdown])
 
-  function handleDigitChange(index: number, value: string) {
-    // Handle paste of full code
-    if (value.length > 1) {
-      const clean = value.replace(/\D/g, '').slice(0, OTP_LENGTH)
-      const next = [...digits]
-      for (let i = 0; i < OTP_LENGTH; i++) {
-        next[i] = clean[i] ?? ''
-      }
-      setDigits(next)
-      inputRefs.current[Math.min(clean.length, OTP_LENGTH - 1)]?.focus()
-      return
-    }
-    const digit = value.replace(/\D/g, '').slice(-1)
-    const next = [...digits]
-    next[index] = digit
-    setDigits(next)
-    if (digit && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus()
-    }
-  }
-
-  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
-    }
-  }
-
   async function handleVerify() {
     const code = digits.join('')
-    if (code.length !== OTP_LENGTH) {
+    if (code.length !== DEFAULT_OTP_LENGTH) {
       setVerifyError('Enter all 6 digits of your verification code.')
       return
     }
@@ -1511,8 +1488,8 @@ function Step5({ email, onBack }: Step5Props) {
       }
       setResendSent(true)
       setCountdown(RESEND_COOLDOWN_SECONDS)
-      setDigits(Array(OTP_LENGTH).fill(''))
-      inputRefs.current[0]?.focus()
+      setDigits(Array(DEFAULT_OTP_LENGTH).fill(''))
+      otpDigitsRef.current?.focusFirst()
     } catch {
       setResendError('Network error. Please try again.')
     } finally {
@@ -1558,35 +1535,12 @@ function Step5({ email, onBack }: Step5Props) {
       <p className="text-[14px] text-gray-600 mb-1">We sent a 6-digit code to</p>
       <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
 
-      {/* OTP digit inputs */}
-      <div className="flex justify-center gap-2 mb-4">
-        {digits.map((d, i) => (
-          <input
-            key={i}
-            ref={(el) => { inputRefs.current[i] = el }}
-            type="text"
-            inputMode="numeric"
-            maxLength={OTP_LENGTH}
-            value={d}
-            onChange={(e) => handleDigitChange(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            onFocus={(e) => e.target.select()}
-            style={{
-              width: '44px',
-              height: '52px',
-              textAlign: 'center',
-              fontSize: '22px',
-              fontWeight: 700,
-              border: `2px solid ${verifyError ? '#FCA5A5' : d ? 'var(--color-bp-primary)' : 'var(--color-bp-border)'}`,
-              borderRadius: '10px',
-              color: 'var(--color-bp-primary)',
-              outline: 'none',
-              background: d ? 'var(--color-bp-light)' : '#fff',
-              transition: 'border-color 0.15s, background 0.15s',
-            }}
-          />
-        ))}
-      </div>
+      <OtpDigits
+        ref={otpDigitsRef}
+        value={digits}
+        onChange={setDigits}
+        hasError={!!verifyError}
+      />
 
       {verifyError && (
         <p className="text-[12px] font-medium text-red-500 mb-3">{verifyError}</p>

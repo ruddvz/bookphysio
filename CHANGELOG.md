@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Slice 1: extract OtpDigits shared component
+- Commit: (feat: extract OtpDigits for doctor signup Step 5)
+- Files touched: src/components/auth/OtpDigits.tsx, src/app/(auth)/doctor-signup/page.tsx
+- Tests added / changed: 0 (refactor only; existing tests cover doctor-signup)
+- Build: not run (eslint unavailable in sandbox — `npm run lint` failed: eslint not found)
+- Status: wip
+- Next up: Slice 2 from `docs/planning/plans/2026-04-18-provider-signup-otp-and-password-reset-fix.md` — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: PR #113 execution started. Shared 6-digit grid + paste/backspace behavior lives in `OtpDigits` for reuse by forgot-password Step 2 in a later slice.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Plan: provider signup OTP + password reset fix
 - Commit: (docs: plan for provider signup OTP, resume-onboarding, and 6-digit password-reset rewrite)
 - Files touched: docs/planning/plans/2026-04-18-provider-signup-otp-and-password-reset-fix.md, CHANGELOG.md
