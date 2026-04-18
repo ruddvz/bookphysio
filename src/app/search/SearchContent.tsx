@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
+import SearchResultsReels from '@/app/search/SearchResultsReels'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { SpecialtyCTARail } from '@/components/specialties/SpecialtyCTARail'
@@ -459,6 +460,12 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
             </div>
           ) : (
             <div className="flex flex-col gap-5 pb-16">
+              {isV2 ? (
+                <div className="block md:hidden">
+                  <SearchResultsReels results={sortedDoctors} />
+                </div>
+              ) : null}
+              <div className={isV2 ? 'hidden md:block' : ''}>
               {error && (
                 <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 text-left">
                   <div className="flex-1">
@@ -495,6 +502,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               ))}
 
               <FeaturedDoctors />
+              </div>
             </div>
           )}
         </div>
