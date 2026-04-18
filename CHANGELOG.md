@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slice-16-21-patient-ai-shell-9290 — Slice 16.21 patient PAI + Motio v2 AI shell
+- Commit: d2cd03b (feat(ui-v2): slice 16.21 — patient PAI/Motio AI shell with pulse strip)
+- Files touched: src/app/patient/ai/PatientAIShellV2.tsx (new), src/app/patient/ai/patient-ai-shell-v2.test.tsx (new), src/app/patient/pai/page.tsx, src/app/patient/motio/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: +4 (patient-ai-shell-v2.test.tsx)
+- Build: type-check pass (`npm run type-check`). `next build` not run — env vars missing in sandbox (prebuild check-env). Lint: 0 errors.
+- Status: done
+- Next up: 16.22 `/patient/search` — v2 filter rail (specialty, pincode, mode, availability) aligned with `/search` redesign
+- Notes: PatientAIShellV2 self-gates via useUiV2(); pulse uses role=patient Sparkline + TrendDelta (half-window delta from demo series) + Badge. PatientAppointmentsTimeline now requires nowMs from parent (useState(() => Date.now())) — fixes react-hooks/purity Date.now in render.
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
