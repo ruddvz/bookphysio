@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { PageHeader } from './primitives'
 
 describe('PageHeader', () => {
-  it('renders the optional kicker above the title', () => {
+  it('keeps the optional kicker in the DOM but visually hidden above the title', () => {
     render(
       <PageHeader
         role="patient"
@@ -13,8 +13,10 @@ describe('PageHeader', () => {
       />
     )
 
-    expect(screen.getByText('YOUR HEALTH')).toBeInTheDocument()
+    expect(document.querySelector('[data-kicker]')).toHaveClass('sr-only')
+    expect(screen.getByText('YOUR HEALTH', { selector: '[data-kicker]' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
-    expect(screen.getByText('Care at a glance')).toBeInTheDocument()
+    expect(document.querySelector('[data-subtitle]')).toHaveClass('sr-only')
+    expect(screen.getByText('Care at a glance', { selector: '[data-subtitle]' })).toBeInTheDocument()
   })
 })

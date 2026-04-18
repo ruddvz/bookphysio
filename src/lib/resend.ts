@@ -106,7 +106,7 @@ export async function sendAppointmentReminder({
 }
 
 /** Shared branded HTML wrapper for all transactional auth emails. */
-function renderAuthEmail({
+export function renderAuthEmail({
   title,
   preheader,
   bodyHtml,

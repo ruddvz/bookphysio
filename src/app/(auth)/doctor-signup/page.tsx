@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
@@ -11,6 +11,11 @@ import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { INDIA_STATES } from '@/lib/india-locations'
+import {
+  DEFAULT_OTP_LENGTH,
+  OtpDigits,
+  type OtpDigitsHandle,
+} from '@/components/auth/OtpDigits'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -338,12 +343,14 @@ function FocusableInput({
   placeholder,
   type = 'text',
   style: extraStyle,
+  'aria-label': ariaLabel,
 }: {
   value: string
   onChange: (v: string) => void
   placeholder?: string
   type?: string
   style?: React.CSSProperties
+  'aria-label'?: string
 }) {
   const [focused, setFocused] = useState(false)
   return (
@@ -352,6 +359,7 @@ function FocusableInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      aria-label={ariaLabel}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{ ...inputStyle, ...extraStyle, borderColor: focused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
@@ -521,6 +529,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
             value={data.name}
             onChange={(v) => onChange({ ...data, name: v })}
             placeholder="Priya Sharma"
+            aria-label="Your name (without Dr. prefix)"
             style={{ borderRadius: '0', borderLeft: 'none', borderRight: 'none' }}
           />
           <div style={{
@@ -1410,17 +1419,27 @@ function Step4({ data, visitTypes, onChange, onNext, onBack, submitError, submit
 
 // ─── Step 5 — Email OTP verification ─────────────────────────────────────────
 
-const OTP_LENGTH = 6
 const RESEND_COOLDOWN_SECONDS = 60
 
 interface Step5Props {
   email: string
   onBack: () => void
+  /** False when onboard-signup created the user but the first OTP email failed to send. */
+  initialSendOk?: boolean
+  initialSendError?: string
+  /** After login resume: trigger one send on mount (fresh code). */
+  requireFreshSend?: boolean
 }
 
-function Step5({ email, onBack }: Step5Props) {
+function Step5({
+  email,
+  onBack,
+  initialSendOk = true,
+  initialSendError,
+  requireFreshSend = false,
+}: Step5Props) {
   const router = useRouter()
-  const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''))
+  const [digits, setDigits] = useState<string[]>(Array(DEFAULT_OTP_LENGTH).fill(''))
   const [verifyError, setVerifyError] = useState('')
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [verified, setVerified] = useState(false)
@@ -1428,9 +1447,51 @@ function Step5({ email, onBack }: Step5Props) {
   const [resendLoading, setResendLoading] = useState(false)
   const [resendSent, setResendSent] = useState(false)
   const [resendError, setResendError] = useState('')
-  const [countdown, setCountdown] = useState(RESEND_COOLDOWN_SECONDS)
+  const [countdown, setCountdown] = useState(() => {
+    if (requireFreshSend) return 0
+    return initialSendOk ? RESEND_COOLDOWN_SECONDS : 0
+  })
+  const [freshSendDone, setFreshSendDone] = useState(!requireFreshSend)
+  const [freshSendError, setFreshSendError] = useState<string | null>(null)
+  const [freshSending, setFreshSending] = useState(requireFreshSend)
 
-  const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(OTP_LENGTH).fill(null))
+  const otpDigitsRef = useRef<OtpDigitsHandle | null>(null)
+  const freshSendOnceRef = useRef(false)
+
+  useEffect(() => {
+    if (!requireFreshSend || freshSendOnceRef.current) return
+    freshSendOnceRef.current = true
+
+    async function sendFresh() {
+      setFreshSending(true)
+      setFreshSendError(null)
+      try {
+        const res = await fetch('/api/auth/email-otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({})) as { error?: string }
+          setFreshSendError(data.error ?? 'Unable to send verification code.')
+          setCountdown(0)
+          return
+        }
+        setCountdown(RESEND_COOLDOWN_SECONDS)
+        setResendSent(true)
+        setDigits(Array(DEFAULT_OTP_LENGTH).fill(''))
+        otpDigitsRef.current?.focusFirst()
+      } catch {
+        setFreshSendError('Network error. Please try again.')
+        setCountdown(0)
+      } finally {
+        setFreshSending(false)
+        setFreshSendDone(true)
+      }
+    }
+
+    void sendFresh()
+  }, [requireFreshSend, email])
 
   // Countdown ticker — the OTP email was already sent by onboard-signup
   useEffect(() => {
@@ -1439,36 +1500,9 @@ function Step5({ email, onBack }: Step5Props) {
     return () => clearTimeout(timer)
   }, [countdown])
 
-  function handleDigitChange(index: number, value: string) {
-    // Handle paste of full code
-    if (value.length > 1) {
-      const clean = value.replace(/\D/g, '').slice(0, OTP_LENGTH)
-      const next = [...digits]
-      for (let i = 0; i < OTP_LENGTH; i++) {
-        next[i] = clean[i] ?? ''
-      }
-      setDigits(next)
-      inputRefs.current[Math.min(clean.length, OTP_LENGTH - 1)]?.focus()
-      return
-    }
-    const digit = value.replace(/\D/g, '').slice(-1)
-    const next = [...digits]
-    next[index] = digit
-    setDigits(next)
-    if (digit && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus()
-    }
-  }
-
-  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
-    }
-  }
-
   async function handleVerify() {
     const code = digits.join('')
-    if (code.length !== OTP_LENGTH) {
+    if (code.length !== DEFAULT_OTP_LENGTH) {
       setVerifyError('Enter all 6 digits of your verification code.')
       return
     }
@@ -1511,8 +1545,8 @@ function Step5({ email, onBack }: Step5Props) {
       }
       setResendSent(true)
       setCountdown(RESEND_COOLDOWN_SECONDS)
-      setDigits(Array(OTP_LENGTH).fill(''))
-      inputRefs.current[0]?.focus()
+      setDigits(Array(DEFAULT_OTP_LENGTH).fill(''))
+      otpDigitsRef.current?.focusFirst()
     } catch {
       setResendError('Network error. Please try again.')
     } finally {
@@ -1524,6 +1558,9 @@ function Step5({ email, onBack }: Step5Props) {
     /^(.)(.*)(@.*)$/,
     (_m, first, local, domain) => `${first}${'•'.repeat(Math.min(Math.max(local.length, 1), 6))}${domain}`,
   )
+
+  const showInitialFailureBanner = !initialSendOk
+  const showFreshFailureBanner = freshSendDone && freshSendError
 
   if (verified) {
     return (
@@ -1549,6 +1586,30 @@ function Step5({ email, onBack }: Step5Props) {
 
   return (
     <div className="text-center">
+      {requireFreshSend && freshSending ? (
+        <p className="text-sm text-gray-600 mb-4">Sending a fresh verification code…</p>
+      ) : null}
+
+      {showInitialFailureBanner ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left">
+          <p className="text-sm font-semibold text-red-800">
+            We couldn&apos;t send the verification email. Please click Resend code below.
+          </p>
+          {initialSendError ? (
+            <p className="text-xs text-red-600 mt-1">{initialSendError}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showFreshFailureBanner ? (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left">
+          <p className="text-sm font-semibold text-red-800">
+            We couldn&apos;t send a verification code. Tap Resend code below.
+          </p>
+          <p className="text-xs text-red-600 mt-1">{freshSendError}</p>
+        </div>
+      ) : null}
+
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 rounded-full bg-bp-primary/10 flex items-center justify-center">
           <Mail className="w-8 h-8 text-bp-primary" />
@@ -1558,41 +1619,18 @@ function Step5({ email, onBack }: Step5Props) {
       <p className="text-[14px] text-gray-600 mb-1">We sent a 6-digit code to</p>
       <p className="text-[14px] font-semibold text-bp-primary mb-6">{maskedEmail}</p>
 
-      {/* OTP digit inputs */}
-      <div className="flex justify-center gap-2 mb-4">
-        {digits.map((d, i) => (
-          <input
-            key={i}
-            ref={(el) => { inputRefs.current[i] = el }}
-            type="text"
-            inputMode="numeric"
-            maxLength={OTP_LENGTH}
-            value={d}
-            onChange={(e) => handleDigitChange(i, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(i, e)}
-            onFocus={(e) => e.target.select()}
-            style={{
-              width: '44px',
-              height: '52px',
-              textAlign: 'center',
-              fontSize: '22px',
-              fontWeight: 700,
-              border: `2px solid ${verifyError ? '#FCA5A5' : d ? 'var(--color-bp-primary)' : 'var(--color-bp-border)'}`,
-              borderRadius: '10px',
-              color: 'var(--color-bp-primary)',
-              outline: 'none',
-              background: d ? 'var(--color-bp-light)' : '#fff',
-              transition: 'border-color 0.15s, background 0.15s',
-            }}
-          />
-        ))}
-      </div>
+      <OtpDigits
+        ref={otpDigitsRef}
+        value={digits}
+        onChange={setDigits}
+        hasError={!!verifyError}
+      />
 
       {verifyError && (
         <p className="text-[12px] font-medium text-red-500 mb-3">{verifyError}</p>
       )}
 
-      <PrimaryButton onClick={handleVerify} disabled={verifyLoading}>
+      <PrimaryButton onClick={handleVerify} disabled={verifyLoading || (requireFreshSend && !freshSendDone)}>
         {verifyLoading ? 'Verifying…' : (
           <>
             Verify Email
@@ -1642,9 +1680,10 @@ function Step5({ email, onBack }: Step5Props) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function DoctorSignupPage() {
+function DoctorSignupPageInner() {
   const isV2 = useUiV2()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [currentStep, setCurrentStep] = useState<StepNumber>(1)
   const [submitError, setSubmitError] = useState('')
   const [submitLoading, setSubmitLoading] = useState(false)
@@ -1682,6 +1721,65 @@ export default function DoctorSignupPage() {
     slotDuration: '',
     availability: buildInitialAvailability(),
   })
+
+  const [resumeEmail, setResumeEmail] = useState<string | null>(null)
+  const [requireFreshOtp, setRequireFreshOtp] = useState(false)
+  const [emailOtpInitialOk, setEmailOtpInitialOk] = useState(true)
+  const [emailOtpInitialError, setEmailOtpInitialError] = useState<string | undefined>(undefined)
+  const onboardingResumeChecked = useRef(false)
+
+  useEffect(() => {
+    const resume = searchParams.get('resume')
+    const emailParam = searchParams.get('email')
+    if (resume === '1' && emailParam) {
+      setResumeEmail(emailParam)
+      setStep1((s) => ({ ...s, email: emailParam }))
+      setRequireFreshOtp(true)
+      setCurrentStep(5)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (searchParams.get('resume') === '1') return
+    if (onboardingResumeChecked.current) return
+    onboardingResumeChecked.current = true
+
+    async function checkOnboarding() {
+      try {
+        const res = await fetch('/api/auth/me/onboarding-status')
+        if (!res.ok) return
+        const data = await res.json() as {
+          signedIn?: boolean
+          role?: string
+          emailConfirmed?: boolean
+          providerExists?: boolean
+          onboardingStep?: number | null
+          email?: string | null
+        }
+        if (
+          data.signedIn &&
+          data.role === 'provider_pending' &&
+          !data.emailConfirmed &&
+          data.providerExists &&
+          data.onboardingStep === 4 &&
+          data.email
+        ) {
+          setResumeEmail(data.email)
+          setStep1((s) => ({ ...s, email: data.email ?? s.email }))
+          setRequireFreshOtp(true)
+          setCurrentStep(5)
+          router.replace(
+            `/doctor-signup?resume=1&email=${encodeURIComponent(data.email)}`,
+            { scroll: false },
+          )
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    void checkOnboarding()
+  }, [searchParams, router])
 
   async function goNext() {
     if (currentStep === 4) {
@@ -1726,6 +1824,14 @@ export default function DoctorSignupPage() {
           setSubmitError(payload.error ?? 'Registration failed. Please try again.')
           return
         }
+
+        const payload = await res.json().catch(() => ({})) as {
+          emailOtpStatus?: 'sent' | 'failed'
+          emailOtpError?: string
+        }
+        setEmailOtpInitialOk(payload.emailOtpStatus !== 'failed')
+        setEmailOtpInitialError(payload.emailOtpError)
+        setRequireFreshOtp(false)
 
         // Avatar upload is skipped here — provider has no session yet (email not confirmed).
         // Provider can add their photo from the dashboard after confirming their email.
@@ -1780,8 +1886,11 @@ export default function DoctorSignupPage() {
       )}
       {currentStep === 5 && (
         <Step5
-          email={step1.email}
+          email={resumeEmail ?? step1.email}
           onBack={() => router.push('/login')}
+          initialSendOk={emailOtpInitialOk}
+          initialSendError={emailOtpInitialError}
+          requireFreshSend={requireFreshOtp}
         />
       )}
 
@@ -1791,5 +1900,13 @@ export default function DoctorSignupPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function DoctorSignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[400px]" />}>
+      <DoctorSignupPageInner />
+    </Suspense>
   )
 }

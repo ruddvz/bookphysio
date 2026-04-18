@@ -209,7 +209,7 @@ function isRoleCompatibleReturnPath(role: DemoRole, returnPath: string): boolean
     return true
   }
 
-  if (pathname === '/update-password') {
+  if (pathname === '/forgot-password') {
     return true
   }
 

@@ -50,20 +50,9 @@ function formatCompactInr(amount: number): string {
   return `₹${amount.toLocaleString('en-IN')}`
 }
 
-function fmtToday(d: Date): string {
-  return d.toLocaleDateString('en-IN', {
-    timeZone: 'Asia/Kolkata',
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-
 function DashboardSkeleton() {
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
-      <Skeleton className="h-10 w-72 rounded-[var(--sq-sm)] bg-slate-100" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
           <Skeleton key={i} className="h-28 rounded-[var(--sq-lg)] bg-slate-100" />
@@ -102,8 +91,7 @@ function AiInsightsCard() {
     try {
       const res = await fetch('/api/admin/ai-insights', { method: 'POST' })
       if (!res.ok) {
-        const body = await res.json().catch(() => null) as { error?: string } | null
-        throw new Error(body?.error ?? `HTTP ${res.status}`)
+        throw new Error('Failed to generate insights. Please try again.')
       }
       const data = await res.json() as AiInsights
       setInsights(data)
@@ -299,9 +287,7 @@ export default function AdminDashboardHome() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
         <PageHeader
           role="admin"
-          kicker="PLATFORM"
           title="Platform overview"
-          subtitle="Live admin stats are temporarily unavailable."
           action={{ label: 'Review approvals', href: '/admin/listings' }}
         />
 
@@ -317,7 +303,20 @@ export default function AdminDashboardHome() {
     )
   }
 
-  if (isLoading) return <DashboardSkeleton />
+  if (isLoading) {
+    return (
+      <div className="space-y-6 lg:space-y-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8">
+          <PageHeader
+            role="admin"
+            title="Platform overview"
+            action={{ label: 'Review approvals', href: '/admin/listings' }}
+          />
+        </div>
+        <DashboardSkeleton />
+      </div>
+    )
+  }
 
   const stats = data ?? {
     activeProviders: 0,
@@ -338,9 +337,7 @@ export default function AdminDashboardHome() {
     : stats.pendingApprovals > 25
       ? 'Elevated'
       : 'Active'
-  const statsFeedSignal = isError
-    ? { label: 'Admin stats', value: 'Unavailable', tone: 'text-amber-700', dot: 'bg-amber-500' }
-    : { label: 'Admin stats', value: 'Live', tone: 'text-emerald-600', dot: 'bg-emerald-500' }
+  const statsFeedSignal = { label: 'Admin stats', value: 'Live', tone: 'text-emerald-600', dot: 'bg-emerald-500' }
   const queueSignal = queueState === 'Clear'
     ? { label: 'Review queue', value: queueState, tone: 'text-emerald-600', dot: 'bg-emerald-500' }
     : queueState === 'Elevated'
@@ -364,9 +361,7 @@ export default function AdminDashboardHome() {
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
       <PageHeader
         role="admin"
-        kicker="PLATFORM"
         title="Platform overview"
-        subtitle={stats.pendingApprovals > 0 ? `${stats.pendingApprovals} approvals are waiting for review.` : fmtToday(new Date())}
         action={{ label: 'Review approvals', href: '/admin/listings' }}
       />
 

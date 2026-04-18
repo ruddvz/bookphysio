@@ -5,11 +5,10 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
-import { Bell, LogOut, MessageSquare } from 'lucide-react'
+import { Bell, LogOut, MessageSquare, ShieldCheck } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 import BpLogo from '@/components/BpLogo'
-import { DashboardBreadcrumbs } from '@/components/dashboard/DashboardBreadcrumbs'
 
 export interface NavItem {
   href: string
@@ -32,11 +31,6 @@ interface TopPillNavProps {
   /** label shown below the greeting (e.g. "Patient", "Practitioner", "Administrator") */
   roleLabel: string
   children: ReactNode
-}
-
-function getGreeting(): string {
-  const hour = new Date().getHours()
-  return hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 }
 
 /**
@@ -64,8 +58,6 @@ export default function TopPillNav({
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
-  const [greeting, setGreeting] = useState('Hello')
-
   const prefix = role === 'patient' ? 'pt' : role === 'provider' ? 'pv' : 'ad'
   // inline style objects — pull from role CSS variables
   const surfaceStyle = { background: `var(--color-${prefix}-surface)` }
@@ -82,8 +74,8 @@ export default function TopPillNav({
 
   const displayName =
     (user?.user_metadata?.full_name as string | undefined) ??
-    user?.phone ??
     roleLabel
+  const navDisplayName = role === 'admin' ? roleLabel : displayName
   const initials =
     displayName
       .split(' ')
@@ -91,13 +83,9 @@ export default function TopPillNav({
       .map((w: string) => w[0]?.toUpperCase() ?? '')
       .join('') || '?'
 
-  useEffect(() => {
-    setGreeting(getGreeting())
-  }, [])
-
   // Fetch avatar_url from profile API (avatar is stored in users table, not auth metadata)
   useEffect(() => {
-    if (!user?.id) return
+    if (!user?.id || role === 'admin') return
     let cancelled = false
     fetch('/api/profile')
       .then((res) => (res.ok ? res.json() : null))
@@ -106,7 +94,7 @@ export default function TopPillNav({
       })
       .catch(() => {/* ignore — fallback to initials */})
     return () => { cancelled = true }
-  }, [user?.id])
+  }, [role, user?.id])
 
   const handleSignOut = async () => {
     try {
@@ -212,30 +200,25 @@ export default function TopPillNav({
               </Link>
             )}
 
-            {/* Profile + greeting */}
+            {/* Profile */}
             <Link
               href={profileHref ?? '#'}
               className="flex items-center gap-3 pl-2 sm:pl-3 sm:border-l group"
               style={{ borderColor: `var(--color-${prefix}-border)` }}
             >
-              <div className="hidden md:block text-right">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 leading-tight">
-                  {greeting},
-                </div>
-                <div className="text-[13px] font-bold text-slate-900 leading-tight truncate max-w-[140px]">
-                  {displayName}
-                </div>
-              </div>
               <div
                 className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center text-white text-[13px] font-bold shadow-md shrink-0 overflow-hidden',
+                  'flex h-10 w-10 items-center justify-center overflow-hidden text-white text-[13px] font-bold shadow-md shrink-0',
+                  role === 'admin' ? 'rounded-[14px] border border-slate-700/80' : 'rounded-full',
                   avatarClass
                 )}
               >
-                {avatarUrl ? (
+                {role === 'admin' ? (
+                  <ShieldCheck size={18} aria-hidden="true" data-testid="admin-avatar-icon" />
+                ) : avatarUrl ? (
                   <Image
                     src={avatarUrl}
-                    alt={displayName}
+                    alt={navDisplayName}
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
@@ -271,10 +254,7 @@ export default function TopPillNav({
       </header>
 
       {/* ── UI v2 breadcrumb strip (hidden on root, hidden when flag off) */}
-      <DashboardBreadcrumbs
-        role={role}
-        className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4"
-      />
+      {null}
 
       {/* ── Main content ─────────────────────────────────────── */}
       <main className="relative pb-28 lg:pb-10">{children}</main>

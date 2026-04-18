@@ -56,6 +56,16 @@ export async function POST(request: NextRequest) {
   const role = profile?.role ?? 'patient'
   const returnTo = sanitizeReturnPath(typeof body.return_to === 'string' ? body.return_to : null)
 
+  const emailConfirmed = Boolean(data.user.email_confirmed_at)
+  if (!emailConfirmed && role === 'provider_pending') {
+    const response = NextResponse.json({
+      role,
+      redirectTo: `/doctor-signup?resume=1&email=${encodeURIComponent(parsed.data.email)}`,
+    })
+    clearDemoSessionCookies(response)
+    return response
+  }
+
   const response = NextResponse.json({
     role,
     redirectTo: resolvePostAuthRedirect(role, returnTo),

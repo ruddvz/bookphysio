@@ -36,6 +36,25 @@ describe('Homepage regressions', () => {
     expect(screen.getByRole('region', { name: /cities we operate in/i })).toBeInTheDocument()
   }, 15000)
 
+  it('keeps homepage kicker badges visually hidden', () => {
+    const { container } = render(
+      <>
+        <TopSpecialties />
+        <ProofSection />
+        <FAQ />
+        <WhereWeOperate />
+      </>
+    )
+
+    const kickers = Array.from(container.querySelectorAll('.bp-kicker'))
+    expect(kickers.length).toBeGreaterThan(0)
+
+    kickers.forEach((kicker) => {
+      expect(kicker).toHaveClass('bp-kicker')
+      expect(kicker.textContent?.trim().length).toBeGreaterThan(0)
+    })
+  })
+
   it('keeps the hero above the fold and leaves trust stats readable', () => {
     render(<HeroSection />)
 

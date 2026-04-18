@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import ProviderAvailability from './page'
 
@@ -23,17 +23,8 @@ async function waitForAvailabilityEditor() {
   })
 }
 
-function getDayCard(day: string): HTMLElement {
-  const toggle = screen.getByLabelText(new RegExp(day, 'i'))
-  const card = toggle.closest('.group')
-  if (!card) {
-    throw new Error(`Unable to locate availability card for ${day}`)
-  }
-  return card as HTMLElement
-}
-
-function getDayTimeSelects(day: string): HTMLSelectElement[] {
-  return Array.from(getDayCard(day).querySelectorAll('select')) as HTMLSelectElement[]
+function getTimeSelects(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('select')) as HTMLSelectElement[]
 }
 
 describe('ProviderAvailability', () => {
@@ -75,35 +66,34 @@ describe('ProviderAvailability', () => {
   })
 
   it('shows error if end time is before start time', async () => {
-    render(<ProviderAvailability />)
+    const { container } = render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-
-    const [startSelect, endSelect] = getDayTimeSelects('Monday')
+    const [startSelect, endSelect] = getTimeSelects(container)
+    
     fireEvent.change(startSelect, { target: { value: '18:00' } })
     fireEvent.change(endSelect, { target: { value: '09:00' } })
-
+    
     const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
     fireEvent.click(saveButton)
-
+    
     expect(await screen.findByText(/End time must be after start time/i, {}, { timeout: 10000 })).toBeInTheDocument()
   }, 15000)
 
   it('clears stale day slot errors after removing an invalid extra range', async () => {
-    render(<ProviderAvailability />)
+    const { container } = render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
 
     fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
 
-    const mondayCard = getDayCard('Monday')
-    const mondaySelects = Array.from(mondayCard.querySelectorAll('select')) as HTMLSelectElement[]
-    fireEvent.change(mondaySelects[2]!, { target: { value: '18:00' } })
-    fireEvent.change(mondaySelects[3]!, { target: { value: '09:00' } })
+    const timeSelects = getTimeSelects(container)
+    fireEvent.change(timeSelects[2]!, { target: { value: '18:00' } })
+    fireEvent.change(timeSelects[3]!, { target: { value: '09:00' } })
 
     fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
 
     expect(await screen.findByText(/End time must be after start time/i)).toBeInTheDocument()
 
-    fireEvent.click(within(mondayCard).getAllByRole('button', { name: /Remove/i })[0]!)
+    fireEvent.click(screen.getAllByRole('button', { name: /Remove/i })[1]!)
 
     await waitFor(() => {
       expect(screen.queryByText(/End time must be after start time/i)).not.toBeInTheDocument()
@@ -171,10 +161,10 @@ describe('ProviderAvailability', () => {
       })
     )
 
-    render(<ProviderAvailability />)
+    const { container } = render(<ProviderAvailability />)
 
     await waitFor(() => {
-      const [startSelect, endSelect] = getDayTimeSelects('Monday')
+      const [startSelect, endSelect] = getTimeSelects(container)
       expect(startSelect).toHaveValue('09:00')
       expect(endSelect).toHaveValue('10:00')
     })
@@ -213,7 +203,11 @@ describe('ProviderAvailability', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
 
-    const mondayTimeSelects = getDayTimeSelects('Monday')
+    const mondayCard = screen.getByLabelText(/Monday/i).closest('.group')
+    const mondayTimeSelects = mondayCard
+      ? Array.from(mondayCard.querySelectorAll('select'))
+      : []
+
     expect(mondayTimeSelects).toHaveLength(4)
 
     fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
