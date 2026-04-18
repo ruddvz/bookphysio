@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.22 `/patient/search` — v2 filter rail** (Part B P2)
+## 👉 NEXT UP: **Slice 16.23** — speciality page hero + after-image slots (assets incoming; Part B P2)
 
-Slice **16.21** is complete: `/patient/pai` + `/patient/motio` wrap `BookPhysioAIChat` with `PatientAIShellV2` (patient-role `Sparkline` + `TrendDelta` + `Badge` pulse strip) when `useUiV2()` is on.
+Slices **16.21** (`/patient/pai`, `/patient/motio` — `PatientAIShellV2`) and **16.22** (`/patient/search` — `PatientSearchFiltersRail` + optional `pincode` on `/api/providers`) ship together on rollup branch **`cursor/phase-16-slices-21-25-9290`** (single PR for 16.21–16.25 tranche).
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.22.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.23.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -57,7 +57,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
 - [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
 
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments ✓, records ✓, messages ✓, notifications ✓, profile ✓, pai/motio ✓, search, specialty images
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments ✓, records ✓, messages ✓, notifications ✓, profile ✓, pai/motio ✓, search ✓, specialty images
 
 **Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
 

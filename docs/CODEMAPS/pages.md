@@ -43,7 +43,7 @@
 | `/patient/payments` | `app/patient/payments/page.tsx` | Server | Table: Date, Doctor, Amount ₹, GST, Total, Status |
 | `/patient/notifications` | `app/patient/notifications/page.tsx` | Server | Notification list with unread dots |
 | `/patient/messages` | `app/patient/messages/page.tsx` | Client | Message threads (stub) |
-| `/patient/search` | `app/patient/search/page.tsx` | Server | In-dashboard doctor search |
+| `/patient/search` | `app/patient/search/page.tsx` | Client | In-dashboard provider search — reuses `SearchContent` (`variant="patient"`) + v2 `PatientSearchFiltersRail` when ui-v2 |
 | Layout | `app/patient/layout.tsx` | Server | SidebarNav + header |
 
 ## Provider Portal (owner: `bp-ui-provider`)
