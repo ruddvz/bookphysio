@@ -57,6 +57,7 @@ function PatientAppointmentsContent() {
   const [appointments, setAppointments] = useState<AppointmentItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [timelineNowMs] = useState(() => Date.now())
 
   async function fetchAppointments() {
     setLoading(true)
@@ -146,7 +147,7 @@ function PatientAppointmentsContent() {
               cta={tab === 'upcoming' ? { label: 'Book a visit', href: '/search' } : undefined}
             />
           ) : uiV2 ? (
-            <PatientAppointmentsTimeline appointments={filtered} tab={tab} />
+            <PatientAppointmentsTimeline appointments={filtered} tab={tab} nowMs={timelineNowMs} />
           ) : (
             <div className="divide-y divide-[var(--color-pt-border-soft)]">
               {filtered.map((appt) => (
