@@ -23,8 +23,8 @@ async function waitForAvailabilityEditor() {
   })
 }
 
-function getTimeInputs(container: HTMLElement) {
-  return Array.from(container.querySelectorAll('input[type="time"]')) as HTMLInputElement[]
+function getTimeSelects(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('select')) as HTMLSelectElement[]
 }
 
 describe('ProviderAvailability', () => {
@@ -68,10 +68,10 @@ describe('ProviderAvailability', () => {
   it('shows error if end time is before start time', async () => {
     const { container } = render(<ProviderAvailability />)
     await waitForAvailabilityEditor()
-    const [startInput, endInput] = getTimeInputs(container)
+    const [startSelect, endSelect] = getTimeSelects(container)
     
-    fireEvent.change(startInput, { target: { value: '18:00' } })
-    fireEvent.change(endInput, { target: { value: '09:00' } })
+    fireEvent.change(startSelect, { target: { value: '18:00' } })
+    fireEvent.change(endSelect, { target: { value: '09:00' } })
     
     const saveButton = screen.getByRole('button', { name: /Commit Changes/i })
     fireEvent.click(saveButton)
@@ -85,9 +85,9 @@ describe('ProviderAvailability', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
 
-    const timeInputs = getTimeInputs(container)
-    fireEvent.change(timeInputs[2]!, { target: { value: '18:00' } })
-    fireEvent.change(timeInputs[3]!, { target: { value: '09:00' } })
+    const timeSelects = getTimeSelects(container)
+    fireEvent.change(timeSelects[2]!, { target: { value: '18:00' } })
+    fireEvent.change(timeSelects[3]!, { target: { value: '09:00' } })
 
     fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
 
@@ -164,9 +164,9 @@ describe('ProviderAvailability', () => {
     const { container } = render(<ProviderAvailability />)
 
     await waitFor(() => {
-      const [startInput, endInput] = getTimeInputs(container)
-      expect(startInput).toHaveValue('09:00')
-      expect(endInput).toHaveValue('10:00')
+      const [startSelect, endSelect] = getTimeSelects(container)
+      expect(startSelect).toHaveValue('09:00')
+      expect(endSelect).toHaveValue('10:00')
     })
 
     expect(screen.getByText(/1\s*Active/i)).toBeInTheDocument()
@@ -204,11 +204,11 @@ describe('ProviderAvailability', () => {
     fireEvent.click(screen.getAllByRole('button', { name: /\+ Add range/i })[0]!)
 
     const mondayCard = screen.getByLabelText(/Monday/i).closest('.group')
-    const mondayTimeInputs = mondayCard
-      ? Array.from(mondayCard.querySelectorAll('input[type="time"]'))
+    const mondayTimeSelects = mondayCard
+      ? Array.from(mondayCard.querySelectorAll('select'))
       : []
 
-    expect(mondayTimeInputs).toHaveLength(4)
+    expect(mondayTimeSelects).toHaveLength(4)
 
     fireEvent.click(screen.getByRole('button', { name: /Commit Changes/i }))
 
