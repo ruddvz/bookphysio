@@ -51,12 +51,12 @@
 | Route | File | Type | Notes |
 |-------|------|------|-------|
 | `/provider/dashboard` | `app/provider/dashboard/page.tsx` | Server | Today's summary stats + schedule timeline |
-| `/provider/calendar` | `app/provider/calendar/page.tsx` | Client | 7-day grid, 30-min blocks |
+| `/provider/calendar` | `app/provider/calendar/page.tsx` | Client | 7-day grid; ui-v2: `ProviderCalendarV2Chrome` + per-cell booking `Badge` |
 | `/provider/appointments` | `app/provider/appointments/page.tsx` | Server | Table: Patient, Date, Time, Type, Status |
 | `/provider/appointments/[id]` | `app/provider/appointments/[id]/page.tsx` | Server | Appointment detail |
 | `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search |
 | `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history |
-| `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration, working hours |
+| `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration; ui-v2: `ProviderAvailabilityV2Chrome` + day window `Badge` |
 | `/provider/earnings` | `app/provider/earnings/page.tsx` | Server | Monthly ₹ total, GST, payouts, transactions |
 | `/provider/profile` | `app/provider/profile/page.tsx` | Client | Practice profile form |
 | `/provider/messages` | `app/provider/messages/page.tsx` | Client | Message threads (stub) |

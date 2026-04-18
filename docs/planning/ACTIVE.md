@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.25** — `/provider/calendar` + `/provider/availability` v2 grid chrome (Part B P3)
+## 👉 NEXT UP: **Slice 16.23** or **16.26+** — continue Phase 16 on rollup PR (same branch)
 
-Rollup branch **`cursor/phase-16-slices-21-25-9290`** — single open PR for **16.21–16.25** (do not open a new PR per slice). **16.24** shipped: provider appointments v2 day-grouped timeline + `provider_set_status` API + detail quick actions when ui-v2.
+Rollup branch **`cursor/phase-16-slices-21-25-9290`** — **16.25** complete: `/provider/calendar` + `/provider/availability` get v2 pulse strips (`Sparkline` + `TrendDelta` + `Badge`), grid cell booking counts, day-row window badges when ui-v2. Next logical slices: **16.23** (specialty images when assets land) or **16.26** provider earnings v2.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 3 → 16.25.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
