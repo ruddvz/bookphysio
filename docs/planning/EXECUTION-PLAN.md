@@ -271,7 +271,7 @@
 - [x] **16.11** Auth surfaces redesign — v2 card chrome + OTP keypad polish on `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`; reuse `Badge` + `Sparkline` primitives where relevant; keep `+91` phone input + Zod validation; ≥ 6 unit tests per surface
 - [x] **16.12** Search results redesign — provider result cards on `/search` use v2 tile primitives (availability pills, price chip, distance badge, "Book in 60s" CTA); adds pulse-style sort chips; keep `SpecialtyCTARail` integration
 - [x] **16.13** How-it-works redesign — v2 timeline strip above step grid, per-step `Badge` + `Sparkline` progress signal, v2 CTA footer with role-aware `TrendDelta` stat rail; flag-gated via `useUiV2()`; 8 unit tests
-- [ ] **16.14** Provider detail + city pages — `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]` shift to v2 card chrome, availability strip, trust chips, "Book in 60s" primary CTA
+- [x] **16.14** Provider detail + city pages — `/doctor/[id]` gets a flag-gated `ProviderV2TrustStrip` (IAP chip, live availability pill, `Book in 60s` CTA, location); `/city/[slug]` gets a `CityV2TrustChips` row (3 credential chips + weekly demand `Sparkline`). `/provider/[slug]` not in scope (route doesn't exist). Both components render `null` in v1 so SSR stays byte-identical; 7 + 7 unit tests.
 - [ ] **16.15** Booking flow — `/book/[id]` v2 stepper (slot → details → confirm), integer `₹` pricing, Razorpay handoff unchanged
 
 #### Priority 2 — Patient surfaces

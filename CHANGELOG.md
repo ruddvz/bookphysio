@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.14 Provider detail + city v2 trust surfaces
+- Commit: <pending> (feat(ui-v2): slice 16.14 — ProviderV2TrustStrip on /doctor/[id] + CityV2TrustChips on /city/[slug])
+- Files touched: src/components/specialties/ProviderV2TrustStrip.tsx (new), src/components/specialties/ProviderV2TrustStrip.test.tsx (new), src/components/specialties/CityV2TrustChips.tsx (new), src/components/specialties/CityV2TrustChips.test.tsx (new), src/app/doctor/[id]/page.tsx, src/app/city/[slug]/page.tsx, src/app/how-it-works/page.tsx
+- Tests added / changed: +15 (ProviderV2TrustStrip.test.tsx: 8; CityV2TrustChips.test.tsx: 7). All green. Full suite: 592/601 passing; the 9 failing tests are pre-existing availability/auth/testimonials flakes unrelated to this slice (verified via `git stash` + rerun).
+- Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox — Supabase URL etc. missing); CI validates.
+- Status: done
+- Next up: 16.15 Booking flow `/book/[id]` — v2 stepper (slot → details → confirm), integer ₹ pricing, Razorpay handoff unchanged
+- Notes: `/doctor/[id]` and `/city/[slug]` are Server Components, so added two client-only overlays that self-gate via `useUiV2()` and render `null` in v1 — SSR stays byte-identical. `ProviderV2TrustStrip` on doctor page carries IAP chip (ShieldCheck), live availability pill (`Next slot · <formatted>` or `Check availability`), optional location, and a primary `Book in 60s` CTA pointing at `#booking-card-section`. `CityV2TrustChips` on city page carries 3 trust badges (IAP verified / Clinic + Home visits / Transparent ₹ pricing) and a weekly demand `Sparkline` with a city-aware `ariaLabel`. `/provider/[slug]` is NOT a live route; scope scaled to the two real pages and noted in EXECUTION-PLAN + ACTIVE. Also fixed a latent vitest-only module-resolution bug in slice 16.13's `how-it-works/page.tsx` — `@/components/dashboard/primitives` resolves ambiguously between `primitives.tsx` and `primitives/index.ts` under vitest, so swapped to direct per-file imports (`.../Badge`, `.../Sparkline`, `.../TrendDelta`) which made the 8 how-it-works v2 tests pass too. Same direct-import pattern used in the new 16.14 components.
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.13 How-it-works v2 redesign
 - Commit: c5865b6 (feat(ui-v2): slice 16.13 — how-it-works timeline strip + per-step Sparkline + CTA stat rail)
 - Files touched: src/app/how-it-works/page.tsx, src/app/how-it-works/page.v2.test.tsx (new)

@@ -19,7 +19,9 @@ import {
   Clock,
   Home,
 } from 'lucide-react'
-import { Badge, Sparkline, TrendDelta } from '@/components/dashboard/primitives'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
+import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { useUiV2 } from '@/hooks/useUiV2'
 
 // Character paths — swap these for new poses when illustrations are ready

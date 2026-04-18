@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.14 — Provider detail + city pages (Part B P1)**
+## 👉 NEXT UP: **Slice 16.15 — Booking flow `/book/[id]` (Part B P1)**
 
-Scope: `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]` — shift to v2 card chrome, availability strip, trust chips, "Book in 60s" primary CTA.
-Flag-gated via `useUiV2()`. ≥ 6 unit tests per surface.
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.14.
+Scope: `/book/[id]` — v2 stepper/progress UI, visit-format toggle chrome, price confirm panel, post-book receipt affordance.
+Flag-gated via `useUiV2()`. ≥ 6 unit tests on the stepper + confirm panel.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.15.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -49,7 +49,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [x] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
 - [x] **16.12** `/search` result cards
 - [x] **16.13** `/how-it-works`
-- [ ] **16.14** `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
+- [x] **16.14** `/doctor/[id]`, `/city/[slug]` (note: `/provider/[slug]` route doesn't exist — scope scaled to the two live routes)
 - [ ] **16.15** `/book/[id]` booking flow
 
 **Priority 2 (patient surfaces):** 16.16–16.23 — appointments, payments, records, messages, notifications, profile, pai/motio, search, specialty images
