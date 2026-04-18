@@ -15,6 +15,7 @@ const fallbackProvidersBuilder = {
   gte: vi.fn(() => fallbackProvidersBuilder),
   lte: vi.fn(() => fallbackProvidersBuilder),
   contains: vi.fn(() => fallbackProvidersBuilder),
+  ilike: vi.fn(() => fallbackProvidersBuilder),
   limit: vi.fn(() => fallbackProvidersOrderMock()),
 }
 
@@ -220,9 +221,46 @@ describe('GET /api/providers', () => {
       lng: 72.8777,
     })
     expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('active', true)
+    expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('verified', true)
+    expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('approval_status', 'approved')
     expect(fallbackProvidersBuilder.gte).toHaveBeenCalledWith('rating_avg', 0)
     expect(fallbackProvidersBuilder.lte).toHaveBeenCalledWith('consultation_fee_inr', 2000000)
     expect(fallbackProvidersBuilder.limit).toHaveBeenCalled()
     expect(fallbackProvidersOrderMock).toHaveBeenCalled()
+  })
+
+  it('returns no providers when RPC succeeds but no approved rows match (unapproved would be filtered in DB)', async () => {
+    rpcMock.mockResolvedValue({
+      data: [],
+      error: null,
+    })
+
+    const { GET } = await import('../providers/route')
+    const res = await GET(new Request('http://localhost/api/providers?city=Mumbai') as never)
+
+    expect(res.status).toBe(200)
+    const body = await res.json() as { providers: unknown[]; total: number }
+    expect(body.providers).toHaveLength(0)
+    expect(body.total).toBe(0)
+  })
+
+  it('returns no providers on relational fallback when only unapproved providers would match', async () => {
+    rpcMock.mockResolvedValue({
+      data: null,
+      error: { message: 'rpc failed' },
+    })
+    fallbackProvidersOrderMock.mockResolvedValue({
+      data: [],
+      error: null,
+    })
+
+    const { GET } = await import('../providers/route')
+    const res = await GET(new Request('http://localhost/api/providers?city=Mumbai') as never)
+
+    expect(res.status).toBe(200)
+    const body = await res.json() as { providers: unknown[]; total: number }
+    expect(body.providers).toHaveLength(0)
+    expect(body.total).toBe(0)
+    expect(fallbackProvidersBuilder.eq).toHaveBeenCalledWith('approval_status', 'approved')
   })
 })

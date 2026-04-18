@@ -3,6 +3,18 @@ import { vi } from 'vitest'
 
 // jsdom does not implement matchMedia — GSAP's ScrollTrigger calls it at
 // registration. Return a stub that reports "no match" so the plugin is happy.
+if (typeof globalThis !== 'undefined' && !globalThis.IntersectionObserver) {
+  globalThis.IntersectionObserver = class {
+    observe = vi.fn()
+    unobserve = vi.fn()
+    disconnect = vi.fn()
+    takeRecords = vi.fn(() => [])
+    root = null
+    rootMargin = ''
+    thresholds = []
+  } as unknown as typeof IntersectionObserver
+}
+
 if (typeof window !== 'undefined' && !window.matchMedia) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,

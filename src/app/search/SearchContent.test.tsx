@@ -96,6 +96,7 @@ function mockSearchSWR(response: Partial<SWRResponse<SearchResponse, Error>>) {
 beforeEach(() => {
   vi.clearAllMocks()
   searchParamsValue = new URLSearchParams()
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://bookphysio.in')
 })
 
 describe('SearchContent', () => {
@@ -170,6 +171,47 @@ describe('SearchContent', () => {
     expect(params.get('city')).toBe('Delhi')
     expect(params.get('specialty_id')).toBe('Pain Management')
     expect(params.get('query')).toBeNull()
+  })
+
+  it('embeds BreadcrumbList JSON-LD and keeps breadcrumb nav sr-only', () => {
+    searchParamsValue = new URLSearchParams('city=Bengaluru')
+
+    mockSearchSWR({
+      data: mockSearchResponse(mockProviders),
+      error: undefined,
+      isLoading: false,
+      mutate: vi.fn() as unknown as SWRResponse<SearchResponse, Error>['mutate'],
+    })
+
+    const { container } = render(<SearchContent />)
+
+    const ldScript = container.querySelector('script[type="application/ld+json"]')
+    expect(ldScript).toBeTruthy()
+    const parsed = JSON.parse(ldScript?.textContent ?? '{}') as {
+      '@type': string
+      itemListElement: Array<{ '@type': string }>
+    }
+    expect(parsed['@type']).toBe('BreadcrumbList')
+    expect(parsed.itemListElement).toHaveLength(2)
+    expect(parsed.itemListElement.every((i) => i['@type'] === 'ListItem')).toBe(true)
+
+    const nav = container.querySelector('nav[aria-label="Breadcrumb"]')
+    expect(nav?.className).toContain('sr-only')
+  })
+
+  it('renders compact h1 with count and city', () => {
+    searchParamsValue = new URLSearchParams('city=Bengaluru')
+
+    mockSearchSWR({
+      data: mockSearchResponse(mockProviders),
+      error: undefined,
+      isLoading: false,
+      mutate: vi.fn() as unknown as SWRResponse<SearchResponse, Error>['mutate'],
+    })
+
+    render(<SearchContent />)
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/1 physios · Bengaluru/)
   })
 
   it('passes the selected sort mode through to the providers API request', () => {

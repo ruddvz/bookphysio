@@ -17,9 +17,13 @@
 
 ## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin) per `EXECUTION-PLAN.md` Phase 16
 
-Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #107). Next open slice: **16.41**.
+Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #108). Next open slice: **16.41**.
 
-Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
+Phase **17.1–17.5** is also implemented on branch `cursor/phase-17-search-fixes-5f15` (provider approval gate + search UX + migrations 044/045). **Ops:** apply migrations `044` + `045` in Supabase after merge/deploy.
+
+Full Phase 17 spec (reference): `docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md`
+
+Before starting 16.21: read `CHANGELOG.md` newest entry for any WIP handoff.
 
 ---
 
