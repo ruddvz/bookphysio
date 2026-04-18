@@ -80,16 +80,24 @@
 - Next up: 16.13 How-it-works redesign — step timeline + Sparkline progress indicators + provider/patient role toggle + v2 CTA footer
 - Notes: DoctorCard v2 — useUiV2 gate, data-ui-version attr, distance Badge (soft/provider tone), price chip (rounded-full bg-bp-primary/10, data-testid="price-chip"), "Book in 60s" + Zap icon CTA. SearchContent v2 — SORT_OPTIONS constant, pill sort chips with aria-pressed replaces <select>, SpecialtyCTARail mounted below SearchFilters when specialty param active + isV2. All v1 behaviour byte-identical until bp_ui=v2.
 
-## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.11 auth surfaces v2 redesign
-- Commit: c9b8514 (feat(ui-v2): slice 16.11 — auth surfaces v2 card chrome + OTP keypad polish)
-- Files touched: src/app/(auth)/login/page.tsx, signup/page.tsx, verify-email/page.tsx, forgot-password/page.tsx, update-password/page.tsx, verify-otp/page.tsx, doctor-signup/page.tsx, auth-v2.test.tsx (new)
-- Tests added / changed: +42 (auth-v2.test.tsx — 6 per surface × 7 surfaces)
+## 2026-04-18 — claude/fix-code-rabbit-comments-S7PVe — CodeRabbit fixes (PRs 90/91/92)
+- Commit: 3a134c3 (fix(cr): address CodeRabbit comments from PRs 90/91/92)
+- Files touched: src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/forgot-password/page.tsx, src/app/(auth)/login/page.tsx, src/app/(auth)/signup/page.tsx, src/app/(auth)/update-password/page.tsx, src/app/(auth)/verify-email/page.tsx, src/app/(auth)/verify-otp/page.tsx, src/app/(auth)/doctor-signup/page.tsx, src/app/search/search-v2.test.tsx, src/components/booking/BookingV2TrustStrip.test.tsx
+- Tests added / changed: +1 test (v2+specialty positive case in search-v2.test.tsx); OTP test made timing-safe
 - Build: not run (node_modules absent in sandbox; CI validates)
 - Status: done
-- Next up: 16.12 Search results redesign — v2 provider result cards on /search (availability pills, price chip, distance badge, "Book in 60s" CTA, sort chips)
-- Notes: All 7 auth pages flag-gated via useUiV2(). login/signup/verify-email/doctor-signup get full card chrome upgrade (rounded-[40px], bp-border, shadow-2xl) in v2 mode. forgot-password/update-password/verify-otp already had deep-pine chrome — v2 adds trust badge + data-ui-version attr only. Badge primitive used for "Secure · India's physio platform" trust chip. verify-otp OTP keypad gets data-testid="v2-otp-keypad" in v2 mode. Production byte-identical until bp_ui=v2.
+- Next up: merge PR #92 once CI green; then 16.16 `/patient/appointments` v2 timeline
 
-## 2026-04-18 — claude/next-phases-2t7bI — Phases 4-6 auth+admin fixes
+## 2026-04-18 — claude/fix-pr-failures-MQQ5X — CI build fix (TS2551 .catch() on PostgrestFilterBuilder)
+- Commit: ec97aaf (fix(ci): replace .catch() on PostgrestFilterBuilder with { error } destructuring)
+- Files touched: src/app/api/admin/listings/route.ts, src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/lib/auth/email-otp.ts, src/app/api/__tests__/admin-listings-route.test.ts
+- Tests added / changed: 1 changed (admin-listings-route.test.ts — GET() needs NextRequest arg)
+- Build: pass (lint + type-check + next build all green with CI placeholder env vars)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1 (flag-gated v2 card chrome + OTP keypad polish across 7 auth pages)
+- Notes: PR #88 introduced 4 Supabase fire-and-forget queries using .catch() — PostgrestFilterBuilder is a thenable but not a full Promise (no .catch()). Fixed all 4 to use { error } destructuring. Test fix: GET handler now requires NextRequest since it reads the URL for rate-limit scope.
+
+
 - Commit: b6a1728 (feat(auth+admin): phases 4-6 — OAuth role fix, approval state machine, admin email alerts)
 - Files touched: src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/app/api/admin/listings/route.ts, src/app/admin/listings/page.tsx, src/lib/resend.ts, src/app/api/providers/onboard-signup/route.ts, supabase/migrations/042_provider_approval_state.sql, supabase/migrations/043_oauth_role_default.sql
 - Tests added / changed: 0 (server-side logic + UI tabs — CI validates)
