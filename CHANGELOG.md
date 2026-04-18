@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Slice 1: extract OtpDigits shared component
-- Commit: (feat: extract OtpDigits for doctor signup Step 5)
+- Commit: da7e4a5 (feat: extract OtpDigits shared component for doctor signup Step 5)
 - Files touched: src/components/auth/OtpDigits.tsx, src/app/(auth)/doctor-signup/page.tsx
 - Tests added / changed: 0 (refactor only; existing tests cover doctor-signup)
 - Build: not run (eslint unavailable in sandbox — `npm run lint` failed: eslint not found)
