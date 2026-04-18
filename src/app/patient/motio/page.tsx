@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import type { BookPhysioAIMessage } from '@/components/BookPhysioAIChat'
-import { MotioV2Shell } from './MotioV2Shell'
+import { PatientAIShellV2 } from '@/app/patient/ai/PatientAIShellV2'
 
 const BookPhysioAIChat = dynamic(() => import('@/components/BookPhysioAIChat').then(mod => mod.BookPhysioAIChat), {
    ssr: false,
@@ -19,10 +19,9 @@ const INITIAL_MESSAGES: BookPhysioAIMessage[] = [
 ]
 
 export default function PatientMotio() {
-   return (
-      <>
-         <MotioV2Shell />
-         <BookPhysioAIChat variant="patient" api="/api/ai/motio" initialMessages={INITIAL_MESSAGES} />
-      </>
-   )
+  return (
+    <PatientAIShellV2 mode="motio">
+      <BookPhysioAIChat variant="patient" api="/api/ai/motio" initialMessages={INITIAL_MESSAGES} />
+    </PatientAIShellV2>
+  )
 }

@@ -12,10 +12,12 @@ import {
   ListRow,
   EmptyState,
 } from '@/components/dashboard/primitives'
-import { ProviderPatientRosterV2 } from './ProviderPatientRosterV2'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderPatientsRosterCardV2 } from '@/app/provider/patients/ProviderPatientsRosterCardV2'
 
-async function fetchRoster(): Promise<{ patients: PatientRosterRow[] }> {
-  const res = await fetch('/api/provider/patients')
+async function fetchRoster(includeVisitSeries: boolean): Promise<{ patients: PatientRosterRow[] }> {
+  const q = includeVisitSeries ? '?includeVisitSeries=1' : ''
+  const res = await fetch(`/api/provider/patients${q}`)
   if (!res.ok) throw new Error('Failed to fetch')
   return res.json()
 }
@@ -45,10 +47,11 @@ export default function ProviderPatients() {
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const queryClient = useQueryClient()
+  const uiV2 = useUiV2()
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['provider-patient-roster'],
-    queryFn: fetchRoster,
+    queryKey: ['provider-patient-roster', uiV2 ? 'v2' : 'v1'],
+    queryFn: () => fetchRoster(uiV2),
   })
 
   const allPatients = useMemo(() => data?.patients ?? [], [data?.patients])
@@ -89,8 +92,6 @@ export default function ProviderPatients() {
         </div>
       </div>
 
-      <ProviderPatientRosterV2 patients={allPatients.map((p) => ({ ...p, visit_dates: [] }))} />
-
       <SectionCard role="provider" title="Active roster">
         {isLoading ? (
           <div className="space-y-4 py-2">
@@ -114,6 +115,17 @@ export default function ProviderPatients() {
             description={search ? `Your search for "${search}" returned no results.` : "This clinic has no registered patient profiles yet."}
             cta={!search ? { label: 'Register patient', onClick: () => setShowAdd(true) } : undefined}
           />
+        ) : uiV2 ? (
+          <div className="space-y-4">
+            {filteredPatients.map((p) => (
+              <ProviderPatientsRosterCardV2
+                key={p.profile_id}
+                patient={p}
+                formatDate={formatDate}
+                formatPhone={formatPhone}
+              />
+            ))}
+          </div>
         ) : (
           <div className="divide-y divide-slate-100/50">
             {filteredPatients.map((p) => (

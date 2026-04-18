@@ -7,6 +7,8 @@ const deprecatedInsuranceField = z.any().optional().refine((value) => value === 
 export const searchFiltersSchema = z.object({
   query: z.string().optional(),
   city: z.string().optional(),
+  /** 6-digit Indian pincode — applied in relational fallback (RPC path skipped when set). */
+  pincode: z.string().regex(/^[1-9][0-9]{5}$/).optional(),
   specialty_id: z.string().optional(),
   visit_type: z.enum(['in_clinic', 'home_visit']).optional(),
   qualification: z.enum(['BPT', 'MPT', 'PhD', 'DPT']).optional(),

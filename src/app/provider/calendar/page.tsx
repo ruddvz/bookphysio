@@ -19,7 +19,9 @@ import {
   PageHeader,
   SectionCard,
 } from '@/components/dashboard/primitives'
-import { CalendarV2Header } from './CalendarV2Header'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderCalendarV2Chrome } from './ProviderCalendarV2Chrome'
 
 async function fetchSchedule(start: string, end: string): Promise<ScheduleEntry[]> {
   const res = await fetch(`/api/provider/schedule?start=${start}&end=${end}`)
@@ -53,6 +55,7 @@ const DEFAULT_BOOKING_HOUR = HOURS[1] ?? HOURS[0] ?? 9
 
 export default function ProviderSchedule() {
   const queryClient = useQueryClient()
+  const uiV2 = useUiV2()
   const [anchor, setAnchor] = useState<Date>(() => new Date())
   const [modalOpen, setModalOpen] = useState(false)
   const [draft, setDraft] = useState<NewVisit>(EMPTY_NEW_VISIT)
@@ -88,6 +91,15 @@ export default function ProviderSchedule() {
   }, [entries])
 
   const weekTotalRupees = (entries ?? []).reduce((s, e) => s + (e.fee_inr ?? 0), 0)
+
+  const bookingsPerDay = useMemo(() => {
+    const counts = days.map(() => 0)
+    for (const e of entries ?? []) {
+      const idx = days.findIndex((d) => dateKey(d) === e.visit_date)
+      if (idx >= 0) counts[idx] += 1
+    }
+    return counts
+  }, [entries, days])
 
   /* Mobile: track selected day index (0–6) for the day-list view */
   const [mobileDayIndex, setMobileDayIndex] = useState(() => {
@@ -165,7 +177,6 @@ export default function ProviderSchedule() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
-      <CalendarV2Header />
       <PageHeader
         role="provider"
         kicker="CLINICAL HOURS"
@@ -221,6 +232,8 @@ export default function ProviderSchedule() {
              </div>
           </div>
         </div>
+
+        <ProviderCalendarV2Chrome bookingsPerDay={bookingsPerDay} weekTotalRupees={weekTotalRupees} />
 
         <div className="border border-slate-100 rounded-[var(--sq-lg)] overflow-hidden shadow-sm">
           {isLoading ? (
@@ -370,6 +383,16 @@ export default function ProviderSchedule() {
                                 isToday && "bg-[var(--color-pv-surface)]/10"
                               )}
                             >
+                              {uiV2 && hasEntries ? (
+                                <Badge
+                                  role="provider"
+                                  variant="soft"
+                                  tone={1}
+                                  className="absolute right-2 top-2 z-[1] !px-2 !py-0.5 !text-[10px]"
+                                >
+                                  {cellEntries.length}
+                                </Badge>
+                              ) : null}
                               {hasEntries ? (
                                 <div className="flex flex-col gap-2 h-full">
                                   {cellEntries.map((e) => (

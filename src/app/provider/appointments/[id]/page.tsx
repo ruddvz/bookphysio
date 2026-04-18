@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useUiV2 } from '@/hooks/useUiV2'
 import { formatIndiaDate, formatIndiaTime } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 import {
@@ -27,7 +28,6 @@ import {
   StatTile,
   type TileTone,
 } from '@/components/dashboard/primitives'
-import { ProviderAppointmentDetailV2 } from './ProviderAppointmentDetailV2'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -63,8 +63,11 @@ const STATUS_CONFIG: Record<AppointmentStatus, { label: string; tone: TileTone }
 export default function ProviderAppointmentDetail() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
+  const uiV2 = useUiV2()
   const [notesDraft, setNotesDraft] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [statusErr, setStatusErr] = useState<string | null>(null)
+  const [referenceNowMs] = useState(() => Date.now())
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
     queryKey: ['appointment', 'provider', id],
@@ -74,6 +77,26 @@ export default function ProviderAppointmentDetail() {
       return res.json()
     },
     enabled: !!id,
+  })
+
+  const statusMut = useMutation({
+    mutationFn: async (status: 'confirmed' | 'completed' | 'no_show') => {
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'provider_set_status', status }),
+      })
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string }
+        throw new Error(body.error ?? 'Update failed')
+      }
+    },
+    onSuccess: () => {
+      setStatusErr(null)
+      void queryClient.invalidateQueries({ queryKey: ['appointment', 'provider', id] })
+      void queryClient.invalidateQueries({ queryKey: ['provider-appointments'] })
+    },
+    onError: (e: Error) => setStatusErr(e.message),
   })
 
   const notesMut = useMutation({
@@ -121,7 +144,12 @@ export default function ProviderAppointmentDetail() {
   const startTime = formatIndiaTime(appt.availabilities.starts_at, { hour: '2-digit', minute: '2-digit' })
   const refCode = `BP-RECA-${new Date(appt.created_at).getFullYear()}-${appt.id.slice(-6).toUpperCase()}`
   const statusCfg = STATUS_CONFIG[appt.status]
-  
+  const slotMs = Date.parse(appt.availabilities.starts_at)
+  const slotPassed = Number.isFinite(slotMs) && slotMs <= referenceNowMs
+  const canConfirm = uiV2 && appt.status === 'pending'
+  const canOutcome =
+    uiV2 && slotPassed && ['confirmed', 'pending'].includes(appt.status)
+
   const paymentLabel = appt.payment_status === 'paid' ? 'Paid' : 'Pay at Visit'
   const totalDue = appt.payment_amount_inr ?? (appt.fee_inr + (appt.payment_gst_amount_inr ?? Math.round(appt.fee_inr * 0.18)))
 
@@ -135,8 +163,6 @@ export default function ProviderAppointmentDetail() {
         Back to Registry
       </Link>
 
-      <ProviderAppointmentDetailV2 appointment={appt} />
-
       <PageHeader
         role="provider"
         kicker="VIRTUAL RECORD"
@@ -148,6 +174,47 @@ export default function ProviderAppointmentDetail() {
            disabled: true
         }}
       />
+
+      {statusErr ? (
+        <div className="rounded-[var(--sq-sm)] border border-rose-200 bg-rose-50 px-4 py-3 text-[13px] font-semibold text-rose-800">
+          {statusErr}
+        </div>
+      ) : null}
+
+      {(canConfirm || canOutcome) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {canConfirm ? (
+            <button
+              type="button"
+              disabled={statusMut.isPending}
+              onClick={() => statusMut.mutate('confirmed')}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-[12px] font-bold text-emerald-800 transition-colors hover:bg-emerald-100 disabled:opacity-50"
+            >
+              Confirm session
+            </button>
+          ) : null}
+          {canOutcome ? (
+            <>
+              <button
+                type="button"
+                disabled={statusMut.isPending}
+                onClick={() => statusMut.mutate('completed')}
+                className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2 text-[12px] font-bold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50"
+              >
+                Mark complete
+              </button>
+              <button
+                type="button"
+                disabled={statusMut.isPending}
+                onClick={() => statusMut.mutate('no_show')}
+                className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[12px] font-bold text-rose-800 transition-colors hover:bg-rose-100 disabled:opacity-50"
+              >
+                Mark no-show
+              </button>
+            </>
+          ) : null}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatTile
@@ -269,10 +336,13 @@ export default function ProviderAppointmentDetail() {
                    </div>
                  ))}
                  <div className="pt-4 mt-2 border-t border-slate-50">
-                    <button className="w-full py-3 bg-slate-50 text-[12px] font-bold text-slate-600 rounded-[var(--sq-sm)] hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                    <Link
+                      href={`/provider/appointments/${appt.id}?reschedule=true`}
+                      className="flex w-full items-center justify-center gap-2 rounded-[var(--sq-sm)] bg-slate-50 py-3 text-[12px] font-bold text-slate-600 transition-all hover:bg-slate-100"
+                    >
                        Reschedule Session
                        <ArrowUpRight size={14} />
-                    </button>
+                    </Link>
                  </div>
               </div>
            </SectionCard>

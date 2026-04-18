@@ -1,6 +1,7 @@
 "use client"
 
 import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   Download,
@@ -16,7 +17,12 @@ import {
   SectionCard,
   EmptyState,
 } from '@/components/dashboard/primitives'
-import { ProviderEarningsV2 } from './ProviderEarningsV2'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { cn } from '@/lib/utils'
+import { ProviderEarningsV2Chrome } from './ProviderEarningsV2Chrome'
+import { monthlySettledNetSeries } from './provider-earnings-utils'
 
 interface AppointmentRow {
   id: string
@@ -39,6 +45,7 @@ interface Transaction {
   gst: number
   net: number
   status: 'paid' | 'pending'
+  visitIso: string
 }
 
 async function fetchAppointments(): Promise<{ appointments: AppointmentRow[] }> {
@@ -75,22 +82,38 @@ function buildTransactions(appointments: AppointmentRow[]): Transaction[] {
         gst,
         net,
         status: a.payment_status === 'paid' ? 'paid' as const : 'pending' as const,
+        visitIso: a.availabilities?.starts_at || a.created_at,
       }
     })
 }
 
 export default function ProviderEarnings() {
+  const uiV2 = useUiV2()
+  const [referenceNowMs] = useState(() => Date.now())
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['provider-appointments-earnings'],
     queryFn: fetchAppointments,
   })
 
-  const transactions = buildTransactions(data?.appointments ?? [])
+  const transactions = useMemo(
+    () => buildTransactions(data?.appointments ?? []),
+    [data?.appointments],
+  )
   const settledTransactions = transactions.filter((transaction) => transaction.status === 'paid')
 
   const totalRevenue = settledTransactions.reduce((sum, t) => sum + t.amount, 0)
   const totalGst = settledTransactions.reduce((sum, t) => sum + t.gst, 0)
   const paidOut = settledTransactions.reduce((sum, t) => sum + t.net, 0)
+
+  const { values: monthlySettled } = useMemo(
+    () =>
+      monthlySettledNetSeries(
+        transactions.map((t) => ({ status: t.status, net: t.net, visitIso: t.visitIso })),
+        referenceNowMs,
+        6,
+      ),
+    [transactions, referenceNowMs],
+  )
 
   if (isLoading) {
     return (
@@ -122,8 +145,6 @@ export default function ProviderEarnings() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
-      <ProviderEarningsV2 transactions={transactions} />
-
       <PageHeader
         role="provider"
         kicker="FINANCIALS"
@@ -136,8 +157,15 @@ export default function ProviderEarnings() {
         }}
       />
 
+      <ProviderEarningsV2Chrome monthlySettled={monthlySettled} totalSettledInr={paidOut} />
+
       {/* Financial KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-6',
+          uiV2 && 'rounded-[var(--sq-lg)] border border-[var(--color-pv-border)] bg-[var(--color-pv-surface)]/40 p-4',
+        )}
+      >
         <StatTile
           role="provider"
           tone={1}
@@ -172,10 +200,26 @@ export default function ProviderEarnings() {
              title="Revenue Growth"
              action={{ label: 'Live Analytics', href: '#' }}
           >
-             <div className="h-[240px] border-2 border-dashed border-slate-100 rounded-[var(--sq-lg)] flex flex-col items-center justify-center text-center p-8">
-                <TrendingUp className="text-slate-200 mb-4" size={32} />
-               <p className="text-[14px] font-bold text-slate-400">Interactive charts will be activated after 10 confirmed sessions.</p>
-             </div>
+             {uiV2 ? (
+               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                 <div>
+                   <p className="text-[12px] font-semibold uppercase tracking-wider text-slate-400">Settled net (monthly)</p>
+                   <p className="mt-1 text-[13px] font-medium text-slate-600">India calendar months · integer ₹ only</p>
+                 </div>
+                 <Sparkline
+                   role="provider"
+                   values={monthlySettled}
+                   width={Math.min(320, monthlySettled.length * 48)}
+                   height={40}
+                   ariaLabel="Monthly settled net"
+                 />
+               </div>
+             ) : (
+               <div className="h-[240px] border-2 border-dashed border-slate-100 rounded-[var(--sq-lg)] flex flex-col items-center justify-center text-center p-8">
+                  <TrendingUp className="text-slate-200 mb-4" size={32} />
+                 <p className="text-[14px] font-bold text-slate-400">Interactive charts will be activated after 10 confirmed sessions.</p>
+               </div>
+             )}
           </SectionCard>
 
           {/* Clinical Ledger Table */}
@@ -204,12 +248,23 @@ export default function ProviderEarnings() {
                         <td className="px-6 py-4 text-[13px] font-bold text-slate-700 text-right">₹{t.amount.toLocaleString('en-IN')}</td>
                         <td className="px-6 py-4 text-[14px] font-bold text-[var(--color-pv-primary)] text-right">₹{t.net.toLocaleString('en-IN')}</td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
-                            t.status === 'paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${t.status === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                            {t.status}
-                          </span>
+                          {uiV2 ? (
+                            <Badge
+                              role="provider"
+                              variant={t.status === 'paid' ? 'success' : 'warning'}
+                              tone={1}
+                              className="!normal-case !tracking-normal"
+                            >
+                              {t.status}
+                            </Badge>
+                          ) : (
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                              t.status === 'paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${t.status === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                              {t.status}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))

@@ -30,7 +30,8 @@ import {
   StatTile,
   EmptyState,
 } from '@/components/dashboard/primitives'
-import { ProviderPatientDetailV2 } from './ProviderPatientDetailV2'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderPatientChartV2Chrome } from '@/app/provider/patients/ProviderPatientChartV2Chrome'
 
 type Tab = 'profile' | 'visits' | 'bills'
 
@@ -52,6 +53,8 @@ function formatDate(iso: string | null) {
 export default function ProviderPatientChart({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const queryClient = useQueryClient()
+  const uiV2 = useUiV2()
+  const [referenceNowMs] = useState(() => Date.now())
   const [tab, setTab] = useState<Tab>('visits')
   const [creatingVisit, setCreatingVisit] = useState(false)
   const [activeVisitId, setActiveVisitId] = useState<string | null>(null)
@@ -64,22 +67,6 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
 
   const profile = data?.profile
   const visits = useMemo(() => data?.visits ?? [], [data?.visits])
-  const rosterForV2 = useMemo(() => {
-    if (!profile) return null
-    const sortedVisits = [...visits].sort(
-      (a, b) => new Date(b.visit_date).getTime() - new Date(a.visit_date).getTime(),
-    )
-    return {
-      profile_id: profile.id,
-      patient_name: profile.patient_name,
-      patient_phone: profile.patient_phone,
-      patient_age: profile.patient_age,
-      chief_complaint: profile.chief_complaint,
-      visit_count: visits.length,
-      last_visit_date: sortedVisits[0]?.visit_date ?? null,
-      visit_dates: visits.map((v) => v.visit_date),
-    }
-  }, [profile, visits])
   const activeVisit = useMemo<PatientVisit | null>(
     () => visits.find((v) => v.id === activeVisitId) ?? visits[0] ?? null,
     [visits, activeVisitId]
@@ -144,8 +131,6 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
         Back to Registry
       </Link>
 
-      {rosterForV2 ? <ProviderPatientDetailV2 patient={rosterForV2} /> : null}
-
       <PageHeader
         role="provider"
         kicker="CLINICAL CHART"
@@ -163,6 +148,20 @@ export default function ProviderPatientChart({ params }: { params: Promise<{ id:
         <div className="rounded-[var(--sq-sm)] border border-rose-100 bg-rose-50 px-5 py-3 text-rose-700">
           <p className="text-[13px] font-bold">{visitError}</p>
         </div>
+      ) : null}
+
+      {uiV2 ? (
+        <ProviderPatientChartV2Chrome
+          profile={profile}
+          visits={visits}
+          referenceNowMs={referenceNowMs}
+          onQuickNote={() => {
+            setTab('profile')
+            requestAnimationFrame(() => {
+              document.getElementById('clinical-profile-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            })
+          }}
+        />
       ) : null}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -339,7 +338,7 @@ function ProfileTab({ profileId, initialProfile }: { profileId: string, initialP
   ]
 
   return (
-    <div className="space-y-10 animate-fade-in py-4">
+    <div id="clinical-profile-form" className="space-y-10 animate-fade-in py-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {sections.map((s) => (
           <div key={s.id} className="space-y-3">

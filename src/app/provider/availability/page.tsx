@@ -29,7 +29,9 @@ import {
   SectionCard,
   StatTile,
 } from '@/components/dashboard/primitives'
-import { AvailabilityV2StatusBar } from './AvailabilityV2StatusBar'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderAvailabilityV2Chrome } from './ProviderAvailabilityV2Chrome'
 
 const AVAILABILITY_WEEKS = 4
 
@@ -64,6 +66,7 @@ async function fetchExistingAvailability(startDateKey: string, endDateKey: strin
 }
 
 export default function ProviderAvailability() {
+  const uiV2 = useUiV2()
   const [schedule, setSchedule] = useState<ProviderMultiSlotSchedule>(() =>
     cloneProviderMultiSlotSchedule(DEFAULT_PROVIDER_MULTI_SLOT_SCHEDULE),
   )
@@ -262,7 +265,6 @@ export default function ProviderAvailability() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
-      <AvailabilityV2StatusBar />
       <PageHeader
         role="provider"
         kicker="CLINIC OPERATIONS"
@@ -311,6 +313,8 @@ export default function ProviderAvailability() {
           delta={{ value: hasChanges ? 'Changes pending' : 'Registry active', positive: !hasChanges }}
         />
       </div>
+
+      <ProviderAvailabilityV2Chrome schedule={schedule} durationMinutes={parseInt(duration, 10) || 30} />
 
       {/* Alerts */}
       <div className="space-y-3">
@@ -365,7 +369,11 @@ export default function ProviderAvailability() {
                   <div key={day} className="group">
                     <div className={cn(
                       "flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-5 rounded-2xl border transition-all",
-                      enabled ? "bg-white border-slate-200 shadow-sm" : "bg-slate-50/50 border-slate-100 opacity-60"
+                      enabled
+                        ? uiV2
+                          ? "bg-white border-[var(--color-pv-border)] shadow-[0_1px_3px_rgba(15,23,42,0.04)]"
+                          : "bg-white border-slate-200 shadow-sm"
+                        : "bg-slate-50/50 border-slate-100 opacity-60"
                     )}>
                       <div className="flex items-center gap-4">
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -385,6 +393,11 @@ export default function ProviderAvailability() {
                         )}>
                           {day}
                         </span>
+                        {uiV2 && enabled ? (
+                          <Badge role="provider" variant="outline" tone={1} className="!normal-case !tracking-normal">
+                            {slots.length} window{slots.length === 1 ? '' : 's'}
+                          </Badge>
+                        ) : null}
                       </div>
 
                       {enabled && (
