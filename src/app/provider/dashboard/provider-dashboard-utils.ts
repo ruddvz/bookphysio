@@ -185,3 +185,38 @@ export function sumScheduledFees(entries: ScheduleEntry[]): number {
 export function patientDisplayName(appt: ProviderAppointment): string {
   return appt.patient?.full_name ?? 'Patient'
 }
+
+/**
+ * Bucket forward-looking schedule entries into the next `weeks` weekly
+ * windows starting from today India time. `reference` is snapped to
+ * India-local midnight so bucket boundaries don't shift with the UTC
+ * hour the page loads. Bucket 0 is the current week (days 0–6 ahead),
+ * bucket 1 is +7–13d, and so on. Entries outside the window or
+ * before today are dropped silently.
+ */
+export function bucketScheduleByWeek(
+  entries: readonly ScheduleEntry[],
+  weeks: number,
+  reference: Date = new Date(),
+): number[] {
+  const todayIndia = parseIndiaDate(formatIndiaDateInput(reference))
+  const buckets = new Array<number>(weeks).fill(0)
+  for (const entry of entries) {
+    if (!entry.visit_date) continue
+    const day = parseIndiaDate(entry.visit_date)
+    if (Number.isNaN(day.getTime())) continue
+    const daysAhead = Math.floor((day.getTime() - todayIndia.getTime()) / DAY_IN_MS)
+    if (daysAhead < 0 || daysAhead >= weeks * 7) continue
+    buckets[Math.floor(daysAhead / 7)] += 1
+  }
+  return buckets
+}
+
+/**
+ * Number of upcoming visits in the schedule whose `visit_number` is 1 —
+ * i.e. first-time patients coming through the door. Surfaces as the
+ * growth signal on the provider pulse card.
+ */
+export function countFirstVisitsInSchedule(entries: readonly ScheduleEntry[]): number {
+  return entries.filter((entry) => entry.visit_number === 1).length
+}

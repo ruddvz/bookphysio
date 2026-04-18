@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { Star } from 'lucide-react'
-import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap-client'
+import { ScrollTrigger, revealOnScroll, useGSAP } from '@/lib/gsap-client'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import type { SearchResponse } from '@/app/api/contracts/search'
 import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
@@ -103,10 +103,13 @@ export default function FeaturedDoctors() {
 
   useGSAP(() => {
     if (isLoading || providers.length === 0) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    gsap.from('[data-featured-card]', {
-      y: 20, opacity: 0, duration: 0.45, ease: 'power2.out', stagger: 0.07,
-      scrollTrigger: { trigger: scope.current, start: 'top 88%', once: true },
+    revealOnScroll('[data-featured-card]', {
+      y: 20,
+      duration: 0.45,
+      ease: 'power2.out',
+      stagger: 0.07,
+      trigger: scope.current,
+      start: 'top 88%',
     })
   }, { scope, dependencies: [isLoading, providers.length, ScrollTrigger] })
 

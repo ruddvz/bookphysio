@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { Quote, ArrowUpRight, CheckCircle } from 'lucide-react'
-import { gsap, useGSAP } from '@/lib/gsap-client'
+import { revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 // Pull-quote is illustrative until we publish a real provider testimonial.
 // Phrasing mirrors the kind of thing physios have told us in onboarding calls.
@@ -44,33 +44,20 @@ export default function ProviderCTA() {
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
       // Testimonial slides in from the left.
-      gsap.from('[data-cta-testimonial]', {
-        opacity: 0,
+      revealOnScroll('[data-cta-testimonial]', {
+        y: 0,
         x: -40,
         duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '[data-cta-testimonial]',
-          start: 'top 85%',
-          once: true,
-        },
+        trigger: '[data-cta-testimonial]',
       })
 
       // Stat cards rise in sequence on the right.
-      gsap.from('[data-cta-stat]', {
-        opacity: 0,
+      revealOnScroll('[data-cta-stat]', {
         y: 24,
         duration: 0.6,
-        ease: 'power3.out',
         stagger: 0.12,
-        scrollTrigger: {
-          trigger: '[data-cta-stats]',
-          start: 'top 85%',
-          once: true,
-        },
+        trigger: '[data-cta-stats]',
       })
     },
     { scope },

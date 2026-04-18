@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { MapPin, ArrowRight } from 'lucide-react'
-import { gsap, useGSAP } from '@/lib/gsap-client'
+import { revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 // Hand-picked list of the 12 cities with the strongest current provider density.
 // Kept explicit (not sliced from INDIA_CITIES) so we can tune ordering without
@@ -35,21 +35,14 @@ export default function WhereWeOperate() {
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
       // Cities ripple in left-to-right so the grid feels like a map populating.
-      gsap.from('[data-city-chip]', {
-        opacity: 0,
+      revealOnScroll('[data-city-chip]', {
         y: 16,
         scale: 0.96,
         duration: 0.5,
         ease: 'back.out(1.3)',
         stagger: { each: 0.04, from: 'start' },
-        scrollTrigger: {
-          trigger: '[data-city-grid]',
-          start: 'top 85%',
-          once: true,
-        },
+        trigger: '[data-city-grid]',
       })
     },
     { scope },

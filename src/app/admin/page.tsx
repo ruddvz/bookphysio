@@ -28,6 +28,7 @@ import {
   EmptyState,
   DashCard,
 } from '@/components/dashboard/primitives'
+import { AdminPulse } from '@/components/dashboard/AdminPulse'
 import { DashboardQueryError, isDashboardAccessError } from '@/lib/dashboard-query-error'
 import { AdminPulseRail } from '@/components/admin/AdminPulseRail'
 
@@ -36,6 +37,19 @@ interface AdminStats {
   pendingApprovals: number
   totalPatients: number
   gmvMtd: number
+}
+
+interface AdminAnalytics {
+  kpis: {
+    totalGmv: number
+    totalGmvFormatted: string
+    activePatients: number
+    completionRate: number
+    totalProviders: number
+    totalAppointments: number
+  }
+  monthlyRevenue: Array<{ label: string; revenue: number }>
+  monthlyAppointments: Array<{ label: string; count: number }>
 }
 
 function formatCompactInr(amount: number): string {
@@ -286,11 +300,24 @@ export default function AdminDashboardHome() {
     },
   })
 
+  // Analytics powers the flag-gated `<AdminPulse>` card; it's best-effort
+  // on top of the `admin-stats` query so a transient analytics outage
+  // doesn't take the whole dashboard down — the card simply won't render.
+  const { data: analytics } = useQuery({
+    queryKey: ['admin-analytics-pulse'],
+    queryFn: async () => {
+      const r = await fetch('/api/admin/analytics')
+      if (!r.ok) throw new DashboardQueryError('admin-analytics', r.status)
+      return r.json() as Promise<AdminAnalytics>
+    },
+  })
+
   const hasAccessError = isDashboardAccessError(error)
 
   useEffect(() => {
     if (hasAccessError) {
       queryClient.removeQueries({ queryKey: ['admin-stats'], exact: true })
+      queryClient.removeQueries({ queryKey: ['admin-analytics-pulse'], exact: true })
     }
   }, [hasAccessError, queryClient])
 
@@ -519,6 +546,14 @@ export default function AdminDashboardHome() {
 
         {/* Right rail */}
         <div className="xl:w-[340px] xl:shrink-0 space-y-6">
+          {Array.isArray(analytics?.monthlyAppointments) && analytics?.kpis ? (
+            <AdminPulse
+              monthlyAppointments={analytics.monthlyAppointments.map((m) => m.count)}
+              completionRate={analytics.kpis.completionRate}
+              totalAppointments={analytics.kpis.totalAppointments}
+            />
+          ) : null}
+
           <AiInsightsCard />
 
           <DashCard role="admin">

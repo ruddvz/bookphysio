@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
-import { gsap, useGSAP } from '@/lib/gsap-client'
+import { revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   Bone,
@@ -44,21 +44,11 @@ export default function TopSpecialties() {
 
   useGSAP(
     () => {
-      // Staggered rise-and-fade for specialty cards as the grid scrolls
-      // into view. Respect reduced-motion — skip entirely.
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-      gsap.from('[data-specialty-card]', {
-        opacity: 0,
+      revealOnScroll('[data-specialty-card]', {
         y: 32,
         duration: 0.7,
-        ease: 'power3.out',
         stagger: { each: 0.06, from: 'start' },
-        scrollTrigger: {
-          trigger: '[data-specialty-grid]',
-          start: 'top 85%',
-          once: true,
-        },
+        trigger: '[data-specialty-grid]',
       })
     },
     { scope },
