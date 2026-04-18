@@ -1,6 +1,6 @@
 import { randomInt } from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase/admin'
-import { Resend } from 'resend'
+import { getResendClient } from '@/lib/resend'
 
 const OTP_EXPIRY_MINUTES = 10
 
@@ -21,11 +21,10 @@ export async function createAndSendEmailOtp(
   email: string,
   userId: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const resendApiKey = process.env.RESEND_API_KEY
   const fromEmail = process.env.RESEND_FROM_EMAIL
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
 
-  if (!resendApiKey || !fromEmail) {
+  if (!fromEmail) {
     return { ok: false, error: 'Email service not configured' }
   }
 
@@ -43,8 +42,7 @@ export async function createAndSendEmailOtp(
     return { ok: false, error: 'Failed to create verification code' }
   }
 
-  const resend = new Resend(resendApiKey)
-  const { error: sendError } = await resend.emails.send({
+  const { error: sendError } = await getResendClient().emails.send({
     from: fromEmail,
     to: email,
     subject: 'Your bookphysio.in verification code',
@@ -74,9 +72,8 @@ export async function createAndSendEmailOtp(
 
   if (sendError) {
     console.error('Resend send error:', sendError)
-    // Clean up the orphaned OTP record so it cannot be verified
-    const { error: cleanupError } = await supabaseAdmin.from('email_otps').delete().eq('id', inserted.id)
-    if (cleanupError) console.error('email_otps cleanup failed:', cleanupError)
+    // Keep the OTP record so the user can trigger a resend from Step 5.
+    // The 6-digit code space + rate limiting on verify makes the record safe to retain.
     return { ok: false, error: 'Failed to send verification email' }
   }
 

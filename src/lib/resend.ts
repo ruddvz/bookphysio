@@ -1,10 +1,15 @@
 import { Resend } from 'resend'
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('RESEND_API_KEY is not set')
-}
+let _resend: Resend | null = null
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+export function getResendClient(): Resend {
+  if (!_resend) {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
+    _resend = new Resend(apiKey)
+  }
+  return _resend
+}
 
 /** Escape HTML special characters to prevent injection in email templates. */
 function escapeHtml(str: string): string {
@@ -42,7 +47,7 @@ export async function sendBookingConfirmation({
     throw new Error('RESEND_FROM_EMAIL is required to send emails')
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
     subject: `Appointment Confirmed — ${sanitizeSubject(providerName)}`,
@@ -82,7 +87,7 @@ export async function sendAppointmentReminder({
     throw new Error('RESEND_FROM_EMAIL is required to send emails')
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
     subject: `Reminder: Appointment with ${sanitizeSubject(providerName)} tomorrow`,
@@ -144,7 +149,7 @@ export async function sendAdminNewProviderAlert({
   if (!adminEmail || !fromEmail) return
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: fromEmail,
     to: adminEmail,
     subject: `New provider application: ${sanitizeSubject(providerName)}`,
@@ -181,7 +186,7 @@ export async function sendReviewPrompt({
     throw new Error('RESEND_FROM_EMAIL is required to send emails')
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: process.env.RESEND_FROM_EMAIL,
     to,
     subject: `How was your session with ${sanitizeSubject(providerName)}?`,
