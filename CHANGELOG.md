@@ -45,7 +45,7 @@
 - Notes: Additive overlay pattern — `PatientMessagesV2` and `PatientNotificationsV2` both self-gate via `useUiV2()`, return `null` in v1 mode, and are injected into their respective `page.tsx` files via an early-return guard (after all hooks). `PatientMessagesV2` delivers: conversation sidebar with day/time stamps, `Badge` unread count chip (success for 1-4 / warning for 5+), initials avatar, day-grouped thread dividers, "Available" status Badge on the thread header, and `scrollIntoView` on new messages. `PatientNotificationsV2` delivers: day-grouped notification sections (Today / Yesterday / formatted date, newest first), per-notification type Badge chip (Confirmed/Cancelled/Payment/Message/Verified) with semantic variant (danger for cancelled, success for confirmed/payment, warning for new_message), unread dot per item, unread count Badge in header, "Mark all read" action. `Badge` component updated to extend `HTMLAttributes<HTMLSpanElement>` so `data-testid` / `aria-*` attributes pass through. jsdom shim added for `scrollIntoView` in the messages test file.
 
 ## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.20 Patient profile v2
-- Commit: (pending)
+- Commit: 114d38e (feat(ui-v2): slice 16.20 — patient profile v2 form chrome + consent toggles + role Badge)
 - Files touched: src/app/patient/profile/PatientProfileV2.tsx (new), src/app/patient/profile/profile-v2.test.tsx (new), src/app/patient/profile/page.tsx
 - Tests added / changed: +14 (profile-v2.test.tsx). Full suite: 656/667 passing; 11 pre-existing failures unrelated to this slice.
 - Build: type-check pass (`tsc --noEmit` clean).
