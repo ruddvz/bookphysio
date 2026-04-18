@@ -5,15 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { X, ChevronDown, Check, MapPin, Activity, Wallet, Home, Building2, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SPECIALTIES as SPECIALTY_DEFS } from '@/lib/specialties'
-import { INDIA_CITIES } from '@/lib/india-locations'
+import { CitySearchCombobox } from '@/components/search/CitySearchCombobox'
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const SPECIALTIES = SPECIALTY_DEFS.map((s) => s.label)
-
-const CITIES = INDIA_CITIES.map((c) => c.city)
 
 const QUALIFICATIONS = ['BPT', 'MPT', 'PhD', 'DPT']
 const VISIT_TYPES = ['In-clinic', 'Home Visit']
@@ -133,6 +131,68 @@ function FilterPill({
   )
 }
 
+function LocationFilterPill({
+  value,
+  onChange,
+  icon: Icon,
+}: {
+  value: string
+  onChange: (val: string) => void
+  icon: typeof MapPin
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const isActive = !!value
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+        className={cn(
+          "flex items-center gap-2 h-10 px-4 rounded-full text-[13px] font-semibold transition-all duration-200 whitespace-nowrap border",
+          isActive
+            ? "bg-[#00766C] text-white border-[#00766C] shadow-sm"
+            : "bg-white text-[#333333] border-[#E5E7EB] hover:border-[#00766C]/40 hover:bg-[#E6F4F3]/50"
+        )}
+      >
+        <Icon size={15} className={isActive ? "text-white/80" : "text-[#666666]"} />
+        <span>{value || 'Location'}</span>
+        <ChevronDown size={13} className={cn("transition-transform duration-200", isOpen && "rotate-180", isActive ? "text-white/60" : "text-[#999]")} />
+      </button>
+
+      {isOpen && (
+        <div
+          role="dialog"
+          aria-label="Choose city"
+          className="absolute top-full left-0 mt-2 w-[min(22rem,calc(100vw-2rem))] max-h-[min(28rem,80vh)] overflow-y-auto bg-white border border-[#E5E7EB] rounded-[var(--sq-sm)] shadow-lg shadow-black/8 z-50 p-3 animate-in fade-in slide-in-from-top-1 duration-150"
+        >
+          <CitySearchCombobox
+            value={value}
+            onChange={(city) => {
+              onChange(city)
+              setIsOpen(false)
+            }}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
@@ -233,12 +293,10 @@ export default function SearchFilters({
     <div className="w-full">
       {/* ── Desktop Horizontal Bar ── */}
       <div className="hidden md:flex items-center gap-2.5 flex-wrap">
-        <FilterPill
-          label="Location"
+        <LocationFilterPill
           value={currentCity}
-          options={CITIES}
           icon={MapPin}
-          onChange={(val) => pushParams({ city: val })}
+          onChange={(val) => pushParams({ city: val || null })}
         />
 
         <FilterPill
@@ -390,23 +448,13 @@ export default function SearchFilters({
               <section>
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin size={15} className="text-[#00766C]" />
-                  <label className="text-[13px] font-semibold text-[#333]">City</label>
+                  <span className="text-[13px] font-semibold text-[#333]">City</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {CITIES.map(c => (
-                    <button
-                      key={c}
-                      onClick={() => pushParams({ city: c === currentCity ? null : c })}
-                      className={cn(
-                        "text-[13px] font-medium py-2 px-3.5 rounded-full border transition-all",
-                        currentCity === c
-                          ? "bg-[#00766C] text-white border-[#00766C]"
-                          : "bg-white text-[#333] border-[#E5E7EB] active:scale-95"
-                      )}
-                    >
-                      {c}
-                    </button>
-                  ))}
+                <div>
+                  <CitySearchCombobox
+                    value={currentCity}
+                    onChange={(c) => pushParams({ city: c || null })}
+                  />
                 </div>
               </section>
 
