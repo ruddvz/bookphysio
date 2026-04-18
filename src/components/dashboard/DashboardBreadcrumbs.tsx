@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 import { Breadcrumbs, type Crumb } from '@/components/dashboard/primitives/Breadcrumbs'
-import { useUiV2 } from '@/hooks/useUiV2'
 import type { NavRole } from '@/components/dashboard/TopPillNav'
 
 export interface DashboardBreadcrumbsProps {
@@ -107,10 +106,7 @@ export function buildCrumbsFromPath(pathname: string, role: NavRole): readonly C
  *   - An explicit `items={[]}` override is passed
  */
 export function DashboardBreadcrumbs({ role, items, className }: DashboardBreadcrumbsProps) {
-  const uiV2 = useUiV2()
   const pathname = usePathname() ?? ''
-
-  if (!uiV2) return null
 
   const resolved = items ?? buildCrumbsFromPath(pathname, role)
   if (!resolved || resolved.length === 0) return null

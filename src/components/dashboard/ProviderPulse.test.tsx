@@ -1,15 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import {
   computeLoadTrend,
   getBookingStatus,
   ProviderPulse,
 } from './ProviderPulse'
-
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
 
 describe('computeLoadTrend', () => {
   it('returns undefined for series shorter than 2 values', () => {
@@ -72,26 +67,8 @@ describe('getBookingStatus', () => {
 })
 
 describe('<ProviderPulse />', () => {
-  beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    setUiV2Cookie(false)
     cleanup()
-  })
-
-  it('renders nothing when ui-v2 is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(
-      <ProviderPulse
-        weeklyLoad={[4, 3, 2, 1]}
-        remainingToday={2}
-        firstVisitCount={1}
-      />,
-    )
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders the weekly load sparkline with an accessible label', () => {

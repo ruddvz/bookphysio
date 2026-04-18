@@ -2,7 +2,6 @@
 
 import { Activity, CalendarCheck2, ShieldCheck, type LucideIcon } from 'lucide-react'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
 import type { NavRole } from '@/components/dashboard/TopPillNav'
 
 export interface DashboardContextStripProps {
@@ -62,10 +61,6 @@ export function DashboardContextStrip({
   now,
   className,
 }: DashboardContextStripProps) {
-  const uiV2 = useUiV2()
-
-  if (!uiV2) return null
-
   const copy = COPY[role]
   const Icon = copy.icon
   const { weekday, full } = formatIndiaDate(now ?? new Date())

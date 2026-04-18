@@ -1,15 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import {
   AdminPulse,
   computePlatformTrend,
   getPlatformStatus,
 } from './AdminPulse'
-
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
 
 describe('computePlatformTrend', () => {
   it('returns undefined for series shorter than 2 values', () => {
@@ -96,26 +91,8 @@ describe('getPlatformStatus', () => {
 })
 
 describe('<AdminPulse />', () => {
-  beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    setUiV2Cookie(false)
     cleanup()
-  })
-
-  it('renders nothing when ui-v2 is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(
-      <AdminPulse
-        monthlyAppointments={[1, 2, 3, 4, 5, 6, 7]}
-        completionRate={90}
-        totalAppointments={100}
-      />,
-    )
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders the appointment volume sparkline with an accessible label', () => {

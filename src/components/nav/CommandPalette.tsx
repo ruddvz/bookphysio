@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Clock, Search } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-import { useUiV2 } from '@/hooks/useUiV2'
 import type { StaticLocale } from '@/lib/i18n/static-pages'
 import { cn } from '@/lib/utils'
 import {
@@ -52,7 +51,6 @@ type Row =
   | { kind: 'recent'; label: string; href: string }
 
 export function CommandPalette({ locale }: CommandPaletteProps) {
-  const uiV2 = useUiV2()
   const router = useRouter()
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
@@ -115,7 +113,6 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
   }, [open])
 
   useEffect(() => {
-    if (!uiV2) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'k' && e.key !== 'K') return
       if (!(e.metaKey || e.ctrlKey)) return
@@ -124,7 +121,7 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [uiV2])
+  }, [])
 
   useEffect(() => {
     if (!open) return
@@ -169,8 +166,6 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
       navigate(rows[highlight]!.href)
     }
   }
-
-  if (!uiV2) return null
 
   const sectionLabel = (kind: Row['kind']) => {
     if (kind === 'jump') return 'Jump to page'

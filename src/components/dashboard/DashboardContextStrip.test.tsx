@@ -1,35 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { DashboardContextStrip } from './DashboardContextStrip'
-
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
 
 // Fixed instant: Friday, 17 Apr 2026 (IST).
 const FIXED_DATE = new Date('2026-04-17T09:00:00+05:30')
 
 describe('DashboardContextStrip', () => {
-  let prevUiV2: string | undefined
-
-  beforeEach(() => {
-    prevUiV2 = process.env.NEXT_PUBLIC_UI_V2
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    if (prevUiV2 === undefined) delete process.env.NEXT_PUBLIC_UI_V2
-    else process.env.NEXT_PUBLIC_UI_V2 = prevUiV2
-    setUiV2Cookie(false)
     cleanup()
-  })
-
-  it('renders nothing when the ui-v2 flag is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(<DashboardContextStrip role="patient" now={FIXED_DATE} />)
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders the patient copy when on the patient dashboard', () => {

@@ -1,32 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { SpecialtyCTARail } from './SpecialtyCTARail'
 
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
-
 describe('SpecialtyCTARail', () => {
-  beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    setUiV2Cookie(false)
     cleanup()
   })
 
-  it('renders nothing when the ui-v2 flag is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(
-      <SpecialtyCTARail specialtyLabel="Orthopaedic Physiotherapy" bookingHref="/search?specialty=orthopaedic" />,
-    )
-    expect(container.firstChild).toBeNull()
-  })
-
-  it('renders the primary CTA pointing to the booking href when ui-v2 is on', () => {
+  it('renders the primary CTA pointing to the booking href', () => {
     render(
       <SpecialtyCTARail specialtyLabel="Orthopaedic Physiotherapy" bookingHref="/search?specialty=orthopaedic" />,
     )

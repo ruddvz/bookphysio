@@ -4,8 +4,6 @@ import { CalendarCheck, TrendingUp, UserPlus } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { useUiV2 } from '@/hooks/useUiV2'
-
 export interface ProviderPulseProps {
   /**
    * Forward-looking sessions per week (oldest → newest, bucket 0 = this
@@ -134,9 +132,6 @@ export function ProviderPulse({
   firstVisitCount,
   className = '',
 }: ProviderPulseProps) {
-  const uiV2 = useUiV2()
-  if (!uiV2) return null
-
   const trend = computeLoadTrend(weeklyLoad)
   const status = getBookingStatus({ remainingToday, weeklyLoad })
   const firstVisitCopy = `${firstVisitCount} ${firstVisitCount === 1 ? 'first visit' : 'first visits'}`

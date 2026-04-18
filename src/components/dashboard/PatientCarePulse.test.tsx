@@ -6,11 +6,6 @@ import {
   PatientCarePulse,
 } from './PatientCarePulse'
 
-function setUiV2Cookie(on: boolean) {
-  if (typeof document === 'undefined') return
-  document.cookie = `bp_ui=${on ? 'v2' : 'v1'}; path=/`
-}
-
 describe('computeVisitTrend', () => {
   it('returns undefined for series shorter than 2 values', () => {
     expect(computeVisitTrend([])).toBeUndefined()
@@ -80,26 +75,8 @@ describe('getCareStatus', () => {
 })
 
 describe('<PatientCarePulse />', () => {
-  beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_UI_V2
-    setUiV2Cookie(true)
-  })
-
   afterEach(() => {
-    setUiV2Cookie(false)
     cleanup()
-  })
-
-  it('renders nothing when ui-v2 is off', () => {
-    setUiV2Cookie(false)
-    const { container } = render(
-      <PatientCarePulse
-        weeklyVisits={[1, 2, 3, 4]}
-        careTeamSize={2}
-        nextAppointmentInDays={3}
-      />,
-    )
-    expect(container.firstChild).toBeNull()
   })
 
   it('renders the visit cadence sparkline with an accessible label', () => {

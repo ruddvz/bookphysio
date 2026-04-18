@@ -35,6 +35,33 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Slices 16.41 + 16.42 complete
+- Commit: (feat: slices 16.41 + 16.42 — pulse de-dupe + ui-v2 default-on)
+- Files touched: src/app/patient/dashboard/page.tsx, src/app/admin/page.tsx, .env.example, src/components/nav/CommandPalette.tsx+test, NotificationDrawer.tsx+test, SpecialtyCTARail.tsx+test, PatientInsightsStrip.tsx+test, ProviderPulse.tsx+test, PatientCarePulse.tsx+test, DashboardContextStrip.tsx+test, DashboardBreadcrumbs.tsx+test, AdminPulse.tsx+test, AdminPulseRail.tsx+test, src/app/about/about-page.test.tsx, faq-page.test.tsx, privacy-page.test.tsx, terms-page.test.tsx, docs/planning/EXECUTION-PLAN.md, ACTIVE.md
+- Tests added / changed: removed 9 "renders nothing when ui-v2 off" tests; added QueryClientProvider wrapper to 4 static-page tests that were pre-failing; 843 passing (11 pre-existing failures unchanged)
+- Build: type-check pass (next build requires env vars not present in agent)
+- Status: done
+- Next up: 16.23 — specialty hero + after-image slots (blocked on asset uploads from user)
+- Notes: Phase 16 is now fully complete except 16.23. NEXT_PUBLIC_UI_V2=true is set in .env.example — deploy/Vercel env var should be updated to match. Remaining useUiV2 uses in page files are conditional-branching (v1 vs v2 variant); those remain and are still valid when the flag is overridden to false per-user via `bp_ui=v1` cookie.
+
+## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Precise actionable specs for 16.41 + 16.42
+- Commit: (docs: expand 16.41 + 16.42 specs with exact file:line instructions)
+- Files touched: docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a (docs only)
+- Status: done
+- Next up: 16.41 — remove PatientInsightsStrip from patient dashboard + AdminPulse from admin dashboard
+- Notes: 16.41 spec names exact files and lines to change. 16.42 spec splits into (a) .env.example + (b) strip early-return useUiV2 guards only; conditional-branch uses are left intact.
+
+## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Simplify Phase 16 planning docs
+- Commit: 24f448f (docs: simplify Phase 16 plan (table + remaining slices))
+- Files touched: docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.41 — dashboard pulse de-duplication (patient + admin)
+- Notes: Per-slice detail now deferred to CHANGELOG/git; remaining work is 16.23, 16.41, 16.42 only.
+
 ## 2026-04-18 — pr-107 — CHANGELOG handoff fix (16.37 commit sha)
 - Commit: 39a87ce (docs: fix CHANGELOG commit sha for slice 16.37)
 - Files touched: CHANGELOG.md
