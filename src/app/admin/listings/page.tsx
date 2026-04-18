@@ -79,8 +79,7 @@ export default function AdminListings() {
         body: JSON.stringify({ provider_id: providerId, approved }),
       })
       if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string }
-        throw new Error(body.error ?? `Request failed (${res.status})`)
+        throw new Error('We could not update the listing right now. Please try again.')
       }
       setListings((prev) => prev.filter((p) => p.id !== providerId))
     } catch (err) {
@@ -100,9 +99,7 @@ export default function AdminListings() {
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-8">
       <PageHeader
         role="admin"
-        kicker="OPERATIONS"
         title="Listing verification"
-        subtitle="Review and approve physiotherapist applications"
         action={{
           label: 'Refresh',
           icon: RefreshCw,
@@ -145,6 +142,7 @@ export default function AdminListings() {
         <div className="flex gap-1 mb-6 border-b border-slate-100">
           {TABS.map(({ label, value, icon: Icon }) => (
             <button
+              type="button"
               key={value}
               onClick={() => switchTab(value)}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 transition-colors ${

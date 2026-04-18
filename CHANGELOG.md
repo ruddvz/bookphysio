@@ -35,6 +35,33 @@
 
 ## Log (newest first)
 
+## 2026-04-18 21:34 UTC — cursor/admin-dashboard-polish-fe31 — public detail chrome cleanup
+- Commit: <pending> (fix: hide remaining visible chrome everywhere else)
+- Files touched: src/components/dashboard/primitives.tsx, src/components/dashboard/primitives.test.tsx, src/app/city/[slug]/page.tsx, src/app/specialty/[slug]/page.tsx, src/components/specialties/SpecialtyArticle.tsx
+- Tests added / changed: 1 file changed (primitives.test.tsx)
+- Build: pass (`npm run lint` on touched files, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Extended the hidden-chrome cleanup beyond shared/static pages to public city and specialty detail heroes plus SpecialtyArticle. Shared dashboard `PageHeader` subtitle is now visually hidden too, so patient/provider pages match the admin treatment and keep only the primary headline visible.
+
+## 2026-04-18 21:22 UTC — cursor/admin-dashboard-polish-fe31 — site-wide hidden chrome pass
+- Commit: 951a869 (fix: hide visible chrome across site)
+- Files touched: src/app/about/AboutPageClient.tsx, src/app/faq/FAQPageClient.tsx, src/app/globals.css, src/app/hi/about/HiAboutPageClient.tsx, src/app/hi/faq/HiFAQPageClient.tsx, src/app/hi/how-it-works/page.tsx, src/app/hi/privacy/HiPrivacyHero.tsx, src/app/hi/terms/HiTermsHero.tsx, src/app/how-it-works/page.tsx, src/app/privacy/PrivacyHero.tsx, src/app/terms/TermsHero.tsx, src/components/dashboard/DashboardContextStrip.tsx, src/components/dashboard/DashboardShell.tsx, src/components/dashboard/TopPillNav.tsx, src/components/dashboard/primitives.tsx, src/components/static/StaticPageV2Chrome.tsx, src/components/dashboard/DashboardContextStrip.test.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/primitives.test.tsx, src/components/homepage-regressions.test.tsx
+- Tests added / changed: 8 files changed (primitives.test.tsx, TopPillNav.test.tsx, DashboardContextStrip.test.tsx, homepage-regressions.test.tsx, about-page.test.tsx, privacy-page.test.tsx, terms-page.test.tsx, how-it-works/page.v2.test.tsx)
+- Build: pass (focused `vitest` 31/31, `npm run lint` on touched files, `npm run type-check`)
+- Status: done
+- Next up: Sweep specialty/city/provider-detail/public detail pages for any remaining visible eyebrow labels not covered by shared primitives, or continue with 16.23 once assets arrive
+- Notes: Public/static hero pills on About/FAQ/How It Works/Privacy/Terms and Hindi mirrors are now visually hidden; dashboard breadcrumbs/context strip/greeting/kicker chrome are hidden site-wide; static v2 TOC helper heading and floating last-updated badge are hidden visually while JSON-LD, metadata, nav links, and headings remain intact.
+
+## 2026-04-18 20:55 UTC — cursor/admin-dashboard-polish-fe31 — admin dashboard chrome + live registry cleanup
+- Commit: 946f0bf (fix: polish admin dashboard chrome and registry)
+- Files touched: src/components/dashboard/TopPillNav.tsx, src/components/dashboard/DashboardShell.tsx, src/app/admin/page.tsx, src/app/admin/listings/page.tsx, src/app/admin/users/page.tsx, src/app/admin/users/UsersV2.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/DashboardBreadcrumbs.test.tsx, src/app/admin/page.test.tsx, src/app/admin/users/users-v2.test.tsx
+- Tests added / changed: 4 files changed (DashboardBreadcrumbs.test.tsx, TopPillNav.test.tsx, page.test.tsx, users-v2.test.tsx)
+- Build: pass (`npm run lint` on touched files, focused `vitest` 23/23, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Admin-only chrome now hides the breadcrumb strip and context strip, page headers show only primary headlines, admin nav avatar is a fixed ShieldCheck icon treatment, admin home renders the main heading immediately while stats load, approvals page no longer exposes raw server error text, and `/admin/users` now uses live `/api/admin/users` + `/api/admin/stats` data with pending-aware badges and simple pagination instead of fake placeholder records.
+
 ## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
 - Commit: 8ec94e7 (fix: resend OTP and email system)
 - Files touched: src/lib/resend.ts, src/lib/auth/email-otp.ts, src/app/api/auth/password-reset/route.ts, src/app/api/cron/daily-summary/route.ts

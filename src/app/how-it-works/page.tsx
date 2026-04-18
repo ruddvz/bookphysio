@@ -184,7 +184,7 @@ export default function HowItWorksPage() {
 
               {/* Left: kicker + heading + trust points + tabs */}
               <div>
-                <div data-hiw-hero className="inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
+                <div data-hiw-hero className="sr-only inline-flex items-center gap-2 px-3 py-1 bg-[#E6F4F3] text-[#00766C] rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] mb-5">
                   How it works
                 </div>
                 <h1 data-hiw-hero className="text-[30px] lg:text-[40px] font-bold tracking-tight text-[#1A1C29] leading-tight mb-4">

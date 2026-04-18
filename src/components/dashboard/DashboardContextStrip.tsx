@@ -76,7 +76,7 @@ export function DashboardContextStrip({
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+        <span className="sr-only text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
           {copy.eyebrow} · {full}
         </span>
         <span className="truncate text-[13px] font-semibold text-slate-800">
@@ -84,7 +84,7 @@ export function DashboardContextStrip({
         </span>
       </div>
 
-      <span className="hidden max-w-sm truncate text-[12px] text-slate-500 md:inline">
+      <span className="sr-only max-w-sm truncate text-[12px] text-slate-500 md:inline">
         {copy.tip}
       </span>
 
