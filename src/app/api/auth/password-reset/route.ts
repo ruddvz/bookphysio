@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { buildConfiguredAppUrl, getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
-import { Resend } from 'resend'
+import { getResendClient } from '@/lib/resend'
 
 const maskedResponse = { message: 'If an account exists, a password reset email has been sent.' }
 
@@ -62,17 +62,15 @@ export async function POST(request: NextRequest) {
   }
 
   const resetLink = data.properties.action_link
-  const resendApiKey = process.env.RESEND_API_KEY
   const fromEmail = process.env.RESEND_FROM_EMAIL
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
 
-  if (!resendApiKey || !fromEmail) {
-    console.error('Resend not configured: missing RESEND_API_KEY or RESEND_FROM_EMAIL')
+  if (!fromEmail) {
+    console.error('Resend not configured: missing RESEND_FROM_EMAIL')
     return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
   }
 
-  const resend = new Resend(resendApiKey)
-  const { error: sendError } = await resend.emails.send({
+  const { error: sendError } = await getResendClient().emails.send({
     from: fromEmail,
     to: email,
     subject: 'Reset your bookphysio.in password',

@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
+- Commit: 8ec94e7 (fix: resend OTP and email system)
+- Files touched: src/lib/resend.ts, src/lib/auth/email-otp.ts, src/app/api/auth/password-reset/route.ts, src/app/api/cron/daily-summary/route.ts
+- Tests added / changed: 0 (no new tests; existing auth-hardening suite covers the flow)
+- Build: type-check pre-existing errors only (node_modules absent in sandbox); no new errors introduced
+- Status: done
+- Next up: Verify RESEND_API_KEY + RESEND_FROM_EMAIL are set in Vercel env; apply migration 041_email_otps.sql if not yet done; smoke test doctor signup Step 5 "Resend code" button
+- Notes: Three bugs fixed: (1) email-otp.ts was deleting the OTP record on send failure, making Step 5 "Resend code" silently do nothing because the resend endpoint found no record to get user_id from — record is now retained; (2) resend.ts was throwing at module load time (crash on import if RESEND_API_KEY missing) — now lazy singleton; (3) email-otp.ts / password-reset / daily-summary each created own inline `new Resend()` — all now use shared getResendClient()
+
 ## 2026-04-18 — cursor/simplify-phase-16-plan-8f67 — Slices 16.41 + 16.42 complete
 - Commit: (feat: slices 16.41 + 16.42 — pulse de-dupe + ui-v2 default-on)
 - Files touched: src/app/patient/dashboard/page.tsx, src/app/admin/page.tsx, .env.example, src/components/nav/CommandPalette.tsx+test, NotificationDrawer.tsx+test, SpecialtyCTARail.tsx+test, PatientInsightsStrip.tsx+test, ProviderPulse.tsx+test, PatientCarePulse.tsx+test, DashboardContextStrip.tsx+test, DashboardBreadcrumbs.tsx+test, AdminPulse.tsx+test, AdminPulseRail.tsx+test, src/app/about/about-page.test.tsx, faq-page.test.tsx, privacy-page.test.tsx, terms-page.test.tsx, docs/planning/EXECUTION-PLAN.md, ACTIVE.md
