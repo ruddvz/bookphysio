@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
   if (!resendApiKey || !fromEmail) {
     console.error('Resend not configured: missing RESEND_API_KEY or RESEND_FROM_EMAIL')
-    return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
+    return NextResponse.json(maskedResponse)
   }
 
   const resend = new Resend(resendApiKey)
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
 
   if (sendError) {
     console.error('Resend send error:', sendError)
-    return NextResponse.json({ error: 'Failed to send email. Please try again.' }, { status: 500 })
+    return NextResponse.json(maskedResponse)
   }
 
   return NextResponse.json(maskedResponse)

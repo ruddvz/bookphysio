@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { hashCode } from '@/lib/auth/email-otp'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 
@@ -17,6 +18,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 400 })
   }
   const { email, code } = { email: parsed.data.email.trim().toLowerCase(), code: parsed.data.code.trim() }
+
+  let codeHash: string
+  try {
+    codeHash = hashCode(code)
+  } catch {
+    return NextResponse.json({ error: 'Verification service not configured' }, { status: 500 })
+  }
 
   // Rate limit verify attempts to prevent brute-force of the 6-digit space
   const ip = getRequestIpAddress(request)
@@ -35,12 +43,12 @@ export async function POST(request: NextRequest) {
     // Rate limiter unavailable — allow through
   }
 
-  // Find a valid, unused, non-expired OTP
+  // Find a valid, unused, non-expired OTP matching the submitted hash
   const { data: otp, error: otpError } = await supabaseAdmin
     .from('email_otps')
     .select('id, user_id')
     .eq('email', email)
-    .eq('code', code)
+    .eq('code_hash', codeHash)
     .is('used_at', null)
     .gt('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false })
@@ -54,14 +62,17 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Mark the OTP as used — abort if this fails to prevent replay attacks
-  const { error: markError } = await supabaseAdmin
+  // Mark the OTP as used — use .select().single() so PostgREST returns an error
+  // when zero rows are updated (race condition: concurrent verify requests).
+  const { data: consumedOtp, error: markError } = await supabaseAdmin
     .from('email_otps')
     .update({ used_at: new Date().toISOString() })
     .eq('id', otp.id)
     .is('used_at', null)
+    .select('id')
+    .single()
 
-  if (markError) {
+  if (markError || !consumedOtp) {
     console.error('email_otps mark-used failed:', markError)
     return NextResponse.json({ error: 'Verification failed. Please try again.' }, { status: 500 })
   }

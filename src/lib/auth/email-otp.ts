@@ -1,4 +1,4 @@
-import { randomInt } from 'crypto'
+import { randomInt, createHmac } from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 
@@ -6,6 +6,13 @@ const OTP_EXPIRY_MINUTES = 10
 
 function generateCode(): string {
   return String(randomInt(100000, 1000000))
+}
+
+/** HMAC-SHA256 hash of the OTP code — only the hash is persisted, never the plaintext. */
+export function hashCode(code: string): string {
+  const secret = process.env.EMAIL_OTP_SECRET
+  if (!secret) throw new Error('EMAIL_OTP_SECRET is not configured')
+  return createHmac('sha256', secret).update(code).digest('hex')
 }
 
 function escapeHtml(str: string): string {
@@ -32,9 +39,17 @@ export async function createAndSendEmailOtp(
   const code = generateCode()
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString()
 
+  let codeHash: string
+  try {
+    codeHash = hashCode(code)
+  } catch (e) {
+    console.error('email_otps: hashCode failed:', e)
+    return { ok: false, error: 'OTP configuration error' }
+  }
+
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from('email_otps')
-    .insert({ user_id: userId, email: email.toLowerCase(), code, expires_at: expiresAt })
+    .insert({ user_id: userId, email: email.toLowerCase(), code_hash: codeHash, expires_at: expiresAt })
     .select('id')
     .single()
 
@@ -74,10 +89,14 @@ export async function createAndSendEmailOtp(
 
   if (sendError) {
     console.error('Resend send error:', sendError)
-    // Clean up the orphaned OTP record so it cannot be verified
-    await supabaseAdmin.from('email_otps').delete().eq('id', inserted.id).catch((e: unknown) => {
-      console.error('email_otps cleanup failed:', e)
-    })
+    // Clean up the orphaned OTP row so it cannot be partially verified
+    const { error: cleanupError } = await supabaseAdmin
+      .from('email_otps')
+      .delete()
+      .eq('id', inserted.id)
+    if (cleanupError) {
+      console.error('email_otps cleanup failed:', cleanupError)
+    }
     return { ok: false, error: 'Failed to send verification email' }
   }
 

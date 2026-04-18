@@ -9,6 +9,8 @@ const sendSchema = z.object({
   email: z.string().email('Valid email is required'),
 })
 
+const maskedResponse = { message: 'If an account exists, a verification code has been sent.' }
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
   const parsed = sendSchema.safeParse(body)
@@ -33,22 +35,17 @@ export async function POST(request: NextRequest) {
     // Rate limiter unavailable — allow through
   }
 
-  // Look up the user_id from the most recent OTP entry for this email.
-  // This is safe because onboard-signup always creates an OTP before Step 5 is shown.
-  const { data: existingOtp } = await supabaseAdmin
-    .from('email_otps')
-    .select('user_id')
-    .eq('email', email)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
+  // Resolve user_id from auth.users directly so resend works even if the
+  // original email_otps row was cleaned up after a Resend delivery failure.
+  const { data: userId, error: lookupError } = await supabaseAdmin
+    .rpc('get_user_id_by_email', { p_email: email })
 
-  if (!existingOtp?.user_id) {
+  if (lookupError || !userId) {
     // Mask: don't reveal whether the account exists
-    return NextResponse.json({ message: 'If an account exists, a verification code has been sent.' })
+    return NextResponse.json(maskedResponse)
   }
 
-  const result = await createAndSendEmailOtp(email, existingOtp.user_id)
+  const result = await createAndSendEmailOtp(email, userId as string)
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error ?? 'Failed to send code' }, { status: 500 })
