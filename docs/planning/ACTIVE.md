@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP (after consolidation PR merges): **Slice 16.21 `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)**
+## 👉 NEXT UP: **Slice 16.22 `/patient/search` — v2 filter rail** (Part B P2)
 
-Slices 16.16–16.20 complete. Next is **16.21**: `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens. ≥ 6 unit tests.
+Slice **16.21** is complete: `/patient/pai` + `/patient/motio` wrap `BookPhysioAIChat` with `PatientAIShellV2` (patient-role `Sparkline` + `TrendDelta` + `Badge` pulse strip) when `useUiV2()` is on.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.21.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.22.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -57,7 +57,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
 - [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
 
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments ✓, records ✓, messages ✓, notifications ✓, profile ✓, pai/motio ✓, search, specialty images
 
 **Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
 
