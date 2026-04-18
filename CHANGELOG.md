@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/next-phases-2t7bI — PR-88 CodeRabbit security fixes
+- Commit: a78fe94 (fix(auth): address PR-88 CodeRabbit security findings)
+- Files touched: src/lib/auth/email-otp.ts, src/app/api/auth/email-otp/verify/route.ts, src/app/api/auth/email-otp/send/route.ts, src/app/api/auth/password-reset/route.ts, supabase/migrations/044_email_otps_security.sql, .env.example
+- Tests added / changed: 0 (security fixes — logic-layer)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1
+- Notes: 5 CodeRabbit findings fixed: (1) plaintext OTP → HMAC-SHA256 code_hash (migration 044 + app code); (2) .catch() compile error on PostgrestFilterBuilder → proper await+error check; (3) mark-used race condition → .select('id').single() so zero-rows-updated is fatal; (4) send resend depends on transient email_otps → get_user_id_by_email() RPC; (5) password-reset user enumeration → maskedResponse for all post-generateLink failures. USER ACTION: apply migration 044, set EMAIL_OTP_SECRET env var.
+
 ## 2026-04-18 — claude/next-phases-2t7bI — Phases 4-6 auth+admin fixes
 - Commit: b6a1728 (feat(auth+admin): phases 4-6 — OAuth role fix, approval state machine, admin email alerts)
 - Files touched: src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/app/api/admin/listings/route.ts, src/app/admin/listings/page.tsx, src/lib/resend.ts, src/app/api/providers/onboard-signup/route.ts, supabase/migrations/042_provider_approval_state.sql, supabase/migrations/043_oauth_role_default.sql
