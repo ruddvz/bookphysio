@@ -8,6 +8,8 @@ import {
   ListRow,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientNotificationsV2 } from './PatientNotificationsV2'
 
 interface Notification {
   id: string
@@ -59,6 +61,7 @@ async function markOneRead(id: string) {
 }
 
 export default function PatientNotifications() {
+  const isV2 = useUiV2()
   const queryClient = useQueryClient()
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -78,6 +81,8 @@ export default function PatientNotifications() {
 
   const notifications = data?.notifications ?? []
   const unreadCount = notifications.filter(n => !n.read).length
+
+  if (isV2) return <PatientNotificationsV2 />
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">

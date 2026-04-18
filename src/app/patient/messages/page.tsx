@@ -1,5 +1,7 @@
 'use client'
 
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientMessagesV2 } from './PatientMessagesV2'
 import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -32,6 +34,7 @@ import {
 const EMPTY_MESSAGES: Message[] = []
 
 export default function PatientMessages() {
+  const isV2 = useUiV2()
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [messageText, setMessageText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -117,6 +120,8 @@ export default function PatientMessages() {
       }
     )
   }, [messagesData, queryClient, selectedConversationId])
+
+  if (isV2) return <PatientMessagesV2 />
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8 h-[calc(100vh-80px)] flex flex-col overflow-hidden">

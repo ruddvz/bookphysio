@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.19 Patient messages + notifications v2
+- Commit: (pending — see git log)
+- Files touched: src/app/patient/messages/PatientMessagesV2.tsx (new), src/app/patient/messages/messages-v2-utils.ts (new), src/app/patient/messages/messages-v2.test.tsx (new), src/app/patient/messages/page.tsx, src/app/patient/notifications/PatientNotificationsV2.tsx (new), src/app/patient/notifications/notifications-v2-utils.ts (new), src/app/patient/notifications/notifications-v2.test.tsx (new), src/app/patient/notifications/page.tsx, src/components/dashboard/primitives/Badge.tsx
+- Tests added / changed: +43 (22 messages-v2 + 21 notifications-v2). Full suite: 642/653 passing; 11 failing are pre-existing unrelated to this slice.
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.20 `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles, ≥ 6 unit tests
+- Notes: Additive overlay pattern — `PatientMessagesV2` and `PatientNotificationsV2` both self-gate via `useUiV2()`, return `null` in v1 mode, and are injected into their respective `page.tsx` files via an early-return guard (after all hooks). `PatientMessagesV2` delivers: conversation sidebar with day/time stamps, `Badge` unread count chip (success for 1-4 / warning for 5+), initials avatar, day-grouped thread dividers, "Available" status Badge on the thread header, and `scrollIntoView` on new messages. `PatientNotificationsV2` delivers: day-grouped notification sections (Today / Yesterday / formatted date, newest first), per-notification type Badge chip (Confirmed/Cancelled/Payment/Message/Verified) with semantic variant (danger for cancelled, success for confirmed/payment, warning for new_message), unread dot per item, unread count Badge in header, "Mark all read" action. `Badge` component updated to extend `HTMLAttributes<HTMLSpanElement>` so `data-testid` / `aria-*` attributes pass through. jsdom shim added for `scrollIntoView` in the messages test file.
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
 - Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
 - Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx
