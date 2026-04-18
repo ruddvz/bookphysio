@@ -7,6 +7,7 @@ import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
+import { SpecialtyCTARail } from '@/components/specialties/SpecialtyCTARail'
 import SearchFilters from './SearchFilters'
 import { Search as SearchIcon, ChevronRight, RefreshCw, Sparkles, ArrowRight } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
@@ -15,6 +16,8 @@ import type { SearchResponse } from '@/app/api/contracts/search'
 import { SEARCH_COPY, type StaticLocale } from '@/lib/i18n/dynamic-pages'
 import { formatIndiaDateTime } from '@/lib/india-date'
 import { conditionSlugToSpecialtySlug } from '@/lib/conditions'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { cn } from '@/lib/utils'
 
 const VISIT_TYPE_LABELS: Record<string, string> = {
   in_clinic: 'In-clinic',
@@ -147,11 +150,19 @@ function resolveConditionFilters(condition: string | null): {
   }
 }
 
+const SORT_OPTIONS: { value: 'relevance' | 'rating' | 'price_low' | 'price_high'; label: string }[] = [
+  { value: 'relevance', label: 'Relevance' },
+  { value: 'rating', label: 'Top Rated' },
+  { value: 'price_low', label: 'Price ↑' },
+  { value: 'price_high', label: 'Price ↓' },
+]
+
 export default function SearchContent({ locale }: { locale?: StaticLocale } = {}) {
   const t = SEARCH_COPY[locale ?? 'en']
   const searchBasePath = locale === 'hi' ? '/hi/search' : '/search'
   const searchParams = useSearchParams()
   const router = useRouter()
+  const isV2 = useUiV2()
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'price_low' | 'price_high'>('relevance')
 
@@ -242,22 +253,52 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
               )}
             </div>
             {!loading && total > 0 && (
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                aria-label="Sort results"
-                className="rounded-[var(--sq-xs)] border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
-              >
-                <option value="relevance">Sort: Relevance</option>
-                <option value="rating">Highest Rated</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-              </select>
+              isV2 ? (
+                <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Sort results" data-testid="sort-chips">
+                  {SORT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setSortBy(opt.value)}
+                      aria-pressed={sortBy === opt.value}
+                      className={cn(
+                        'rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all',
+                        sortBy === opt.value
+                          ? 'bg-bp-primary text-white shadow-sm'
+                          : 'border border-bp-border bg-white text-bp-body hover:border-bp-accent hover:text-bp-primary'
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  aria-label="Sort results"
+                  className="rounded-[var(--sq-xs)] border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
+                >
+                  <option value="relevance">Sort: Relevance</option>
+                  <option value="rating">Highest Rated</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
+                </select>
+              )
             )}
           </div>
 
           {/* Filters */}
           <SearchFilters total={total} basePath={searchBasePath} />
+
+          {/* v2: specialty CTA rail when a specialty filter is active */}
+          {isV2 && specialty && (
+            <div className="mt-3 -mx-1">
+              <SpecialtyCTARail
+                specialtyLabel={specialty}
+                bookingHref={`${searchBasePath}?specialty=${encodeURIComponent(specialty)}`}
+              />
+            </div>
+          )}
         </div>
       </header>
 

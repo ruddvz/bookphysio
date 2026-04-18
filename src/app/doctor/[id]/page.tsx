@@ -4,6 +4,7 @@ import Footer from '@/components/Footer'
 import BookingCard from './BookingCard'
 import ClinicGallery from './ClinicGallery'
 import MobileBookingBar from './MobileBookingBar'
+import { ProviderV2TrustStrip } from '@/components/specialties/ProviderV2TrustStrip'
 import { GraduationCap, Star, ChevronRight, Award, CheckCircle2, Clock, Sparkles, Building2, Activity, Mail } from 'lucide-react'
 import type { ProviderProfile, ProviderReview } from '@/app/api/contracts/provider'
 import Link from 'next/link'
@@ -371,6 +372,23 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
 
       <main className="pb-32 md:pb-24">
         <div className="max-w-[1142px] mx-auto px-6">
+          <ProviderV2TrustStrip
+            location={provider.city ?? undefined}
+            nextSlotLabel={
+              provider.next_available_slot
+                ? formatIndiaDate(provider.next_available_slot, {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : null
+            }
+            bookingHref={`#booking-card-section`}
+            verified={provider.verified}
+          />
+
           <div className="grid grid-cols-1 xl:grid-cols-[64%_36%] gap-8 items-start">
 
             {/* LEFT COLUMN */}
