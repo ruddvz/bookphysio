@@ -35,6 +35,60 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.5 shorter display_id sequences
+- Commit: 4d741f3 (feat(db): migration 045 — shorter display IDs (6-digit providers, 7-digit patients))
+- Files touched: supabase/migrations/045_shorter_display_ids.sql
+- Tests added / changed: 0 (verify in Supabase after apply: new provider/patient rows get 6/7 digit display_id)
+- Build: n/a (SQL only)
+- Status: done
+- Next up: Apply migrations 044 + 045 in Supabase; then **16.21** `/patient/pai` + `/patient/motio` (ui-v2) or next backlog slice
+- Notes: Grep of `src/` found no `display_id` UI assumptions to update.
+
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.4 mobile reels (ui-v2)
+- Commit: b3261a3 (feat(search): mobile reels snap-scroll (ui-v2 only) — SearchResultsReels + DoctorCardCompact)
+- Files touched: src/app/search/SearchContent.tsx, src/app/search/SearchResultsReels.tsx, src/app/search/SearchResultsReels.test.tsx, src/components/DoctorCardCompact.tsx
+- Tests added / changed: +2 (SearchResultsReels.test.tsx)
+- Build: pass (targeted tests)
+- Status: done
+- Next up: 17.5 migration 045
+- Notes: Fixed viewport reels + IntersectionObserver counter; keyboard PageUp/Down on window.
+
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.3 CitySearchCombobox
+- Commit: a780178 (feat(search): replace flat city list with CitySearchCombobox (popular chips + typeahead))
+- Files touched: src/components/search/CitySearchCombobox.tsx, src/components/search/CitySearchCombobox.test.tsx, src/app/search/SearchFilters.tsx
+- Tests added / changed: +6 (CitySearchCombobox.test.tsx)
+- Build: pass (targeted tests)
+- Status: done
+- Next up: 17.4 reels
+- Notes: Desktop uses LocationFilterPill + popover; mobile drawer uses same combobox.
+
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.2 compact search header
+- Commit: b78f0d1 (feat(search): compact mobile header — sr-only breadcrumb + BreadcrumbList JSON-LD + single-line h1)
+- Files touched: src/app/search/SearchContent.tsx, src/app/search/SearchFilters.tsx, src/app/search/SearchContent.test.tsx
+- Tests added / changed: +3 (SearchContent.test.tsx)
+- Build: pass (targeted tests)
+- Status: done
+- Next up: 17.3 city combobox
+- Notes: Mobile filter chip opens shared drawer via controlled SearchFilters props.
+
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.1 provider search approval gate
+- Commit: c02b513 (fix: tighten provider search to require approval_status=approved (migration 044))
+- Files touched: src/app/api/providers/filters.ts, src/app/api/providers/route.ts, supabase/migrations/044_search_providers_approval_gate.sql, src/app/api/__tests__/providers.test.ts
+- Tests added / changed: +2 (providers.test.ts)
+- Build: pass (targeted tests)
+- Status: done
+- Next up: 17.2 search header
+- Notes: RPC + fallback now aligned on verified + approval_status=approved.
+
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Merge PR 105 Phase 17 planning docs
+- Commit: a672093 (docs: merge Phase 17 plan + execution checklist from PR 105)
+- Files touched: docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Implementation commits c02b513 → 4d741f3 on branch cursor/phase-17-search-fixes-5f15
+- Notes: Brought agent-ready plan + Phase 17 checklist onto implementation branch.
+
 ## 2026-04-18 — cursor/simplify-pr103-plan-7c79 — Phase 17 plan simplification
 - Commit: 7bcddfe (docs: simplify PR 103 plan into 5 agent-ready slices (Phase 17))
 - Files touched: docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md (rewritten), docs/planning/EXECUTION-PLAN.md (Phase 17 added), docs/planning/ACTIVE.md (NEXT UP updated)
