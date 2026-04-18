@@ -57,7 +57,7 @@
 | `/provider/patients` | `app/provider/patients/page.tsx` | Server | Patient list with search |
 | `/provider/patients/[id]` | `app/provider/patients/[id]/page.tsx` | Server | Patient detail + visit history |
 | `/provider/availability` | `app/provider/availability/page.tsx` | Client | Weekday toggles, slot duration; ui-v2: `ProviderAvailabilityV2Chrome` + day window `Badge` |
-| `/provider/earnings` | `app/provider/earnings/page.tsx` | Server | Monthly ₹ total, GST, payouts, transactions |
+| `/provider/earnings` | `app/provider/earnings/page.tsx` | Client | Ledger from appointments; ui-v2: `ProviderEarningsV2Chrome` + sparkline tiles + `Badge` status |
 | `/provider/profile` | `app/provider/profile/page.tsx` | Client | Practice profile form |
 | `/provider/messages` | `app/provider/messages/page.tsx` | Client | Message threads (stub) |
 | `/provider/notifications` | `app/provider/notifications/page.tsx` | Server | Notifications (stub) |
