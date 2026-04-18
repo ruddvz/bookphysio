@@ -42,6 +42,7 @@ import {
 } from './dashboard-utils'
 import type { AppointmentItem } from '../appointments/appointments-utils'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
+import { PatientInsightsStrip } from '@/components/patient/PatientInsightsStrip'
 
 function fmtShortDate(iso: string): string {
   return formatIndiaDate(iso, { day: 'numeric', month: 'short' })
@@ -272,6 +273,12 @@ export default function PatientDashboardHome() {
       {/* Main + rail */}
       <div className="flex flex-col xl:flex-row gap-6">
         <div className="flex-1 space-y-6">
+          <PatientInsightsStrip
+            upcomingVisits={upcomingCount}
+            careTeam={uniqueProviders}
+            publishedSummaries={latestSummaryCount}
+            lastVisitIso={lastVisit?.visit_date ?? null}
+          />
           <SectionCard role="patient" title="Upcoming appointment">
             {nextAppointment ? (
               <div className="rounded-[var(--sq-lg)] border border-[var(--color-pt-border-soft)] bg-[var(--color-pt-surface)]/70 p-4 sm:p-5 md:p-6">
