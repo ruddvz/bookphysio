@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-pr-81-tests-Cdyms — Session-handoff system
+- Commit: 2dacec8 (chore(handoff): add CHANGELOG.md + session-handoff protocol)
+- Files touched: CHANGELOG.md (new), CLAUDE.md, docs/planning/ACTIVE.md
+- Tests added / changed: 0 (docs / workflow only)
+- Build: not run (docs / workflow only)
+- Status: done
+- Next up: 16.11 auth surfaces redesign — Part B P1 (see EXECUTION-PLAN.md and ACTIVE.md NEXT UP header)
+- Notes: Orchestration is now unambiguous. Fresh agents read CHANGELOG.md + ACTIVE.md first (Phase 0), see slice 16.11 as NEXT UP, and must append a CHANGELOG entry after every commit. Low-token handoff rule forces stop-and-push at ~20% context so nothing is stranded.
+
 ## 2026-04-18 — claude/version-16.9-NV2gO — PR #83 merge resolution
 - Commit: f98f578 (merge: origin/main into claude/version-16.9-NV2gO)
 - Files touched: docs/planning/EXECUTION-PLAN.md (conflict), src/app/admin/page.tsx (auto), src/app/patient/dashboard/page.tsx (auto)
