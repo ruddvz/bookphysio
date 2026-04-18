@@ -1,6 +1,7 @@
 import { randomInt } from 'crypto'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getResendClient } from '@/lib/resend'
+import { assertEmailServiceConfigured } from '@/lib/email/preflight'
 
 const OTP_EXPIRY_MINUTES = 10
 
@@ -21,12 +22,13 @@ export async function createAndSendEmailOtp(
   email: string,
   userId: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const fromEmail = process.env.RESEND_FROM_EMAIL
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
-
-  if (!fromEmail) {
+  const preflight = assertEmailServiceConfigured()
+  if (!preflight.ok) {
     return { ok: false, error: 'Email service not configured' }
   }
+
+  const fromEmail = process.env.RESEND_FROM_EMAIL!
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
 
   const code = generateCode()
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString()

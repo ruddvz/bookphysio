@@ -24,8 +24,8 @@ describe('resolvePostAuthRedirect', () => {
     expect(resolvePostAuthRedirect('provider', '/provider/messages?tab=unread')).toBe('/provider/messages?tab=unread')
   })
 
-  it('allows the password update route for recovery flows', () => {
-    expect(resolvePostAuthRedirect('provider', '/update-password')).toBe('/update-password')
+  it('allows the forgot-password route for recovery flows', () => {
+    expect(resolvePostAuthRedirect('provider', '/forgot-password')).toBe('/forgot-password')
   })
 
   it('falls back to the role default for incompatible paths', () => {

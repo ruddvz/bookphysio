@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Provider signup OTP + resume + password-reset OTP (PR #113 plan)
+- Commit: (feat: complete provider OTP resume and email password reset flow)
+- Files touched: `src/lib/email/preflight.ts`, `src/lib/auth/password-reset-otp.ts`, `src/lib/auth/lookup-user.ts`, `src/app/api/providers/onboard-signup/route.ts`, `src/app/(auth)/doctor-signup/page.tsx`, `src/app/api/auth/login/route.ts`, `src/app/api/auth/me/onboarding-status/route.ts`, `src/app/provider/pending/page.tsx`, `ProviderPendingClient.tsx`, `src/app/api/auth/password-reset/route.ts`, `src/app/api/auth/password-reset/verify/route.ts`, `src/app/(auth)/forgot-password/page.tsx`, `src/app/(auth)/login/page.tsx`, `src/app/(auth)/verify-otp/page.tsx`, `src/lib/auth/pending-otp.ts`, `src/lib/resend.ts`, `src/lib/auth/email-otp.ts`, `src/app/api/auth/email-otp/send/route.ts`, `src/lib/demo/session.ts`, tests, `supabase/migrations/046_password_reset_otps.sql`, plan doc; removed `src/app/(auth)/update-password/*`
+- Tests added / changed: `src/lib/email/preflight.test.ts` (2); updated auth/regression/pending tests
+- Build: `npm run type-check` pass; `npm run build` blocked in sandbox without full `.env` (prebuild lists missing vars — expected)
+- Status: done
+- Next up: Apply migration `046_password_reset_otps.sql` in Supabase; smoke-test doctor signup Step 5, login resume, forgot-password email + phone paths; optional Playwright specs from plan
+- Notes: Migration number is **046** (045 already used). Password reset uses Resend + `password_reset_otps` table; `/update-password` removed — use `/forgot-password` (phone OTP lands on `/forgot-password?after_otp=1`). Unconfirmed `provider_pending` logins redirect to `/doctor-signup?resume=1&email=…`.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (ADMIN_ALERT_EMAIL doc commit)
 - Commit: aa7a728 (docs: fix CHANGELOG sha for ADMIN_ALERT_EMAIL commit)
 - Files touched: CHANGELOG.md

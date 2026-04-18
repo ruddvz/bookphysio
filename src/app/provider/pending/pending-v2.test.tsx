@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { PendingStepperV2 } from './PendingV2'
-import ProviderPendingPage from './page'
+import { ProviderPendingClient } from './ProviderPendingClient'
 
 const useUiV2Mock = vi.fn<() => boolean>(() => false)
 
@@ -42,23 +42,23 @@ describe('ProviderPendingPage', () => {
 
   it('renders PendingStepperV2 when ui-v2 flag is on', () => {
     useUiV2Mock.mockReturnValue(true)
-    render(<ProviderPendingPage />)
+    render(<ProviderPendingClient emailConfirmed email="test@example.com" />)
     expect(screen.getByTestId('pending-stepper-v2')).toBeInTheDocument()
   })
 
   it('does not render PendingStepperV2 when ui-v2 flag is off', () => {
     useUiV2Mock.mockReturnValue(false)
-    render(<ProviderPendingPage />)
+    render(<ProviderPendingClient emailConfirmed email="test@example.com" />)
     expect(screen.queryByTestId('pending-stepper-v2')).toBeNull()
   })
 
   it('always renders sign out', () => {
     useUiV2Mock.mockReturnValue(true)
-    const { unmount } = render(<ProviderPendingPage />)
+    const { unmount } = render(<ProviderPendingClient emailConfirmed email="test@example.com" />)
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
     unmount()
     useUiV2Mock.mockReturnValue(false)
-    render(<ProviderPendingPage />)
+    render(<ProviderPendingClient emailConfirmed email="test@example.com" />)
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
   })
 })

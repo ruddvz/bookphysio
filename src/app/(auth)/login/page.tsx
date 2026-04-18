@@ -23,6 +23,8 @@ interface LoginErrors {
   general?: string
 }
 
+type LoginBanner = { kind: 'error'; message: string } | { kind: 'success'; message: string } | null
+
 export default function LoginPage() {
   const isV2 = useUiV2()
   const router = useRouter()
@@ -31,6 +33,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<LoginErrors>({})
+  const [banner, setBanner] = useState<LoginBanner>(null)
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<'google' | null>(null)
   const [emailFocused, setEmailFocused] = useState(false)
@@ -52,17 +55,22 @@ export default function LoginPage() {
     if (authError === 'auth_failed') {
       setErrors({ general: 'Sign-in failed. Please try again.' })
     }
+    if (params.get('reset') === '1') {
+      setBanner({ kind: 'success', message: 'Password updated — sign in with your new password.' })
+    }
   }, [])
 
   function clearFieldError(field: keyof LoginErrors) {
     if (errors[field] || errors.general) {
       setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }))
     }
+    if (banner) setBanner(null)
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setErrors({})
+    setBanner(null)
 
     const result = loginSchema.safeParse({ email, password })
     if (!result.success) {
@@ -174,6 +182,19 @@ export default function LoginPage() {
             <div role="alert" className="mb-4 flex items-center gap-2.5 rounded-[var(--sq-xs)] border border-red-100 bg-red-50 px-3.5 py-3 text-sm font-medium text-red-600">
               <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
               {errors.general}
+            </div>
+          )}
+          {banner && !errors.general && (
+            <div
+              role="status"
+              className={cn(
+                'mb-4 flex items-center gap-2.5 rounded-[var(--sq-xs)] border px-3.5 py-3 text-sm font-medium',
+                banner.kind === 'success'
+                  ? 'border-emerald-100 bg-emerald-50 text-emerald-800'
+                  : 'border-red-100 bg-red-50 text-red-600',
+              )}
+            >
+              {banner.message}
             </div>
           )}
 

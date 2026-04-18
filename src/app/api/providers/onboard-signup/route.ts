@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
+import { assertEmailServiceConfigured } from '@/lib/email/preflight'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { parseIndiaDate } from '@/lib/india-date'
@@ -256,6 +257,14 @@ export async function POST(request: NextRequest) {
   let specialtiesLinked = false
 
   try {
+    const emailPreflight = assertEmailServiceConfigured()
+    if (!emailPreflight.ok) {
+      return NextResponse.json(
+        { error: 'Email service is temporarily unavailable. Please try again in a few minutes.' },
+        { status: 503 },
+      )
+    }
+
     // 1. Create the Supabase auth user via the admin client.
     //    email_confirm: false — user must verify via our 6-digit OTP email (sent below),
     //    not Supabase's built-in mailer (which is disabled; all email goes via Resend).
@@ -432,7 +441,14 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
     })
 
-    return NextResponse.json({ success: true }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        emailOtpStatus: otpResult.ok ? 'sent' : 'failed',
+        ...(otpResult.ok ? {} : { emailOtpError: otpResult.error }),
+      },
+      { status: 201 },
+    )
 
   } catch (error: unknown) {
     // Surface the actual error message for easier debugging

@@ -65,7 +65,7 @@ Dr. sign-up has three compounding failures that strand the provider:
 
 Current Supabase `generateLink({ type: 'recovery' })` flow has three fragile dependencies: Supabase SMTP config, the redirect-URL allowlist, and the code-exchange session handshake at `/auth/callback`. We'll replace it with the same pattern that already works for email verification: a 6-digit code via Resend.
 
-**New DB migration**: `supabase/migrations/045_password_reset_otps.sql`
+**New DB migration**: `supabase/migrations/046_password_reset_otps.sql` (045 was already used for display-id sequencing)
 - Table `password_reset_otps (id uuid pk, user_id uuid fk auth.users, email text, code text, expires_at timestamptz, used_at timestamptz null, created_at timestamptz default now())`.
 - Index on `(email, created_at desc)`.
 - No RLS — server-only access via `supabaseAdmin`.
@@ -129,7 +129,7 @@ Current Supabase `generateLink({ type: 'recovery' })` flow has three fragile dep
 | `src/lib/auth/password-reset-otp.ts` | **NEW** — mirrors `email-otp.ts`: `createAndSend`, `verify` |
 | `src/lib/email/preflight.ts` | **NEW** — shared `assertEmailServiceConfigured()` |
 | `src/components/auth/OtpDigits.tsx` | **NEW** — extracted 6-digit input grid shared between doctor-signup Step 5 and forgot-password Step 2 |
-| `supabase/migrations/045_password_reset_otps.sql` | **NEW** — `password_reset_otps` table |
+| `supabase/migrations/046_password_reset_otps.sql` | **NEW** — `password_reset_otps` table |
 
 ## Existing utilities to reuse
 
@@ -165,7 +165,7 @@ E2E (Playwright, under `e2e/`):
 2. `rtk npm run build` — must pass with zero TS errors.
 3. `rtk npm test` — all new unit tests green, existing suite passes.
 4. `rtk playwright test e2e/provider-signup-otp.spec.ts e2e/provider-resume-onboarding.spec.ts e2e/forgot-password.spec.ts`.
-5. Apply migration `supabase/migrations/045_password_reset_otps.sql` in the local Supabase.
+5. Apply migration `supabase/migrations/046_password_reset_otps.sql` in the local Supabase.
 6. Manual smoke against dev server (`rtk npm run dev`):
    - (a) Sign up a new provider with a real inbox; confirm the 6-digit OTP email arrives within 10 s; enter code; land on `/provider/pending` with correct "Email confirmed" tick.
    - (b) Sign up a second provider, intentionally unset `RESEND_FROM_EMAIL`; confirm the 503 shows *before* the user is created (check Supabase auth.users — no orphan row), and a clear UI error.
@@ -177,7 +177,7 @@ E2E (Playwright, under `e2e/`):
    - Slice 2: `email/preflight` + onboard-signup 503 + Step 5 `emailOtpStatus` banner.
    - Slice 3: login route resume redirect + `onboarding-status` endpoint + doctor-signup `?resume=1` handling.
    - Slice 4: `/provider/pending` data-bound state.
-   - Slice 5: migration 045 + `password-reset-otp` lib + new send/verify routes + rewritten forgot-password page + delete `/update-password` + gut recovery branch in `/auth/callback`.
+   - Slice 5: migration 046 + `password-reset-otp` lib + new send/verify routes + rewritten forgot-password page + delete `/update-password` + gut recovery branch in `/auth/callback`.
 8. Append CHANGELOG entry per session-handoff protocol (status: `done`, next up: follow-up if any).
 
 ## Out of scope

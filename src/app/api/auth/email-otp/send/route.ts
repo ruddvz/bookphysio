@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 import { createAndSendEmailOtp } from '@/lib/auth/email-otp'
+import { assertEmailServiceConfigured } from '@/lib/email/preflight'
 
 const sendSchema = z.object({
   email: z.string().email('Valid email is required'),
@@ -16,6 +17,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
   }
   const email = parsed.data.email.trim().toLowerCase()
+
+  const preflight = assertEmailServiceConfigured()
+  if (!preflight.ok) {
+    return NextResponse.json(
+      { error: 'Email service is temporarily unavailable. Please try again in a few minutes.' },
+      { status: 503 },
+    )
+  }
 
   const ip = getRequestIpAddress(request)
   try {

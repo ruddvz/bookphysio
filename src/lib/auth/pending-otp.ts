@@ -1,4 +1,4 @@
-export type PendingOtpFlow = 'login' | 'signup'
+export type PendingOtpFlow = 'login' | 'signup' | 'password_reset_phone'
 
 export interface PendingOtpPayload {
   flow: PendingOtpFlow
@@ -35,7 +35,7 @@ export function readPendingOtp(): PendingOtpPayload | null {
 
     const parsed = JSON.parse(rawValue) as Partial<PendingOtpPayload>
 
-    if (parsed.flow !== 'login' && parsed.flow !== 'signup') {
+    if (parsed.flow !== 'login' && parsed.flow !== 'signup' && parsed.flow !== 'password_reset_phone') {
       return null
     }
 
