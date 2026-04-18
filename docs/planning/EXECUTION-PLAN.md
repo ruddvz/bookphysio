@@ -294,14 +294,14 @@
 - [ ] **16.28** `/provider/profile` — v2 form chrome, NCAHP credential chip reuse, preview-on-public-page CTA
 - [ ] **16.29** `/provider/ai-assistant` — v2 assistant shell with provider pulse tokens, visit-note autodraft CTA alignment
 - [ ] **16.30** `/provider/messages` + `/provider/notifications` — parity with patient 16.19 but provider tokens
-- [ ] **16.31** `/provider/bills/new` — v2 invoice builder, GST line-item chips, integer `₹` only
-- [ ] **16.32** `/provider/pending` — v2 onboarding-progress stepper, document-status `Badge`s
+- [x] **16.31** `/provider/bills/new` — v2 invoice builder, GST line-item chips, integer `₹` only
+- [x] **16.32** `/provider/pending` — v2 onboarding-progress stepper, document-status `Badge`s
 
 #### Priority 4 — Admin surfaces
 
-- [ ] **16.33** `/admin/listings` — v2 approval queue table with `Badge` states, quick-approve action, review SLA sparkline
-- [ ] **16.34** `/admin/users` — v2 user directory with role `Badge`, last-active `TrendDelta`, verification state
-- [ ] **16.35** `/admin/analytics` — v2 analytics grid powered by Recharts (see 16.38); KPI pills reuse `AdminPulseRail` patterns
+- [x] **16.33** `/admin/listings` — v2 approval queue table with `Badge` states, quick-approve action, review SLA sparkline
+- [x] **16.34** `/admin/users` — v2 user directory with role `Badge`, last-active `TrendDelta`, verification state
+- [x] **16.35** `/admin/analytics` — v2 `AdminPulseRail` at top (full Recharts grid → slice 16.38)
 
 #### Priority 5 — Static, legal, Hindi mirrors
 

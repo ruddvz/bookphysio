@@ -59,9 +59,9 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 
 **Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
 
-**Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
+**Priority 3 (provider surfaces):** 16.24–16.30 pending · **16.31–16.32** `/provider/bills/new`, `/provider/pending` ✓
 
-**Priority 4 (admin):** 16.33–16.35 — listings, users, analytics (+ Recharts)
+**Priority 4 (admin):** **16.33–16.35** listings, users, analytics ✓ (full Recharts charts → **16.38**)
 
 **Priority 5 (static + Hindi):** 16.36–16.37
 
