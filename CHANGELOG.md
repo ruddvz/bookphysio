@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.13 How-it-works v2 redesign
-- Commit: <pending> (feat(ui-v2): slice 16.13 — how-it-works timeline strip + per-step Sparkline + CTA stat rail)
+- Commit: c5865b6 (feat(ui-v2): slice 16.13 — how-it-works timeline strip + per-step Sparkline + CTA stat rail)
 - Files touched: src/app/how-it-works/page.tsx, src/app/how-it-works/page.v2.test.tsx (new)
 - Tests added / changed: +8 (page.v2.test.tsx)
 - Build: not run (node_modules absent in sandbox; CI validates)
