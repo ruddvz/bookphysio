@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.16 patient appointments v2 redesign
-- Commit: <pending> (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
+- Commit: 787b58c (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
 - Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new), docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
 - Tests added / changed: +23 (9 new timeline-helper cases in page.test.tsx, 8 component cases for PatientAppointmentsTimeline, 9 component cases for PatientAppointmentDetailV2)
 - Build: pass (`next build` green; type-check + targeted eslint clean; full `vitest run` 548/556 — 8 pre-existing failures in provider/availability, auth-regressions, Testimonials, and providers-onboard-signup that reproduce on `main` unchanged)
