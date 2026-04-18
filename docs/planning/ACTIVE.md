@@ -15,13 +15,13 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.31 `/provider/bills/new` — v2 invoice builder (GST chips, integer ₹)**
+## 👉 NEXT UP: **Slice 16.21** — `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)
 
-Slices 16.28–16.30 (provider profile, AI assistant, messages/notifications v2) landed on branch `cursor/slices-16.28-16.30-spec-56c7` (PR #100). Next provider slice per `EXECUTION-PLAN.md`: **16.31**.
+Phase **17.1–17.5** is implemented on branch `cursor/phase-17-search-fixes-5f15` (provider approval gate + search UX + migrations 044/045). **Ops:** apply migrations `044` + `045` in Supabase after merge/deploy.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Priority 3 → 16.31.
+Full Phase 17 spec (reference): `docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md`
 
-Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
+Before starting 16.21: read `CHANGELOG.md` newest entry for any WIP handoff.
 
 ---
 

@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import Link from 'next/link'
 import DoctorCard, { type Doctor } from '@/components/DoctorCard'
+import SearchResultsReels from '@/app/search/SearchResultsReels'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { SpecialtyCTARail } from '@/components/specialties/SpecialtyCTARail'
 import SearchFilters from './SearchFilters'
 import { PatientSearchFiltersRail } from '@/app/patient/search/PatientSearchFiltersRail'
-import { Search as SearchIcon, ChevronRight, RefreshCw, Sparkles, ArrowRight } from 'lucide-react'
+import { Search as SearchIcon, RefreshCw, Sparkles, ArrowRight } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
@@ -171,6 +172,7 @@ export default function SearchContent({
   const router = useRouter()
   const isV2 = useUiV2()
   const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
+  const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false)
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'price_low' | 'price_high'>('relevance')
 
   const location = searchParams.get('location')
@@ -242,6 +244,66 @@ export default function SearchContent({
     return href
   }
 
+  const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
+  const cityForSearchLink = city ?? location ?? ''
+  const locationSearchUrl = cityForSearchLink
+    ? `${searchBasePath}?city=${encodeURIComponent(cityForSearchLink)}`
+    : searchBasePath
+
+  const breadcrumbJsonLd = useMemo(() => {
+    const origin = new URL(siteOrigin).origin
+    const cityHref = new URL(locationSearchUrl, origin).href
+    const items: Array<{ '@type': 'ListItem'; position: number; name: string; item: string }> = [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${origin}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: displayLocation,
+        item: cityHref,
+      },
+    ]
+    if (specialty) {
+      const withSpecialty = `${locationSearchUrl}${locationSearchUrl.includes('?') ? '&' : '?'}specialty=${encodeURIComponent(specialty)}`
+      items.push({
+        '@type': 'ListItem',
+        position: 3,
+        name: specialty,
+        item: new URL(withSpecialty, origin).href,
+      })
+    }
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items,
+    }
+  }, [displayLocation, locationSearchUrl, siteOrigin, specialty])
+
+  const activeFilterCount = useMemo(() => {
+    const currentCity = city ?? ''
+    const currentVisitTypeRaw = searchParams.get('visit_type') ?? ''
+    const currentMaxFee = Number(searchParams.get('max_fee') ?? '2000')
+    const currentSpecialty = searchParams.get('specialty') ?? ''
+    const currentQualification = searchParams.get('qualification') ?? ''
+    const currentSort = searchParams.get('sort') ?? ''
+    return [
+      currentCity !== '',
+      currentVisitTypeRaw !== '',
+      currentMaxFee !== 2000,
+      currentSpecialty !== '',
+      currentQualification !== '',
+      currentSort !== '',
+    ].filter(Boolean).length
+  }, [city, searchParams])
+
+  const handleOpenFilters = useCallback(() => {
+    setFiltersDrawerOpen(true)
+  }, [])
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F7F8F9]">
 
@@ -253,26 +315,38 @@ export default function SearchContent({
         )}
       >
         <div className="max-w-[1142px] mx-auto px-4 sm:px-6 md:px-10 py-4">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-[12px] text-[#999] mb-3">
-            <Link href={homeCrumbHref} className="hover:text-[#00766C] transition-colors">
-              {variant === 'patient' ? 'Patient' : 'Home'}
-            </Link>
-            <ChevronRight size={11} className="text-[#D1D5DB]" />
-            <span className="text-[#333] font-medium">{displayLocation}</span>
-            {specialty && (
-              <>
-                <ChevronRight size={11} className="text-[#D1D5DB]" />
-                <span className="text-[#333] font-medium">{specialty}</span>
-              </>
-            )}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+          />
+          {/* Breadcrumb — SEO + screen readers only */}
+          <nav aria-label="Breadcrumb" className="sr-only">
+            <ol className="flex flex-wrap items-center gap-1.5 text-[12px]">
+              <li>
+                <Link href={homeCrumbHref} className="hover:text-[#00766C] transition-colors">
+                  {variant === 'patient' ? 'Patient' : 'Home'}
+                </Link>
+              </li>
+              <li aria-hidden className="text-[#D1D5DB]">›</li>
+              <li>
+                <Link href={locationSearchUrl} className="hover:text-[#00766C] transition-colors">{displayLocation}</Link>
+              </li>
+              {specialty && (
+                <>
+                  <li aria-hidden className="text-[#D1D5DB]">›</li>
+                  <li>
+                    <span className="text-[#333] font-medium">{specialty}</span>
+                  </li>
+                </>
+              )}
+            </ol>
           </nav>
 
           {/* Title row + sort */}
           <div className="flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
-              <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#333] tracking-tight leading-tight">
-                {loading ? t.headingLoading : total > 0 ? t.headingResults(total) : t.headingEmpty}
+              <h1 className="text-base font-medium text-[#333] md:text-xl leading-tight">
+                {loading ? 'Finding physios…' : `${total} physios · ${displayLocation}`}
               </h1>
               {loading && (
                 <div className="w-5 h-5 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin shrink-0" />
@@ -313,11 +387,29 @@ export default function SearchContent({
             )}
           </div>
 
-          {/* Filters — patient v2: dedicated rail; otherwise shared SearchFilters */}
+          {/* Filters — patient v2: dedicated rail; otherwise mobile chip + shared SearchFilters */}
           {variant === 'patient' && isV2 ? (
             <PatientSearchFiltersRail basePath={searchBasePath} total={total} />
           ) : (
-            <SearchFilters total={total} basePath={searchBasePath} />
+            <>
+              <div className="flex md:hidden items-center gap-2 mb-3">
+                <button
+                  type="button"
+                  onClick={handleOpenFilters}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
+                >
+                  Filters
+                  {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
+                </button>
+              </div>
+              <SearchFilters
+                total={total}
+                basePath={searchBasePath}
+                drawerOpen={filtersDrawerOpen}
+                onDrawerOpenChange={setFiltersDrawerOpen}
+                hideMobileFilterBar
+              />
+            </>
           )}
 
           {/* v2: specialty CTA rail when a specialty filter is active */}
@@ -399,6 +491,12 @@ export default function SearchContent({
             </div>
           ) : (
             <div className="flex flex-col gap-5 pb-16">
+              {isV2 ? (
+                <div className="block md:hidden">
+                  <SearchResultsReels results={sortedDoctors} />
+                </div>
+              ) : null}
+              <div className={isV2 ? 'hidden md:block' : ''}>
               {error && (
                 <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 text-left">
                   <div className="flex-1">
@@ -435,6 +533,7 @@ export default function SearchContent({
               ))}
 
               <FeaturedDoctors />
+              </div>
             </div>
           )}
         </div>
