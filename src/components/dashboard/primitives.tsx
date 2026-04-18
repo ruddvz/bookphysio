@@ -60,6 +60,7 @@ export interface StatTileProps {
   value: string | number;
   tone: TileTone;
   delta?: { value: string; positive?: boolean };
+  children?: ReactNode;
 }
 
 export function StatTile({
@@ -69,6 +70,7 @@ export function StatTile({
   value,
   tone,
   delta,
+  children,
 }: StatTileProps) {
   return (
     <div
@@ -102,6 +104,7 @@ export function StatTile({
       <div className="mt-3 sm:mt-4 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400">
         {label}
       </div>
+      {children}
       <div
         className="mt-0.5 sm:mt-1 text-[20px] sm:text-[26px] font-bold tabular-nums truncate"
         style={{ color: v(role, 'ink') }}

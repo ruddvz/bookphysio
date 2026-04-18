@@ -85,6 +85,7 @@ interface FallbackProviderUserRow {
 interface FallbackProviderLocationRow {
   id: string
   city: string | null
+  pincode: string | null
   lat: number | null
   lng: number | null
   visit_type: ProviderCard['visit_types'] | null
@@ -238,6 +239,7 @@ function sortProviders(
 async function searchProvidersWithoutRpc({
   supabase,
   city,
+  pincode,
   resolvedSpecialtyId,
   visit_type,
   qualification,
@@ -252,6 +254,7 @@ async function searchProvidersWithoutRpc({
 }: {
   supabase: Awaited<ReturnType<typeof createClient>>
   city: string | null
+  pincode: string | null
   resolvedSpecialtyId: string | null
   visit_type: ProviderCard['visit_types'][number] | null
   qualification: string | null
@@ -279,7 +282,7 @@ async function searchProvidersWithoutRpc({
       specialty_ids,
       verified,
       users!inner (full_name, avatar_url),
-      locations (id, city, lat, lng, visit_type)
+      locations (id, city, pincode, lat, lng, visit_type)
     `),
   )
     .gte('rating_avg', min_rating ?? 0)
@@ -306,6 +309,7 @@ async function searchProvidersWithoutRpc({
   }
 
   const normalizedCity = city?.trim().toLowerCase() ?? null
+  const normalizedPincode = pincode?.trim() ?? null
   const filteredProviders = ((fallbackProviderData ?? []) as FallbackProviderRow[])
     .flatMap((provider) => {
       const user = toArray(provider.users)[0]
@@ -329,9 +333,12 @@ async function searchProvidersWithoutRpc({
 
       const matchingLocations = locations.filter((location) => {
         const cityMatches = !normalizedCity || location.city?.toLowerCase().includes(normalizedCity)
+        const pincodeMatches =
+          !normalizedPincode ||
+          (location.pincode != null && String(location.pincode).replace(/\s/g, '') === normalizedPincode)
         const visitTypeMatches = !visit_type || (location.visit_type ?? []).includes(visit_type)
 
-        return cityMatches && visitTypeMatches
+        return cityMatches && pincodeMatches && visitTypeMatches
       })
 
       if (matchingLocations.length === 0) {
@@ -421,7 +428,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { query, city, specialty_id, visit_type, qualification, sort, min_rating, max_fee_inr, page, limit, lat, lng, radius_km } = parsed.data
+  const {
+    query,
+    city,
+    pincode,
+    specialty_id,
+    visit_type,
+    qualification,
+    sort,
+    min_rating,
+    max_fee_inr,
+    page,
+    limit,
+    lat,
+    lng,
+    radius_km,
+  } = parsed.data
   if (!hasPublicSupabaseEnv()) {
     // Surface a real error instead of silently returning an empty list. The previous
     // 200 + [] fallback masked missing Supabase env so the UI showed "no results in
@@ -465,6 +487,17 @@ export async function GET(request: NextRequest) {
     p_limit: limit
   })
 
+  // Pincode is not in search_providers_v2 — use relational fallback when set.
+  if (!error && pincode) {
+    error = {
+      code: 'PINCODE_FALLBACK',
+      details: '',
+      hint: '',
+      message: 'RPC does not filter by pincode',
+      name: 'PostgrestError',
+    }
+  }
+
   // If RPC doesn't support query yet, we force fallback if query is present
   if (!error && query) {
     // We can't easily filter by query in the current RPC v2,
@@ -484,6 +517,7 @@ export async function GET(request: NextRequest) {
     const fallbackSearch = await searchProvidersWithoutRpc({
       supabase,
       city: city ?? null,
+      pincode: pincode ?? null,
       resolvedSpecialtyId,
       visit_type: visit_type ?? null,
       qualification: qualification ?? null,

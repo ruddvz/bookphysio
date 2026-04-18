@@ -15,8 +15,8 @@ import {
 export interface PatientAppointmentsTimelineProps {
   appointments: AppointmentItem[]
   tab: AppointmentTab
-  /** Optional injection point for tests to freeze "now". */
-  nowMs?: number
+  /** Wall-clock ms for grouping (parent supplies via useState(() => Date.now()) or tests inject a fixed value). */
+  nowMs: number
 }
 
 function visitTypeLabel(visitType: string): string {
@@ -44,9 +44,8 @@ export function PatientAppointmentsTimeline({
   tab,
   nowMs,
 }: PatientAppointmentsTimelineProps) {
-  const resolvedNowMs = nowMs ?? Date.now()
-  const days = groupApptsByDay(appointments, tab, resolvedNowMs)
-  const nowDate = new Date(resolvedNowMs)
+  const days = groupApptsByDay(appointments, tab, nowMs)
+  const nowDate = new Date(nowMs)
 
   if (days.length === 0) return null
 

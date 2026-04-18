@@ -12,6 +12,9 @@ import {
   EmptyState,
 } from '@/components/dashboard/primitives'
 import Image from 'next/image'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { mapProviderRowForTimeline } from './provider-appointments-utils'
+import { ProviderAppointmentsTimelineV2 } from './ProviderAppointmentsTimelineV2'
 
 const STATUS_STYLES: Record<string, { label: string; color: string }> = {
   confirmed: { label: 'Confirmed', color: 'text-emerald-600 bg-emerald-50' },
@@ -85,6 +88,8 @@ function filterAppointments(appointments: AppointmentRow[], tab: TabType, search
 function ProviderAppointmentsContent() {
   const [activeTab, setActiveTab] = useState<TabType>('upcoming')
   const [search, setSearch] = useState('')
+  const uiV2 = useUiV2()
+  const [timelineNowMs] = useState(() => Date.now())
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['provider-appointments'],
@@ -93,6 +98,7 @@ function ProviderAppointmentsContent() {
 
   const allAppointments = data?.appointments ?? []
   const filtered = filterAppointments(allAppointments, activeTab, search)
+  const timelineItems = filtered.map(mapProviderRowForTimeline)
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 lg:space-y-8">
@@ -155,6 +161,12 @@ function ProviderAppointmentsContent() {
             icon={Calendar}
             title={`No ${activeTab} sessions`}
             description={search ? "No results match your search query." : `You have no ${activeTab} appointments in the registry.`}
+          />
+        ) : uiV2 ? (
+          <ProviderAppointmentsTimelineV2
+            appointments={timelineItems}
+            tab={activeTab}
+            nowMs={timelineNowMs}
           />
         ) : (
           <div className="divide-y divide-slate-100/50">

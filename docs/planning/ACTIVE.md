@@ -57,11 +57,11 @@ Before starting 16.21: read `CHANGELOG.md` newest entry for any WIP handoff.
 - [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
 - [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
 
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments ✓, records ✓, messages ✓, notifications ✓, profile ✓, pai/motio ✓, search ✓, specialty images
 
-**Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
+**Priority 3 (provider surfaces):** 16.24–16.30 pending · **16.31–16.32** `/provider/bills/new`, `/provider/pending` ✓
 
-**Priority 4 (admin):** 16.33–16.35 — listings, users, analytics (+ Recharts)
+**Priority 4 (admin):** **16.33–16.35** listings, users, analytics ✓ (full Recharts charts → **16.38**)
 
 **Priority 5 (static + Hindi):** 16.36–16.37
 

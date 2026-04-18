@@ -4,8 +4,11 @@ import { useRouter } from 'next/navigation'
 import { CheckCircle2, Clock, LogOut } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { createClient } from '@/lib/supabase/client'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PendingStepperV2 } from './PendingV2'
 
 export default function ProviderPendingPage() {
+  const uiV2 = useUiV2()
   const router = useRouter()
 
   async function handleSignOut() {
@@ -43,39 +46,45 @@ export default function ProviderPendingPage() {
         </div>
 
         {/* Progress steps */}
-        <div className="space-y-3 mb-8">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-emerald-800">Account created</p>
-              <p className="text-xs text-emerald-600">Registration complete</p>
-            </div>
+        {uiV2 ? (
+          <div className="mb-8">
+            <PendingStepperV2 />
           </div>
+        ) : (
+          <div className="space-y-3 mb-8">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">Account created</p>
+                <p className="text-xs text-emerald-600">Registration complete</p>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-emerald-800">Email confirmed</p>
-              <p className="text-xs text-emerald-600">Identity verified</p>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">Email confirmed</p>
+                <p className="text-xs text-emerald-600">Identity verified</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 border border-amber-100">
-            <Clock className="w-5 h-5 text-amber-500 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-amber-800">Credentials review</p>
-              <p className="text-xs text-amber-600">Our team is reviewing your details</p>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 border border-amber-100">
+              <Clock className="w-5 h-5 text-amber-500 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Credentials review</p>
+                <p className="text-xs text-amber-600">Our team is reviewing your details</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-            <div className="w-5 h-5 rounded-full border-2 border-gray-300 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-gray-400">Dashboard access</p>
-              <p className="text-xs text-gray-400">Available after approval</p>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              <div className="w-5 h-5 rounded-full border-2 border-gray-300 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-gray-400">Dashboard access</p>
+                <p className="text-xs text-gray-400">Available after approval</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <p className="text-xs text-center text-gray-400 mb-6">
           Once approved you can sign in and your dashboard will be ready.

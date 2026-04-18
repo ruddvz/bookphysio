@@ -10,6 +10,7 @@ import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
 import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { SpecialtyCTARail } from '@/components/specialties/SpecialtyCTARail'
 import SearchFilters from './SearchFilters'
+import { PatientSearchFiltersRail } from '@/app/patient/search/PatientSearchFiltersRail'
 import { Search as SearchIcon, RefreshCw, Sparkles, ArrowRight } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
@@ -158,9 +159,15 @@ const SORT_OPTIONS: { value: 'relevance' | 'rating' | 'price_low' | 'price_high'
   { value: 'price_high', label: 'Price ↓' },
 ]
 
-export default function SearchContent({ locale }: { locale?: StaticLocale } = {}) {
+export type SearchContentVariant = 'public' | 'patient'
+
+export default function SearchContent({
+  locale,
+  variant = 'public',
+}: { locale?: StaticLocale; variant?: SearchContentVariant } = {}) {
   const t = SEARCH_COPY[locale ?? 'en']
-  const searchBasePath = locale === 'hi' ? '/hi/search' : '/search'
+  const searchBasePath =
+    variant === 'patient' ? '/patient/search' : locale === 'hi' ? '/hi/search' : '/search'
   const searchParams = useSearchParams()
   const router = useRouter()
   const isV2 = useUiV2()
@@ -180,10 +187,12 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const sort = searchParams.get('sort')
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
+  const pincode = searchParams.get('pincode')
 
   const fetchUrl = useMemo(() => {
     const apiParams: Record<string, string> = { page: '1', limit: '40' }
     if (city) apiParams.city = city
+    if (pincode) apiParams.pincode = pincode
     if (specialty) apiParams.specialty_id = specialty
     if (conditionFilters.query) apiParams.query = conditionFilters.query
     if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
@@ -193,7 +202,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     if (lat) apiParams.lat = lat
     if (lng) apiParams.lng = lng
     return `/api/providers?${new URLSearchParams(apiParams).toString()}`
-  }, [city, specialty, conditionFilters.query, visit_type, qualification, sort, max_fee, lat, lng])
+  }, [city, pincode, specialty, conditionFilters.query, visit_type, qualification, sort, max_fee, lat, lng])
 
   const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR<SearchResponse>(
     fetchUrl,
@@ -223,7 +232,17 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
   const loading = swrLoading && !data
   const error = Boolean(swrError)
 
-  const displayLocation = (lat && lng) ? 'Near Me' : city ?? location ?? 'India'
+  const displayLocation =
+    lat && lng ? 'Near Me' : pincode ? `Pin ${pincode}` : city ?? location ?? 'India'
+
+  const headerStickyTop = variant === 'patient' ? 'top-0' : 'top-[56px]'
+  const homeCrumbHref = variant === 'patient' ? '/patient/dashboard' : '/'
+
+  const mapSuggestedHref = (href: string) => {
+    if (variant === 'patient') return href.replace('/search', '/patient/search')
+    if (locale === 'hi') return href.replace('/search', '/hi/search')
+    return href
+  }
 
   const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
   const cityForSearchLink = city ?? location ?? ''
@@ -289,7 +308,12 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
     <div className="flex flex-col min-h-screen bg-[#F7F8F9]">
 
       {/* ── Search Header ── */}
-      <header className="z-30 bg-white border-b border-[#E5E7EB]/80 flex-shrink-0 sticky top-[56px]">
+      <header
+        className={cn(
+          'z-30 flex-shrink-0 border-b border-[#E5E7EB]/80 bg-white sticky',
+          headerStickyTop
+        )}
+      >
         <div className="max-w-[1142px] mx-auto px-4 sm:px-6 md:px-10 py-4">
           <script
             type="application/ld+json"
@@ -299,7 +323,9 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
           <nav aria-label="Breadcrumb" className="sr-only">
             <ol className="flex flex-wrap items-center gap-1.5 text-[12px]">
               <li>
-                <Link href="/" className="hover:text-[#00766C] transition-colors">Home</Link>
+                <Link href={homeCrumbHref} className="hover:text-[#00766C] transition-colors">
+                  {variant === 'patient' ? 'Patient' : 'Home'}
+                </Link>
               </li>
               <li aria-hidden className="text-[#D1D5DB]">›</li>
               <li>
@@ -361,25 +387,30 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
             )}
           </div>
 
-          <div className="flex md:hidden items-center gap-2 mb-3">
-            <button
-              type="button"
-              onClick={handleOpenFilters}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
-            >
-              Filters
-              {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
-            </button>
-          </div>
-
-          {/* Filters */}
-          <SearchFilters
-            total={total}
-            basePath={searchBasePath}
-            drawerOpen={filtersDrawerOpen}
-            onDrawerOpenChange={setFiltersDrawerOpen}
-            hideMobileFilterBar
-          />
+          {/* Filters — patient v2: dedicated rail; otherwise mobile chip + shared SearchFilters */}
+          {variant === 'patient' && isV2 ? (
+            <PatientSearchFiltersRail basePath={searchBasePath} total={total} />
+          ) : (
+            <>
+              <div className="flex md:hidden items-center gap-2 mb-3">
+                <button
+                  type="button"
+                  onClick={handleOpenFilters}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
+                >
+                  Filters
+                  {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
+                </button>
+              </div>
+              <SearchFilters
+                total={total}
+                basePath={searchBasePath}
+                drawerOpen={filtersDrawerOpen}
+                onDrawerOpenChange={setFiltersDrawerOpen}
+                hideMobileFilterBar
+              />
+            </>
+          )}
 
           {/* v2: specialty CTA rail when a specialty filter is active */}
           {isV2 && specialty && (
@@ -438,7 +469,7 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
                     {SUGGESTED_SEARCHES.map((s) => (
                       <Link
                         key={s.label}
-                        href={locale === 'hi' ? s.href.replace('/search', '/hi/search') : s.href}
+                        href={mapSuggestedHref(s.href)}
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3.5 py-2 text-[13px] font-medium text-[#333] hover:border-[#00766C]/30 hover:bg-[#E6F4F3]/30 transition-all"
                       >
                         <span>{s.emoji}</span>
