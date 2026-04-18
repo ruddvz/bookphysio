@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Fix TS + SearchFilters drawer + jsdom IntersectionObserver
+- Commit: (pending) (fix: SearchFilters duplicate drawer state + loosen filters typing + IO stub in test setup)
+- Files touched: src/app/search/SearchFilters.tsx, src/app/api/providers/filters.ts, src/test/setup.ts
+- Tests added / changed: 0 (search-v2 + type-check green)
+- Build: pass (`npm run type-check`)
+- Status: done
+- Next up: Push branch + open PR
+- Notes: Removes duplicate `drawerOpen` state; `applyPublicProviderFilters` uses `any` to avoid Postgrest TS2589; global `IntersectionObserver` stub for SearchResultsReels in jsdom.
+
 ## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Phase 17.5 shorter display_id sequences
 - Commit: 4d741f3 (feat(db): migration 045 — shorter display IDs (6-digit providers, 7-digit patients))
 - Files touched: supabase/migrations/045_shorter_display_ids.sql

@@ -232,7 +232,6 @@ export default function SearchFilters({
   const currentQualification = searchParams.get('qualification') ?? ''
   const currentSort = searchParams.get('sort') ?? ''
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [localMaxFee, setLocalMaxFee] = useState(currentMaxFee)
 
   useEffect(() => {
