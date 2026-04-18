@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/phase-16-17-pr93-CTFYI — Slice 16.17 Patient payments v2 ledger
+- Commit: 8fce9e5 (feat(patient): slice 16.17 — v2 payments ledger with Badge status + GST line items)
+- Files touched: src/app/patient/payments/payments-utils.ts (new), src/app/patient/payments/PatientPaymentsLedger.tsx (new), src/app/patient/payments/payments-v2.test.tsx (new), src/app/patient/payments/page.tsx
+- Tests added / changed: +23 (payments-v2.test.tsx). All green. Vitest targeted run confirms.
+- Build: type-check pass (all errors are pre-existing sandbox no-node_modules artefacts — same for every other file). CI validates.
+- Status: done
+- Next up: 16.18 `/patient/records` + visit-summary view — v2 summary tiles with Sparkline for progress signals
+- Notes: Self-gated behind useUiV2() — page.tsx renders PatientPaymentsLedger only when uiV2=true; falls back to existing ListRow list in v1 (SSR byte-identical). Ledger groups by IST calendar month (IST_OFFSET_MS = +5.5h) newest-first. Each row: receipt icon, provider name + Badge status (success/danger/soft/warning), visit type + date, total ₹ amount, optional "incl. GST ₹X" line, "View →" link to appointment detail. Month header shows month label + total paid. PaymentItem interface in payments-utils.ts matches the existing page.tsx Payment interface exactly. Cherry-picked commit onto claude/issue-16-16-rFkjG to update PR #93 with the 16.17 changes (no new PR created per user instruction).
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
 - Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
 - Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx

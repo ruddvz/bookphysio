@@ -276,8 +276,8 @@
 
 #### Priority 2 — Patient surfaces
 
-- [ ] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens
-- [ ] **16.17** `/patient/payments` — v2 ledger card with `₹` integer formatter, `Badge` for paid/refunded, GST line items
+- [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens
+- [x] **16.17** `/patient/payments` — v2 ledger card with `₹` integer formatter, `Badge` for paid/refunded, GST line items
 - [ ] **16.18** `/patient/records` + visit-summary view — v2 summary tiles with `Sparkline` for progress signals
 - [ ] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread `Badge`, empty-state illustrations
 - [ ] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
