@@ -15,11 +15,9 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.31 `/provider/bills/new` — v2 invoice builder (GST chips, integer ₹)**
+## 👉 NEXT UP: **Slice 16.41** — dashboard pulse de-duplication (patient + admin) per `EXECUTION-PLAN.md` Phase 16
 
-Slices 16.28–16.30 (provider profile, AI assistant, messages/notifications v2) landed on branch `cursor/slices-16.28-16.30-spec-56c7` (PR #100). Next provider slice per `EXECUTION-PLAN.md`: **16.31**.
-
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Priority 3 → 16.31.
+Slices **16.36–16.40** (static v2 chrome, Hindi mirrors, Recharts, command palette, notification drawer) are implemented on branch `pr-107` (PR #107). Next open slice: **16.41**.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -63,9 +61,9 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 
 **Priority 4 (admin):** **16.33–16.35** listings, users, analytics ✓ (full Recharts charts → **16.38**)
 
-**Priority 5 (static + Hindi):** 16.36–16.37
+**Priority 5 (static + Hindi):** 16.36–16.37 ✓
 
-**Priority 6 (cross-cutting):** 16.38 Recharts · 16.39 Command palette · 16.40 Notification drawer · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
+**Priority 6 (cross-cutting):** 16.38 Recharts ✓ · 16.39 Command palette ✓ · 16.40 Notification drawer ✓ · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
 
 ### Blockers / inbound
 - Specialty hero images + "after" treatment images — uploading in 2–3 days (slice **16.23** waits for this)

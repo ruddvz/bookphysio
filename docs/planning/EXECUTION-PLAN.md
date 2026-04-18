@@ -305,14 +305,14 @@
 
 #### Priority 5 — Static, legal, Hindi mirrors
 
-- [ ] **16.36** `/about`, `/faq`, `/privacy`, `/terms` — v2 long-form chrome (typography, TOC sidebar, last-updated `Badge`)
-- [ ] **16.37** Hindi mirrors under `/hi/*` — port every completed v2 slice to the Hindi route tree once the English surfaces have landed
+- [x] **16.36** `/about`, `/faq`, `/privacy`, `/terms` — v2 long-form chrome (typography, TOC sidebar, last-updated `Badge`)
+- [x] **16.37** Hindi mirrors under `/hi/*` — port every completed v2 slice to the Hindi route tree once the English surfaces have landed
 
 #### Priority 6 — Cross-cutting platform features
 
-- [ ] **16.38** Recharts integration — adopt Recharts for analytics surfaces (`/admin/analytics`, provider earnings, patient records trends); keep `Sparkline` primitive for inline, reserve Recharts for full charts
-- [ ] **16.39** Command palette (full) — replaces `CommandPaletteHint`; ⌘K opens a modal with jump-to-page, quick-actions, recent items; role-aware
-- [ ] **16.40** Notification drawer — slide-over tied to `/patient/notifications` and `/provider/notifications` data with unread `Badge` on top nav
+- [x] **16.38** Recharts integration — adopt Recharts for analytics surfaces (`/admin/analytics`, provider earnings, patient records trends); keep `Sparkline` primitive for inline, reserve Recharts for full charts
+- [x] **16.39** Command palette (full) — replaces `CommandPaletteHint`; ⌘K opens a modal with jump-to-page, quick-actions, recent items; role-aware
+- [x] **16.40** Notification drawer — slide-over tied to `/patient/notifications` and `/provider/notifications` data with unread `Badge` on top nav
 - [ ] **16.41** Dashboard pulse de-duplication — decide whether `PatientCarePulse` (right rail) or `PatientInsightsStrip` (left column) wins for the patient dashboard; trim the other to avoid showing the same cadence twice; mirror the same review for admin (`AdminPulse` vs `AdminPulseRail`)
 - [ ] **16.42** ui-v2 flag flip — once Parts A + B are complete, set `NEXT_PUBLIC_UI_V2=true` by default and remove `useUiV2()` gates
 
