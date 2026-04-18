@@ -105,7 +105,7 @@ export default function ProviderEarnings() {
   const totalGst = settledTransactions.reduce((sum, t) => sum + t.gst, 0)
   const paidOut = settledTransactions.reduce((sum, t) => sum + t.net, 0)
 
-  const { values: monthlySettled } = useMemo(
+  const { values: monthlySettled, keys: monthlySettledKeys } = useMemo(
     () =>
       monthlySettledNetSeries(
         transactions.map((t) => ({ status: t.status, net: t.net, visitIso: t.visitIso })),
@@ -157,7 +157,11 @@ export default function ProviderEarnings() {
         }}
       />
 
-      <ProviderEarningsV2Chrome monthlySettled={monthlySettled} totalSettledInr={paidOut} />
+      <ProviderEarningsV2Chrome
+        monthlySettled={monthlySettled}
+        monthKeys={monthlySettledKeys}
+        totalSettledInr={paidOut}
+      />
 
       {/* Financial KPIs */}
       <div

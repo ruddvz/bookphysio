@@ -1,12 +1,22 @@
 'use client'
 
-import { FileText, Activity, CheckCircle2, ClipboardList } from 'lucide-react'
+import { useId } from 'react'
+import { FileText, CheckCircle2, ClipboardList } from 'lucide-react'
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { Badge } from '@/components/dashboard/primitives/Badge'
-import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
+import { RECHARTS_FILL, RECHARTS_PRIMARY } from '@/components/dashboard/charts/recharts-theme'
 import type { PatientFacingRecord } from '@/lib/clinical/types'
 import {
   buildVisitSparkline,
+  buildVisitSparklineMonthLabels,
   groupRecordsByProvider,
   summaryCompletionCount,
   planCount,
@@ -33,10 +43,16 @@ const PLAN_TRUNCATE = 120
  */
 export function PatientRecordsSummaryV2({ records }: PatientRecordsSummaryV2Props) {
   const v2 = useUiV2()
+  const visitGradId = useId().replace(/:/g, '')
   if (!v2) return null
   if (records.length === 0) return null
 
   const sparklineValues = buildVisitSparkline(records)
+  const monthLabels = buildVisitSparklineMonthLabels(6)
+  const visitTrendData = sparklineValues.map((count, i) => ({
+    label: monthLabels[i] ?? `M${i + 1}`,
+    visits: count,
+  }))
   const providerGroups = groupRecordsByProvider(records)
   const summaryCount = summaryCompletionCount(records)
   const plans = planCount(records)
@@ -61,14 +77,42 @@ export function PatientRecordsSummaryV2({ records }: PatientRecordsSummaryV2Prop
               total visits · last 6 months
             </p>
           </div>
-          <Sparkline
-            role="patient"
-            values={sparklineValues}
-            width={96}
-            height={36}
-            fill
-            ariaLabel="Visit frequency over the last 6 months"
-          />
+          <div
+            className="h-[72px] w-[140px] shrink-0"
+            role="img"
+            aria-label="Visit frequency over the last 6 months"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={visitTrendData} margin={{ top: 2, right: 2, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id={visitGradId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={RECHARTS_PRIMARY} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={RECHARTS_FILL} stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 9, fill: 'var(--color-pt-muted)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide allowDecimals={false} domain={[0, 'auto']} />
+                <Tooltip
+                  formatter={(value: number) => [value, 'Visits']}
+                  labelFormatter={(label) => String(label)}
+                  contentStyle={{ fontSize: 11, borderRadius: 8 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="visits"
+                  stroke={RECHARTS_PRIMARY}
+                  strokeWidth={2}
+                  fill={`url(#${visitGradId})`}
+                  dot={{ r: 2, fill: '#fff', stroke: RECHARTS_PRIMARY, strokeWidth: 1.5 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Mini stat row */}

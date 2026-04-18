@@ -46,6 +46,17 @@ export function buildVisitSparkline(
   return buckets
 }
 
+/** Short month labels (oldest → newest) aligned with `buildVisitSparkline` buckets. */
+export function buildVisitSparklineMonthLabels(months = 6): string[] {
+  const now = new Date()
+  const labels: string[] = []
+  for (let j = 0; j < months; j++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - (months - 1 - j), 1)
+    labels.push(d.toLocaleDateString('en-IN', { month: 'short' }))
+  }
+  return labels
+}
+
 export interface ProviderGroup {
   providerName: string
   visits: PatientFacingRecord[]

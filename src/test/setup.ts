@@ -19,6 +19,15 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
   })
 }
 
+// Recharts ResponsiveContainer uses ResizeObserver (jsdom has none)
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+}
+
 // Mock next/navigation
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = await importOriginal() as Record<string, unknown>
