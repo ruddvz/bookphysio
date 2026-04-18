@@ -2,35 +2,33 @@
 
 import { useRef } from 'react'
 import Image from 'next/image'
-import { ShieldCheck, Clock, Home } from 'lucide-react'
+import { ShieldCheck, Star } from 'lucide-react'
+import useSWR from 'swr'
 import { ScrollTrigger, revealOnScroll, useGSAP } from '@/lib/gsap-client'
 
-const promises = [
-  {
-    title: 'Verified credentials',
-    description: 'We check every physiotherapist against their IAP or State Council registration before their profile goes live on the site.',
-    icon: ShieldCheck,
-    color: 'text-[#00766C]',
-    bg: 'bg-[#E6F4F3]',
-  },
-  {
-    title: 'Clear pricing',
-    description: 'You see the session fee and any taxes before you book. The amount you pay at the end is the amount you saw at the start.',
-    icon: Clock,
-    color: 'text-violet-600',
-    bg: 'bg-violet-50',
-  },
-  {
-    title: 'Clinic or home visit',
-    description: 'Filter by home visit or in-clinic, compare providers side by side, and book whichever option fits your day better.',
-    icon: Home,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
-  },
-]
+type ReviewFeedItem = {
+  id: string
+  rating: number
+  comment: string
+  created_at: string
+  provider: { full_name: string; title: string; specialty: string }
+}
+
+const fetcher = (url: string) =>
+  fetch(url).then((res) => {
+    if (!res.ok) throw new Error('Failed to load reviews')
+    return res.json() as Promise<{ reviews: ReviewFeedItem[] }>
+  })
 
 export default function Testimonials() {
   const scope = useRef<HTMLElement>(null)
+  const { data, error, isLoading } = useSWR<{ reviews: ReviewFeedItem[] }>(
+    '/api/reviews?limit=3',
+    fetcher,
+    { revalidateOnFocus: false },
+  )
+
+  const reviews = !error && data?.reviews?.length ? data.reviews : null
 
   useGSAP(() => {
     revealOnScroll('[data-tl-left]', {
@@ -50,10 +48,10 @@ export default function Testimonials() {
       trigger: '[data-tl-cards]',
       start: 'top 80%',
     })
-  }, { scope, dependencies: [ScrollTrigger] })
+  }, { scope, dependencies: [ScrollTrigger, reviews?.length] })
 
   return (
-    <section ref={scope} className="bg-[#E6F4F3] py-24 md:py-32" aria-label="Platform promises">
+    <section ref={scope} className="bg-[#E6F4F3] py-24 md:py-32" aria-label={reviews ? 'Patient stories' : 'Platform promises'}>
       <div className="bp-container">
         <div className="grid gap-16 lg:grid-cols-2 items-center">
 
@@ -97,7 +95,7 @@ export default function Testimonials() {
             </div>
           </div>
 
-          {/* Right: 3 promise cards */}
+          {/* Right: live reviews or static promise cards */}
           <div className="space-y-4" data-tl-cards>
             <div className="flex items-center gap-3 mb-6">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-semibold">
@@ -106,21 +104,57 @@ export default function Testimonials() {
               </span>
             </div>
 
-            {promises.map(p => (
-              <article
-                key={p.title}
-                data-tl-card
-                className="flex gap-4 p-6 bg-white rounded-[var(--sq-lg)] border border-[#00766C]/10 hover:border-[#00766C]/25 hover:shadow-md hover:shadow-[#00766C]/5 transition-all duration-200"
-              >
-                <div className={`w-11 h-11 rounded-[var(--sq-sm)] ${p.bg} flex items-center justify-center shrink-0 mt-0.5`}>
-                  <p.icon size={20} className={p.color} />
-                </div>
-                <div>
-                  <h3 className="text-slate-900 text-[16px] font-semibold mb-1.5">{p.title}</h3>
-                  <p className="text-slate-500 text-[14px] leading-relaxed">{p.description}</p>
-                </div>
-              </article>
-            ))}
+            {isLoading && !reviews ? (
+              <div className="space-y-4">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    data-tl-card
+                    className="h-32 rounded-[var(--sq-lg)] bg-white/60 border border-[#00766C]/10 animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : null}
+
+            {reviews
+              ? reviews.map((r) => {
+                  const displayName =
+                    r.provider.title === 'Dr.'
+                      ? `Dr. ${r.provider.full_name}`
+                      : `${r.provider.title} ${r.provider.full_name}`
+                  return (
+                    <article
+                      key={r.id}
+                      data-tl-card
+                      className="flex flex-col gap-3 p-6 bg-white rounded-[var(--sq-lg)] border border-[#00766C]/10 hover:border-[#00766C]/25 hover:shadow-md hover:shadow-[#00766C]/5 transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-1 text-amber-500" aria-hidden>
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            size={16}
+                            className={i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}
+                            strokeWidth={1.5}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-slate-700 text-[15px] leading-relaxed">{r.comment}</p>
+                      <div className="flex flex-wrap items-baseline justify-between gap-2 pt-1 border-t border-slate-100">
+                        <p className="text-slate-900 text-[15px] font-semibold">{displayName}</p>
+                        <p className="text-slate-500 text-[13px]">
+                          {r.provider.specialty} · {r.created_at}
+                        </p>
+                      </div>
+                    </article>
+                  )
+                })
+              : null}
+
+            {!reviews && !isLoading ? (
+              <p className="text-slate-600 text-[14px]" data-tl-card>
+                Reviews will appear here as patients share their experience.
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

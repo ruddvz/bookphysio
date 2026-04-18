@@ -338,12 +338,14 @@ function FocusableInput({
   placeholder,
   type = 'text',
   style: extraStyle,
+  'aria-label': ariaLabel,
 }: {
   value: string
   onChange: (v: string) => void
   placeholder?: string
   type?: string
   style?: React.CSSProperties
+  'aria-label'?: string
 }) {
   const [focused, setFocused] = useState(false)
   return (
@@ -352,6 +354,7 @@ function FocusableInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      aria-label={ariaLabel}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{ ...inputStyle, ...extraStyle, borderColor: focused ? 'var(--color-bp-primary)' : 'var(--color-bp-border)' }}
@@ -521,6 +524,7 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
             value={data.name}
             onChange={(v) => onChange({ ...data, name: v })}
             placeholder="Priya Sharma"
+            aria-label="Your name (without Dr. prefix)"
             style={{ borderRadius: '0', borderLeft: 'none', borderRight: 'none' }}
           />
           <div style={{

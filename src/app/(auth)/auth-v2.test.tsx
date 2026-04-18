@@ -15,7 +15,8 @@ const back = vi.fn()
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, back, refresh: vi.fn() }),
-  useSearchParams: () => new URLSearchParams('email=test%40example.com'),
+  // Long local part so masked display uses 6 bullets (matches verify-email mask rules)
+  useSearchParams: () => new URLSearchParams('email=testuser%40example.com'),
 }))
 
 vi.mock('@/components/BpLogo', () => ({
@@ -435,26 +436,23 @@ describe('VerifyOtpPage — v2 flag', () => {
   })
 
   it('OTP verification still works in v2 mode', async () => {
-    vi.useFakeTimers()
-    try {
-      setV2(true)
-      window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ role: 'patient' }),
-      }))
-      render(<VerifyOtpPage />)
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
-      })
-      fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
-      vi.advanceTimersByTime(800)
-      await waitFor(() => {
+    setV2(true)
+    window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ role: 'patient' }),
+    }))
+    render(<VerifyOtpPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
+    await waitFor(
+      () => {
         expect(push).toHaveBeenCalledWith('/patient/dashboard')
-      })
-    } finally {
-      vi.useRealTimers()
-    }
+      },
+      { timeout: 3000 },
+    )
   })
 })
 
@@ -500,7 +498,7 @@ describe('DoctorSignupPage — v2 flag', () => {
     render(<DoctorSignupPage />)
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
     await waitFor(() => {
-      expect(screen.getByText(/at least 2 characters/i)).toBeInTheDocument()
+      expect(screen.getByText(/Name must be at least 2 characters/i)).toBeInTheDocument()
     })
   })
 })

@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/fix-pr-112-tests-8913 — PR 112 test + testimonials fixes
+- Commit: test: fix PR 112 regressions (availability selects, auth, testimonials)
+- Files touched: src/app/provider/availability/Availability.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/doctor-signup/page.tsx, src/components/Testimonials.tsx, CHANGELOG.md
+- Tests added / changed: 859 passing (Availability + auth + Testimonials suites updated)
+- Build: not run in CI sandbox (prebuild requires full `.env`; `npm test` pass)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Provider availability UI uses `<select>` for times — tests now drive selects. Doctor signup step 1 name field has `aria-label`; regression test selects IAP, In-clinic, city from combobox via `mouseDown`, expects step 5 heading “Check your email”. Verify-email mock uses longer local part for mask. OTP v2 test drops fake timers (async redirect). Testimonials loads `/api/reviews?limit=3` via SWR when data exists.
+
 ## 2026-04-18 21:34 UTC — cursor/admin-dashboard-polish-fe31 — public detail chrome cleanup
 - Commit: <pending> (fix: hide remaining visible chrome everywhere else)
 - Files touched: src/components/dashboard/primitives.tsx, src/components/dashboard/primitives.test.tsx, src/app/city/[slug]/page.tsx, src/app/specialty/[slug]/page.tsx, src/components/specialties/SpecialtyArticle.tsx
