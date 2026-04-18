@@ -17,6 +17,10 @@ vi.mock('@/context/AuthContext', () => ({
   }),
 }))
 
+vi.mock('@/hooks/useUiV2', () => ({
+  useUiV2: () => false,
+}))
+
 function jsonResponse(body: unknown, ok = true): Response {
   return {
     ok,

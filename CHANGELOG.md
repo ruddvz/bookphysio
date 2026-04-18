@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.28 provider profile v2
+- Commit: 897a7c9 (feat(ui-v2): slice 16.28 — provider profile v2 with credential chip + public preview CTA)
+- Files touched: src/app/provider/profile/ProviderProfileV2.tsx, src/app/provider/profile/profile-v2.test.tsx, src/app/provider/profile/page.tsx, src/app/provider/profile/page.test.tsx
+- Tests added / changed: +10 (profile-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.29 `/provider/ai-assistant` — v2 assistant shell + capability chips
+- Notes: v2 gate via `useUiV2()`; v1 extracted as `ProviderProfileV1` to satisfy Rules of Hooks. Public CTA links to `/doctor/:userId`.
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx

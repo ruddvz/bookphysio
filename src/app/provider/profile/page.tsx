@@ -18,6 +18,8 @@ import {
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/context/AuthContext'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ProviderProfileV2 } from './ProviderProfileV2'
 import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
 import { cn } from '@/lib/utils'
 import {
@@ -116,7 +118,7 @@ async function resizeImage(file: File, maxPx = 400): Promise<Blob> {
   })
 }
 
-export default function ProviderProfile() {
+function ProviderProfileV1() {
   const { user } = useAuth()
   const [formData, setFormData] = useState<ProfileForm>(EMPTY_FORM)
   const [savedFormData, setSavedFormData] = useState<ProfileForm>(EMPTY_FORM)
@@ -500,4 +502,10 @@ export default function ProviderProfile() {
       </div>
     </div>
   )
+}
+
+export default function ProviderProfile() {
+  const isV2 = useUiV2()
+  if (isV2) return <ProviderProfileV2 />
+  return <ProviderProfileV1 />
 }
