@@ -35,42 +35,16 @@ Before starting 16.21: read `CHANGELOG.md` newest entry for any WIP handoff.
 
 ## 🎨 Phase 16 — Premium UI/UX Redesign (ui-v2) — ACTIVE
 
-> Flag-gated behind `NEXT_PUBLIC_UI_V2` / `bp_ui=v2` cookie / `?ui=v2`. See `docs/planning/EXECUTION-PLAN.md` Phase 16 for the full checklist.
+> Flag: `NEXT_PUBLIC_UI_V2` / `bp_ui=v2` / `?ui=v2`. **Checklist:** `docs/planning/EXECUTION-PLAN.md` Phase 16 (table + three open slices).
 
-### Shipped (Part A — 10 slices complete)
-- [x] **16.1 – 16.4** Foundations, public Navbar, hero trust strip, specialty CTA rail
-- [x] **16.5** Dashboard chrome — breadcrumbs + context strip
-- [x] **16.6** Provider AI elevation
-- [x] **16.7** Patient dashboard — `PatientCarePulse` + `PatientInsightsStrip`
-- [x] **16.8** Provider dashboard — `ProviderPulse`
-- [x] **16.9** Admin dashboard — `AdminPulse` + `AdminPulseRail`
-- [x] **16.10** Homepage reveal safety — `revealOnScroll()` helper; fixes blank-sections-below-hero regression
+### Shipped (compact)
+Everything through **16.22**, **16.24–16.40** is done — see EXECUTION-PLAN “Done (summary)” table.
 
-### In progress (Part B — page redesign gaps)
-**Priority 1 (public + auth, highest blast radius):**
-- [x] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
-- [x] **16.12** `/search` result cards
-- [x] **16.13** `/how-it-works`
-- [x] **16.14** `/doctor/[id]`, `/city/[slug]` (note: `/provider/[slug]` route doesn't exist — scope scaled to the two live routes)
-- [x] **16.15** `/book/[id]` booking flow — `BookingV2TrustStrip` under the step rail
-- [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline day-grouped (in PR #93)
-- [x] **16.17** `/patient/payments` — v2 ledger with Badge status + GST line (in PR #93 + #94)
-- [x] **16.18** `/patient/records` — v2 summary tiles + visit-frequency Sparkline (in PR #93)
-- [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
-- [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
-
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments ✓, records ✓, messages ✓, notifications ✓, profile ✓, pai/motio ✓, search ✓, specialty images
-
-**Priority 3 (provider surfaces):** 16.24–16.30 pending · **16.31–16.32** `/provider/bills/new`, `/provider/pending` ✓
-
-**Priority 4 (admin):** **16.33–16.35** listings, users, analytics ✓ (full Recharts charts → **16.38**)
-
-**Priority 5 (static + Hindi):** 16.36–16.37 ✓
-
-**Priority 6 (cross-cutting):** 16.38 Recharts ✓ · 16.39 Command palette ✓ · 16.40 Notification drawer ✓ · 16.41 Pulse de-dupe decision · 16.42 Flag flip to default-on
+### Open
+- **16.23** Specialty images *(often blocked on asset upload)* · **16.41** Pulse de-duplication · **16.42** Default-on flag + remove gates *(after 16.23 + 16.41)*
 
 ### Blockers / inbound
-- Specialty hero images + "after" treatment images — uploading in 2–3 days (slice **16.23** waits for this)
+- Specialty hero + after images — slice **16.23** waits on uploads
 - PR #83 (`claude/version-16.9-NV2gO`) — dashboard chrome + patient insights + admin pulse rail — open, both CodeRabbit findings resolved in commit `9c40b81`; ready to merge
 
 ---

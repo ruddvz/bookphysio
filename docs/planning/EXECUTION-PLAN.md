@@ -247,74 +247,27 @@
 
 ## PHASE 16 — Premium UI/UX Redesign (ui-v2, flag-gated)
 
-> Additive, opt-in redesign rolled out behind `NEXT_PUBLIC_UI_V2` / `bp_ui=v2` cookie / `?ui=v2` query. Every slice keeps v1 behavior the default so production is unchanged until the flag flips.
+> Additive redesign behind `NEXT_PUBLIC_UI_V2` / `bp_ui=v2` / `?ui=v2`. v1 stays default until **16.42**.
 
-### PART A — Foundations + shipped slices
+### Done (summary)
 
-- [x] **16.1** Foundations — dashboard primitives (`Sparkline`, `TrendDelta`, `Shimmer`, `Badge`, `Breadcrumbs`), `PageReveal` GSAP wrapper, `isUiV2` feature-flag resolver (PR 80)
-- [x] **16.2** Public Navbar uplift — `CommandPaletteHint` (⌘K / Ctrl+K) in the desktop Navbar, flag-gated, keyboard-shortcut wired, 7 unit tests
-- [x] **16.3** Hero trust strip — `HeroTrustStrip` combining `Sparkline` + `TrendDelta` from PR 80 primitives, flag-gated in `HeroSection`, props-driven so a later slice can feed live `/api/stats`, 6 unit tests
-- [x] **16.4** Specialty page uplift — `SpecialtyCTARail` with NCAHP credential chip, demand sparkline (role=patient), optional advisor tel: link, and primary booking CTA; flag-gated via `isUiV2Client()`, wired into `SpecialtyArticle` above the content cards, 5 unit tests
-- [x] **16.5** Dashboard chrome — flag-gated `DashboardBreadcrumbs` in `TopPillNav` (PR 80, 12 tests) + `DashboardContextStrip` (PR 83: role-aware chrome pill with India-locale date, weekday headline, role-specific tip, status badge; wired into `DashboardShell` between `PWAInstallPrompt` and children; 6 tests across flag-off, all three roles, locale, aria-region)
-- [x] **16.6** Provider AI elevation — AI moved to position 2 in `TopPillNav`, duplicate quick-action removed (PR 80)
-- [x] **16.7** Patient dashboard redesign — right-rail `PatientCarePulse` (visit cadence sparkline + `TrendDelta` + care team size + status badge; 30 tests) + left-column `PatientInsightsStrip` (care cadence strip with gap badge 14d/45d thresholds, 3-tile insights grid, Book CTA; 11 tests incl. fractional / future-date guards)
-- [x] **16.8** Provider dashboard redesign — `ProviderPulse` rail card with 4-week forward booking load sparkline, first-visit pipeline count, status badge (`In session` / `Busy week` / `Quiet week` / `Open diary` / `Steady`); India-time aware helpers in `provider-dashboard-utils.ts`; 31 tests
-- [x] **16.9** Admin dashboard redesign — `AdminPulse` right-rail card (monthly appointments sparkline, completion-rate tile, 5-state status badge; 20 tests) + `AdminPulseRail` top-of-page 4-KPI pill grid (active providers / pending approvals / total patients / completed GMV; integer-rupee `formatCompactInr`; 11 tests)
-- [x] **16.10** Homepage reveal safety — centralized `revealOnScroll()` helper (`immediateRender: false` + `clearProps`) so below-hero sections (`TopSpecialties`, `ProofSection`, `ProviderCTA`, `FAQ`, `WhereWeOperate`, `Testimonials`, `FeaturedDoctors`) can never get stuck at opacity:0 if ScrollTrigger fails to fire
+| Range | Theme |
+|-------|--------|
+| **16.1–16.10** | Foundations: dashboard primitives, Navbar, hero + specialty rails, dashboard chrome, patient/provider/admin pulse rails, homepage `revealOnScroll()` safety |
+| **16.11–16.15** | Public + booking: auth, `/search`, `/how-it-works`, `/doctor/[id]` + `/city/[slug]`, `/book/[id]` |
+| **16.16–16.22** | Patient: appointments, payments, records, messages, notifications, profile, PAI/Motio, patient search |
+| **16.24–16.32** | Provider: appointments, calendar/availability, earnings, patients, profile, AI assistant, messages/notifications, bills, pending |
+| **16.33–16.35** | Admin: listings, users, analytics |
+| **16.36–16.37** | Static legal pages + Hindi `/hi/*` mirrors |
+| **16.38–16.40** | Recharts on full charts, command palette (⌘K), notification drawer |
 
-### PART B — Page redesign gaps (still v1, prioritized)
+Per-slice detail and PR references live in `CHANGELOG.md` and git history.
 
-> Every slice must stay flag-gated via `useUiV2()`. Production behaviour is byte-identical until `bp_ui=v2`.
+### Remaining
 
-#### Priority 1 — High-traffic public + auth
-
-- [x] **16.11** Auth surfaces redesign — v2 card chrome + OTP keypad polish on `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`; reuse `Badge` + `Sparkline` primitives where relevant; keep `+91` phone input + Zod validation; ≥ 6 unit tests per surface
-- [x] **16.12** Search results redesign — provider result cards on `/search` use v2 tile primitives (availability pills, price chip, distance badge, "Book in 60s" CTA); adds pulse-style sort chips; keep `SpecialtyCTARail` integration
-- [x] **16.13** How-it-works redesign — v2 timeline strip above step grid, per-step `Badge` + `Sparkline` progress signal, v2 CTA footer with role-aware `TrendDelta` stat rail; flag-gated via `useUiV2()`; 8 unit tests
-- [x] **16.14** Provider detail + city pages — `/doctor/[id]` gets a flag-gated `ProviderV2TrustStrip` (IAP chip, live availability pill, `Book in 60s` CTA, location); `/city/[slug]` gets a `CityV2TrustChips` row (3 credential chips + weekly demand `Sparkline`). `/provider/[slug]` not in scope (route doesn't exist). Both components render `null` in v1 so SSR stays byte-identical; 7 + 7 unit tests.
-- [x] **16.15** Booking flow — new `BookingV2TrustStrip` under the existing step rail on `/book/[id]` (IAP provider chip + GST-invoiced + Encrypted UPI/Card + "Avg booking <n>s" with inverse `TrendDelta`). Returns `null` in v1 and on the success step so SSR + post-book flow stay byte-identical. Integer `₹` pricing preserved (existing `toLocaleString('en-IN')`); Razorpay handoff untouched. 8 unit tests.
-
-#### Priority 2 — Patient surfaces
-
-- [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens (flag-gated via `useUiV2()`; `PatientAppointmentsTimeline` + `PatientAppointmentDetailV2`; 23 new unit tests)
-- [x] **16.17** `/patient/payments` — v2 ledger card with `₹` integer formatter, `Badge` for paid/refunded, GST line items
-- [x] **16.18** `/patient/records` + visit-summary view — v2 summary tiles with `Sparkline` for progress signals
-- [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread `Badge`, empty-state illustrations
-- [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
-- [x] **16.21** `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
-- [x] **16.22** `/patient/search` — v2 filter rail (specialty, pincode, mode, availability) aligned with `/search` redesign
-- [ ] **16.23** Speciality page image + after-image slots — accept image uploads (incoming in 2–3 days), wire into `SPECIALTIES` + `SpecialtyCTARail`, tune mustard-yellow canvas backgrounds per specialty
-
-#### Priority 3 — Provider surfaces
-
-- [x] **16.24** `/provider/appointments` + `/provider/appointments/[id]` — v2 timeline with provider pulse tokens, quick actions (complete, reschedule, no-show)
-- [x] **16.25** `/provider/calendar` + `/provider/availability` — v2 grid chrome, day-template editor, `Badge` for bookings per slot; preserve existing India-time bucketing
-- [x] **16.26** `/provider/earnings` — v2 earnings tiles with `Sparkline` + `TrendDelta`, payout cadence badge, `₹` integer rupees (never paise)
-- [x] **16.27** `/provider/patients` + `/provider/patients/[id]` — v2 patient card with visit history sparkline, vitals chips, quick-note action
-- [x] **16.28** `/provider/profile` — v2 form chrome, NCAHP credential chip reuse, preview-on-public-page CTA
-- [x] **16.29** `/provider/ai-assistant` — v2 assistant shell with provider pulse tokens, visit-note autodraft CTA alignment
-- [x] **16.30** `/provider/messages` + `/provider/notifications` — parity with patient 16.19 but provider tokens
-- [x] **16.31** `/provider/bills/new` — v2 invoice builder, GST line-item chips, integer `₹` only
-- [x] **16.32** `/provider/pending` — v2 onboarding-progress stepper, document-status `Badge`s
-
-#### Priority 4 — Admin surfaces
-
-- [x] **16.33** `/admin/listings` — v2 approval queue table with `Badge` states, quick-approve action, review SLA sparkline
-- [x] **16.34** `/admin/users` — v2 user directory with role `Badge`, last-active `TrendDelta`, verification state
-- [x] **16.35** `/admin/analytics` — v2 `AdminPulseRail` at top (full Recharts grid → slice 16.38)
-
-#### Priority 5 — Static, legal, Hindi mirrors
-
-- [x] **16.36** `/about`, `/faq`, `/privacy`, `/terms` — v2 long-form chrome (typography, TOC sidebar, last-updated `Badge`)
-- [x] **16.37** Hindi mirrors under `/hi/*` — port every completed v2 slice to the Hindi route tree once the English surfaces have landed
-
-#### Priority 6 — Cross-cutting platform features
-
-- [x] **16.38** Recharts integration — adopt Recharts for analytics surfaces (`/admin/analytics`, provider earnings, patient records trends); keep `Sparkline` primitive for inline, reserve Recharts for full charts
-- [x] **16.39** Command palette (full) — replaces `CommandPaletteHint`; ⌘K opens a modal with jump-to-page, quick-actions, recent items; role-aware
-- [x] **16.40** Notification drawer — slide-over tied to `/patient/notifications` and `/provider/notifications` data with unread `Badge` on top nav
-- [ ] **16.41** Dashboard pulse de-duplication — decide whether `PatientCarePulse` (right rail) or `PatientInsightsStrip` (left column) wins for the patient dashboard; trim the other to avoid showing the same cadence twice; mirror the same review for admin (`AdminPulse` vs `AdminPulseRail`)
-- [ ] **16.42** ui-v2 flag flip — once Parts A + B are complete, set `NEXT_PUBLIC_UI_V2=true` by default and remove `useUiV2()` gates
+- [ ] **16.23** Specialty hero + after-image slots — wire uploads into `SPECIALTIES` / `SpecialtyCTARail` when assets arrive; tune per-specialty backgrounds *(often blocked on incoming uploads)*.
+- [ ] **16.41** Pulse de-dupe — one clear cadence story on patient dashboard (`PatientCarePulse` vs `PatientInsightsStrip`) and admin (`AdminPulse` vs `AdminPulseRail`); trim overlap.
+- [ ] **16.42** Default-on — `NEXT_PUBLIC_UI_V2=true`, then strip `useUiV2()` gates after **16.23** + **16.41** land.
 
 ---
 
