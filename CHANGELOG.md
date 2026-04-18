@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — cursor/full-green-review-fixes-0413 — Merge origin/main into PR 114 (resolve conflicts)
-- Commit: merge: resolve conflicts with main
+- Commit: e7e820c (merge: resolve conflicts with main)
 - Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/provider/availability/Availability.test.tsx, src/components/__tests__/Testimonials.test.tsx
 - Tests added / changed: took `origin/main` versions for auth + availability tests; restored main’s SWR-mocked `Testimonials.test.tsx` (live reviews) so assertions match `Testimonials.tsx`; unified CHANGELOG (PR #114 entries + main history)
 - Build: pass (`npm run lint`, `npm run type-check` after removing stale `.next`, `npm test` 856/856)
