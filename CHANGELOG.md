@@ -42,7 +42,7 @@
 - Build: type-check pass; lint 0 errors (pre-existing warnings elsewhere)
 - Status: done
 - Next up: 16.23 speciality page hero + after-image slots
-- Notes: `SearchContent` gains `variant="patient"` (dashboard sticky header, breadcrumb to /patient/dashboard). `PatientSearchFiltersRail` when `useUiV2()` + patient variant. Optional `pincode` query param on GET /api/providers — Zod-validated 6 digits; forces relational fallback and filters `locations.pincode`. Timeline: required `nowMs` from parent for react-hooks/purity.
+- Notes: `SearchContent` gains `variant="patient"` (dashboard sticky header, breadcrumb to /patient/dashboard). `PatientSearchFiltersRail` when `useUiV2()` + patient variant. Optional `pincode` query param on GET /api/providers — Zod-validated 6 digits; forces relational fallback and filters `locations.pincode`. Timeline: required `nowMs` from parent for react-hooks/purity. Separate docs commit: d97c68f.
 
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
