@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Merge origin/main into PR 113 (resolve conflicts)
-- Commit: (merge: origin/main into provider OTP branch)
+- Commit: 146e5d3 (merge: origin/main into PR 113 (resolve CHANGELOG + auth test conflicts))
 - Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx (+ merged main changes elsewhere)
 - Tests added / changed: auth-v2 + auth-regressions 58/58 passing after resolution
 - Build: n/a (merge commit)
