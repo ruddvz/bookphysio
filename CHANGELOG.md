@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/phase-16-slices-21-25-9290 — Slice 16.24 provider appointments v2 + provider_set_status API
+- Commit: 3fe82f3 (feat(ui-v2): slice 16.24 — provider appointments timeline + status actions)
+- Files touched: src/app/api/appointments/[id]/route.ts, src/lib/validations/booking.ts, src/app/provider/appointments/* (ProviderAppointmentsTimelineV2, provider-appointments-utils, page, [id]/page), provider-appointments-utils.test.ts, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
+- Tests added / changed: +2 (provider-appointments-utils.test.ts)
+- Build: type-check + lint 0 errors
+- Status: done
+- Next up: 16.25 provider calendar + availability v2 (same PR branch)
+- Notes: PATCH `action: provider_set_status` with `confirmed` | `completed` | `no_show` (provider-owned appointment, RLS). Outcome buttons only after slot start. Reschedule link goes to `?reschedule=true` (UI placeholder until booking flow wires provider reschedule).
+
 ## 2026-04-18 — cursor/slice-16-22-patient-search-9290 — Slice 16.22 patient search v2 filter rail
 - Commit: 44996b3 (feat(ui-v2): slice 16.22 — patient search v2 rail + optional pincode search)
 - Files touched: src/app/patient/search/PatientSearchFiltersRail.tsx (new), src/app/patient/search/patient-search-filters-rail.test.tsx (new), src/app/patient/search/page.tsx, src/app/search/SearchContent.tsx, src/app/api/providers/route.ts, src/lib/validations/search.ts, src/components/dashboard/DashboardShell.tsx, src/app/patient/appointments/page.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx, docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md, docs/CODEMAPS/pages.md
