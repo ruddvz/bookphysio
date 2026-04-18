@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Plan: provider signup OTP + password reset fix
+- Commit: (docs: plan for provider signup OTP, resume-onboarding, and 6-digit password-reset rewrite)
+- Files touched: docs/planning/plans/2026-04-18-provider-signup-otp-and-password-reset-fix.md, CHANGELOG.md
+- Tests added / changed: 0 (plan only — tests listed in the plan to be added during execution)
+- Build: n/a (docs only)
+- Status: done (plan); implementation not yet started
+- Next up: Execute slices 1–5 from the plan on this branch — start with Slice 1 (extract `OtpDigits` shared component) then Slice 2 (email/preflight + Step 5 banner + 503 on missing Resend env)
+- Notes: User reported provider Step 5 OTP never arrives, no resend, no resume path, and forgot-password broken. Plan (a) adds 503 preflight on missing Resend env to prevent orphan auth users, (b) surfaces send-failure banner on Step 5, (c) routes unconfirmed `provider_pending` logins back to `/doctor-signup?resume=1&email=…` with auto-resend, (d) replaces Supabase recovery-link with a 6-digit OTP flow (new migration `045_password_reset_otps.sql`). Delete `/update-password` page. Operator prerequisite: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_APP_URL` set and Resend sender-domain verified.
+
 ## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
 - Commit: 8ec94e7 (fix: resend OTP and email system)
 - Files touched: src/lib/resend.ts, src/lib/auth/email-otp.ts, src/app/api/auth/password-reset/route.ts, src/app/api/cron/daily-summary/route.ts
