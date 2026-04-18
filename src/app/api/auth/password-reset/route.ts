@@ -1,10 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { buildConfiguredAppUrl, getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 import { Resend } from 'resend'
 
 const maskedResponse = { message: 'If an account exists, a password reset email has been sent.' }
+
+const resetSchema = z.object({
+  email: z.string().email('Valid email is required'),
+})
 
 function escapeHtml(str: string): string {
   return str
@@ -17,14 +22,11 @@ function escapeHtml(str: string): string {
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
-  const email =
-    typeof body === 'object' && body && typeof (body as { email?: unknown }).email === 'string'
-      ? (body as { email: string }).email.trim().toLowerCase()
-      : null
-
-  if (!email || !email.includes('@')) {
+  const parsed = resetSchema.safeParse(body)
+  if (!parsed.success) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
   }
+  const email = parsed.data.email.trim().toLowerCase()
 
   const ip = getRequestIpAddress(request)
   try {

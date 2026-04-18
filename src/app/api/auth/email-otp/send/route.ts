@@ -1,19 +1,21 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { otpRatelimit } from '@/lib/upstash'
 import { createAndSendEmailOtp } from '@/lib/auth/email-otp'
 
+const sendSchema = z.object({
+  email: z.string().email('Valid email is required'),
+})
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
-  const email =
-    typeof body === 'object' && body && typeof (body as { email?: unknown }).email === 'string'
-      ? (body as { email: string }).email.trim().toLowerCase()
-      : null
-
-  if (!email || !email.includes('@')) {
+  const parsed = sendSchema.safeParse(body)
+  if (!parsed.success) {
     return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
   }
+  const email = parsed.data.email.trim().toLowerCase()
 
   const ip = getRequestIpAddress(request)
   try {
