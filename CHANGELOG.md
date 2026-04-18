@@ -35,8 +35,17 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.29 provider AI assistant v2
+- Commit: (pending) (feat(ui-v2): slice 16.29 — provider AI-assistant v2 shell + capability chips)
+- Files touched: src/app/provider/ai-assistant/ProviderAIAssistantV2.tsx, src/app/provider/ai-assistant/ai-assistant-v2.test.tsx, src/app/provider/ai-assistant/page.tsx
+- Tests added / changed: +5 (ai-assistant-v2.test.tsx)
+- Build: type-check pass (`tsc --noEmit`)
+- Status: done
+- Next up: 16.30 `/provider/messages` + `/provider/notifications` v2
+- Notes: `next/dynamic` mock in tests; v1 remains default export path when flag off.
+
 ## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.28 provider profile v2
-- Commit: 897a7c9 (feat(ui-v2): slice 16.28 — provider profile v2 with credential chip + public preview CTA)
+- Commit: dcbd856 (feat(ui-v2): slice 16.28 — provider profile v2 with credential chip + public preview CTA)
 - Files touched: src/app/provider/profile/ProviderProfileV2.tsx, src/app/provider/profile/profile-v2.test.tsx, src/app/provider/profile/page.tsx, src/app/provider/profile/page.test.tsx
 - Tests added / changed: +10 (profile-v2.test.tsx)
 - Build: type-check pass (`tsc --noEmit`)
