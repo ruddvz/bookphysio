@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import { StepConfirm } from './StepConfirm'
 import { StepPayment } from './StepPayment'
 import { StepSuccess } from './StepSuccess'
+import { BookingV2TrustStrip } from '@/components/booking/BookingV2TrustStrip'
 import { Check, Calendar, Clock, MapPin, ShieldCheck, User, ArrowLeft, Award, Sparkles, LayoutDashboard } from 'lucide-react'
 import Image from 'next/image'
 import { formatIndiaDateInput } from '@/lib/india-date'
@@ -162,7 +163,9 @@ export default function BookingInner({ locale }: { locale?: StaticLocale } = {})
 
       <main className="flex-1 py-12 px-6 md:py-20 lg:px-12">
         <div className="max-w-[1280px] mx-auto">
-          
+
+          <BookingV2TrustStrip step={step} />
+
           {/* Breadcrumb Back Button */}
           {step > 1 && step < 3 && (
             <div className="mb-10 animate-in fade-in slide-in-from-left-4 duration-500">

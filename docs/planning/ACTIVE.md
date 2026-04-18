@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.15 — Booking flow `/book/[id]` (Part B P1)**
+## 👉 NEXT UP: **Priority 2 kick-off — Slice 16.16 `/patient/appointments` (Part B P2)**
 
-Scope: `/book/[id]` — v2 stepper/progress UI, visit-format toggle chrome, price confirm panel, post-book receipt affordance.
-Flag-gated via `useUiV2()`. ≥ 6 unit tests on the stepper + confirm panel.
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.15.
+Phase 16 Part B Priority 1 is complete (slices 16.11 → 16.15 shipped). Next is Priority 2 (patient surfaces). Start with **16.16**: `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens. ≥ 6 unit tests.
+
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.16.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -50,7 +50,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [x] **16.12** `/search` result cards
 - [x] **16.13** `/how-it-works`
 - [x] **16.14** `/doctor/[id]`, `/city/[slug]` (note: `/provider/[slug]` route doesn't exist — scope scaled to the two live routes)
-- [ ] **16.15** `/book/[id]` booking flow
+- [x] **16.15** `/book/[id]` booking flow — `BookingV2TrustStrip` under the step rail
 
 **Priority 2 (patient surfaces):** 16.16–16.23 — appointments, payments, records, messages, notifications, profile, pai/motio, search, specialty images
 

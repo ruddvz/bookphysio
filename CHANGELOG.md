@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
+- Commit: <pending> (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
+- Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx
+- Tests added / changed: +8 (BookingV2TrustStrip.test.tsx). All green. Existing book/[id] step tests still 6/6 pass.
+- Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox); CI validates.
+- Status: done
+- Next up: 16.16 `/patient/appointments` — Priority 2 kick-off (v2 timeline grouped by day, Badge status, cancel/reschedule affordances)
+- Notes: Minimal additive approach — the existing `BookingInner.tsx` step rail chrome is already polished; instead of rewriting it, this slice adds one self-gating client component under the existing progress bar that surfaces trust + speed signal. Component returns `null` in v1 AND on step 3 (success), so SSR + the receipt flow are byte-identical with v1. Props: `step: 1|2|3`, `providerVerified?: boolean` (defaults true), `medianBookingSeconds?: number` (default 58), `deltaPct?: number` (default -12, rendered with `<TrendDelta inverse>` so negative = faster = emerald). Chips reuse the same `role=provider` (success variant) + `role=patient` (soft tones 2 + 3) palette we used in ProviderV2TrustStrip / CityV2TrustChips so the whole Part B surface reads as one family. Put the component in new `src/components/booking/` subtree rather than `specialties/` since booking isn't a specialty surface — cleaner semantics, no existing files to migrate. Direct per-file imports from `@/components/dashboard/primitives/{Badge,TrendDelta}` (same vitest-ambiguity workaround as slice 16.14). Integer ₹ pricing was already enforced by existing `toLocaleString('en-IN')` + `Math.round(... * 0.18)` — no changes needed to Razorpay handoff or price math.
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.14 Provider detail + city v2 trust surfaces
 - Commit: 9a94638 (feat(ui-v2): slice 16.14 — ProviderV2TrustStrip on /doctor/[id] + CityV2TrustChips on /city/[slug])
 - Files touched: src/components/specialties/ProviderV2TrustStrip.tsx (new), src/components/specialties/ProviderV2TrustStrip.test.tsx (new), src/components/specialties/CityV2TrustChips.tsx (new), src/components/specialties/CityV2TrustChips.test.tsx (new), src/app/doctor/[id]/page.tsx, src/app/city/[slug]/page.tsx, src/app/how-it-works/page.tsx
