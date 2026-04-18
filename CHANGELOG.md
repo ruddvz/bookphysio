@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.13 How-it-works v2 redesign
+- Commit: <pending> (feat(ui-v2): slice 16.13 — how-it-works timeline strip + per-step Sparkline + CTA stat rail)
+- Files touched: src/app/how-it-works/page.tsx, src/app/how-it-works/page.v2.test.tsx (new)
+- Tests added / changed: +8 (page.v2.test.tsx)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.14 Provider detail + city pages — v2 card chrome, availability strip, trust chips, "Book in 60s" primary CTA on `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
+- Notes: v1 byte-identical when `useUiV2()` off (regressions test still imports page.tsx; useSyncExternalStore returns false in jsdom). v2 additions: (1) 4-cell timeline strip above step grid with role="list"/"listitem" + aria-label="Booking progress timeline"; (2) per-step `Badge` replaces uppercase caption + per-step `Sparkline` with ariaLabel="<step> progress"; (3) v2 CTA footer (`data-testid=v2-cta-footer`) adds a proof-stat rail (`v2-cta-stats`) with 2 role-aware KPIs wrapped in `TrendDelta` (inverse=true when the metric is "smaller is better"). Role switch re-renders the stats + sparklines. All new DOM has `data-ui-version="v2"` for CSS targeting.
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — PR #91 CI fixes (16.11 + 16.12 unblock)
 - Commit: 3807e72 (fix(ci): PR #91 TS2739 SpecialtyCTARail props + jsx-a11y combobox ARIA)
 - Files touched: src/app/search/SearchContent.tsx, src/app/(auth)/auth-v2.test.tsx
