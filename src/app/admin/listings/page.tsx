@@ -7,6 +7,8 @@ import {
   SectionCard,
   StatTile,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { ApprovalStatusBadge, SlaSparkline } from './ListingsV2'
 
 type ApprovalStatus = 'pending' | 'approved' | 'rejected'
 
@@ -35,6 +37,7 @@ const TABS: { label: string; value: ApprovalStatus; icon: typeof Clock }[] = [
 ]
 
 export default function AdminListings() {
+  const uiV2 = useUiV2()
   const [activeTab, setActiveTab] = useState<ApprovalStatus>('pending')
   const [listings, setListings] = useState<ProviderListing[]>([])
   const [loading, setLoading] = useState(true)
@@ -129,7 +132,9 @@ export default function AdminListings() {
           label="Rejection deactivates"
           value="Listing"
           tone={1}
-        />
+        >
+          {uiV2 ? <SlaSparkline /> : null}
+        </StatTile>
       </div>
 
       <SectionCard
@@ -220,13 +225,17 @@ export default function AdminListings() {
                           {provider.experience_years}y exp
                         </span>
                       )}
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
-                        provider.approval_status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
-                        provider.approval_status === 'rejected' ? 'bg-red-50 text-red-600' :
-                        'bg-amber-50 text-amber-600'
-                      }`}>
-                        {provider.approval_status}
-                      </span>
+                      {uiV2 ? (
+                        <ApprovalStatusBadge status={provider.approval_status} />
+                      ) : (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
+                          provider.approval_status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
+                          provider.approval_status === 'rejected' ? 'bg-red-50 text-red-600' :
+                          'bg-amber-50 text-amber-600'
+                        }`}>
+                          {provider.approval_status}
+                        </span>
+                      )}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
                       <span>Reg: {regNo}</span>
