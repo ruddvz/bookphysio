@@ -35,6 +35,24 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(planning): 16.28–16.30 complete + NEXT UP 16.31
+- Commit: d59f3d9 (docs(planning): mark slices 16.28-16.30 complete; NEXT UP 16.31)
+- Files touched: docs/planning/ACTIVE.md, docs/planning/EXECUTION-PLAN.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: 16.31 `/provider/bills/new` — v2 invoice builder
+- Notes: EXECUTION-PLAN Phase 16 items 16.28–16.30 set to [x].
+
+## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — docs(changelog): slice 16.30 entry short SHA
+- Commit: db9439e (docs(changelog): add short SHA for slice 16.30 entry)
+- Files touched: CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: planning tick commit (see entry above)
+- Notes: Records fc75bb7 for slice 16.30 (could not embed in amend commit message).
+
 ## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.30 provider messages + notifications v2
 - Commit: fc75bb7 (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19))
 - Files touched: src/app/provider/messages/ProviderMessagesV2.tsx, src/app/provider/messages/messages-v2.test.tsx, src/app/provider/messages/page.tsx, src/app/provider/notifications/ProviderNotificationsV2.tsx, src/app/provider/notifications/notifications-v2.test.tsx, src/app/provider/notifications/page.tsx
