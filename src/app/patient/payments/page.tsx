@@ -11,6 +11,8 @@ import {
   ListRow,
   EmptyState,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientPaymentsLedger } from './PatientPaymentsLedger'
 
 interface Payment {
   id: string
@@ -41,6 +43,7 @@ function formatDate(iso: string) {
 }
 
 export default function PatientPayments() {
+  const uiV2 = useUiV2()
   const { data, isLoading, isError, refetch } = useQuery<{ payments: Payment[] }>({
     queryKey: ['patient-payments'],
     queryFn: async () => {
@@ -128,6 +131,8 @@ export default function PatientPayments() {
             description="Your transaction records will appear here after your first consultation."
             cta={{ label: 'Book a visit', href: '/search' }}
           />
+        ) : uiV2 ? (
+          <PatientPaymentsLedger payments={payments} />
         ) : (
           <div className="divide-y divide-[var(--color-pt-border-soft)]">
             {payments.map((p) => {
