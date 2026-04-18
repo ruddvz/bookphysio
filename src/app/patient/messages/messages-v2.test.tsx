@@ -6,7 +6,6 @@ import {
   unreadBadgeVariant,
   lastMessagePreview,
   groupMessagesByDay,
-  formatMessageTime,
   conversationSortKey,
 } from './messages-v2-utils'
 import type { MessageItem, ConversationItem } from './messages-v2-utils'

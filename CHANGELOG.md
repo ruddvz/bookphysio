@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/full-green-review-fixes-0413 — Full codebase green + security hardening
+- Commit: pending (fix: make repo green and harden review findings)
+- Files touched: src/components/nav/CommandPalette.tsx, src/components/nav/CommandPalette.test.tsx, src/components/search/CitySearchCombobox.tsx, src/components/search/CitySearchCombobox.test.tsx, src/app/patient/messages/PatientMessagesV2.tsx, src/app/provider/messages/ProviderMessagesV2.tsx, src/app/api/ai/pai/route.ts, src/lib/server/cron-auth.ts, src/app/api/cron/appointment-reminders/route.ts, src/app/api/cron/daily-summary/route.ts, src/app/api/cron/review-prompts/route.ts, src/app/api/payments/webhook/route.ts, src/app/api/provider/patients/[id]/profile/route.ts, src/components/__tests__/Testimonials.test.tsx, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/provider/availability/Availability.test.tsx, src/app/patient/messages/messages-v2.test.tsx, src/app/patient/payments/payments-v2.test.tsx, src/app/provider/messages/messages-v2.test.tsx, src/components/dashboard/PatientCarePulse.test.tsx
+- Tests added / changed: changed 9 existing test files (CommandPalette, CitySearchCombobox, Testimonials, auth-v2, auth-regressions, Availability, patient/provider messages, payments, PatientCarePulse)
+- Build: pass (lint + type-check + vitest + next build all green)
+- Status: done
+- Next up: Monitor CI/preview for parity with local green run; optional follow-up is migrate deprecated middleware.ts to proxy.ts before Next.js enforces it
+- Notes: Fixed CI-blocking react-hooks/set-state-in-effect errors in CommandPalette, repaired stale UI tests to current markup/copy, hardened cron auth to require CRON_SECRET, required auth on /api/ai/pai, validated webhook payment amounts + real patient email use, avoided leaking raw provider patient profile DB errors, and aligned provider messages list semantics with patient messages.
+
 ## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
 - Commit: 8ec94e7 (fix: resend OTP and email system)
 - Files touched: src/lib/resend.ts, src/lib/auth/email-otp.ts, src/app/api/auth/password-reset/route.ts, src/app/api/cron/daily-summary/route.ts

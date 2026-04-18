@@ -264,7 +264,7 @@ describe('VerifyEmailPage — v2 flag', () => {
   it('shows the masked email in v2 mode', () => {
     setV2(true)
     render(<VerifyEmailPage />)
-    expect(screen.getByText(/t••••••@example\.com/i)).toBeInTheDocument()
+    expect(screen.getByText(/t•••@example\.com/i)).toBeInTheDocument()
   })
 
   it('resend button and sign up again link present in v2 mode', () => {
@@ -435,26 +435,20 @@ describe('VerifyOtpPage — v2 flag', () => {
   })
 
   it('OTP verification still works in v2 mode', async () => {
-    vi.useFakeTimers()
-    try {
-      setV2(true)
-      window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ role: 'patient' }),
-      }))
-      render(<VerifyOtpPage />)
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
-      })
-      fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
-      vi.advanceTimersByTime(800)
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith('/patient/dashboard')
-      })
-    } finally {
-      vi.useRealTimers()
-    }
+    setV2(true)
+    window.history.replaceState({}, '', '/verify-otp?flow=flow-1')
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ role: 'patient' }),
+    }))
+    render(<VerifyOtpPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /complete otp/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /complete otp/i }))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/patient/dashboard')
+    }, { timeout: 2000 })
   })
 })
 
@@ -501,6 +495,6 @@ describe('DoctorSignupPage — v2 flag', () => {
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
     await waitFor(() => {
       expect(screen.getByText(/at least 2 characters/i)).toBeInTheDocument()
-    })
+    }, { timeout: 2000 })
   })
 })

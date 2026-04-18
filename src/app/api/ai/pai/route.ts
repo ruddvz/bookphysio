@@ -5,6 +5,8 @@ import { Redis } from '@upstash/redis'
 import { NextRequest, NextResponse } from 'next/server'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { aiChatRequestSchema } from '@/lib/validations/ai'
+import { createClient } from '@/lib/supabase/server'
+import { getDemoSessionFromCookies } from '@/lib/demo/session'
 
 const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -88,9 +90,17 @@ const PAI_SYSTEM_PROMPT = `
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const demoSession = !user ? await getDemoSessionFromCookies(req.cookies) : null
+
+    if (!user && !demoSession) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
+
     if (ratelimit) {
-      const ip = getRequestIpAddress(req) ?? 'unknown'
-      const { success } = await ratelimit.limit(`pai:${ip}`)
+      const rateLimitKey = user?.id ?? demoSession?.userId ?? getRequestIpAddress(req) ?? 'unknown'
+      const { success } = await ratelimit.limit(`pai:${rateLimitKey}`)
       if (!success) {
         return new NextResponse(
           'Rate limit exceeded. Please wait before asking PAI again.',

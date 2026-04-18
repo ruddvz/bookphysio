@@ -39,6 +39,27 @@ vi.mock('@/components/OtpInput', () => ({
   ),
 }))
 
+vi.mock('@/components/CityCombobox', () => ({
+  CityCombobox: ({
+    value,
+    onChange,
+    placeholder,
+  }: {
+    value: string
+    onChange: (city: string, state?: string) => void
+    placeholder?: string
+  }) => (
+    <input
+      role="combobox"
+      aria-controls="city-combobox-listbox"
+      aria-expanded={false}
+      placeholder={placeholder}
+      value={value}
+      onChange={(e) => onChange(e.target.value, 'Maharashtra')}
+    />
+  ),
+}))
+
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
@@ -312,7 +333,7 @@ describe('Auth regressions', () => {
 
     render(<DoctorSignupPage />)
 
-    fireEvent.change(screen.getByPlaceholderText('Dr. Priya Sharma'), {
+    fireEvent.change(screen.getByPlaceholderText('Priya Sharma'), {
       target: { value: 'Dr. Meera Shah' },
     })
     fireEvent.change(screen.getByPlaceholderText('98765 43210'), {
@@ -326,8 +347,8 @@ describe('Auth regressions', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: /next: professional details/i }))
 
-    fireEvent.change(screen.getByPlaceholderText('e.g. L-12345'), {
-      target: { value: 'IAP-12345' },
+    fireEvent.change(screen.getByPlaceholderText('e.g. NCAHP/PT/2024/12345'), {
+      target: { value: 'NCAHP/PT/2024/12345' },
     })
     fireEvent.change(screen.getByPlaceholderText('5'), {
       target: { value: '8' },
@@ -336,29 +357,30 @@ describe('Auth regressions', () => {
     fireEvent.click(screen.getByLabelText('Sports Physio'))
     fireEvent.click(screen.getByRole('button', { name: /next: practice details/i }))
 
+    fireEvent.click(screen.getByRole('button', { name: 'In-clinic' }))
     fireEvent.change(screen.getByPlaceholderText('Sharma Physiotherapy Centre'), {
       target: { value: 'Physio Plus' },
     })
     fireEvent.change(screen.getByPlaceholderText('Shop 12, Green Park Main Road'), {
       target: { value: '12 Marine Drive' },
     })
-    fireEvent.change(screen.getByRole('combobox'), {
+    fireEvent.change(screen.getByPlaceholderText('Search city… (e.g. Surat)'), {
       target: { value: 'Mumbai' },
     })
     fireEvent.change(screen.getByPlaceholderText('110001'), {
       target: { value: '400001' },
     })
-    fireEvent.click(screen.getByLabelText('In-clinic'))
     fireEvent.click(screen.getByRole('button', { name: /next: pricing & availability/i }))
 
-    fireEvent.change(screen.getAllByPlaceholderText('500')[0], {
+    fireEvent.change(screen.getAllByPlaceholderText('500')[0]!, {
       target: { value: '900' },
     })
     fireEvent.click(screen.getByLabelText('30 min'))
     fireEvent.click(screen.getByRole('button', { name: /complete registration/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/check your email!/i)).toBeInTheDocument()
+      expect(screen.getByText(/check your email/i)).toBeInTheDocument()
+      expect(screen.getByText(/we sent a 6-digit code to/i)).toBeInTheDocument()
     })
 
     expect(fetchMock).toHaveBeenCalledWith('/api/providers/onboard-signup', expect.objectContaining({

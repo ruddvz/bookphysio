@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   // 4. Idempotency check — if already paid, return 200 without re-processing
   const { data: existingPayment, error: lookupError } = await supabaseAdmin
     .from('payments')
-    .select('id, status, razorpay_payment_id, appointment_id')
+    .select('id, status, razorpay_payment_id, appointment_id, amount_inr')
     .eq('razorpay_order_id', razorpayOrderId)
     .maybeSingle()
 
@@ -82,6 +82,24 @@ export async function POST(request: NextRequest) {
   if (existingPayment.razorpay_payment_id) {
     // Already processed — idempotent 200
     return NextResponse.json({ received: true })
+  }
+
+  if (typeof existingPayment.amount_inr !== 'number' || existingPayment.amount_inr <= 0) {
+    console.error('[webhook] Payment record missing valid amount_inr:', {
+      razorpayOrderId,
+      amountInr: existingPayment.amount_inr,
+    })
+    return NextResponse.json({ error: 'Payment record invalid' }, { status: 500 })
+  }
+
+  const expectedAmountPaise = existingPayment.amount_inr * 100
+  if (!Number.isInteger(payment.amount) || payment.amount <= 0 || payment.amount !== expectedAmountPaise) {
+    console.error('[webhook] Payment amount mismatch:', {
+      razorpayOrderId,
+      expectedAmountPaise,
+      receivedAmountPaise: payment.amount,
+    })
+    return NextResponse.json({ error: 'Invalid payment amount' }, { status: 400 })
   }
 
   // 5. Mark payment as paid and confirm appointment — atomic via sequential admin calls
@@ -122,7 +140,7 @@ export async function POST(request: NextRequest) {
     if (appt) {
       const { data: patient } = await supabaseAdmin
         .from('users')
-        .select('full_name, phone')
+        .select('full_name, phone, email')
         .eq('id', appt.patient_id)
         .single()
 
@@ -137,19 +155,21 @@ export async function POST(request: NextRequest) {
         const date = startsAt ? new Date(startsAt).toLocaleDateString('en-IN', { dateStyle: 'long' }) : 'TBD'
         const time = startsAt ? new Date(startsAt).toLocaleTimeString('en-IN', { timeStyle: 'short' }) : 'TBD'
 
-        // Send email (awaited, independent error handling)
-        try {
-          await sendBookingConfirmation({
-            to: `${patient.phone ?? ''}@sms.placeholder`, // phone-first; swap for email when available
-            patientName: patient.full_name,
-            providerName: provider.full_name,
-            appointmentDate: date,
-            appointmentTime: time,
-            visitType: appt.visit_type,
-            amountInr: appt.fee_inr,
-          })
-        } catch (emailError) {
-          console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+        // Send email only when a real email is available.
+        if (patient.email) {
+          try {
+            await sendBookingConfirmation({
+              to: patient.email,
+              patientName: patient.full_name,
+              providerName: provider.full_name,
+              appointmentDate: date,
+              appointmentTime: time,
+              visitType: appt.visit_type,
+              amountInr: appt.fee_inr,
+            })
+          } catch (emailError) {
+            console.error('[webhook] Confirmation email failed (non-fatal):', emailError)
+          }
         }
 
         // Send SMS + WhatsApp (awaited separately, independent error handling)

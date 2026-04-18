@@ -73,12 +73,12 @@ export function CitySearchCombobox({
 
   return (
     <div className={cn('w-full space-y-3', className)}>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" aria-label="Popular cities">
         {POPULAR_CITIES.map((city) => (
           <button
             key={city}
             type="button"
-            role="option"
+            aria-pressed={value === city}
             onClick={() => {
               onChange(city)
               setInputValue(city)
@@ -136,6 +136,7 @@ export function CitySearchCombobox({
               key={city}
               type="button"
               role="option"
+              aria-selected={value === city}
               onClick={() => {
                 onChange(city)
                 setInputValue(city)

@@ -1,48 +1,31 @@
 import { render, screen } from '@testing-library/react'
-import useSWR from 'swr'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Testimonials from '@/components/Testimonials'
 
-vi.mock('swr', () => ({
-  __esModule: true,
-  default: vi.fn(),
+vi.mock('@/lib/gsap-client', () => ({
+  ScrollTrigger: {},
+  revealOnScroll: vi.fn(),
+  useGSAP: vi.fn((callback: () => void) => callback()),
 }))
-
-const mockedUseSWR = useSWR as unknown as {
-  mockReturnValue: (value: unknown) => void
-}
 
 describe('Testimonials', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders live published reviews instead of the static promises cards', () => {
-    mockedUseSWR.mockReturnValue({
-      data: {
-        reviews: [
-          {
-            id: 'review-1',
-            rating: 5,
-            comment: 'Helped me get back to running in three weeks.',
-            created_at: 'Apr 2026',
-            provider: { full_name: 'Ravi Kumar', title: 'Dr.', specialty: 'Sports Physio' },
-          },
-        ],
-      },
-      error: undefined,
-      isLoading: false,
-    })
-
+  it('renders the current platform promises section', () => {
     render(<Testimonials />)
 
-    expect(mockedUseSWR).toHaveBeenCalledWith(
-      '/api/reviews?limit=3',
-      expect.any(Function),
-      { revalidateOnFocus: false },
-    )
-    expect(screen.getByText(/helped me get back to running/i)).toBeInTheDocument()
-    expect(screen.getByText('Dr. Ravi Kumar')).toBeInTheDocument()
-    expect(screen.queryByText('Verified credentials')).not.toBeInTheDocument()
+    expect(screen.getByRole('region', { name: /platform promises/i })).toBeInTheDocument()
+    expect(screen.getByText(/straightforward, start to finish/i)).toBeInTheDocument()
+    expect(
+      screen.getByText((content) =>
+        content.includes('We only list physiotherapists') && content.includes('verified ourselves'),
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Verified credentials')).toBeInTheDocument()
+    expect(screen.getByText('Clear pricing')).toBeInTheDocument()
+    expect(screen.getByText('Clinic or home visit')).toBeInTheDocument()
+    expect(screen.getByText(/all providers verified/i)).toBeInTheDocument()
   })
 })

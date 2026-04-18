@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { sendAppointmentReminder } from '@/lib/resend'
 import { sendAppointmentReminderSms } from '@/lib/msg91'
 import { formatIndiaDateTime } from '@/lib/india-date'
+import { isAuthorizedCron } from '@/lib/server/cron-auth'
 
 /** Reminder window: appointments starting within this many hours from now (start). */
 const REMINDER_WINDOW_START_HOURS = 0
@@ -25,14 +26,10 @@ function extractStartsAt(availabilities: unknown): string | null {
  *
  * Sends daily reminders for upcoming appointments within the next 24 hours.
  * Designed to be called once per day by Vercel Cron (8 AM IST / 2:30 AM UTC).
- * Protected by x-vercel-cron header or CRON_SECRET bearer token.
+ * Protected by CRON_SECRET bearer token (Vercel cron header is advisory only).
  */
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET
-  const isVercelCron = !!request.headers.get('x-vercel-cron')
-
-  if (!isVercelCron && (!cronSecret || authHeader !== `Bearer ${cronSecret}`)) {
+  if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
