@@ -47,6 +47,8 @@ vi.mock('@/components/CityCombobox', () => ({
   }) => (
     <input
       role="combobox"
+      aria-controls="city-combobox-listbox"
+      aria-expanded={false}
       value={value}
       onChange={(e) => onValueChange(e.target.value)}
     />

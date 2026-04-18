@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — PR #91 CI fixes (16.11 + 16.12 unblock)
+- Commit: <pending> (fix(ci): PR #91 TS2739 SpecialtyCTARail props + jsx-a11y combobox ARIA)
+- Files touched: src/app/search/SearchContent.tsx, src/app/(auth)/auth-v2.test.tsx
+- Tests added / changed: 0 (CI unblock — build + lint only; tests from 16.11/16.12 remain green)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.13 How-it-works redesign — step timeline + Sparkline progress indicators + provider/patient role toggle + v2 CTA footer
+- Notes: Merged origin/claude/next-phases-hRiOh (PR #91, slices 16.11 + 16.12) into assigned dev branch. Two CI blockers fixed: (1) `SpecialtyCTARail` invocation in `SearchContent.tsx:296` was missing required `specialtyLabel` + `bookingHref` props (TS2739) — now passes `specialty` filter value + `searchBasePath` query; (2) `CityCombobox` mock in `auth-v2.test.tsx:49` failed `jsx-a11y/role-has-required-aria-props` — added `aria-controls="city-combobox-listbox"` + `aria-expanded={false}`. Both fixes preserve the ui-v2 flag-gated behaviour end-to-end.
+
 ## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.12 Search results redesign
 - Commit: ed14c3e (feat(ui-v2): slice 16.12 — search result cards + sort chips + SpecialtyCTARail)
 - Files touched: src/components/DoctorCard.tsx, src/app/search/SearchContent.tsx, src/app/search/search-v2.test.tsx (new)

@@ -293,7 +293,10 @@ export default function SearchContent({ locale }: { locale?: StaticLocale } = {}
           {/* v2: specialty CTA rail when a specialty filter is active */}
           {isV2 && specialty && (
             <div className="mt-3 -mx-1">
-              <SpecialtyCTARail />
+              <SpecialtyCTARail
+                specialtyLabel={specialty}
+                bookingHref={`${searchBasePath}?specialty=${encodeURIComponent(specialty)}`}
+              />
             </div>
           )}
         </div>
