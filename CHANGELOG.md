@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — cursor/slices-16.28-16.30-spec-56c7 — Slice 16.30 provider messages + notifications v2
-- Commit: (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19)) — short SHA omitted (self-referential in amend)
+- Commit: fc75bb7 (feat(ui-v2): slice 16.30 — provider messages + notifications v2 (parity with patient 16.19))
 - Files touched: src/app/provider/messages/ProviderMessagesV2.tsx, src/app/provider/messages/messages-v2.test.tsx, src/app/provider/messages/page.tsx, src/app/provider/notifications/ProviderNotificationsV2.tsx, src/app/provider/notifications/notifications-v2.test.tsx, src/app/provider/notifications/page.tsx
 - Tests added / changed: +12 (messages-v2.test.tsx + notifications-v2.test.tsx)
 - Build: type-check pass (`tsc --noEmit`)
