@@ -10,10 +10,13 @@ import {
   StatTile,
   ListRow,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { LastActiveDelta, RoleBadge, type DirectoryRole } from './UsersV2'
 
 type RegistryTab = 'patients' | 'providers' | 'suspended'
 
 export default function AdminUsers() {
+  const uiV2 = useUiV2()
   const [activeTab, setActiveTab] = useState<RegistryTab>('patients')
   const [actionMessage, setActionMessage] = useState<string | null>(null)
 
@@ -151,11 +154,19 @@ export default function AdminUsers() {
                      <div className="flex items-center gap-6">
                         <div className="hidden lg:flex flex-col items-end gap-1">
                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last Activity</span>
-                           <span className="text-[13px] font-bold text-slate-900">{currentRow.lastActive}</span>
+                           <div className="flex items-center gap-2">
+                             <span className="text-[13px] font-bold text-slate-900">{currentRow.lastActive}</span>
+                             {uiV2 ? <LastActiveDelta label={currentRow.lastActive} /> : null}
+                           </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                           <button onClick={() => setActionMessage(`Inspecting ${currentRow.name}`)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><Eye size={18} /></button>
-                           <button onClick={() => setActionMessage(`Suspending ${currentRow.name}`)} className="p-2 text-slate-400 hover:text-rose-600 transition-colors"><Ban size={18} /></button>
+                        <div className="flex items-center gap-3">
+                           {uiV2 ? (
+                             <RoleBadge role={currentRow.role as DirectoryRole} />
+                           ) : null}
+                           <div className="flex items-center gap-1">
+                             <button onClick={() => setActionMessage(`Inspecting ${currentRow.name}`)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><Eye size={18} /></button>
+                             <button onClick={() => setActionMessage(`Suspending ${currentRow.name}`)} className="p-2 text-slate-400 hover:text-rose-600 transition-colors"><Ban size={18} /></button>
+                           </div>
                         </div>
                      </div>
                    }
