@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/phase-16-17-pr93-CTFYI — Slice 16.18 Patient records v2 summary
+- Commit: 240e31a (feat(patient): slice 16.18 — v2 records summary tiles + visit-frequency Sparkline)
+- Files touched: src/app/patient/records/records-utils.ts (new), src/app/patient/records/PatientRecordsSummaryV2.tsx (new), src/app/patient/records/records-v2.test.tsx (new), src/app/patient/records/page.tsx
+- Tests added / changed: +25 (records-v2.test.tsx). All green.
+- Build: type-check — only pre-existing sandbox errors; no new errors from my files. CI validates.
+- Status: done
+- Next up: 16.19 `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
+- Notes: Self-gated behind useUiV2(). v2 layout: (1) visit-frequency card with Sparkline (6-month monthly buckets) + summary/plan mini-stats; (2) provider-grouped tiles — each shows visit number badge, date, patient_summary excerpt (160 chars), plan excerpt (120 chars), Plan success Badge. buildVisitSparkline uses IST-safe new Date(visit_date + 'T00:00:00') to avoid timezone day-shift for visit_date strings. page.tsx renders PatientRecordsSummaryV2 when uiV2=true, falls back to existing SectionCard+ListRow in v1. Cherry-picked onto claude/issue-16-16-rFkjG to update PR #93.
+
 ## 2026-04-18 — claude/phase-16-17-pr93-CTFYI — Slice 16.17 Patient payments v2 ledger
 - Commit: 8fce9e5 (feat(patient): slice 16.17 — v2 payments ledger with Badge status + GST line items)
 - Files touched: src/app/patient/payments/payments-utils.ts (new), src/app/patient/payments/PatientPaymentsLedger.tsx (new), src/app/patient/payments/payments-v2.test.tsx (new), src/app/patient/payments/page.tsx

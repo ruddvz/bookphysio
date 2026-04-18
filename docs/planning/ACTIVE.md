@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.18 `/patient/records` (Part B P2)**
+## 👉 NEXT UP: **Slice 16.19 `/patient/messages` + `/patient/notifications` (Part B P2)**
 
-Slices 16.16 (appointments) and 16.17 (payments) are done — both in PR #93. Next is **16.18**: `/patient/records` + visit-summary view — v2 summary tiles with `Sparkline` for progress signals, role=patient tokens. ≥ 6 unit tests.
+Slices 16.16–16.18 are done (all in PR #93). Next is **16.19**: `/patient/messages` + `/patient/notifications` — v2 thread layout, unread `Badge`, empty-state illustrations. ≥ 6 unit tests.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.18.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.19.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -55,7 +55,8 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 **Priority 2 (patient surfaces):**
 - [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]`
 - [x] **16.17** `/patient/payments`
-- 16.18–16.23 — records, messages, notifications, profile, pai/motio, search, specialty images
+- [x] **16.18** `/patient/records`
+- 16.19–16.23 — messages, notifications, profile, pai/motio, search, specialty images
 
 **Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
 
