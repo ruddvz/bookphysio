@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.23** — speciality page hero + after-image slots (assets incoming; Part B P2)
+## 👉 NEXT UP: **Slice 16.25** — `/provider/calendar` + `/provider/availability` v2 grid chrome (Part B P3)
 
-Slices **16.21** (`/patient/pai`, `/patient/motio` — `PatientAIShellV2`) and **16.22** (`/patient/search` — `PatientSearchFiltersRail` + optional `pincode` on `/api/providers`) ship together on rollup branch **`cursor/phase-16-slices-21-25-9290`** (single PR for 16.21–16.25 tranche).
+Rollup branch **`cursor/phase-16-slices-21-25-9290`** — single open PR for **16.21–16.25** (do not open a new PR per slice). **16.24** shipped: provider appointments v2 day-grouped timeline + `provider_set_status` API + detail quick actions when ui-v2.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.23.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 3 → 16.25.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 

@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { cancelAppointmentSchema, rescheduleAppointmentSchema, updateNotesSchema } from '@/lib/validations/booking'
+import {
+  cancelAppointmentSchema,
+  providerSetStatusSchema,
+  rescheduleAppointmentSchema,
+  updateNotesSchema,
+} from '@/lib/validations/booking'
 import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/booking/policy'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
@@ -186,6 +191,65 @@ export async function PATCH(
   }
 
   if (!user) return jsonNoStore({ error: 'Unauthorized' }, { status: 401 })
+
+  if (body.action === 'provider_set_status') {
+    const parsed = providerSetStatusSchema.safeParse(body)
+    if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
+
+    const { supabaseAdmin } = await import('@/lib/supabase/admin')
+    const { data: row, error: loadErr } = await supabaseAdmin
+      .from('appointments')
+      .select('id, status, provider_id, availabilities (starts_at)')
+      .eq('id', id)
+      .eq('provider_id', user.id)
+      .single()
+
+    if (loadErr || !row) return jsonNoStore({ error: 'Appointment not found' }, { status: 404 })
+
+    const startsAt = extractStartsAt(row.availabilities)
+    const current = row.status as string
+    const next = parsed.data.status
+    const nowMs = Date.now()
+    const slotMs = startsAt ? Date.parse(startsAt) : NaN
+    const slotStartedOrPassed = Number.isFinite(slotMs) && slotMs <= nowMs
+
+    if (['cancelled', 'completed', 'no_show'].includes(current)) {
+      return jsonNoStore({ error: 'This appointment can no longer be updated' }, { status: 409 })
+    }
+
+    if (next === 'confirmed') {
+      if (current !== 'pending') {
+        return jsonNoStore({ error: 'Only pending appointments can be confirmed' }, { status: 409 })
+      }
+    } else {
+      if (!['confirmed', 'pending'].includes(current)) {
+        return jsonNoStore({ error: 'Invalid status transition' }, { status: 409 })
+      }
+      if (!slotStartedOrPassed) {
+        return jsonNoStore({ error: 'Outcome can be recorded only after the scheduled start time' }, { status: 409 })
+      }
+    }
+
+    const { data: updated, error: upErr } = await supabaseAdmin
+      .from('appointments')
+      .update({ status: next })
+      .eq('id', id)
+      .eq('provider_id', user.id)
+      .select('*, availabilities (*), locations (*), payments (status, amount_inr, gst_amount_inr, created_at)')
+      .single()
+
+    if (upErr || !updated) {
+      console.error('[api/appointments/[id]] provider_set_status failed:', upErr)
+      return jsonNoStore({ error: 'Failed to update appointment' }, { status: 500 })
+    }
+
+    return jsonNoStore(
+      withAppointmentDetailNotes(updated, {
+        includeProviderNotes: true,
+        includeLegacyNotes: true,
+      }),
+    )
+  }
 
   if (body.action === 'update_notes') {
     const { supabaseAdmin } = await import('@/lib/supabase/admin')
