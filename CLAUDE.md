@@ -12,12 +12,37 @@ bookphysio.in is a physiotherapy booking platform for India. Connects patients w
 
 Run these in parallel before doing anything else:
 
-1. **Read Codemaps** — `docs/CODEMAPS/OVERVIEW.md` (full architecture). Then drill into the relevant area map: `pages.md`, `components.md`, `api.md`, `lib.md`
-2. **Check Git Status** — `rtk git status` + `rtk git log --oneline -5`
-3. **Read ACTIVE.md** — `docs/planning/ACTIVE.md` (current task queue, what's next)
-4. **Read EXECUTION-PLAN.md** — `docs/planning/EXECUTION-PLAN.md` (phase status)
+1. **Read CHANGELOG.md** — `CHANGELOG.md` (newest entry = where the previous agent stopped + explicit `Next up:` pointer)
+2. **Read ACTIVE.md** — `docs/planning/ACTIVE.md` (`NEXT UP` line at the top is the starting point)
+3. **Read EXECUTION-PLAN.md** — `docs/planning/EXECUTION-PLAN.md` (phase checkbox state)
+4. **Read Codemaps** — `docs/CODEMAPS/OVERVIEW.md` (full architecture). Then drill into the relevant area map: `pages.md`, `components.md`, `api.md`, `lib.md`
+5. **Check Git Status** — `rtk git status` + `rtk git log --oneline -5`
 
 Only after Phase 0 is complete, proceed to the relevant workflow below.
+
+---
+
+## MANDATORY Session-Handoff Protocol (Read Before Any Commit)
+
+Every agent — without exception — must keep `CHANGELOG.md` honest so the next
+agent (fresh context) can resume instantly.
+
+1. **Append to `CHANGELOG.md` after every commit.** Use the block template at
+   the top of that file. One entry per commit, newest on top of the log.
+2. **Commit every logical slice.** A slice = a commit = a CHANGELOG entry.
+   Never accumulate uncommitted WIP across slices.
+3. **Low-token handoff.** When context budget is tight (~20% remaining):
+   STOP work → commit current WIP (even partial) → push →
+   write a CHANGELOG entry with `Status: wip` and an explicit `Next up:`
+   pointing to the exact slice id in `EXECUTION-PLAN.md`. Never attempt one
+   more slice at low budget — the handoff quality matters more than the extra work.
+4. **`Next up:` is mandatory** on every entry. Name a slice id
+   (e.g. `16.11 auth surfaces redesign — Part B P1`) or a direct question
+   for the human. Never leave it empty.
+5. **Dev branch lock:** this stream's dev branch is
+   `claude/fix-pr-81-tests-Cdyms`. PR branches have their own names
+   (e.g. `claude/version-16.9-NV2gO`). Never push to a branch you weren't
+   assigned to.
 
 ---
 

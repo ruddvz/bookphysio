@@ -6,9 +6,19 @@
 
 ---
 
+## 👉 NEXT UP: **Slice 16.11 — Auth surfaces redesign (Part B P1)**
+
+Scope: `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`.
+Keep `+91` phone input + Zod validation. Flag-gated via `useUiV2()`. ≥ 6 unit tests per surface.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.11.
+
+Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
+
+---
+
 ## ✅ COMPLETION STATUS: Phases 14 + 15 live in production; Phase 16 (ui-v2) in full redesign rollout ✓
 
-**Last updated:** 2026-04-17
+**Last updated:** 2026-04-18
 
 ---
 
