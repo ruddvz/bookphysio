@@ -100,6 +100,72 @@ export async function sendAppointmentReminder({
   })
 }
 
+/** Shared branded HTML wrapper for all transactional auth emails. */
+function renderAuthEmail({
+  title,
+  preheader,
+  bodyHtml,
+  cta,
+}: {
+  title: string
+  preheader: string
+  bodyHtml: string
+  cta?: { label: string; url: string }
+}): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>${escapeHtml(title)}</title></head>
+<body style="margin:0;padding:0;background:#F7F8F9;font-family:Inter,Arial,sans-serif;">
+  <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(preheader)}</div>
+  <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:12px;padding:40px 32px;box-shadow:0 1px 4px rgba(0,0,0,.06);">
+    <img src="${escapeHtml(appUrl)}/logo.png" alt="bookphysio.in" style="height:28px;margin-bottom:28px;" />
+    <h2 style="color:#00766C;font-size:22px;font-weight:900;margin:0 0 12px;">${escapeHtml(title)}</h2>
+    ${bodyHtml}
+    ${cta ? `<a href="${escapeHtml(cta.url)}" style="display:inline-block;background:#FF6B35;color:#fff;font-size:15px;font-weight:900;padding:14px 28px;border-radius:24px;text-decoration:none;margin:20px 0;">${escapeHtml(cta.label)}</a>` : ''}
+    <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+    <p style="color:#999;font-size:12px;margin:0;">bookphysio.in — Physiotherapy booking for India</p>
+  </div>
+</body>
+</html>`
+}
+
+export async function sendAdminNewProviderAlert({
+  providerName,
+  email,
+  submittedAt,
+}: {
+  providerName: string
+  email: string
+  submittedAt: string
+}) {
+  const adminEmail = process.env.ADMIN_ALERT_EMAIL
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+  if (!adminEmail || !fromEmail) return
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://bookphysio.in'
+
+  return resend.emails.send({
+    from: fromEmail,
+    to: adminEmail,
+    subject: `New provider application: ${sanitizeSubject(providerName)}`,
+    html: renderAuthEmail({
+      title: 'New Provider Application',
+      preheader: `${providerName} has submitted a provider application for review.`,
+      bodyHtml: `
+        <p style="color:#333;font-size:15px;line-height:1.6;margin:0 0 16px;">
+          A new physiotherapist has submitted an application and is awaiting review.
+        </p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;color:#555;margin-bottom:16px;">
+          <tr><td style="padding:6px 0;font-weight:600;width:120px;">Name</td><td>${escapeHtml(providerName)}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Email</td><td>${escapeHtml(email)}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Submitted</td><td>${escapeHtml(submittedAt)}</td></tr>
+        </table>
+      `,
+      cta: { label: 'Review Application', url: `${appUrl}/admin/listings` },
+    }),
+  }).catch((e: unknown) => console.error('[resend] sendAdminNewProviderAlert failed:', e))
+}
+
 export async function sendReviewPrompt({
   to,
   patientName,

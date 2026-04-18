@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sanitizeReturnPath, resolvePostAuthRedirect, clearDemoSessionCookies } from '@/lib/demo/session'
 
 export async function GET(request: NextRequest) {
@@ -16,6 +17,21 @@ export async function GET(request: NextRequest) {
 
   if (error || !data.user) {
     return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+  }
+
+  // Belt-and-braces: ensure Google OAuth users always get role='patient'
+  if (data.user.app_metadata?.provider === 'google' && data.user.id) {
+    await supabaseAdmin
+      .from('users')
+      .upsert(
+        {
+          id: data.user.id,
+          role: 'patient',
+          full_name: (data.user.user_metadata?.full_name as string | undefined) ?? data.user.email ?? '',
+        },
+        { onConflict: 'id', ignoreDuplicates: true },
+      )
+      .catch((e: unknown) => console.error('[api/auth/callback] Google upsert failed:', e))
   }
 
   const { data: profile, error: profileError } = await supabase
