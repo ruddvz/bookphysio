@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { Mail, ArrowLeft, KeyRound, RotateCcw, ArrowRight } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
 import { savePendingOtp } from '@/lib/auth/pending-otp'
-import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 const forgotSchema = z.object({
@@ -27,8 +26,6 @@ export default function ForgotPasswordPage() {
   const [focused, setFocused] = useState(false)
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  
-  const supabase = createClient()
 
   function handleChange(value: string) {
     setIdentifier(value)
@@ -47,12 +44,15 @@ export default function ForgotPasswordPage() {
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
       
       if (isEmail) {
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(identifier, {
-          redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
+        const res = await fetch('/api/auth/password-reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: identifier }),
         })
-        
-        if (resetError) {
-          setError(resetError.message)
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({})) as { error?: string }
+          setError(data.error || 'Failed to send reset email. Please try again.')
           return
         }
       } else {

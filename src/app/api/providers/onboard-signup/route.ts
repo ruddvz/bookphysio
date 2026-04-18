@@ -3,6 +3,7 @@ import { getRequestIpAddress } from '@/lib/server/runtime'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { otpRatelimit } from '@/lib/upstash'
 import { parseIndiaDate } from '@/lib/india-date'
+import { createAndSendEmailOtp } from '@/lib/auth/email-otp'
 import { z } from 'zod'
 import {
   buildAvailabilitySlotsInIndia,
@@ -255,11 +256,8 @@ export async function POST(request: NextRequest) {
 
   try {
     // 1. Create the Supabase auth user via the admin client.
-    //    Using admin.createUser() is reliable in server-side Route Handlers —
-    //    the anon signUp() can fail in server context due to email rate limits
-    //    or SMTP configuration checks. email_confirm: false means the user must
-    //    confirm their email before logging in. The confirmation email is sent
-    //    client-side by Step 5 via supabase.auth.resend() immediately on mount.
+    //    email_confirm: false — user must verify via our 6-digit OTP email (sent below),
+    //    not Supabase's built-in mailer (which is disabled; all email goes via Resend).
     //
     //    NOTE: role is intentionally NOT set in user_metadata here.
     //    The handle_new_user trigger copies the metadata role into users.role, and
@@ -416,6 +414,14 @@ export async function POST(request: NextRequest) {
 
         if (availabilityError) throw availabilityError
       }
+    }
+
+    // 8. Send 6-digit email OTP via Resend so Step 5 can verify the provider's email.
+    //    Fire-and-forget: a failure here does not roll back the signup; the provider
+    //    can resend from Step 5 using /api/auth/email-otp/send.
+    const otpResult = await createAndSendEmailOtp(email, userId as string)
+    if (!otpResult.ok) {
+      console.error('Provider signup: OTP send failed after user creation', otpResult.error)
     }
 
     return NextResponse.json({ success: true }, { status: 201 })

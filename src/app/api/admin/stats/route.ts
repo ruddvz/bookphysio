@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const demoSession = !user ? await getDemoSessionFromCookies(request.cookies) : null
 
-  if (!user && demoSession?.role === 'admin') {
+  if (!user && demoSession?.role === 'admin' && process.env.DEMO_ADMIN_FALLBACK_ENABLED === 'true') {
     return jsonNoStore(getDemoAdminStats())
   }
 

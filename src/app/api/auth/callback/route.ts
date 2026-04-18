@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { sanitizeReturnPath, resolvePostAuthRedirect } from '@/lib/demo/session'
+import { sanitizeReturnPath, resolvePostAuthRedirect, clearDemoSessionCookies } from '@/lib/demo/session'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -31,5 +31,7 @@ export async function GET(request: NextRequest) {
   const role = profile?.role ?? 'patient'
   const redirectTo = resolvePostAuthRedirect(role, returnTo)
 
-  return NextResponse.redirect(`${origin}${redirectTo}`)
+  const response = NextResponse.redirect(`${origin}${redirectTo}`)
+  clearDemoSessionCookies(response)
+  return response
 }
