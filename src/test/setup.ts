@@ -28,6 +28,18 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
   }
 }
 
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  globalThis.IntersectionObserver = class IntersectionObserver {
+    constructor() {}
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return []
+    }
+  }
+}
+
 // Mock next/navigation
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = await importOriginal() as Record<string, unknown>

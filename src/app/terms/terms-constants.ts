@@ -1,0 +1,18 @@
+export const TERMS_SECTIONS = [
+  { id: 'acceptance', label: '1. Acceptance of terms' },
+  { id: 'eligibility', label: '2. Eligibility' },
+  { id: 'service', label: '3. What BookPhysio is' },
+  { id: 'not-medical', label: '4. Not a medical service' },
+  { id: 'accounts', label: '5. Accounts and access' },
+  { id: 'bookings', label: '6. Bookings and payments' },
+  { id: 'cancellation', label: '7. Cancellations and refunds' },
+  { id: 'conduct', label: '8. Acceptable use' },
+  { id: 'provider', label: '9. Provider obligations' },
+  { id: 'content', label: '10. Content and intellectual property' },
+  { id: 'liability', label: '11. Limitation of liability' },
+  { id: 'indemnity', label: '12. Indemnity' },
+  { id: 'termination', label: '13. Suspension and termination' },
+  { id: 'law', label: '14. Governing law and disputes' },
+  { id: 'changes', label: '15. Changes to these terms' },
+  { id: 'contact', label: '16. Contact and grievance' },
+] as const
