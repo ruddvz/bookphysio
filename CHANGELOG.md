@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/simplify-pr103-plan-7c79 — Phase 17 plan simplification
+- Commit: 7bcddfe (docs: simplify PR 103 plan into 5 agent-ready slices (Phase 17))
+- Files touched: docs/superpowers/plans/2026-04-18-search-fixes-and-id-compaction.md (rewritten), docs/planning/EXECUTION-PLAN.md (Phase 17 added), docs/planning/ACTIVE.md (NEXT UP updated)
+- Tests added / changed: 0
+- Build: n/a (docs only)
+- Status: done
+- Next up: 17.1 — Fix unapproved provider leak in `src/app/api/providers/route.ts:282` + migration 044
+- Notes: PR #103 was a verbose reference plan. Rewrote as 5 numbered slices (17.1–17.5), each with exact file paths, line numbers, precise diffs to make, test cases to write, and a commit message. Added Phase 17 block to EXECUTION-PLAN.md and updated ACTIVE.md NEXT UP pointer. Agent should checkout `claude/fix-search-mobile-ui-sxKR6` and work through slices in order.
+
 ## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
 - Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
 - Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
