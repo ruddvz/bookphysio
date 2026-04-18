@@ -97,7 +97,7 @@
 - Next up: 16.11 auth surfaces redesign — Part B P1 (flag-gated v2 card chrome + OTP keypad polish across 7 auth pages)
 - Notes: PR #88 introduced 4 Supabase fire-and-forget queries using .catch() — PostgrestFilterBuilder is a thenable but not a full Promise (no .catch()). Fixed all 4 to use { error } destructuring. Test fix: GET handler now requires NextRequest since it reads the URL for rate-limit scope.
 
-
+## 2026-04-18 — claude/next-phases-2t7bI — Phases 4-6 auth+admin fixes
 - Commit: b6a1728 (feat(auth+admin): phases 4-6 — OAuth role fix, approval state machine, admin email alerts)
 - Files touched: src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/app/api/admin/listings/route.ts, src/app/admin/listings/page.tsx, src/lib/resend.ts, src/app/api/providers/onboard-signup/route.ts, supabase/migrations/042_provider_approval_state.sql, supabase/migrations/043_oauth_role_default.sql
 - Tests added / changed: 0 (server-side logic + UI tabs — CI validates)
