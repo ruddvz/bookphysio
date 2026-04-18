@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/organize-file-structure-2B6D3 — File structure cleanup + placement enforcement
+- Commit: 2dc7765 (chore: organize file structure + enforce placement rules)
+- Files touched: 19 files — moves, deletes, new rule doc, new hook script, settings.json, CLAUDE.md
+- Tests added / changed: 0
+- Build: n/a (no source changes)
+- Status: done
+- Next up: Slice 16.21 — `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)
+- Notes: IMG_046*.png are iPhone screenshots (NOT PWA icons — real icons in public/). vercel_ls/whoami were temp garbage. PreToolUse hook warns before any future misplaced root write.
+
 ## 2026-04-18 — cursor/phase-17-search-fixes-5f15 — Fix TS + SearchFilters drawer + jsdom IntersectionObserver
 - Commit: 820b8a9 (fix: SearchFilters duplicate drawer state + loosen filters typing + IO stub in test setup)
 - Files touched: src/app/search/SearchFilters.tsx, src/app/api/providers/filters.ts, src/test/setup.ts
