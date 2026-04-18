@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.14 Provider detail + city v2 trust surfaces
-- Commit: <pending> (feat(ui-v2): slice 16.14 — ProviderV2TrustStrip on /doctor/[id] + CityV2TrustChips on /city/[slug])
+- Commit: 9a94638 (feat(ui-v2): slice 16.14 — ProviderV2TrustStrip on /doctor/[id] + CityV2TrustChips on /city/[slug])
 - Files touched: src/components/specialties/ProviderV2TrustStrip.tsx (new), src/components/specialties/ProviderV2TrustStrip.test.tsx (new), src/components/specialties/CityV2TrustChips.tsx (new), src/components/specialties/CityV2TrustChips.test.tsx (new), src/app/doctor/[id]/page.tsx, src/app/city/[slug]/page.tsx, src/app/how-it-works/page.tsx
 - Tests added / changed: +15 (ProviderV2TrustStrip.test.tsx: 8; CityV2TrustChips.test.tsx: 7). All green. Full suite: 592/601 passing; the 9 failing tests are pre-existing availability/auth/testimonials flakes unrelated to this slice (verified via `git stash` + rerun).
 - Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox — Supabase URL etc. missing); CI validates.
