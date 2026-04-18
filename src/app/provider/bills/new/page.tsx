@@ -17,6 +17,8 @@ import {
   PageHeader,
   SectionCard,
 } from '@/components/dashboard/primitives'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { BillV2Sidebar, GstLineItemChips } from './BillsV2'
 
 interface ProviderProfile {
   full_name: string | null
@@ -58,6 +60,7 @@ function defaultInvoiceNumber(): string {
 }
 
 function NewBillForm() {
+  const uiV2 = useUiV2()
   const searchParams = useSearchParams()
   const profileId = searchParams.get('profileId')
 
@@ -337,6 +340,10 @@ function NewBillForm() {
               ))}
             </div>
           </SectionCard>
+
+          {uiV2 ? (
+            <GstLineItemChips subtotal={totals.subtotal} includeGst={includeGst} />
+          ) : null}
         </div>
 
         <div className="space-y-6">
@@ -378,6 +385,10 @@ function NewBillForm() {
                 </button>
              </div>
           </SectionCard>
+
+          {uiV2 ? (
+            <BillV2Sidebar invoiceNumber={invoiceNumber} patientName={patientName} />
+          ) : null}
 
           <SectionCard role="provider" title="Additional Context">
              <div className="space-y-4">
