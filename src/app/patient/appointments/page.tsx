@@ -17,10 +17,13 @@ import {
   parseTab,
   formatApptDate,
   providerDisplayName,
+  STATUS_LABEL,
   type AppointmentItem,
   type AppointmentTab,
 } from './appointments-utils'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientAppointmentsTimeline } from './PatientAppointmentsTimeline'
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
@@ -30,13 +33,6 @@ const STATUS_COLORS: Record<string, string> = {
   no_show: 'bg-slate-50 text-slate-400 border-slate-200',
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
-  confirmed: 'Confirmed',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-  no_show: 'No Show',
-}
 
 function AppointmentsSkeleton() {
   return (
@@ -55,6 +51,7 @@ function PatientAppointmentsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const uiV2 = useUiV2()
 
   const [tab, setTab] = useState<AppointmentTab>(() => parseTab(searchParams.get('tab')))
   const [appointments, setAppointments] = useState<AppointmentItem[]>([])
@@ -148,6 +145,8 @@ function PatientAppointmentsContent() {
               description={tab === 'upcoming' ? 'Your upcoming appointments will appear here.' : 'Your session history will appear here after your first visit.'}
               cta={tab === 'upcoming' ? { label: 'Book a visit', href: '/search' } : undefined}
             />
+          ) : uiV2 ? (
+            <PatientAppointmentsTimeline appointments={filtered} tab={tab} />
           ) : (
             <div className="divide-y divide-[var(--color-pt-border-soft)]">
               {filtered.map((appt) => (
@@ -170,7 +169,7 @@ function PatientAppointmentsContent() {
                         </Link>
                       )}
                       <div className={cn("px-2.5 py-0.5 rounded-full text-[11px] font-semibold border", STATUS_COLORS[appt.status])}>
-                        {STATUS_LABELS[appt.status] || appt.status}
+                        {STATUS_LABEL[appt.status] ?? appt.status}
                       </div>
                       <Link
                         href={`/patient/appointments/${appt.id}`}

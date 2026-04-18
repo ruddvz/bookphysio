@@ -35,6 +35,48 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/consolidate-16-16-to-16-20-b42e — Consolidation + CodeRabbit fixes
+- Commit: 171f4d9 (fix(cr): address CodeRabbit comments from PRs 93/94/95)
+- Files touched: src/app/patient/appointments/PatientAppointmentsTimeline.tsx, src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/page.tsx, src/app/patient/payments/PatientPaymentsLedger.tsx, src/app/patient/payments/payments-v2.test.tsx
+- Tests added / changed: 0 new (1 pre-existing test bug fixed in payments-v2.test.tsx makePayment helper)
+- Build: type-check pass (`tsc --noEmit` clean). Full suite: 741/752 passing; 11 pre-existing failures only.
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- Notes: CodeRabbit fixes: (1) Removed `'use client'` from PatientAppointmentsTimeline — no hooks/events, Server Component candidate; (2) Extracted shared `rescheduleModal` variable in appointments/[id]/page.tsx to de-duplicate the RescheduleModal JSX used by both v1 and v2 branches; (3) Removed local `STATUS_LABELS` map from appointments/page.tsx — now imports `STATUS_LABEL` from appointments-utils (single source of truth, standardized `No-show`); (4) Removed redundant `as string` cast from PatientPaymentsLedger.tsx line 77; (5) Passed `nowDate` (derived from `nowMs`) to `canPatientCancelAppointment` in Timeline so reschedule eligibility uses the same reference time as day-grouping. Also fixed pre-existing test bug in payments-v2.test.tsx `makePayment` helper — `??` was overwriting explicit `null` provider_name with the default; changed to `'provider_name' in overrides` guard.
+
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.20 Patient profile v2
+- Commit: 114d38e (feat(ui-v2): slice 16.20 — patient profile v2 form chrome + consent toggles + role Badge)
+- Files touched: src/app/patient/profile/PatientProfileV2.tsx (new), src/app/patient/profile/profile-v2.test.tsx (new), src/app/patient/profile/page.tsx
+- Tests added / changed: +14 (profile-v2.test.tsx).
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.21 `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens
+- Notes: Additive overlay, self-gates via useUiV2(). Avatar initials (first+last word), role Badge, Phone Verified badge, read-only pill fields, consent toggles, security card, trust card.
+
+## 2026-04-18 — cursor/slice-16-19-messages-notifications-b42e — Slice 16.19 Patient messages + notifications v2
+- Commit: 3d82794 (feat(ui-v2): slice 16.19 — patient messages + notifications v2 thread layout + unread Badge)
+- Files touched: src/app/patient/messages/PatientMessagesV2.tsx (new), src/app/patient/messages/messages-v2-utils.ts (new), src/app/patient/messages/messages-v2.test.tsx (new), src/app/patient/messages/page.tsx, src/app/patient/notifications/PatientNotificationsV2.tsx (new), src/app/patient/notifications/notifications-v2-utils.ts (new), src/app/patient/notifications/notifications-v2.test.tsx (new), src/app/patient/notifications/page.tsx, src/components/dashboard/primitives/Badge.tsx
+- Tests added / changed: +43 (22 messages-v2 + 21 notifications-v2).
+- Build: type-check pass (`tsc --noEmit` clean).
+- Status: done
+- Next up: 16.20 `/patient/profile`
+
+## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.17 Patient payments v2 ledger
+- Commit: 1ccf982 (feat(patient): slice 16.17 — v2 payments ledger with Badge status + GST line items)
+- Files touched: src/app/patient/payments/payments-utils.ts (new), src/app/patient/payments/PatientPaymentsLedger.tsx (new), src/app/patient/payments/payments-v2.test.tsx (new), src/app/patient/payments/page.tsx
+- Tests added / changed: +23 (payments-v2.test.tsx). All green.
+- Build: type-check pass. CI validates.
+- Status: done
+- Next up: 16.18 `/patient/records`
+
+## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.16 patient appointments v2 redesign
+- Commit: 787b58c (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
+- Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new)
+- Tests added / changed: +26 (9 helper + 8 timeline + 9 detail)
+- Build: pass (`next build` green; type-check + targeted eslint clean)
+- Status: done
+- Next up: 16.17 `/patient/payments`
+
 ## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
 - Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
 - Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx

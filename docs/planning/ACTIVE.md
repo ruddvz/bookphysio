@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Priority 2 kick-off — Slice 16.16 `/patient/appointments` (Part B P2)**
+## 👉 NEXT UP (after consolidation PR merges): **Slice 16.21 `/patient/pai` + `/patient/motio` v2 AI-assistant shell (Part B P2)**
 
-Phase 16 Part B Priority 1 is complete (slices 16.11 → 16.15 shipped). Next is Priority 2 (patient surfaces). Start with **16.16**: `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens. ≥ 6 unit tests.
+Slices 16.16–16.20 complete. Next is **16.21**: `/patient/pai` + `/patient/motio` — v2 AI-assistant shell with role=patient pulse tokens. ≥ 6 unit tests.
 
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.16.
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.21.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -51,8 +51,13 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [x] **16.13** `/how-it-works`
 - [x] **16.14** `/doctor/[id]`, `/city/[slug]` (note: `/provider/[slug]` route doesn't exist — scope scaled to the two live routes)
 - [x] **16.15** `/book/[id]` booking flow — `BookingV2TrustStrip` under the step rail
+- [x] **16.16** `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline day-grouped (in PR #93)
+- [x] **16.17** `/patient/payments` — v2 ledger with Badge status + GST line (in PR #93 + #94)
+- [x] **16.18** `/patient/records` — v2 summary tiles + visit-frequency Sparkline (in PR #93)
+- [x] **16.19** `/patient/messages` + `/patient/notifications` — v2 thread layout, unread Badge, empty-state illustrations
+- [x] **16.20** `/patient/profile` — v2 form chrome, avatar + pill fields, consent toggles
 
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments, payments, records, messages, notifications, profile, pai/motio, search, specialty images
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
 
 **Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
 

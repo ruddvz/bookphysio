@@ -9,7 +9,9 @@ import { useState } from 'react'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
 import { formatIndiaDateTime } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
+import { useUiV2 } from '@/hooks/useUiV2'
 import RescheduleModal from './RescheduleModal'
+import { PatientAppointmentDetailV2 } from './PatientAppointmentDetailV2'
 
 type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -50,6 +52,7 @@ export default function PatientAppointmentDetail() {
   const rescheduleParam = searchParams.get('reschedule') === 'true'
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [showReschedule, setShowReschedule] = useState(rescheduleParam)
+  const uiV2 = useUiV2()
 
   const { data: appt, isLoading, isError } = useQuery<AppointmentDetail>({
     queryKey: ['appointment', 'patient', id],
@@ -135,6 +138,37 @@ export default function PatientAppointmentDetail() {
           ? `Online payment failed · Consultation ₹${appt.fee_inr.toLocaleString('en-IN')} + GST ₹${gst.toLocaleString('en-IN')}`
           : `Consultation ₹${appt.fee_inr.toLocaleString('en-IN')} + GST ₹${gst.toLocaleString('en-IN')} · Pay during the visit`
   const providerNotes = appt.provider_notes ?? appt.notes
+
+  const rescheduleModal = showReschedule && canCancel ? (
+    <RescheduleModal
+      appointmentId={appt.id}
+      providerId={appt.provider_id}
+      providerName={doctorName}
+      currentSlotDate={appt.availabilities.starts_at}
+      onClose={() => setShowReschedule(false)}
+      onSuccess={() => setShowReschedule(false)}
+    />
+  ) : null
+
+  if (uiV2) {
+    return (
+      <>
+        <PatientAppointmentDetailV2
+          appt={appt}
+          doctorName={doctorName}
+          refCode={refCode}
+          canReschedule={canCancel}
+          confirmCancel={confirmCancel}
+          onReschedule={() => setShowReschedule(true)}
+          onRequestCancel={() => setConfirmCancel(true)}
+          onKeepIt={() => setConfirmCancel(false)}
+          onConfirmCancel={() => cancelMut.mutate()}
+          cancelPending={cancelMut.isPending}
+        />
+        {rescheduleModal}
+      </>
+    )
+  }
 
   return (
     <div className="max-w-[800px] mx-auto px-6 py-12 animate-in fade-in duration-500 delay-100 fill-mode-both">
@@ -319,17 +353,7 @@ export default function PatientAppointmentDetail() {
         </div>
       )}
 
-      {/* Reschedule modal */}
-      {showReschedule && canCancel && (
-        <RescheduleModal
-          appointmentId={appt.id}
-          providerId={appt.provider_id}
-          providerName={doctorName}
-          currentSlotDate={appt.availabilities.starts_at}
-          onClose={() => setShowReschedule(false)}
-          onSuccess={() => setShowReschedule(false)}
-        />
-      )}
+      {rescheduleModal}
     </div>
   )
 }
