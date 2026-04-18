@@ -46,4 +46,25 @@ describe('TopPillNav', () => {
     expect(screen.getByRole('link', { name: 'Notifications' })).not.toHaveClass('hidden')
     expect(screen.getByRole('link', { name: 'Messages' })).not.toHaveClass('hidden')
   })
+
+  it('renders a fixed admin icon avatar and no breadcrumb strip for admin', () => {
+    render(
+      <TopPillNav
+        role="admin"
+        items={[
+          { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
+          { href: '/admin/listings', label: 'Approvals', icon: Bell },
+        ]}
+        profileHref="/admin"
+        roleLabel="Administrator"
+      >
+        <div>Admin content</div>
+      </TopPillNav>,
+    )
+
+    expect(screen.getByTestId('admin-avatar-icon')).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument()
+    expect(screen.getByText('Administrator')).toBeInTheDocument()
+    expect(screen.queryByText('AK')).not.toBeInTheDocument()
+  })
 })

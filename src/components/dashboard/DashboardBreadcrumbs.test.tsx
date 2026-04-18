@@ -100,4 +100,10 @@ describe('<DashboardBreadcrumbs />', () => {
     const { container } = render(<DashboardBreadcrumbs role="patient" items={[]} />)
     expect(container.firstChild).toBeNull()
   })
+
+  it('renders nothing for admin when the chrome suppresses admin breadcrumbs', () => {
+    usePathnameMock.mockReturnValue('/admin/listings')
+    const { container } = render(<DashboardBreadcrumbs role="admin" items={[]} />)
+    expect(container.firstChild).toBeNull()
+  })
 })

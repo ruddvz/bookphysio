@@ -3,7 +3,7 @@
 import { Badge } from '@/components/dashboard/primitives/Badge'
 import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 
-export type DirectoryRole = 'Patient' | 'Provider' | 'Suspended'
+export type DirectoryRole = 'Patient' | 'Provider' | 'Pending' | 'Suspended'
 
 export interface RoleBadgeProps {
   role: DirectoryRole
@@ -20,6 +20,13 @@ export function RoleBadge({ role }: RoleBadgeProps) {
   if (role === 'Provider') {
     return (
       <Badge role="admin" variant="success" data-testid="role-badge-provider">
+        {role}
+      </Badge>
+    )
+  }
+  if (role === 'Pending') {
+    return (
+      <Badge role="admin" variant="warning" data-testid="role-badge-pending">
         {role}
       </Badge>
     )

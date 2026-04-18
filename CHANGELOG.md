@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 20:55 UTC — cursor/admin-dashboard-polish-fe31 — admin dashboard chrome + live registry cleanup
+- Commit: <pending> (fix: polish admin dashboard chrome and registry)
+- Files touched: src/components/dashboard/TopPillNav.tsx, src/components/dashboard/DashboardShell.tsx, src/app/admin/page.tsx, src/app/admin/listings/page.tsx, src/app/admin/users/page.tsx, src/app/admin/users/UsersV2.tsx, src/components/dashboard/TopPillNav.test.tsx, src/components/dashboard/DashboardBreadcrumbs.test.tsx, src/app/admin/page.test.tsx, src/app/admin/users/users-v2.test.tsx
+- Tests added / changed: 4 files changed (DashboardBreadcrumbs.test.tsx, TopPillNav.test.tsx, page.test.tsx, users-v2.test.tsx)
+- Build: pass (`npm run lint` on touched files, focused `vitest` 23/23, `npm run type-check`)
+- Status: done
+- Next up: 16.23 — Specialty hero + after-image slots (blocked on asset uploads)
+- Notes: Admin-only chrome now hides the breadcrumb strip and context strip, page headers show only primary headlines, admin nav avatar is a fixed ShieldCheck icon treatment, admin home renders the main heading immediately while stats load, approvals page no longer exposes raw server error text, and `/admin/users` now uses live `/api/admin/users` + `/api/admin/stats` data with pending-aware badges and simple pagination instead of fake placeholder records.
+
 ## 2026-04-18 — claude/fix-resend-otp-email-9G6Sm — Fix resend OTP + email system
 - Commit: 8ec94e7 (fix: resend OTP and email system)
 - Files touched: src/lib/resend.ts, src/lib/auth/email-otp.ts, src/app/api/auth/password-reset/route.ts, src/app/api/cron/daily-summary/route.ts

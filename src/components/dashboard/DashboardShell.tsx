@@ -88,7 +88,7 @@ export function DashboardShell({
       roleLabel={config.roleLabel}
     >
       <PWAInstallPrompt role={role} />
-      <DashboardContextStrip role={role} className="mb-4" />
+      {role === 'admin' ? null : <DashboardContextStrip role={role} className="mb-4" />}
       {children}
     </TopPillNav>
   )
