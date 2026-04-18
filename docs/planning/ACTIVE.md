@@ -15,11 +15,11 @@
 - Phase 6: Email infrastructure + admin alert ✓ (b6a1728)
 - **User action required:** Apply migrations 042 + 043 in Supabase; set ADMIN_ALERT_EMAIL env var.
 
-## 👉 NEXT UP: **Slice 16.11 — Auth surfaces redesign (Part B P1)**
+## 👉 NEXT UP: **Priority 2 kick-off — Slice 16.16 `/patient/appointments` (Part B P2)**
 
-Scope: `/login`, `/signup`, `/doctor-signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/verify-email`.
-Keep `+91` phone input + Zod validation. Flag-gated via `useUiV2()`. ≥ 6 unit tests per surface.
-Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 1 → 16.11.
+Phase 16 Part B Priority 1 is complete (slices 16.11 → 16.15 shipped). Next is Priority 2 (patient surfaces). Start with **16.16**: `/patient/appointments` + `/patient/appointments/[id]` — v2 timeline grouped by day, `Badge` status, cancel/reschedule affordances using role=patient tokens. ≥ 6 unit tests.
+
+Full spec: `docs/planning/EXECUTION-PLAN.md` → Phase 16 → Part B → Priority 2 → 16.16.
 
 Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the previous session.
 
@@ -46,11 +46,11 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 
 ### In progress (Part B — page redesign gaps)
 **Priority 1 (public + auth, highest blast radius):**
-- [ ] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
-- [ ] **16.12** `/search` result cards
-- [ ] **16.13** `/how-it-works`
-- [ ] **16.14** `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
-- [ ] **16.15** `/book/[id]` booking flow
+- [x] **16.11** Auth surfaces (`/login`, `/signup`, `/doctor-signup`, `/verify-otp`, password reset flow)
+- [x] **16.12** `/search` result cards
+- [x] **16.13** `/how-it-works`
+- [x] **16.14** `/doctor/[id]`, `/city/[slug]` (note: `/provider/[slug]` route doesn't exist — scope scaled to the two live routes)
+- [x] **16.15** `/book/[id]` booking flow — `BookingV2TrustStrip` under the step rail
 
 **Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
 

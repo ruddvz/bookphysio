@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation'
 import { z } from 'zod'
 import { ArrowLeft, ArrowRight, Camera, Check, CheckCircle2, Eye, EyeOff, Mail, RefreshCw } from 'lucide-react'
 import BpLogo from '@/components/BpLogo'
+import { Badge } from '@/components/dashboard/primitives/Badge'
 import { CityCombobox } from '@/components/CityCombobox'
 import { formatIndianPhone, stripPhoneFormat } from '@/lib/format-phone'
+import { useUiV2 } from '@/hooks/useUiV2'
 import { INDIA_STATES } from '@/lib/india-locations'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1641,6 +1643,7 @@ function Step5({ email, onBack }: Step5Props) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function DoctorSignupPage() {
+  const isV2 = useUiV2()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<StepNumber>(1)
   const [submitError, setSubmitError] = useState('')
@@ -1744,8 +1747,12 @@ export default function DoctorSignupPage() {
     setCurrentStep((s) => Math.max(s - 1, 1) as StepNumber)
   }
 
+  const cardClass = isV2
+    ? 'bg-white rounded-[8px] p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-2xl shadow-bp-primary/5 border border-bp-border animate-in fade-in slide-in-from-bottom-8 duration-700'
+    : 'bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500'
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 pb-10 sm:p-10 sm:pb-12 max-w-[560px] w-full shadow-sm animate-in fade-in duration-500">
+    <div className={cardClass} data-ui-version={isV2 ? 'v2' : 'v1'}>
       <div className="flex justify-center mb-6">
         <BpLogo href="/" size="auth" linkClassName="mx-auto" />
       </div>
@@ -1776,6 +1783,12 @@ export default function DoctorSignupPage() {
           email={step1.email}
           onBack={() => router.push('/login')}
         />
+      )}
+
+      {isV2 && (
+        <div className="flex justify-center mt-6 pt-4 border-t border-bp-border">
+          <Badge variant="success">Secure · India&apos;s physio platform</Badge>
+        </div>
       )}
     </div>
   )

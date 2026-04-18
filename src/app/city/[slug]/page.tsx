@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { CityV2TrustChips } from '@/components/specialties/CityV2TrustChips'
 import { House, IndianRupee, MapPin, Search, ShieldCheck } from 'lucide-react'
 
 export async function generateStaticParams() {
@@ -156,6 +157,8 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
                 </div>
               ))}
             </div>
+
+            <CityV2TrustChips cityLabel={city.label} />
           </div>
         </section>
 

@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { formatIndiaDateInput } from '@/lib/india-date'
 import { getProviderInitials } from '@/lib/providers/display-name'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { useUiV2 } from '@/hooks/useUiV2'
 import {
   ArrowRight,
   CalendarDays,
@@ -16,6 +18,7 @@ import {
   MapPin,
   ShieldCheck,
   Star,
+  Zap,
 } from 'lucide-react'
 
 export interface Doctor {
@@ -80,6 +83,7 @@ function formatAvailabilityPreview(input: Doctor['availabilityPreview']): SlotDa
 }
 
 export default function DoctorCard({ doctor, className, isHovered, onMouseEnter, onMouseLeave }: DoctorCardProps) {
+  const isV2 = useUiV2()
   const router = useRouter()
   const [startIndex, setStartIndex] = useState(0)
   const [selectedSlot, setSelectedSlot] = useState<{ time: string; dayIso: string } | null>(null)
@@ -135,6 +139,7 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
         className
       )}
       aria-label={`${doctor.name} - ${doctor.specialty}`}
+      data-ui-version={isV2 ? 'v2' : 'v1'}
     >
       <div className="grid gap-6 p-5 md:p-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex gap-5">
@@ -211,7 +216,16 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Location</span>
                 </div>
                 <p className="mt-2 text-[14px] font-bold text-bp-primary">{doctor.location}</p>
-                <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
+                {isV2 && doctor.distance ? (
+                  <div className="mt-1">
+                    <Badge variant="soft" role="provider" tone={2}>
+                      <MapPin size={10} />
+                      {doctor.distance}
+                    </Badge>
+                  </div>
+                ) : (
+                  <p className="mt-1 text-[13px] font-medium text-bp-body/60">{doctor.distance}</p>
+                )}
               </div>
 
               <div className="rounded-[var(--sq-sm)] border border-bp-border bg-bp-surface/50 p-3 flex flex-col justify-between">
@@ -243,12 +257,32 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-bp-border pt-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Consult fee</p>
-                <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">₹{doctor.fee}</p>
-                {doctor.icpVerified && (
-                  <p className="mt-0.5 text-[11px] font-semibold text-bp-body/40">
-                    ICP verified provider
-                  </p>
+                {isV2 ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full bg-bp-primary/10 px-3 py-1 text-[14px] font-bold text-bp-primary"
+                      data-testid="price-chip"
+                    >
+                      ₹{doctor.fee}
+                      <span className="text-[10px] font-normal text-bp-body/60">/ consult</span>
+                    </span>
+                    {doctor.icpVerified && (
+                      <Badge variant="success">
+                        <ShieldCheck size={10} />
+                        ICP Verified
+                      </Badge>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-bp-body/40">Consult fee</p>
+                    <p className="mt-1 text-[24px] font-bold tracking-tight text-bp-primary">₹{doctor.fee}</p>
+                    {doctor.icpVerified && (
+                      <p className="mt-0.5 text-[11px] font-semibold text-bp-body/40">
+                        ICP verified provider
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -352,7 +386,14 @@ export default function DoctorCard({ doctor, className, isHovered, onMouseEnter,
             disabled={doctor.disableProfileLink}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[var(--sq-lg)] bg-bp-accent px-4 py-3 text-[13px] font-bold text-white transition-all hover:bg-bp-accent/90 active:scale-[0.99] shadow-lg shadow-bp-accent/10"
           >
-            {doctor.secondaryActionLabel ?? 'Book Appointment'}
+            {isV2 ? (
+              <>
+                <Zap size={14} />
+                {doctor.secondaryActionLabel ?? 'Book in 60s'}
+              </>
+            ) : (
+              doctor.secondaryActionLabel ?? 'Book Appointment'
+            )}
             <ArrowRight size={16} />
           </button>
         </div>

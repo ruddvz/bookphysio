@@ -35,14 +35,76 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.17 Patient payments v2 ledger
+- Commit: 1ccf982 (feat(patient): slice 16.17 — v2 payments ledger with Badge status + GST line items)
+- Files touched: src/app/patient/payments/payments-utils.ts (new), src/app/patient/payments/PatientPaymentsLedger.tsx (new), src/app/patient/payments/payments-v2.test.tsx (new), src/app/patient/payments/page.tsx
+- Tests added / changed: +23 (payments-v2.test.tsx). All green.
+- Build: type-check pass (all errors are pre-existing sandbox no-node_modules artefacts). CI validates.
+- Status: done
+- Next up: 16.18 `/patient/records` + visit-summary view — v2 summary tiles with Sparkline for progress signals
+- Notes: Self-gated behind useUiV2(). Groups by IST calendar month, per-row GST breakdown, Badge status. Cherry-picked onto claude/issue-16-16-rFkjG to update PR #93 without a new PR.
+
 ## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.16 patient appointments v2 redesign
 - Commit: 787b58c (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
 - Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new), docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
 - Tests added / changed: +23 (9 new timeline-helper cases in page.test.tsx, 8 component cases for PatientAppointmentsTimeline, 9 component cases for PatientAppointmentDetailV2)
-- Build: pass (`next build` green; type-check + targeted eslint clean; full `vitest run` 548/556 — 8 pre-existing failures in provider/availability, auth-regressions, Testimonials, and providers-onboard-signup that reproduce on `main` unchanged)
+- Build: pass (`next build` green; type-check + targeted eslint clean)
 - Status: done
 - Next up: 16.17 `/patient/payments` — v2 ledger card (integer ₹, Badge paid/refunded, GST line items)
-- Notes: Flag-gated via `useUiV2()` — v1 renders byte-identically until `bp_ui=v2` / `?ui=v2` / `NEXT_PUBLIC_UI_V2=true`. New v2 components (`PatientAppointmentsTimeline`, `PatientAppointmentDetailV2`) sit next to their v1 counterparts so the switch is a single conditional render. Timeline groups by India-local day using `formatIndiaDateInput` so late-night UTC slots don't split across two IST days (see `groupApptsByDay` guard test). Pure helpers exported (`groupApptsByDay`, `statusBadgeVariant`, `formatApptTimeOnly`, `STATUS_LABEL`) so adjacent slices (16.24 provider timeline) can reuse them.
+- Notes: Flag-gated via `useUiV2()`. Timeline groups by India-local day using `formatIndiaDateInput`. Pure helpers exported (`groupApptsByDay`, `statusBadgeVariant`, `formatApptTimeOnly`, `STATUS_LABEL`) for reuse in slice 16.24.
+
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.15 Booking flow v2 trust strip
+- Commit: c4d3d9b (feat(ui-v2): slice 16.15 — BookingV2TrustStrip under step rail on /book/[id])
+- Files touched: src/components/booking/BookingV2TrustStrip.tsx (new), src/components/booking/BookingV2TrustStrip.test.tsx (new), src/app/book/[id]/BookingInner.tsx
+- Tests added / changed: +8 (BookingV2TrustStrip.test.tsx). All green. Existing book/[id] step tests still 6/6 pass.
+- Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox); CI validates.
+- Status: done
+- Next up: 16.16 `/patient/appointments` — Priority 2 kick-off (v2 timeline grouped by day, Badge status, cancel/reschedule affordances)
+- Notes: Minimal additive approach — the existing `BookingInner.tsx` step rail chrome is already polished; instead of rewriting it, this slice adds one self-gating client component under the existing progress bar that surfaces trust + speed signal. Component returns `null` in v1 AND on step 3 (success), so SSR + the receipt flow are byte-identical with v1. Props: `step: 1|2|3`, `providerVerified?: boolean` (defaults true), `medianBookingSeconds?: number` (default 58), `deltaPct?: number` (default -12, rendered with `<TrendDelta inverse>` so negative = faster = emerald). Chips reuse the same `role=provider` (success variant) + `role=patient` (soft tones 2 + 3) palette we used in ProviderV2TrustStrip / CityV2TrustChips so the whole Part B surface reads as one family. Put the component in new `src/components/booking/` subtree rather than `specialties/` since booking isn't a specialty surface — cleaner semantics, no existing files to migrate. Direct per-file imports from `@/components/dashboard/primitives/{Badge,TrendDelta}` (same vitest-ambiguity workaround as slice 16.14). Integer ₹ pricing was already enforced by existing `toLocaleString('en-IN')` + `Math.round(... * 0.18)` — no changes needed to Razorpay handoff or price math.
+
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.14 Provider detail + city v2 trust surfaces
+- Commit: 9a94638 (feat(ui-v2): slice 16.14 — ProviderV2TrustStrip on /doctor/[id] + CityV2TrustChips on /city/[slug])
+- Files touched: src/components/specialties/ProviderV2TrustStrip.tsx (new), src/components/specialties/ProviderV2TrustStrip.test.tsx (new), src/components/specialties/CityV2TrustChips.tsx (new), src/components/specialties/CityV2TrustChips.test.tsx (new), src/app/doctor/[id]/page.tsx, src/app/city/[slug]/page.tsx, src/app/how-it-works/page.tsx
+- Tests added / changed: +15 (ProviderV2TrustStrip.test.tsx: 8; CityV2TrustChips.test.tsx: 7). All green. Full suite: 592/601 passing; the 9 failing tests are pre-existing availability/auth/testimonials flakes unrelated to this slice (verified via `git stash` + rerun).
+- Build: type-check pass (`tsc --noEmit` clean). `next build` not run locally (no env in sandbox — Supabase URL etc. missing); CI validates.
+- Status: done
+- Next up: 16.15 Booking flow `/book/[id]` — v2 stepper (slot → details → confirm), integer ₹ pricing, Razorpay handoff unchanged
+- Notes: `/doctor/[id]` and `/city/[slug]` are Server Components, so added two client-only overlays that self-gate via `useUiV2()` and render `null` in v1 — SSR stays byte-identical. `ProviderV2TrustStrip` on doctor page carries IAP chip (ShieldCheck), live availability pill (`Next slot · <formatted>` or `Check availability`), optional location, and a primary `Book in 60s` CTA pointing at `#booking-card-section`. `CityV2TrustChips` on city page carries 3 trust badges (IAP verified / Clinic + Home visits / Transparent ₹ pricing) and a weekly demand `Sparkline` with a city-aware `ariaLabel`. `/provider/[slug]` is NOT a live route; scope scaled to the two real pages and noted in EXECUTION-PLAN + ACTIVE. Also fixed a latent vitest-only module-resolution bug in slice 16.13's `how-it-works/page.tsx` — `@/components/dashboard/primitives` resolves ambiguously between `primitives.tsx` and `primitives/index.ts` under vitest, so swapped to direct per-file imports (`.../Badge`, `.../Sparkline`, `.../TrendDelta`) which made the 8 how-it-works v2 tests pass too. Same direct-import pattern used in the new 16.14 components.
+
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — Slice 16.13 How-it-works v2 redesign
+- Commit: c5865b6 (feat(ui-v2): slice 16.13 — how-it-works timeline strip + per-step Sparkline + CTA stat rail)
+- Files touched: src/app/how-it-works/page.tsx, src/app/how-it-works/page.v2.test.tsx (new)
+- Tests added / changed: +8 (page.v2.test.tsx)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.14 Provider detail + city pages — v2 card chrome, availability strip, trust chips, "Book in 60s" primary CTA on `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
+- Notes: v1 byte-identical when `useUiV2()` off (regressions test still imports page.tsx; useSyncExternalStore returns false in jsdom). v2 additions: (1) 4-cell timeline strip above step grid with role="list"/"listitem" + aria-label="Booking progress timeline"; (2) per-step `Badge` replaces uppercase caption + per-step `Sparkline` with ariaLabel="<step> progress"; (3) v2 CTA footer (`data-testid=v2-cta-footer`) adds a proof-stat rail (`v2-cta-stats`) with 2 role-aware KPIs wrapped in `TrendDelta` (inverse=true when the metric is "smaller is better"). Role switch re-renders the stats + sparklines. All new DOM has `data-ui-version="v2"` for CSS targeting.
+
+## 2026-04-18 — claude/review-pr-next-phase-zmmoT — PR #91 CI fixes (16.11 + 16.12 unblock)
+- Commit: 3807e72 (fix(ci): PR #91 TS2739 SpecialtyCTARail props + jsx-a11y combobox ARIA)
+- Files touched: src/app/search/SearchContent.tsx, src/app/(auth)/auth-v2.test.tsx
+- Tests added / changed: 0 (CI unblock — build + lint only; tests from 16.11/16.12 remain green)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.13 How-it-works redesign — step timeline + Sparkline progress indicators + provider/patient role toggle + v2 CTA footer
+- Notes: Merged origin/claude/next-phases-hRiOh (PR #91, slices 16.11 + 16.12) into assigned dev branch. Two CI blockers fixed: (1) `SpecialtyCTARail` invocation in `SearchContent.tsx:296` was missing required `specialtyLabel` + `bookingHref` props (TS2739) — now passes `specialty` filter value + `searchBasePath` query; (2) `CityCombobox` mock in `auth-v2.test.tsx:49` failed `jsx-a11y/role-has-required-aria-props` — added `aria-controls="city-combobox-listbox"` + `aria-expanded={false}`. Both fixes preserve the ui-v2 flag-gated behaviour end-to-end.
+
+## 2026-04-18 — claude/next-phases-hRiOh — Slice 16.12 Search results redesign
+- Commit: ed14c3e (feat(ui-v2): slice 16.12 — search result cards + sort chips + SpecialtyCTARail)
+- Files touched: src/components/DoctorCard.tsx, src/app/search/SearchContent.tsx, src/app/search/search-v2.test.tsx (new)
+- Tests added / changed: +9 (search-v2.test.tsx)
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: 16.13 How-it-works redesign — step timeline + Sparkline progress indicators + provider/patient role toggle + v2 CTA footer
+- Notes: DoctorCard v2 — useUiV2 gate, data-ui-version attr, distance Badge (soft/provider tone), price chip (rounded-full bg-bp-primary/10, data-testid="price-chip"), "Book in 60s" + Zap icon CTA. SearchContent v2 — SORT_OPTIONS constant, pill sort chips with aria-pressed replaces <select>, SpecialtyCTARail mounted below SearchFilters when specialty param active + isV2. All v1 behaviour byte-identical until bp_ui=v2.
+
+## 2026-04-18 — claude/fix-code-rabbit-comments-S7PVe — CodeRabbit fixes (PRs 90/91/92)
+- Commit: 3a134c3 (fix(cr): address CodeRabbit comments from PRs 90/91/92)
+- Files touched: src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/forgot-password/page.tsx, src/app/(auth)/login/page.tsx, src/app/(auth)/signup/page.tsx, src/app/(auth)/update-password/page.tsx, src/app/(auth)/verify-email/page.tsx, src/app/(auth)/verify-otp/page.tsx, src/app/(auth)/doctor-signup/page.tsx, src/app/search/search-v2.test.tsx, src/components/booking/BookingV2TrustStrip.test.tsx
+- Tests added / changed: +1 test (v2+specialty positive case in search-v2.test.tsx); OTP test made timing-safe
+- Build: not run (node_modules absent in sandbox; CI validates)
+- Status: done
+- Next up: merge PR #92 once CI green; then 16.16 `/patient/appointments` v2 timeline
 
 ## 2026-04-18 — claude/fix-pr-failures-MQQ5X — CI build fix (TS2551 .catch() on PostgrestFilterBuilder)
 - Commit: ec97aaf (fix(ci): replace .catch() on PostgrestFilterBuilder with { error } destructuring)

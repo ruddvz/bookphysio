@@ -19,6 +19,10 @@ import {
   Clock,
   Home,
 } from 'lucide-react'
+import { Badge } from '@/components/dashboard/primitives/Badge'
+import { Sparkline } from '@/components/dashboard/primitives/Sparkline'
+import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
+import { useUiV2 } from '@/hooks/useUiV2'
 
 // Character paths — swap these for new poses when illustrations are ready
 const PATIENT_CHARACTER = '/images/physio-female.png'
@@ -86,6 +90,34 @@ const PROVIDER_STEPS = [
   },
 ]
 
+// v2: each step carries a rising "time-to-booked" progress curve. Values are
+// illustrative — they show a patient getting closer to a confirmed booking
+// (or a provider closer to a live listing) as they complete each step.
+const V2_STEP_SPARKLINES: readonly (readonly number[])[] = [
+  [2, 4, 7, 9],
+  [4, 7, 11, 15],
+  [9, 13, 18, 22],
+  [14, 18, 24, 30],
+] as const
+
+// v2 role-aware stat strip shown inside the dark CTA. Integer rupees-free
+// proof points (bookings this month + MoM trend) — keeps India-locale clean.
+interface V2Stat {
+  label: string
+  value: string
+  delta: number
+}
+
+const V2_PATIENT_STATS: readonly V2Stat[] = [
+  { label: 'Patient bookings this month', value: '10,240', delta: 38 },
+  { label: 'Avg booking time', value: '58 sec', delta: -12 },
+] as const
+
+const V2_PROVIDER_STATS: readonly V2Stat[] = [
+  { label: 'Providers live on platform', value: '1,120', delta: 24 },
+  { label: 'First booking after onboarding', value: '4 days', delta: -18 },
+] as const
+
 const PATIENT_TRUST = [
   { icon: ShieldCheck, text: 'IAP-verified physiotherapists only' },
   { icon: Clock,       text: 'Instant booking confirmation via OTP' },
@@ -99,12 +131,15 @@ const PROVIDER_TRUST = [
 ]
 
 export default function HowItWorksPage() {
+  const isV2 = useUiV2()
   const [activeTab, setActiveTab] = useState<'patient' | 'provider'>('patient')
   const activeSteps = activeTab === 'patient' ? PATIENT_STEPS : PROVIDER_STEPS
   const primaryCtaHref = activeTab === 'patient' ? '/search' : '/doctor-signup'
   const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a provider'
   const trust = activeTab === 'patient' ? PATIENT_TRUST : PROVIDER_TRUST
   const character = activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER
+  const v2Role: 'patient' | 'provider' = activeTab
+  const v2Stats = activeTab === 'patient' ? V2_PATIENT_STATS : V2_PROVIDER_STATS
 
   const heroScope = useRef<HTMLElement>(null)
   const stepsScope = useRef<HTMLElement>(null)
@@ -219,27 +254,84 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Steps — 2×2 grid with teal left-accent on hover */}
-        <section ref={stepsScope} className="py-12 lg:py-16">
+        <section ref={stepsScope} className="py-12 lg:py-16" data-ui-version={isV2 ? 'v2' : 'v1'}>
           <div className="max-w-[1142px] mx-auto px-6">
+            {isV2 && (
+              <div
+                data-testid="v2-timeline-strip"
+                role="list"
+                aria-label="Booking progress timeline"
+                className="mb-8 grid grid-cols-4 gap-2"
+              >
+                {activeSteps.map((step, idx) => (
+                  <div
+                    key={step.num}
+                    role="listitem"
+                    className="flex flex-col items-start gap-2"
+                  >
+                    <div className="flex w-full items-center gap-2">
+                      <span
+                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-bp-primary-light)] text-[11px] font-bold text-[var(--color-bp-primary-dark)]"
+                        aria-hidden="true"
+                      >
+                        {idx + 1}
+                      </span>
+                      <span className="h-[2px] flex-1 rounded-full bg-gradient-to-r from-[var(--color-bp-primary)]/40 to-[var(--color-bp-primary)]/10" />
+                    </div>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      {step.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
-              {activeSteps.map((step) => (
+              {activeSteps.map((step, idx) => (
                 <div
                   key={step.title}
                   data-hiw-step
-                  className="relative rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group"
+                  data-ui-version={isV2 ? 'v2' : 'v1'}
+                  className={
+                    isV2
+                      ? 'relative rounded-[28px] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_4px_20px_rgba(0,118,108,0.06)] transition-all duration-200 hover:shadow-[0_6px_24px_rgba(0,118,108,0.12)] hover:border-[#00766C]/40 group'
+                      : 'relative rounded-[var(--sq-lg)] border border-slate-200 bg-white p-6 lg:p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.07)] hover:border-[#00766C]/30 group'
+                  }
                 >
                   <div className="flex items-start justify-between mb-5">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${step.tint}`}>
                       <step.icon className="w-5 h-5" strokeWidth={2.2} />
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 group-hover:text-[#00766C]/50 transition-colors">
-                      Step {step.num}
-                    </span>
+                    {isV2 ? (
+                      <span data-testid={`v2-step-badge-${idx + 1}`}>
+                        <Badge role={v2Role} tone={1} variant="soft">
+                          Step {step.num}
+                        </Badge>
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 group-hover:text-[#00766C]/50 transition-colors">
+                        Step {step.num}
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-[18px] font-bold text-[#1A1C29] mb-2 group-hover:text-[#00766C] transition-colors">
                     {step.title}
                   </h3>
                   <p className="text-[14px] leading-relaxed text-slate-500">{step.text}</p>
+
+                  {isV2 && (
+                    <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                      <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                        Progress signal
+                      </span>
+                      <Sparkline
+                        role={v2Role}
+                        values={V2_STEP_SPARKLINES[idx]}
+                        width={80}
+                        height={22}
+                        ariaLabel={`${step.title} progress`}
+                      />
+                    </div>
+                  )}
 
                   {/* Teal left accent on hover */}
                   <div className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-[#00766C] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -250,45 +342,72 @@ export default function HowItWorksPage() {
         </section>
 
         {/* CTA — dark */}
-        <section ref={ctaScope} className="pb-12 lg:pb-16">
+        <section ref={ctaScope} className="pb-12 lg:pb-16" data-ui-version={isV2 ? 'v2' : 'v1'}>
           <div className="max-w-[1142px] mx-auto px-6">
-            <div data-hiw-cta className="rounded-[var(--sq-xl)] bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+            <div
+              data-hiw-cta
+              data-testid={isV2 ? 'v2-cta-footer' : undefined}
+              className={
+                isV2
+                  ? 'rounded-[32px] bg-[#1A1C29] p-8 lg:p-12 flex flex-col gap-8 relative overflow-hidden shadow-[0_12px_40px_rgba(0,118,108,0.18)]'
+                  : 'rounded-[var(--sq-xl)] bg-[#1A1C29] p-8 lg:p-12 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden'
+              }
+            >
               {/* Background glow */}
               <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#00766C]/10 rounded-full blur-[80px] pointer-events-none" aria-hidden="true" />
 
-              {/* Character — desktop only */}
-              <div className="hidden lg:block shrink-0 relative z-10 select-none">
-                <Image
-                  src={PROVIDER_CHARACTER}
-                  alt=""
-                  aria-hidden="true"
-                  width={140}
-                  height={210}
-                  className="object-contain object-bottom drop-shadow-2xl"
-                  sizes="(min-width: 1024px) 140px, 0px"
-                />
+              <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                {/* Character — desktop only */}
+                <div className="hidden lg:block shrink-0 relative z-10 select-none">
+                  <Image
+                    src={PROVIDER_CHARACTER}
+                    alt=""
+                    aria-hidden="true"
+                    width={140}
+                    height={210}
+                    className="object-contain object-bottom drop-shadow-2xl"
+                    sizes="(min-width: 1024px) 140px, 0px"
+                  />
+                </div>
+
+                <div className="flex-1 text-center md:text-left">
+                  <h2 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight">
+                    {activeTab === 'patient'
+                      ? 'Get back to feeling your best.'
+                      : "Grow your practice with India's best physio network."}
+                  </h2>
+                  <p className="mt-3 text-[15px] text-slate-400 leading-relaxed">
+                    {activeTab === 'patient'
+                      ? 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.'
+                      : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
+                  </p>
+                </div>
+
+                <Link
+                  href={primaryCtaHref}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#00766C] px-7 py-3.5 text-[15px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_16px_rgba(0,118,108,0.25)] w-full md:w-auto shrink-0"
+                >
+                  {primaryCtaLabel}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
 
-              <div className="flex-1 text-center md:text-left relative z-10">
-                <h2 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight">
-                  {activeTab === 'patient'
-                    ? 'Get back to feeling your best.'
-                    : "Grow your practice with India's best physio network."}
-                </h2>
-                <p className="mt-3 text-[15px] text-slate-400 leading-relaxed">
-                  {activeTab === 'patient'
-                    ? 'Verified experts for in-clinic and home visit consultations across 18 major Indian cities.'
-                    : 'Join hundreds of verified physiotherapists building their digital presence with BookPhysio.'}
-                </p>
-              </div>
-
-              <Link
-                href={primaryCtaHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#00766C] px-7 py-3.5 text-[15px] font-semibold text-white hover:bg-[#005A52] transition-colors shadow-[0_4px_16px_rgba(0,118,108,0.25)] w-full md:w-auto shrink-0 relative z-10"
-              >
-                {primaryCtaLabel}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              {isV2 && (
+                <div
+                  data-testid="v2-cta-stats"
+                  className="relative z-10 grid gap-4 border-t border-white/10 pt-6 sm:grid-cols-2"
+                >
+                  {v2Stats.map((stat) => (
+                    <div key={stat.label} className="flex flex-col gap-1">
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-[22px] font-bold text-white tabular-nums">{stat.value}</span>
+                        <TrendDelta value={stat.delta} inverse={stat.delta < 0} />
+                      </div>
+                      <span className="text-[12px] uppercase tracking-wider text-slate-400">{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
