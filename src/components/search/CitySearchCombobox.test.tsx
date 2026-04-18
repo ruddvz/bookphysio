@@ -23,7 +23,7 @@ describe('CitySearchCombobox', () => {
     render(<CitySearchCombobox value="" onChange={onChange} />)
 
     for (const city of POPULAR) {
-      expect(screen.getByRole('option', { name: city })).toBeTruthy()
+      expect(screen.getByRole('button', { name: city })).toBeTruthy()
     }
   })
 
@@ -66,7 +66,7 @@ describe('CitySearchCombobox', () => {
     const onChange = vi.fn()
     render(<CitySearchCombobox value="" onChange={onChange} />)
 
-    fireEvent.click(screen.getByRole('option', { name: 'Kochi' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Kochi' }))
     expect(onChange).toHaveBeenCalledWith('Kochi')
   })
 

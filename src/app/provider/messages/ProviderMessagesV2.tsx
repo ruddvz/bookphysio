@@ -219,7 +219,7 @@ export function ProviderMessagesV2() {
           {/* Conversation list */}
           <div
             className="flex-1 min-h-0 overflow-y-auto bg-white border border-[var(--color-pv-border)] rounded-[var(--sq-lg)] divide-y divide-[var(--color-pv-border-soft)]"
-            role="list"
+            role="listbox"
             aria-label="Conversations"
           >
             {conversationsLoading ? (
@@ -248,9 +248,10 @@ export function ProviderMessagesV2() {
                 return (
                   <button
                     key={chat.id}
-                    role="listitem"
+                    type="button"
+                    role="option"
                     onClick={() => setSelectedConversationId(chat.id)}
-                    aria-pressed={isActive}
+                    aria-selected={isActive}
                     aria-label={`Conversation with ${chat.other_user?.full_name ?? 'Patient'}${hasUnread ? `, ${chat.unread_count} unread` : ''}`}
                     className={cn(
                       'w-full text-left flex items-start gap-3 px-4 py-3 transition-colors hover:bg-slate-50',

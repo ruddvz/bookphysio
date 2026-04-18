@@ -22,7 +22,6 @@ import {
   groupPaymentsByMonth,
   statusBadgeVariant,
   formatInr,
-  formatPaymentDate,
   providerDisplayName,
   visitTypeLabel,
   type PaymentItem,

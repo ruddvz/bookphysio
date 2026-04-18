@@ -31,7 +31,6 @@ import { Badge } from '@/components/dashboard/primitives/Badge'
 import type { Conversation, Message } from '@/app/api/contracts/message'
 import {
   formatConversationDateDivider,
-  formatConversationMessageTime,
   formatConversationTimestamp,
 } from '@/lib/messaging/time'
 import {
@@ -228,7 +227,7 @@ export function PatientMessagesV2() {
           {/* Conversation list */}
           <div
             className="flex-1 min-h-0 overflow-y-auto bg-white border border-[var(--color-pt-border)] rounded-[var(--sq-lg)] divide-y divide-[var(--color-pt-border-soft)]"
-            role="list"
+            role="listbox"
             aria-label="Conversations"
           >
             {conversationsLoading ? (
@@ -257,9 +256,9 @@ export function PatientMessagesV2() {
                 return (
                   <button
                     key={chat.id}
-                    role="listitem"
+                    role="option"
                     onClick={() => setSelectedConversationId(chat.id)}
-                    aria-pressed={isActive}
+                    aria-selected={isActive}
                     aria-label={`Conversation with ${chat.other_user?.full_name ?? 'Provider'}${hasUnread ? `, ${chat.unread_count} unread` : ''}`}
                     className={cn(
                       'w-full text-left flex items-start gap-3 px-4 py-3 transition-colors hover:bg-slate-50',

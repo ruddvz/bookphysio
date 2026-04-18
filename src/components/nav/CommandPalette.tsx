@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Clock, Search } from 'lucide-react'
@@ -51,6 +51,7 @@ type Row =
   | { kind: 'recent'; label: string; href: string }
 
 export function CommandPalette({ locale }: CommandPaletteProps) {
+  const listId = useId()
   const router = useRouter()
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
@@ -76,12 +77,7 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
 
   const jumpLinks = useMemo(() => jumpLinksForRole(role, locale), [role, locale])
   const quickActions = useMemo(() => quickActionsForRole(role), [role])
-
-  const [recentPaths, setRecentPaths] = useState<string[]>([])
-
-  useEffect(() => {
-    if (open) setRecentPaths(readRecent())
-  }, [open])
+  const recentPaths = useMemo(() => (open ? readRecent() : []), [open])
 
   const q = query.trim().toLowerCase()
 
@@ -102,9 +98,8 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
     return out
   }, [jumpLinks, quickActions, recentPaths, q])
 
-  useEffect(() => {
-    setHighlight(0)
-  }, [query, open, rows.length])
+  const activeIndex = rows.length === 0 ? -1 : Math.min(highlight, rows.length - 1)
+  const activeDescendant = activeIndex >= 0 ? `cmd-row-${activeIndex}` : undefined
 
   useEffect(() => {
     if (!open) return
@@ -117,7 +112,14 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
       if (e.key !== 'k' && e.key !== 'K') return
       if (!(e.metaKey || e.ctrlKey)) return
       e.preventDefault()
-      setOpen((o) => !o)
+      setOpen((wasOpen) => {
+        const nextOpen = !wasOpen
+        if (nextOpen) {
+          setQuery('')
+          setHighlight(0)
+        }
+        return nextOpen
+      })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -161,9 +163,9 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setHighlight((h) => Math.max(0, h - 1))
-    } else if (e.key === 'Enter' && rows[highlight]) {
+    } else if (e.key === 'Enter' && activeIndex >= 0 && rows[activeIndex]) {
       e.preventDefault()
-      navigate(rows[highlight]!.href)
+      navigate(rows[activeIndex]!.href)
     }
   }
 
@@ -177,7 +179,11 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setQuery('')
+          setHighlight(0)
+          setOpen(true)
+        }}
         className={cn(
           'hidden lg:inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3.5 py-1.5',
           'text-[13px] font-medium text-slate-500 shadow-sm transition-colors',
@@ -213,18 +219,28 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
               <input
                 ref={inputRef}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setHighlight(0)
+                }}
                 onKeyDown={onKeyNav}
                 placeholder="Jump or search…"
                 className="flex-1 min-w-0 bg-transparent text-[15px] text-slate-900 placeholder:text-slate-400 outline-none"
                 aria-label="Command palette search"
+                role="combobox"
+                aria-controls={listId}
+                aria-expanded={open}
+                aria-autocomplete="list"
+                aria-activedescendant={activeDescendant}
                 data-testid="command-palette-input"
               />
             </div>
 
             <div
               className="max-h-[min(60vh,420px)] overflow-y-auto py-2"
+              id={listId}
               role="listbox"
+              aria-label="Command palette results"
             >
               {user && profileLoading ? (
                 <p className="px-4 py-6 text-[13px] text-slate-500">Loading…</p>
@@ -243,13 +259,13 @@ export function CommandPalette({ locale }: CommandPaletteProps) {
                       <button
                         type="button"
                         role="option"
-                        aria-selected={i === highlight}
+                        aria-selected={i === activeIndex}
                         id={`cmd-row-${i}`}
                         onMouseEnter={() => setHighlight(i)}
                         onClick={() => navigate(row.href)}
                         className={cn(
                           'flex w-full items-center gap-2 px-4 py-2.5 text-left text-[14px] font-medium',
-                          i === highlight ? 'bg-[#E6F4F3] text-[#00766C]' : 'text-slate-700 hover:bg-slate-50',
+                          i === activeIndex ? 'bg-[#E6F4F3] text-[#00766C]' : 'text-slate-700 hover:bg-slate-50',
                         )}
                       >
                         {row.kind === 'recent' ? (

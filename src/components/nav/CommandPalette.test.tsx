@@ -40,4 +40,21 @@ describe('CommandPalette', () => {
     fireEvent.change(input, { target: { value: 'about' } })
     expect(screen.getByRole('option', { name: /About/i })).toBeInTheDocument()
   })
+
+  it('wires combobox accessibility to the results list', () => {
+    render(<CommandPalette />)
+    fireEvent.click(screen.getByTestId('command-palette-trigger'))
+
+    const input = screen.getByRole('combobox', { name: /command palette search/i })
+    const listbox = screen.getByRole('listbox', { name: /command palette results/i })
+
+    expect(input).toHaveAttribute('aria-controls', listbox.id)
+
+    fireEvent.change(input, { target: { value: 'about' } })
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+    const option = screen.getByRole('option', { name: /About/i })
+    expect(input).toHaveAttribute('aria-activedescendant', option.id)
+    expect(option).toHaveAttribute('aria-selected', 'true')
+  })
 })

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { sendReviewPrompt } from '@/lib/resend'
+import { isAuthorizedCron } from '@/lib/server/cron-auth'
 
 /** Window boundaries for finding recently-completed appointments (hours ago). */
 const REVIEW_WINDOW_OLDEST_HOURS_AGO = 28
@@ -15,10 +16,7 @@ const REVIEW_WINDOW_NEWEST_HOURS_AGO = 20
  * Protected by CRON_SECRET env var to prevent unauthorized access.
  */
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET
-
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

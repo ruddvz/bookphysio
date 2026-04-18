@@ -35,6 +35,33 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/full-green-review-fixes-0413 — Merge origin/main into PR 114 (resolve conflicts)
+- Commit: e7e820c (merge: resolve conflicts with main)
+- Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/provider/availability/Availability.test.tsx, src/components/__tests__/Testimonials.test.tsx
+- Tests added / changed: took `origin/main` versions for auth + availability tests; restored main’s SWR-mocked `Testimonials.test.tsx` (live reviews) so assertions match `Testimonials.tsx`; unified CHANGELOG (PR #114 entries + main history)
+- Build: pass (`npm run lint`, `npm run type-check` after removing stale `.next`, `npm test` 856/856)
+- Status: done
+- Next up: Merge PR #114 when GitHub checks green
+- Notes: Conflicts were in CHANGELOG and overlapping test files. PR #114 had an older static-promises Testimonials test; main’s version mocks `useSWR` with sample reviews.
+
+## 2026-04-18 — cursor/full-green-review-fixes-0413 — PR 114: stop duplicate Vercel deploy (rate limit)
+- Commit: ci: avoid duplicate Vercel deploy on PRs
+- Files touched: .github/workflows/preview.yml, CHANGELOG.md
+- Tests added / changed: 0 (workflow-only)
+- Build: n/a (YAML + docs)
+- Status: done
+- Next up: If Vercel status still rate-limits, wait for quota reset or upgrade plan; optional: add note in PR template about preview URL from Vercel app
+- Notes: The failing PR check was Vercel GitHub status "Deployment rate limited" while GitHub Actions CI + preview workflow passed. The preview workflow ran `vercel deploy` in addition to Vercel’s native Git integration, doubling deployments per push. Removed CLI deploy + PR comment; kept `vercel pull` + `vercel build` as smoke test.
+
+## 2026-04-18 — cursor/full-green-review-fixes-0413 — Full codebase green + security hardening
+- Commit: ef0350d (fix: make repo green and harden review findings)
+- Files touched: src/components/nav/CommandPalette.tsx, src/components/nav/CommandPalette.test.tsx, src/components/search/CitySearchCombobox.tsx, src/components/search/CitySearchCombobox.test.tsx, src/app/patient/messages/PatientMessagesV2.tsx, src/app/provider/messages/ProviderMessagesV2.tsx, src/app/api/ai/pai/route.ts, src/lib/server/cron-auth.ts, src/app/api/cron/appointment-reminders/route.ts, src/app/api/cron/daily-summary/route.ts, src/app/api/cron/review-prompts/route.ts, src/app/api/payments/webhook/route.ts, src/app/api/provider/patients/[id]/profile/route.ts, src/components/__tests__/Testimonials.test.tsx, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/provider/availability/Availability.test.tsx, src/app/patient/messages/messages-v2.test.tsx, src/app/patient/payments/payments-v2.test.tsx, src/app/provider/messages/messages-v2.test.tsx, src/components/dashboard/PatientCarePulse.test.tsx
+- Tests added / changed: changed 9 existing test files (CommandPalette, CitySearchCombobox, Testimonials, auth-v2, auth-regressions, Availability, patient/provider messages, payments, PatientCarePulse)
+- Build: pass (lint + type-check + vitest + next build all green)
+- Status: done
+- Next up: Monitor CI/preview for parity with local green run; optional follow-up is migrate deprecated middleware.ts to proxy.ts before Next.js enforces it
+- Notes: Fixed CI-blocking react-hooks/set-state-in-effect errors in CommandPalette, repaired stale UI tests to current markup/copy, hardened cron auth to require CRON_SECRET, required auth on /api/ai/pai, validated webhook payment amounts + real patient email use, avoided leaking raw provider patient profile DB errors, and aligned provider messages list semantics with patient messages.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG sha (merge commit)
 - Commit: 51ac344 (docs: fix CHANGELOG commit sha for merge commit)
 - Files touched: CHANGELOG.md

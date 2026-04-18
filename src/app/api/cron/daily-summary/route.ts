@@ -3,6 +3,7 @@ import { generateText } from 'ai'
 import { getResendClient } from '@/lib/resend'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { patientModels } from '@/lib/ai-config'
+import { isAuthorizedCron } from '@/lib/server/cron-auth'
 
 /**
  * Vercel Cron Job — Daily AI Summary
@@ -12,22 +13,8 @@ import { patientModels } from '@/lib/ai-config'
  * emails the summary to the admin, and stores it in the daily_summaries table.
  *
  * Cron schedule is defined in vercel.json.
- * Protected by Vercel cron header validation and optional CRON_SECRET bearer validation.
+ * Protected by CRON_SECRET; `x-vercel-cron` is advisory only.
  */
-
-function isAuthorizedCron(request: NextRequest): boolean {
-  const vercelCronHeader = request.headers.get('x-vercel-cron')
-  if (vercelCronHeader) {
-    return true
-  }
-
-  const cronSecret = process.env.CRON_SECRET
-  if (!cronSecret) {
-    // In development, allow through without a secret
-    return process.env.NODE_ENV !== 'production'
-  }
-  return request.headers.get('authorization') === `Bearer ${cronSecret}`
-}
 
 interface DailyMetrics {
   date: string
