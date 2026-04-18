@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Test fix analytics-v2 tsc
+- Commit: f7fc6b8 (fix(test): satisfy tsc for AdminAnalytics missing-data mock)
+- Files touched: src/app/admin/analytics/analytics-v2.test.tsx
+- Tests added / changed: 0 new
+- Build: `npm run type-check` pass
+- Status: done
+- Next up: merge PR #102 or continue Phase 16 per EXECUTION-PLAN
+- Notes: `as never` on useQuery mock with undefined data for strict TS.
+
 ## 2026-04-18 — cursor/slices-16-31-to-16-35-2f38 — Slice 16.35 /admin/analytics v2 + plan docs
 - Commit: 6e90b5b (docs: mark Phase 16 slices 16.31–16.35 complete + CHANGELOG handoff); implementation: a43f142 (AdminPulseRail)
 - Files touched: src/app/admin/analytics/page.tsx, src/app/admin/analytics/analytics-v2.test.tsx, docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
