@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-18 — cursor/slices-16-21-to-16-27-spec-f324 — Consolidate PR #97/#98/#99 into PR #101
-- Commit: merge PR #99 (`cursor/phase-16-slices-21-25-9290`) into PR #101; remove superseded spec-only component duplicates (PaiV2Shell, PatientSearchV2Rail, etc.) in favour of PatientAIShellV2 + integrated search/patients
+- Commit: de8d139 (merge: fold PR 99 rollup into PR 101; dedupe superseded v2 stubs)
 - Files touched: merge of rollup branch + deletions of duplicate `*V2` files from earlier PR #101-only attempt; `docs/planning/slices-16-21-to-16-27-spec.md` retained
 - Tests added / changed: net = rollup tests (PR #99); removed obsolete tests tied to deleted duplicates
 - Build: run `npm run type-check` + eslint after merge
