@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — Document ADMIN_ALERT_EMAIL in env + check-env
+- Commit: (docs: document ADMIN_ALERT_EMAIL for admin alerts)
+- Files touched: .env.example, scripts/check-env.mjs, CHANGELOG.md
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Slice 2 — email preflight + onboard-signup `emailOtpStatus` + Step 5 failure banner + 503 on missing Resend env
+- Notes: Code already used `ADMIN_ALERT_EMAIL` in `sendAdminNewProviderAlert`; it was missing from `.env.example` and warn-only env check.
+
 ## 2026-04-18 — claude/fix-signup-otp-password-bMZcQ — CHANGELOG handoff (OtpDigits commit sha)
 - Commit: c35cd62 (docs: fix CHANGELOG commit sha for OtpDigits slice)
 - Files touched: CHANGELOG.md
