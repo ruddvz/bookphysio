@@ -21,6 +21,8 @@ import {
   type AppointmentTab,
 } from './appointments-utils'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
+import { useUiV2 } from '@/hooks/useUiV2'
+import { PatientAppointmentsTimeline } from './PatientAppointmentsTimeline'
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-100',
@@ -55,6 +57,7 @@ function PatientAppointmentsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const uiV2 = useUiV2()
 
   const [tab, setTab] = useState<AppointmentTab>(() => parseTab(searchParams.get('tab')))
   const [appointments, setAppointments] = useState<AppointmentItem[]>([])
@@ -148,6 +151,8 @@ function PatientAppointmentsContent() {
               description={tab === 'upcoming' ? 'Your upcoming appointments will appear here.' : 'Your session history will appear here after your first visit.'}
               cta={tab === 'upcoming' ? { label: 'Book a visit', href: '/search' } : undefined}
             />
+          ) : uiV2 ? (
+            <PatientAppointmentsTimeline appointments={filtered} tab={tab} />
           ) : (
             <div className="divide-y divide-[var(--color-pt-border-soft)]">
               {filtered.map((appt) => (

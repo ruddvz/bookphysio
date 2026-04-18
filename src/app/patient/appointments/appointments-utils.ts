@@ -3,7 +3,7 @@
  * Extracted so they can be unit-tested without mounting the full page.
  */
 
-import { formatIndiaDateTime } from '@/lib/india-date'
+import { formatIndiaDate, formatIndiaDateInput, formatIndiaDateTime, formatIndiaTime } from '@/lib/india-date'
 
 export type AppointmentTab = 'upcoming' | 'past'
 export type VisitType = 'in_clinic' | 'home_visit'
@@ -75,4 +75,149 @@ export function filterByTab(appointments: AppointmentItem[], tab: AppointmentTab
  */
 export function parseTab(raw: string | null): AppointmentTab {
   return raw === 'past' ? 'past' : 'upcoming'
+}
+
+// ---------------------------------------------------------------------------
+// v2 timeline helpers (slice 16.16)
+// ---------------------------------------------------------------------------
+
+export type BadgeVariantSignal = 'success' | 'warning' | 'danger' | 'soft'
+
+/**
+ * Maps an appointment status to the `Badge` primitive variant used by the v2
+ * timeline. `soft` is the neutral fallback that reuses the patient palette.
+ */
+export function statusBadgeVariant(status: AppointmentStatus | string): BadgeVariantSignal {
+  switch (status) {
+    case 'confirmed':
+    case 'completed':
+      return 'success'
+    case 'pending':
+      return 'warning'
+    case 'cancelled':
+      return 'danger'
+    default:
+      return 'soft'
+  }
+}
+
+export const STATUS_LABEL: Record<string, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  no_show: 'No-show',
+}
+
+/**
+ * Formats the clock-only portion of an appointment slot (e.g. "09:30 AM") in
+ * Asia/Kolkata. Used as the left rail of the v2 timeline row.
+ */
+export function formatApptTimeOnly(iso: string): string {
+  return formatIndiaTime(iso)
+}
+
+export interface TimelineDay {
+  /** India-local YYYY-MM-DD key — stable sort key and React key. */
+  key: string
+  /** Human label, e.g. "Today · Mon, 15 Apr" or "Wed, 22 Apr 2026". */
+  label: string
+  items: AppointmentItem[]
+  isToday: boolean
+  isPast: boolean
+}
+
+function indiaKey(iso: string): string {
+  return formatIndiaDateInput(iso)
+}
+
+function dayLabel(iso: string, nowMs: number): string {
+  const slotKey = indiaKey(iso)
+  const todayKey = formatIndiaDateInput(new Date(nowMs))
+  const tomorrowKey = formatIndiaDateInput(new Date(nowMs + 86_400_000))
+  const yesterdayKey = formatIndiaDateInput(new Date(nowMs - 86_400_000))
+
+  const thisYearKey = formatIndiaDateInput(new Date(nowMs)).slice(0, 4)
+  const slotYearKey = slotKey.slice(0, 4)
+  const showYear = slotYearKey !== thisYearKey
+
+  const pretty = formatIndiaDate(iso, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    ...(showYear ? { year: 'numeric' } : {}),
+  })
+
+  if (slotKey === todayKey) return `Today · ${pretty}`
+  if (slotKey === tomorrowKey) return `Tomorrow · ${pretty}`
+  if (slotKey === yesterdayKey) return `Yesterday · ${pretty}`
+  return pretty
+}
+
+/**
+ * Groups appointments by India-local day, sorted chronologically.
+ *
+ * - `upcoming` tab is sorted ascending (soonest first) so patients see the
+ *   next visit at the top of the timeline.
+ * - `past` tab is sorted descending (most recent first) so recent history
+ *   surfaces first.
+ * Appointments without a slot are placed at the end under a "To be scheduled"
+ * bucket so they never silently disappear from the UI.
+ */
+export function groupApptsByDay(
+  appointments: AppointmentItem[],
+  tab: AppointmentTab,
+  nowMs: number = Date.now(),
+): TimelineDay[] {
+  const todayKey = formatIndiaDateInput(new Date(nowMs))
+  const buckets = new Map<string, TimelineDay>()
+  const pending: AppointmentItem[] = []
+
+  for (const appt of appointments) {
+    const iso = appt.availabilities?.starts_at
+    if (!iso) {
+      pending.push(appt)
+      continue
+    }
+    const key = indiaKey(iso)
+    const existing = buckets.get(key)
+    if (existing) {
+      existing.items.push(appt)
+    } else {
+      buckets.set(key, {
+        key,
+        label: dayLabel(iso, nowMs),
+        items: [appt],
+        isToday: key === todayKey,
+        isPast: key < todayKey,
+      })
+    }
+  }
+
+  const ordered = [...buckets.values()].sort((a, b) =>
+    tab === 'upcoming' ? a.key.localeCompare(b.key) : b.key.localeCompare(a.key),
+  )
+
+  // Sort each day's items by starts_at to keep the rail in chronological order.
+  for (const day of ordered) {
+    day.items.sort((a, b) => {
+      const aStart = a.availabilities?.starts_at ?? ''
+      const bStart = b.availabilities?.starts_at ?? ''
+      return tab === 'upcoming'
+        ? aStart.localeCompare(bStart)
+        : bStart.localeCompare(aStart)
+    })
+  }
+
+  if (pending.length > 0) {
+    ordered.push({
+      key: 'pending',
+      label: 'To be scheduled',
+      items: pending,
+      isToday: false,
+      isPast: false,
+    })
+  }
+
+  return ordered
 }

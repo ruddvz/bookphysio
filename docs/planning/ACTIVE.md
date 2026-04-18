@@ -52,7 +52,7 @@ Before starting: read `CHANGELOG.md` newest entry for any WIP handoff from the p
 - [ ] **16.14** `/doctor/[id]`, `/provider/[slug]`, `/city/[slug]`
 - [ ] **16.15** `/book/[id]` booking flow
 
-**Priority 2 (patient surfaces):** 16.16–16.23 — appointments, payments, records, messages, notifications, profile, pai/motio, search, specialty images
+**Priority 2 (patient surfaces):** 16.16–16.23 — appointments ✓, payments, records, messages, notifications, profile, pai/motio, search, specialty images
 
 **Priority 3 (provider surfaces):** 16.24–16.32 — appointments, calendar, availability, earnings, patients, profile, ai-assistant, messages, bills, pending
 

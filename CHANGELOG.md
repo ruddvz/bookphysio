@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-18 — claude/issue-16-16-rFkjG — Slice 16.16 patient appointments v2 redesign
+- Commit: <pending> (feat(patient): slice 16.16 — v2 patient appointments timeline + detail)
+- Files touched: src/app/patient/appointments/appointments-utils.ts, src/app/patient/appointments/page.tsx, src/app/patient/appointments/page.test.tsx, src/app/patient/appointments/PatientAppointmentsTimeline.tsx (new), src/app/patient/appointments/PatientAppointmentsTimeline.test.tsx (new), src/app/patient/appointments/[id]/page.tsx, src/app/patient/appointments/[id]/PatientAppointmentDetailV2.tsx (new), src/app/patient/appointments/[id]/PatientAppointmentDetailV2.test.tsx (new), docs/planning/EXECUTION-PLAN.md, docs/planning/ACTIVE.md
+- Tests added / changed: +23 (9 new timeline-helper cases in page.test.tsx, 8 component cases for PatientAppointmentsTimeline, 9 component cases for PatientAppointmentDetailV2)
+- Build: pass (`next build` green; type-check + targeted eslint clean; full `vitest run` 548/556 — 8 pre-existing failures in provider/availability, auth-regressions, Testimonials, and providers-onboard-signup that reproduce on `main` unchanged)
+- Status: done
+- Next up: 16.17 `/patient/payments` — v2 ledger card (integer ₹, Badge paid/refunded, GST line items)
+- Notes: Flag-gated via `useUiV2()` — v1 renders byte-identically until `bp_ui=v2` / `?ui=v2` / `NEXT_PUBLIC_UI_V2=true`. New v2 components (`PatientAppointmentsTimeline`, `PatientAppointmentDetailV2`) sit next to their v1 counterparts so the switch is a single conditional render. Timeline groups by India-local day using `formatIndiaDateInput` so late-night UTC slots don't split across two IST days (see `groupApptsByDay` guard test). Pure helpers exported (`groupApptsByDay`, `statusBadgeVariant`, `formatApptTimeOnly`, `STATUS_LABEL`) so adjacent slices (16.24 provider timeline) can reuse them.
+
 ## 2026-04-18 — claude/fix-pr-failures-MQQ5X — CI build fix (TS2551 .catch() on PostgrestFilterBuilder)
 - Commit: ec97aaf (fix(ci): replace .catch() on PostgrestFilterBuilder with { error } destructuring)
 - Files touched: src/app/api/admin/listings/route.ts, src/app/api/auth/callback/route.ts, src/app/auth/callback/route.ts, src/lib/auth/email-otp.ts, src/app/api/__tests__/admin-listings-route.test.ts
