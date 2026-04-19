@@ -28,9 +28,6 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   PersonStanding,
 }
 
-/** Mustard yellow — matches the 3D illustration card accent */
-const MUSTARD = '#F5A623'
-
 export default function TopSpecialties() {
   const scope = useRef<HTMLElement>(null)
 
