@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Providers } from '@/app/providers'
+import { ScrollToTop } from '@/components/ScrollToTop'
 import { CookieConsent } from '@/components/CookieConsent'
 import { PublicAnalytics } from '@/components/PublicAnalytics'
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
@@ -77,6 +78,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <noscript>You need JavaScript enabled to use BookPhysio.</noscript>
+        <ScrollToTop />
         <Providers><div id="main-content" tabIndex={-1}>{children}</div></Providers>
         <CookieConsent />
         <PublicAnalytics />

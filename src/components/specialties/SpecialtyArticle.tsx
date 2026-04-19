@@ -4,7 +4,6 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ArrowRight, Calendar, CheckCircle2, Stethoscope } from 'lucide-react'
 import type { SpecialtyCondition } from '@/lib/specialties'
-import { SpecialtyCTARail } from './SpecialtyCTARail'
 
 export interface SpecialtyArticleData {
   title: string
@@ -98,19 +97,19 @@ export default function SpecialtyArticle({
 
                 {/* Disclaimer chip */}
                 <p className="mt-6 text-[11px] text-black/50 leading-relaxed max-w-[420px]">
-                  This page is for general information only — not medical advice. Always consult a qualified physiotherapist.
+                  This page is for general information only, not medical advice. Always consult a qualified physiotherapist.
                 </p>
               </div>
 
-              {/* Right — illustration image (seamless on mustard bg) */}
+              {/* Right — illustration image */}
               {image && (
-                <div className="relative lg:w-[480px] xl:w-[540px] shrink-0 self-end">
+                <div className="relative lg:w-[720px] xl:w-[810px] shrink-0 self-center">
                   <Image
                     src={image}
                     alt={`${data.title} illustration`}
-                    width={540}
-                    height={480}
-                    className="w-full h-auto object-contain object-bottom"
+                    width={810}
+                    height={720}
+                    className="w-full h-auto object-contain object-center mix-blend-multiply"
                     priority
                   />
                 </div>
@@ -140,17 +139,9 @@ export default function SpecialtyArticle({
         <section className="pb-24" style={{ backgroundColor: MUSTARD }}>
           <div className="mx-auto max-w-[1142px] px-6">
 
-            {/* CTA rail — flag-gated, renders only when ui-v2 is enabled */}
-            <SpecialtyCTARail
-              specialtyLabel={data.title}
-              bookingHref={bookingHref}
-              className="mb-6"
-            />
-
             {/* Overview */}
             <div className="mb-6">
               <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Overview</h2>
                 <h3 className="text-[22px] lg:text-[24px] font-bold text-black mb-4">What this care covers</h3>
                 <p className="text-[15px] lg:text-[16px] leading-relaxed text-[#333333]">
                   {data.description}
@@ -162,7 +153,6 @@ export default function SpecialtyArticle({
             {richConditions && richConditions.length > 0 ? (
               <div className="mb-6">
                 <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {richConditions.map((condition) => (
@@ -186,7 +176,6 @@ export default function SpecialtyArticle({
             ) : data.conditions && data.conditions.length > 0 ? (
               <div className="mb-6">
                 <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Common conditions</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">Conditions treated</h3>
                   <ul className="space-y-3">
                     {data.conditions.map((condition) => (
@@ -206,7 +195,6 @@ export default function SpecialtyArticle({
             {symptoms && symptoms.length > 0 && (
               <div className="mb-6">
                 <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Signs & symptoms</h2>
                   <h3 className="text-[20px] font-bold text-black mb-5">When to seek help</h3>
                   <ul className="grid sm:grid-cols-2 gap-3">
                     {symptoms.map((symptom) => (
@@ -226,7 +214,6 @@ export default function SpecialtyArticle({
 
               {/* Treatment approaches */}
               <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Approach</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">How treatment is delivered</h3>
                 <ul className="space-y-3">
                   {(treatments ?? data.highlights).map((item) => (
@@ -247,7 +234,6 @@ export default function SpecialtyArticle({
                 <div className="rounded-2xl bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
                   {modalities && modalities.length > 0 && (
                     <>
-                      <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Equipment used</h2>
                       <h3 className="text-[20px] font-bold text-black mb-4">Modalities & equipment</h3>
                       <div className="flex flex-wrap gap-2 mb-6">
                         {modalities.map((m) => (
@@ -264,7 +250,6 @@ export default function SpecialtyArticle({
                   )}
                   {certifications && certifications.length > 0 && (
                     <>
-                      <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Qualifications to look for</h2>
                       <h3 className="text-[18px] font-bold text-black mb-4">Relevant certifications</h3>
                       <div className="flex flex-wrap gap-2">
                         {certifications.map((c) => (
@@ -285,7 +270,6 @@ export default function SpecialtyArticle({
             {/* Benefits */}
             <div className="mb-6">
               <div className="rounded-[var(--sq-lg)] bg-white p-8 shadow-[0_2px_16px_rgba(0,0,0,0.08)]">
-                <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 mb-2">Patient benefits</h2>
                 <h3 className="text-[20px] font-bold text-black mb-5">What better recovery looks like</h3>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {data.benefits.map((benefit) => (
