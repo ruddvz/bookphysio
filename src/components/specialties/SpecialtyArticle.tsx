@@ -65,7 +65,7 @@ export default function SpecialtyArticle({
           aria-label="Specialty hero"
         >
           <div className="mx-auto max-w-[1142px] px-6">
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-0">
+            <div className="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-0">
 
               {/* Left — text */}
               <div className="flex-1 py-14 lg:py-20 lg:pr-12 z-10">
@@ -101,23 +101,26 @@ export default function SpecialtyArticle({
                 </p>
               </div>
 
-              {/* Right — illustration image */}
+              {/* Right — illustration: fills full height, bleeds to right edge, gradient blends left seam */}
               {image && (
-                <div className="relative lg:w-[720px] xl:w-[810px] shrink-0 self-center">
+                <div className="hidden lg:block relative lg:w-[520px] xl:w-[580px] shrink-0 overflow-hidden -mr-6">
                   <Image
                     src={image}
                     alt={`${data.title} illustration`}
-                    width={810}
-                    height={720}
-                    className="w-full h-auto object-contain object-center mix-blend-multiply"
+                    fill
+                    className="object-cover object-center"
                     priority
+                  />
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-32 pointer-events-none"
+                    style={{ background: `linear-gradient(to right, ${MUSTARD}, transparent)` }}
                   />
                 </div>
               )}
 
               {/* Fallback icon when no image */}
               {!image && (
-                <div className="hidden lg:flex lg:w-[300px] shrink-0 items-center justify-center self-center">
+                <div className="hidden lg:flex lg:w-[300px] shrink-0 items-center justify-center">
                   <div className="w-32 h-32 rounded-full bg-black/10 flex items-center justify-center">
                     <Stethoscope className="w-16 h-16 text-black/40" />
                   </div>
