@@ -8,15 +8,11 @@ import {
   Baby,
   Bone,
   Brain,
-  Briefcase,
   Dumbbell,
-  Ear,
   Flower2,
   HeartPulse,
   PersonStanding,
-  Ribbon,
   Stethoscope,
-  Users,
 } from 'lucide-react'
 import { SPECIALTIES } from '@/lib/specialties'
 import { cn } from '@/lib/utils'
@@ -29,11 +25,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
   Dumbbell,
   Baby,
   Flower2,
-  Ribbon,
-  Users,
   PersonStanding,
-  Briefcase,
-  Ear,
 }
 
 /** Mustard yellow — matches the 3D illustration card accent */
@@ -79,8 +71,7 @@ export default function TopSpecialties() {
           </Link>
         </div>
 
-        {/* Grid — 12 items, image-first cards */}
-        {/* Grid — 12 items, image-first cards with squircle corners */}
+        {/* Grid — 7 specialties, image-first cards with squircle corners */}
         <div data-specialty-grid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {SPECIALTIES.map((s) => {
             const Icon = ICON_MAP[s.icon] ?? Stethoscope

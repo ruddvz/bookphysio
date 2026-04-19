@@ -54,53 +54,19 @@ export const CONDITION_SLUG_TO_SPECIALTY_SLUG: Readonly<Record<string, string>> 
   'age-related-deconditioning': 'geriatric',
   'knee-hip-arthritis': 'geriatric',
 
-  // Obstetrics
-  'pelvic-girdle-pain': 'obstetrics',
-  'low-back-pain-pregnancy': 'obstetrics',
-  'diastasis-recti': 'obstetrics',
-  'postnatal-core-weakness': 'obstetrics',
-  'symphysis-pubis-dysfunction': 'obstetrics',
-  'prenatal-swelling': 'obstetrics',
-
-  // Gynaecology
-  'urinary-incontinence': 'gynaecology',
-  'pelvic-organ-prolapse': 'gynaecology',
-  'chronic-pelvic-pain': 'gynaecology',
-  'dyspareunia': 'gynaecology',
-  'vaginismus': 'gynaecology',
-  'faecal-incontinence': 'gynaecology',
-
-  // Oncology
-  'lymphoedema': 'oncology',
-  'cancer-related-fatigue': 'oncology',
-  'post-mastectomy-rehab': 'oncology',
-  'peripheral-neuropathy': 'oncology',
-  'bone-joint-changes-cancer': 'oncology',
-  'cancer-deconditioning': 'oncology',
-
-  // Community
-  'post-stroke-community': 'community',
-  'disability-management': 'community',
-  'geriatric-falls-home': 'community',
-  'chronic-musculoskeletal': 'community',
-  'post-hospitalisation-recovery': 'community',
-  'developmental-disabilities': 'community',
-
-  // Industrial
-  'carpal-tunnel': 'industrial',
-  'repetitive-strain-injury': 'industrial',
-  'work-related-back-pain': 'industrial',
-  'shoulder-overuse': 'industrial',
-  'neck-pain-screen-work': 'industrial',
-  'manual-handling-injuries': 'industrial',
-
-  // Vestibular
-  'bppv': 'vestibular',
-  'menieres-disease': 'vestibular',
-  'vestibular-neuritis': 'vestibular',
-  'chronic-dizziness': 'vestibular',
-  'post-concussion-balance': 'vestibular',
-  'labyrinthitis': 'vestibular',
+  // Women's Health (merged obstetrics + gynaecology)
+  'pelvic-girdle-pain': 'womens',
+  'low-back-pain-pregnancy': 'womens',
+  'diastasis-recti': 'womens',
+  'postnatal-core-weakness': 'womens',
+  'symphysis-pubis-dysfunction': 'womens',
+  'prenatal-swelling': 'womens',
+  'urinary-incontinence': 'womens',
+  'pelvic-organ-prolapse': 'womens',
+  'chronic-pelvic-pain': 'womens',
+  'dyspareunia': 'womens',
+  'vaginismus': 'womens',
+  'faecal-incontinence': 'womens',
 }
 
 /**

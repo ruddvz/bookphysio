@@ -25,8 +25,8 @@ import { TrendDelta } from '@/components/dashboard/primitives/TrendDelta'
 import { useUiV2 } from '@/hooks/useUiV2'
 
 // Character paths — swap these for new poses when illustrations are ready
-const PATIENT_CHARACTER = '/images/physio-female.png'
-const PROVIDER_CHARACTER = '/images/physio-male.png'
+const PATIENT_CHARACTER = '/images/characters/physio-female-presenting.png'
+const PROVIDER_CHARACTER = '/images/characters/physio-male-laptop.png'
 
 const PATIENT_STEPS = [
   {
