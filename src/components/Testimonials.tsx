@@ -85,7 +85,7 @@ export default function Testimonials() {
             {/* Female physio character */}
             <div className="hidden lg:flex justify-end mt-6 pointer-events-none select-none">
               <Image
-                src="/images/physio-female.png"
+                src="/images/characters/physio-female-waving.png"
                 alt=""
                 width={150}
                 height={230}

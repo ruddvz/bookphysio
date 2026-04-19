@@ -182,7 +182,7 @@ export default function HeroSection() {
         {/* Male physio character — desktop only */}
         <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-[200px] z-[5] select-none">
           <Image
-            src="/images/physio-male.png"
+            src="/images/characters/physio-male-pointing.png"
             alt=""
             width={200}
             height={300}
@@ -195,7 +195,7 @@ export default function HeroSection() {
         {/* Female physio character — desktop only */}
         <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[220px] z-[5] select-none">
           <Image
-            src="/images/physio-female.png"
+            src="/images/characters/physio-female-welcoming.png"
             alt=""
             width={220}
             height={340}

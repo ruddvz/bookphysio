@@ -87,7 +87,7 @@ export default function HealthSystems() {
           {/* Centre: male physio */}
           <div className="hidden lg:flex items-end justify-center">
             <Image
-              src="/images/physio-male.png"
+              src="/images/characters/physio-male-arms-crossed.png"
               alt=""
               width={240}
               height={360}
