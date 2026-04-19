@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-19 — cursor/fix-main-ci-duplicate-womens-664f — fix: remove duplicate specialty key + lint
-- Commit: eba5bc8 (fix: remove duplicate womens specialty entry breaking CI type-check)
+- Commit: a0d04ae (fix: remove duplicate womens specialty entry breaking CI type-check)
 - Files touched: `src/app/specialties/[slug]/page.tsx`, `src/components/TopSpecialties.tsx`, `CHANGELOG.md`
 - Tests added / changed: 0
 - Build: pass (`npm run type-check`, `npm run lint`, `npm run build` with CI-style env)
