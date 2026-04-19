@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-19 — cursor/fix-main-ci-duplicate-womens-664f — fix: remove duplicate specialty key + lint
+- Commit: a0d04ae (fix: remove duplicate womens specialty entry breaking CI type-check)
+- Files touched: `src/app/specialties/[slug]/page.tsx`, `src/components/TopSpecialties.tsx`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: pass (`npm run type-check`, `npm run lint`, `npm run build` with CI-style env)
+- Status: done
+- Next up: Merge PR to restore green `main` CI
+- Notes: `SPECIALTIES_DATA` had two `'womens'` entries after PR #117 merge, causing TS1117. Removed the duplicate block. Dropped unused `MUSTARD` in `TopSpecialties.tsx` so ESLint is clean.
+
 ## 2026-04-18 — cursor/full-green-review-fixes-0413 — Merge origin/main into PR 114 (resolve conflicts)
 - Commit: e7e820c (merge: resolve conflicts with main)
 - Files touched: CHANGELOG.md, src/app/(auth)/auth-v2.test.tsx, src/app/(auth)/auth-regressions.test.tsx, src/app/provider/availability/Availability.test.tsx, src/components/__tests__/Testimonials.test.tsx
