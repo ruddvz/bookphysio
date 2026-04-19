@@ -194,6 +194,33 @@ const SPECIALTIES_DATA: Record<string, SpecialtyArticleData> = {
       'Prenatal swelling and discomfort',
     ],
   },
+  'womens': {
+    title: "Women's Health Physiotherapy",
+    ncahpName: 'Obstetrics & Gynaecology Sciences',
+    subtitle: "Specialist care for pregnancy, pelvic health, and every stage of a woman's life.",
+    description:
+      "Women's health physiotherapy covers the full spectrum of physical changes women experience — from pregnancy and childbirth to pelvic floor dysfunction, incontinence, and chronic pelvic pain. Your physiotherapist will assess your pelvic floor, core, and musculoskeletal system, then build a personalised programme that is safe and effective at every stage. Sessions are completely private and conducted at a pace that feels right for you.",
+    highlights: [
+      'Safe prenatal and postnatal exercise programming',
+      'Pelvic floor rehabilitation and strengthening',
+      'Bladder and bowel control programmes',
+      'Pelvic girdle pain and back pain management',
+    ],
+    benefits: [
+      'Reduced pregnancy-related pain and discomfort',
+      'Restored bladder and bowel control',
+      'Faster postnatal recovery and return to exercise',
+      'Improved pelvic organ support and confidence',
+    ],
+    conditions: [
+      'Pelvic girdle pain in pregnancy',
+      'Diastasis recti and postnatal core weakness',
+      'Urinary and faecal incontinence',
+      'Pelvic organ prolapse',
+      'Chronic pelvic pain',
+      'Vaginismus and painful intercourse',
+    ],
+  },
   'gynaecology': {
     title: "Gynaecological Physiotherapy",
     ncahpName: 'Obstetrics & Gynaecology Sciences',
