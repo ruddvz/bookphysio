@@ -93,15 +93,12 @@ export default function TopSpecialties() {
               >
                 {/* Image area */}
                 {hasImage ? (
-                  <div
-                    className="relative w-full h-44 overflow-hidden"
-                    style={{ backgroundColor: MUSTARD }}
-                  >
+                  <div className="relative w-full aspect-video overflow-hidden bg-[#F5A623]">
                     <Image
                       src={s.image!}
                       alt={`${s.label} physiotherapy`}
                       fill
-                      className="object-contain object-bottom group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   </div>
@@ -116,9 +113,7 @@ export default function TopSpecialties() {
 
                 {/* Text content */}
                 <div className="flex flex-col flex-1 gap-1.5 p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    {s.subLabel}
-                  </p>
+                  <p className="sr-only">{s.subLabel}</p>
                   <h3 className={cn(
                     'text-[16px] font-bold transition-colors group-hover:text-indigo-700',
                     s.tint.text
