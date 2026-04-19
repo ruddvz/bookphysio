@@ -10,9 +10,39 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
-[Live site](https://bookphysio.in) · [Architecture](#architecture) · [Local setup](#local-development)
+[Live site](https://bookphysio.in) · [Visual preview](#visual-preview) · [Architecture](#architecture) · [Local setup](#local-development)
 
 </div>
+
+---
+
+## Visual preview
+
+Brand **3D character** assets (homepage hero) and **specialty** illustrations shipped under `public/`. Paths below work on GitHub and locally.
+
+### Characters
+
+<p align="center">
+  <img src="public/images/characters/physio-male-pointing.png" alt="Male physiotherapist character — pointing" width="220" />
+  &nbsp;&nbsp;
+  <img src="public/images/characters/physio-female-welcoming.png" alt="Female physiotherapist character — welcoming" width="220" />
+</p>
+
+<p align="center"><sub>Same assets as <code>src/components/HeroSection.tsx</code> · transparent PNGs in <code>public/images/characters/</code></sub></p>
+
+### Specialties
+
+<p align="center">
+  <img src="public/specialties/orthopaedic.png" alt="Orthopaedic" title="Orthopaedic" width="96" />
+  <img src="public/specialties/neurological.png" alt="Neurological" title="Neurological" width="96" />
+  <img src="public/specialties/sports.png" alt="Sports" title="Sports" width="96" />
+  <img src="public/specialties/paediatric.png" alt="Paediatric" title="Paediatric" width="96" />
+  <img src="public/specialties/cardiopulmonary.png" alt="Cardiopulmonary" title="Cardiopulmonary" width="96" />
+  <img src="public/specialties/geriatric.png" alt="Geriatric" title="Geriatric" width="96" />
+  <img src="public/specialties/womens.png" alt="Women's health" title="Women's health" width="96" />
+</p>
+
+<p align="center"><sub>Declared in <code>src/lib/specialties.ts</code> · files in <code>public/specialties/</code></sub></p>
 
 ---
 
