@@ -277,10 +277,10 @@ export default function HeroSection() {
                 onCloseOptions={() => setShowCities(false)}
               />
 
-              <div className="pt-2 lg:pt-0">
+              <div className="pt-2 lg:pt-0 lg:flex lg:items-stretch">
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 h-full w-full lg:w-auto lg:px-8 font-bold text-[15px] rounded-full px-6 py-4 active:scale-[0.97] transition-all duration-150 group text-white whitespace-nowrap"
+                  className="flex items-center justify-center gap-2 w-full lg:w-auto lg:px-8 lg:py-0 font-bold text-[15px] rounded-[32px] lg:rounded-full px-6 py-4 active:scale-[0.97] transition-all duration-150 group text-white whitespace-nowrap"
                   style={{
                     background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
                     boxShadow: '0 4px 16px rgba(139,155,216,0.40)',

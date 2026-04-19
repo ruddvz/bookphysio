@@ -65,10 +65,10 @@ export default function SpecialtyArticle({
           aria-label="Specialty hero"
         >
           <div className="mx-auto max-w-[1142px] px-6">
-            <div className="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-0">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
 
               {/* Left — text */}
-              <div className="flex-1 py-14 lg:py-20 lg:pr-12 z-10">
+              <div className="flex-1 py-10 lg:py-16 z-10">
                 {/* NCAHP badge */}
                 {data.ncahpName ? <span className="sr-only">NCAHP: {data.ncahpName}</span> : null}
 
@@ -101,20 +101,21 @@ export default function SpecialtyArticle({
                 </p>
               </div>
 
-              {/* Right — illustration: fills full height, bleeds to right edge, gradient blends left seam */}
+              {/* Right — 16:9 squircle image container */}
               {image && (
-                <div className="hidden lg:block relative lg:w-[520px] xl:w-[580px] shrink-0 overflow-hidden -mr-6">
-                  <Image
-                    src={image}
-                    alt={`${data.title} illustration`}
-                    fill
-                    className="object-cover object-center"
-                    priority
-                  />
+                <div className="w-full lg:w-[520px] xl:w-[600px] shrink-0">
                   <div
-                    className="absolute left-0 top-0 bottom-0 w-32 pointer-events-none"
-                    style={{ background: `linear-gradient(to right, ${MUSTARD}, transparent)` }}
-                  />
+                    className="relative w-full overflow-hidden rounded-[var(--sq-lg)]"
+                    style={{ aspectRatio: '16/9', backgroundColor: MUSTARD }}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${data.title} illustration`}
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
                 </div>
               )}
 
@@ -129,13 +130,6 @@ export default function SpecialtyArticle({
             </div>
           </div>
 
-          {/* Subtle wave divider into content area */}
-          <div
-            className="absolute bottom-0 inset-x-0 h-8 pointer-events-none"
-            style={{
-              background: `linear-gradient(to bottom, transparent, ${MUSTARD})`,
-            }}
-          />
         </section>
 
         {/* ── Content cards on mustard background ─────────────────────── */}
