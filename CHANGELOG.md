@@ -35,6 +35,24 @@
 
 ## Log (newest first)
 
+## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
+- Commit: 30dd065 (docs: add character and specialty images to README)
+- Files touched: `README.md`
+- Tests added / changed: 0
+- Build: n/a (documentation only)
+- Status: done
+- Next up: Merge PR #119 or continue from `docs/planning/ACTIVE.md`
+- Notes: Embedded `public/images/characters/` hero PNGs and `public/specialties/` tiles; relative paths for GitHub rendering.
+
+## 2026-04-19 IST — cursor/readme-github-a8fc — docs: root README for GitHub
+- Commit: 3c7df87 (docs: add root README for GitHub)
+- Files touched: `README.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a (documentation only)
+- Status: done
+- Next up: Merge PR #119 or continue from `docs/planning/ACTIVE.md`
+- Notes: Repository overview for GitHub: stack, architecture links, local setup, conventions (INR/+91), contributing pointer.
+
 ## 2026-04-19 — cursor/fix-main-ci-duplicate-womens-664f — fix: remove duplicate specialty key + lint
 - Commit: a0d04ae (fix: remove duplicate womens specialty entry breaking CI type-check)
 - Files touched: `src/app/specialties/[slug]/page.tsx`, `src/components/TopSpecialties.tsx`, `CHANGELOG.md`
