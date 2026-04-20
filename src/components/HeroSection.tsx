@@ -180,12 +180,12 @@ export default function HeroSection() {
         />
 
         {/* Male physio character — desktop only */}
-        <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-[200px] z-[5] select-none">
+        <div className="hidden lg:block absolute left-[50px] top-1/2 -translate-y-1/2 w-[300px] z-[5] select-none">
           <Image
             src="/images/characters/physio-male-pointing.png"
             alt=""
-            width={200}
-            height={300}
+            width={300}
+            height={450}
             priority
             className="object-contain"
             aria-hidden="true"
@@ -193,12 +193,12 @@ export default function HeroSection() {
         </div>
 
         {/* Female physio character — desktop only */}
-        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[220px] z-[5] select-none">
+        <div className="hidden lg:block absolute right-[50px] top-1/2 -translate-y-1/2 w-[330px] z-[5] select-none">
           <Image
             src="/images/characters/physio-female-welcoming.png"
             alt=""
-            width={220}
-            height={340}
+            width={330}
+            height={510}
             priority
             className="object-contain"
             aria-hidden="true"
@@ -277,10 +277,10 @@ export default function HeroSection() {
                 onCloseOptions={() => setShowCities(false)}
               />
 
-              <div className="pt-2 lg:pt-0">
+              <div className="pt-2 lg:pt-0 lg:flex lg:items-stretch">
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 h-full w-full lg:w-auto lg:px-8 font-bold text-[15px] rounded-full px-6 py-4 active:scale-[0.97] transition-all duration-150 group text-white"
+                  className="flex items-center justify-center gap-2 w-full lg:w-auto lg:px-8 lg:py-0 font-bold text-[15px] rounded-[32px] lg:rounded-full px-6 py-4 active:scale-[0.97] transition-all duration-150 group text-white whitespace-nowrap"
                   style={{
                     background: 'linear-gradient(135deg, #8B9BD8, #7DCFC9)',
                     boxShadow: '0 4px 16px rgba(139,155,216,0.40)',
