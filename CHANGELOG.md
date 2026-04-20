@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-20 — cursor/admin-dashboard-perf-logout-690d — perf: admin stats aggregate + lazy AI insights; mobile logout
+- Commit: `perf(admin): faster stats API, lazy AI insights, hide mobile logout` (SHA: see `git log -1`)
+- Files touched: `src/app/api/admin/stats/route.ts`, `src/app/api/__tests__/admin-stats-route.test.ts`, `src/app/admin/page.tsx`, `src/app/admin/users/page.tsx`, `src/components/admin/AdminAiInsightsCard.tsx`, `src/components/dashboard/TopPillNav.tsx`, `supabase/migrations/047_admin_stats_gmv_index.sql`, `CHANGELOG.md`
+- Tests added / changed: updated admin-stats route mocks; full vitest 856/856
+- Build: pass (`npm run type-check`, `npm run lint`, `npm test`); `npm run build` not run locally (prebuild requires full `.env`)
+- Status: done
+- Next up: Slice 16.23 (specialty hero assets) or ops: apply migration `047_admin_stats_gmv_index.sql` in Supabase for index-backed GMV reads
+- Notes: `/api/admin/stats` uses `fee_inr.sum()` instead of fetching all completed rows; AI Insights split to dynamic import; admin stats query key aligned (`admin-stats`) with 60s staleTime; removed xl:hidden mobile header logout for admin only (desktop Sign out unchanged)
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`
