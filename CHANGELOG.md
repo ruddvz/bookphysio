@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-CONTRACT.md
+- Commit: docs: add Folder AI strict backend contract (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-CONTRACT.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; verify `appointments` INSERT policies on live DB if enabling client-side inserts
+- Notes: Maps inventory to RLS; documents POST /api/appointments + supabaseAdmin for booking; migration 019 caveat.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FRONTEND-ACTIONS-INVENTORY.md
 - Commit: docs: add FRONTEND-ACTIONS-INVENTORY route and API map (`git log -1 --oneline` on this branch)
 - Files touched: `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `CHANGELOG.md`

@@ -213,6 +213,7 @@ When in doubt, grep the page for **`fetch('/api/`** to see the exact endpoint.
 
 ## Related docs
 
+- [`FOLDER-AI-BACKEND-CONTRACT.md`](./FOLDER-AI-BACKEND-CONTRACT.md) — strict Folder AI rules mapped to these actions  
 - [`FOLDER-AI-BACKEND-TRUTH.md`](./FOLDER-AI-BACKEND-TRUTH.md) — RLS + caveats  
 - [`BACKEND-PERMISSION-CONTRACT.md`](./BACKEND-PERMISSION-CONTRACT.md) — per-table client contract  
 - [`FRONTEND-PERMISSIONS.md`](./FRONTEND-PERMISSIONS.md) — role gating & middleware

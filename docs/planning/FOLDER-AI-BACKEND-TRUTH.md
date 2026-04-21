@@ -2,6 +2,8 @@
 
 > **Purpose:** Package for generating **Supabase JS** front-end calls that align with **current RLS** and app roles. Pair with [`BACKEND-PERMISSION-CONTRACT.md`](./BACKEND-PERMISSION-CONTRACT.md) (per-table detail) and [`FRONTEND-PERMISSIONS.md`](./FRONTEND-PERMISSIONS.md) (routes + `src/lib/permissions`).
 
+> **Strict action-level rules** (ownership chains, public vs auth, appointment INSERT caveat, storage paths): **[`FOLDER-AI-BACKEND-CONTRACT.md`](./FOLDER-AI-BACKEND-CONTRACT.md)**.
+
 ---
 
 ## Why this is not a 100% guarantee (read first)

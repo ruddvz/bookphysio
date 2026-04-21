@@ -4,7 +4,7 @@
 >
 > **Truth source:** RLS in the **deployed** Supabase project. Reconcile this document when policies change (dashboard or migrations). See also [`FRONTEND-PERMISSIONS.md`](./FRONTEND-PERMISSIONS.md) for UI routing and role helpers.
 >
-> For **Folder AI** / codegen: limits of “100%” guarantees, hard rules, storage (avatars), and the **minimal ask** for action-level scripts — see [`FOLDER-AI-BACKEND-TRUTH.md`](./FOLDER-AI-BACKEND-TRUTH.md).
+> For **Folder AI** / codegen: limits of “100%” guarantees, hard rules, storage (avatars), and the **minimal ask** for action-level scripts — see [`FOLDER-AI-BACKEND-TRUTH.md`](./FOLDER-AI-BACKEND-TRUTH.md). **Strict contract** tied to the front-end action list: [`FOLDER-AI-BACKEND-CONTRACT.md`](./FOLDER-AI-BACKEND-CONTRACT.md).
 
 ---
 
