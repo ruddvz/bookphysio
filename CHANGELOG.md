@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: BACKEND-PERMISSION-CONTRACT.md
+- Commit: docs: add BACKEND-PERMISSION-CONTRACT for Supabase RLS (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or extend contract with UI action → call scripts when priorities are listed
+- Notes: Tables, operations, FE patterns; links to FRONTEND-PERMISSIONS; session/JWT rule stated up front.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: live DB vs repo RLS note
 - Commit: docs: align FRONTEND-PERMISSIONS with live DB vs migration history (`git log -1 --oneline` on this branch)
 - Files touched: `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`

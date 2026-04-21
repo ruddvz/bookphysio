@@ -2,6 +2,8 @@
 
 This document is the human-readable reference for **who may see which UI and which Supabase/API patterns to use**. **Postgres RLS remains authoritative**; the API routes enforce business rules again. Use this file when building new screens so you do not rely on hidden client-side assumptions.
 
+For **per-table Supabase client calls** aligned with RLS (select/update/insert expectations), see **[`BACKEND-PERMISSION-CONTRACT.md`](./BACKEND-PERMISSION-CONTRACT.md)**.
+
 ## Where the code lives
 
 - **Route guarding:** `src/middleware.ts` + `src/lib/auth/access.ts` — redirects by path prefix and `users.role`.
