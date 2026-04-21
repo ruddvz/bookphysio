@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FRONTEND-ACTIONS-INVENTORY.md
+- Commit: docs: add FRONTEND-ACTIONS-INVENTORY route and API map (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; optionally map each inventory row to exact `fetch` + tables in Folder-AI scripts
+- Notes: Patient, provider, admin, auth, public, chat, payments, Hindi routes; links to Folder AI doc.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-TRUTH.md
 - Commit: docs: add FOLDER-AI-BACKEND-TRUTH RLS reference package (`git log -1 --oneline` on this branch)
 - Files touched: `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`

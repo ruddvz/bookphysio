@@ -163,7 +163,9 @@ RLS allows **many** query shapes; **constraints** can still reject inserts/updat
 
 ## Minimal ask for a stricter Folder AI checklist
 
-Paste or summarize actions such as:
+A **full inventory from this repo’s routes** is in **[`FRONTEND-ACTIONS-INVENTORY.md`](./FRONTEND-ACTIONS-INVENTORY.md)** (pages + API families by role). Use that as the starting list; trim or extend for your deployment.
+
+You can also paste or summarize actions such as:
 
 | Area | Example actions |
 |------|------------------|
