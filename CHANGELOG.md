@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — feat: frontend permissions helpers + FRONTEND-PERMISSIONS.md
+- Commit: feat: add frontend permissions module and planning reference (short SHA = `git rev-parse --short HEAD` on this branch at sync time)
+- Files touched: `CHANGELOG.md`, `src/lib/permissions/`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 1 (`src/lib/permissions/__tests__/checklist.test.ts`)
+- Build: not run (library + docs only)
+- Status: done
+- Next up: Wire `resolveSessionContext` into pages that need explicit feature gates, or continue from `docs/planning/ACTIVE.md`
+- Notes: Pure TS helpers for role/session gates; includes `provider_pending` and `authenticated_profile_pending`; cross-links middleware and `auth/access`.
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`
