@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: live DB vs repo RLS note
+- Commit: docs: align FRONTEND-PERMISSIONS with live DB vs migration history (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or verify failing flows against live Supabase project
+- Notes: Explains policy “public” role naming vs anon JWT; debugging checklist for empty vs denied.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — feat: frontend permissions helpers + FRONTEND-PERMISSIONS.md
 - Commit: feat: add frontend permissions module and planning reference (short SHA = `git rev-parse --short HEAD` on this branch at sync time)
 - Files touched: `CHANGELOG.md`, `src/lib/permissions/`, `docs/planning/FRONTEND-PERMISSIONS.md`
