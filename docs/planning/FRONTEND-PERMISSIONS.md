@@ -4,6 +4,8 @@ This document is the human-readable reference for **who may see which UI and whi
 
 For **per-table Supabase client calls** aligned with RLS (select/update/insert expectations), see **[`BACKEND-PERMISSION-CONTRACT.md`](./BACKEND-PERMISSION-CONTRACT.md)**.
 
+For **Folder AI** / codegen (“backend truth” package, non-RLS caveats, avatar storage, action-list stub), see **[`FOLDER-AI-BACKEND-TRUTH.md`](./FOLDER-AI-BACKEND-TRUTH.md)**.
+
 ## Where the code lives
 
 - **Route guarding:** `src/middleware.ts` + `src/lib/auth/access.ts` — redirects by path prefix and `users.role`.

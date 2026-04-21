@@ -3,6 +3,8 @@
 > **Purpose:** Single reference for **Supabase client** calls that align with **current database RLS**. Use **`createClient()`** (browser) or the same session-based client pattern so the JWT is sent; **`auth.uid()`** is null when logged out and most row policies yield no access or denial.
 >
 > **Truth source:** RLS in the **deployed** Supabase project. Reconcile this document when policies change (dashboard or migrations). See also [`FRONTEND-PERMISSIONS.md`](./FRONTEND-PERMISSIONS.md) for UI routing and role helpers.
+>
+> For **Folder AI** / codegen: limits of “100%” guarantees, hard rules, storage (avatars), and the **minimal ask** for action-level scripts — see [`FOLDER-AI-BACKEND-TRUTH.md`](./FOLDER-AI-BACKEND-TRUTH.md).
 
 ---
 

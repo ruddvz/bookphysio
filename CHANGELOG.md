@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-TRUTH.md
+- Commit: docs: add FOLDER-AI-BACKEND-TRUTH RLS reference package (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Optional `FOLDER-AI-ACTION-SCRIPTS.md` when screen/action list is provided; merge PR #122
+- Notes: Hard rules, auth_role, table contract summary, storage avatars, minimal ask for strict checklist.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: BACKEND-PERMISSION-CONTRACT.md
 - Commit: docs: add BACKEND-PERMISSION-CONTRACT for Supabase RLS (`git log -1 --oneline` on this branch)
 - Files touched: `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`
