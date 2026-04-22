@@ -165,7 +165,17 @@ export async function POST(request: NextRequest) {
   const parsed = createAppointmentSchema.safeParse(body)
   if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { provider_id, availability_id, location_id, visit_type, notes, patient_address, client_request_id } = parsed.data
+  const {
+    provider_id,
+    availability_id,
+    location_id,
+    visit_type,
+    notes,
+    patient_address,
+    client_request_id,
+    payment_channel: paymentChannelRaw,
+  } = parsed.data
+  const payment_channel = paymentChannelRaw ?? 'razorpay'
   const activeIpHoldKey = ip ? getActiveBookingIpHoldKey(ip, provider_id) : null
   const provisionalHoldToken = activeIpHoldKey ? `pending:${user.id}:${crypto.randomUUID()}` : null
 
@@ -395,6 +405,8 @@ export async function POST(request: NextRequest) {
       amount_inr: totalAmountInr,
       gst_amount_inr: gstAmountInr,
       status: 'created',
+      gateway: payment_channel === 'pay_at_clinic' ? 'pay_at_clinic' : 'razorpay',
+      booking_channel: payment_channel,
     })
     .select('id')
     .single()
@@ -408,6 +420,25 @@ export async function POST(request: NextRequest) {
     })
     console.error('[api/appointments] Payment insert error:', paymentError)
     return jsonNoStore({ error: 'Failed to create payment record' }, { status: 500 })
+  }
+
+  if (payment_channel === 'pay_at_clinic') {
+    const { error: confirmError } = await supabaseAdmin
+      .from('appointments')
+      .update({ status: 'confirmed' })
+      .eq('id', appointment.id)
+      .eq('status', 'pending')
+
+    if (confirmError) {
+      await rollbackAppointmentCreation({
+        appointmentId: appointment.id,
+        availabilityId: availability_id,
+        activeIpHoldKey,
+        provisionalHoldToken,
+      })
+      console.error('[api/appointments] Pay-at-clinic confirmation failed:', confirmError)
+      return jsonNoStore({ error: 'Failed to confirm booking' }, { status: 500 })
+    }
   }
 
   if (activeIpHoldKey && provisionalHoldToken) {
@@ -451,7 +482,12 @@ export async function POST(request: NextRequest) {
     // Intentionally swallowed — anomaly detection must never affect the booking
   })
 
-  return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
+  const appointmentForResponse =
+    payment_channel === 'pay_at_clinic'
+      ? { ...appointment, status: 'confirmed' as const }
+      : appointment
+
+  return jsonNoStore(withSanitizedAppointmentNotes(appointmentForResponse), { status: 201 })
 }
 
 export async function GET(request: NextRequest) {

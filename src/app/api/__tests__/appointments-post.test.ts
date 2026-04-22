@@ -160,6 +160,11 @@ function createAdminAppointmentsChain() {
       adminAppointmentInsertHandler?.(payload)
       return insertSelectChain
     }),
+    update: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        eq: vi.fn().mockResolvedValue({ error: null }),
+      })),
+    })),
     delete: vi.fn(() => deleteChain),
   }
 }
@@ -520,6 +525,34 @@ describe('POST /api/appointments', () => {
     expect(insertedPayload).toMatchObject({
       patient_id: '00000000-0000-4000-8000-000000000010',
       visit_type: 'in_clinic',
+      status: 'pending',
+    })
+  })
+
+  it('defaults online channel to razorpay on payment row when omitted from body', async () => {
+    let insertedPaymentPayload: Record<string, unknown> | undefined
+    createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
+    adminPaymentInsertHandler = (payload) => {
+      insertedPaymentPayload = payload as Record<string, unknown>
+    }
+
+    const { POST } = await import('../appointments/route')
+    const response = await POST(new NextRequest('http://localhost/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider_id: '11111111-1111-4111-8111-111111111111',
+        availability_id: '33333333-3333-4333-8333-333333333333',
+        location_id: '22222222-2222-4222-8222-222222222222',
+        visit_type: 'in_clinic',
+      }),
+    }))
+
+    expect(response.status).toBe(201)
+    expect(insertedPaymentPayload).toMatchObject({
+      gateway: 'razorpay',
+      booking_channel: 'razorpay',
+      status: 'created',
     })
   })
 
@@ -547,10 +580,13 @@ describe('POST /api/appointments', () => {
         visit_type: 'home_visit',
         patient_address: '12 Palm Street, Bengaluru',
         notes: 'Bring previous MRI report',
+        payment_channel: 'pay_at_clinic',
       }),
     }))
 
     expect(response.status).toBe(201)
+    const body = await response.json() as { status?: string }
+    expect(body.status).toBe('confirmed')
     expect(parseAppointmentNotes(insertedPayload?.notes as string)).toEqual({
       homeVisitAddress: '12 Palm Street, Bengaluru',
       patientReason: 'Bring previous MRI report',
@@ -569,6 +605,8 @@ describe('POST /api/appointments', () => {
       amount_inr: 1841,
       gst_amount_inr: 281,
       status: 'created',
+      gateway: 'pay_at_clinic',
+      booking_channel: 'pay_at_clinic',
     })
     expect(redisSetMock).toHaveBeenCalled()
   })

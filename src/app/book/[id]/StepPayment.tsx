@@ -121,6 +121,7 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
           patient_address: visitType === 'home_visit' ? patient.homeVisitAddress : undefined,
           ...(combinedNotes ? { notes: combinedNotes } : {}),
           client_request_id: clientRequestId,
+          payment_channel: method === 'pay_at_clinic' ? 'pay_at_clinic' : 'razorpay',
         }),
       })
 

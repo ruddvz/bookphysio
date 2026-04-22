@@ -12,7 +12,9 @@ export const createAppointmentSchema = z.object({
   patient_address: z.string().trim().min(10).max(250).optional(),
   notes: z.string().max(500).optional(),
   /** Stable id from the client so retries return the same booking without duplicate rows. */
-  client_request_id: z.string().uuid().optional(),
+  client_request_id: z.string().uuid().optional().nullable(),
+  /** `pay_at_clinic` = reserve without Razorpay; appointment confirmed after payment row insert. */
+  payment_channel: z.enum(['razorpay', 'pay_at_clinic']).optional(),
   insurance_id: deprecatedInsuranceField,
 }).transform(({ insurance_id, ...booking }) => {
   void insurance_id

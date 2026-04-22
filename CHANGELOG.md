@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: pay-at-clinic confirm + payments.booking_channel
+- Commit: fix: pay-at-clinic gateway confirmation + webhook guards (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/lib/validations/booking.ts`, `src/app/book/[id]/StepPayment.tsx`, `supabase/migrations/048_payments_booking_channel.sql`, `src/app/api/__tests__/appointments-post.test.ts`, `src/app/book/[id]/StepPayment.test.tsx`
+- Tests added / changed: POST asserts `payment_channel`; home-visit test asserts response `status: confirmed`
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment)
+- Status: done
+- Next up: Apply migrations `047` + `048` in Supabase before deploy
+- Notes: `payment_channel` / `booking_channel` + `gateway` distinguish Razorpay vs pay-at-clinic; API confirms appointment after payment insert for `pay_at_clinic` only; webhook skips failure handling for `pay_at_clinic`; captured path uses `.select().maybeSingle()` after payment update for replay safety.
+
 ## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: booking status, Razorpay failure path, idempotency
 - Commit: fix: align booking lifecycle with webhook and add idempotency (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
 - Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/app/book/[id]/StepPayment.tsx`, `src/lib/validations/booking.ts`, `src/lib/booking/active-booking-hold.ts`, `src/app/api/appointments/[id]/route.ts`, `supabase/migrations/047_appointment_booking_idempotency.sql`, tests under `src/app/api/__tests__/`

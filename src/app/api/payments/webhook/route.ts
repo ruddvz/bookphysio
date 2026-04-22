@@ -34,7 +34,7 @@ async function handlePaymentCaptured(payment: RazorpayPaymentEntity): Promise<Ne
 
   const { data: existingPayment, error: lookupError } = await supabaseAdmin
     .from('payments')
-    .select('id, status, razorpay_payment_id, appointment_id, amount_inr')
+    .select('id, status, razorpay_payment_id, appointment_id, amount_inr, booking_channel')
     .eq('razorpay_order_id', razorpayOrderId)
     .maybeSingle()
 
@@ -74,7 +74,7 @@ async function handlePaymentCaptured(payment: RazorpayPaymentEntity): Promise<Ne
     return NextResponse.json({ error: 'Invalid payment amount' }, { status: 400 })
   }
 
-  const { error: paymentUpdateError } = await supabaseAdmin
+  const { data: updatedPaymentRow, error: paymentUpdateError } = await supabaseAdmin
     .from('payments')
     .update({
       razorpay_payment_id: razorpayPaymentId,
@@ -82,10 +82,27 @@ async function handlePaymentCaptured(payment: RazorpayPaymentEntity): Promise<Ne
     })
     .eq('razorpay_order_id', razorpayOrderId)
     .eq('status', 'created')
+    .select('id')
+    .maybeSingle()
 
   if (paymentUpdateError) {
     console.error('[webhook] Payment update failed:', paymentUpdateError)
     return NextResponse.json({ error: 'Failed to update payment' }, { status: 500 })
+  }
+
+  if (!updatedPaymentRow) {
+    const { data: paidReplay } = await supabaseAdmin
+      .from('payments')
+      .select('id, status, razorpay_payment_id')
+      .eq('razorpay_order_id', razorpayOrderId)
+      .maybeSingle()
+
+    if (paidReplay?.status === 'paid') {
+      return NextResponse.json({ received: true })
+    }
+
+    console.warn('[webhook] payment.captured: update matched no rows; acknowledging to avoid retry storms:', razorpayOrderId)
+    return NextResponse.json({ received: true })
   }
 
   const { error: appointmentUpdateError } = await supabaseAdmin
@@ -170,7 +187,7 @@ async function handlePaymentFailed(payment: RazorpayPaymentEntity): Promise<Next
 
   const { data: existingPayment, error: lookupError } = await supabaseAdmin
     .from('payments')
-    .select('id, status, appointment_id')
+    .select('id, status, appointment_id, booking_channel')
     .eq('razorpay_order_id', razorpayOrderId)
     .maybeSingle()
 
@@ -183,6 +200,10 @@ async function handlePaymentFailed(payment: RazorpayPaymentEntity): Promise<Next
     return NextResponse.json({ received: true })
   }
 
+  if ((existingPayment as { booking_channel?: string }).booking_channel === 'pay_at_clinic') {
+    return NextResponse.json({ received: true })
+  }
+
   if (existingPayment.status === 'paid') {
     return NextResponse.json({ received: true })
   }
@@ -191,15 +212,21 @@ async function handlePaymentFailed(payment: RazorpayPaymentEntity): Promise<Next
     return NextResponse.json({ received: true })
   }
 
-  const { error: paymentUpdateError } = await supabaseAdmin
+  const { data: failedUpdateRow, error: paymentUpdateError } = await supabaseAdmin
     .from('payments')
     .update({ status: 'failed' })
     .eq('razorpay_order_id', razorpayOrderId)
     .eq('status', 'created')
+    .select('id')
+    .maybeSingle()
 
   if (paymentUpdateError) {
     console.error('[webhook] Payment failed status update error:', paymentUpdateError)
     return NextResponse.json({ error: 'Failed to update payment' }, { status: 500 })
+  }
+
+  if (!failedUpdateRow) {
+    return NextResponse.json({ received: true })
   }
 
   const { data: appointment, error: apptError } = await supabaseAdmin
