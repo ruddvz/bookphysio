@@ -13,7 +13,7 @@ import { useUiV2 } from '@/hooks/useUiV2'
 import RescheduleModal from './RescheduleModal'
 import { PatientAppointmentDetailV2 } from './PatientAppointmentDetailV2'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 interface AppointmentDetail {

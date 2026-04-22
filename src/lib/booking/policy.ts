@@ -1,4 +1,4 @@
-export type VisitType = 'in_clinic' | 'home_visit' | 'online'
+export type VisitType = 'in_clinic' | 'home_visit'
 
 const HOME_VISIT_MULTIPLIER = 1.3
 const BOOKING_META_START = '[BookPhysioMeta]'
@@ -54,13 +54,13 @@ function serializeAppointmentNotes(input: ParsedAppointmentNotes): string | null
 }
 
 export function isVisitType(value: string | null | undefined): value is VisitType {
-  return value === 'in_clinic' || value === 'home_visit' || value === 'online'
+  return value === 'in_clinic' || value === 'home_visit'
 }
 
 export function collectVisitTypes(
   locations: Array<{ visit_type?: readonly string[] | null }> | null | undefined,
 ): VisitType[] {
-  const visitTypeOrder: VisitType[] = ['in_clinic', 'home_visit', 'online']
+  const visitTypeOrder: VisitType[] = ['in_clinic', 'home_visit']
   const collected = new Set<VisitType>()
 
   for (const location of locations ?? []) {
@@ -84,7 +84,6 @@ export function getVisitTypeConsultationFee(
     return Math.round(normalizedBaseFee * HOME_VISIT_MULTIPLIER)
   }
 
-  // in_clinic and online use the listed consultation fee
   return normalizedBaseFee
 }
 

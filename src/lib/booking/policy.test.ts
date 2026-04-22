@@ -20,7 +20,6 @@ describe('booking policy helpers', () => {
   it('applies the home-visit surcharge consistently', () => {
     expect(getVisitTypeConsultationFee(1200, 'in_clinic')).toBe(1200)
     expect(getVisitTypeConsultationFee(1200, 'home_visit')).toBe(1560)
-    expect(getVisitTypeConsultationFee(1200, 'online')).toBe(1200)
   })
 
   it('stores booking metadata separately from provider notes', () => {

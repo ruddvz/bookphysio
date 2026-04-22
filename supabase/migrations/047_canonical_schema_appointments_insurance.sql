@@ -1,5 +1,5 @@
--- 047: Align with canonical public schema: insurance + telehealth, online visit type,
---      location modalities bridge, and booking_anomalies user FKs.
+-- 047: insurance + telehealth columns, location modalities bridge, booking_anomalies user FKs.
+--      (Visit types are in_clinic + home_visit only; see 048 if 047 was applied with `online`.)
 -- Idempotent where possible for environments that partially match already.
 
 -- ── Insurances (dropped in 023 for legacy “coverage” — reintroduced as optional FK on appointments)
@@ -23,13 +23,13 @@ ALTER TABLE public.provider_insurances ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "provider_insurances_public_read" ON public.provider_insurances;
 CREATE POLICY "provider_insurances_public_read" ON public.provider_insurances FOR SELECT USING (true);
 
--- ── Appointments: allow online + optional insurance and telehealth room
+-- ── Appointments: optional insurance and telehealth room (visit_type check tightened in 048 for fresh chains)
 ALTER TABLE public.appointments
   DROP CONSTRAINT IF EXISTS appointments_visit_type_check;
 
 ALTER TABLE public.appointments
   ADD CONSTRAINT appointments_visit_type_check
-  CHECK (visit_type = ANY (ARRAY['in_clinic'::text, 'home_visit'::text, 'online'::text]));
+  CHECK (visit_type = ANY (ARRAY['in_clinic'::text, 'home_visit'::text]));
 
 ALTER TABLE public.appointments
   ADD COLUMN IF NOT EXISTS insurance_id uuid,

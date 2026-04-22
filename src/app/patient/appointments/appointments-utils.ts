@@ -6,7 +6,7 @@
 import { formatIndiaDate, formatIndiaDateInput, formatIndiaDateTime, formatIndiaTime } from '@/lib/india-date'
 
 export type AppointmentTab = 'upcoming' | 'past'
-export type VisitType = 'in_clinic' | 'home_visit' | 'online'
+export type VisitType = 'in_clinic' | 'home_visit'
 export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
 
 export interface AppointmentItem {

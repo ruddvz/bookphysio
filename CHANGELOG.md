@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — fix: no online visit type (048 + app revert)
+- Commit: (pending)
+- Files touched: `supabase/migrations/048_no_online_visit_type.sql`, `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `supabase/migrations/001_initial_schema.sql` (locations visit_type check), `src` visit_type enums and doctor booking UI
+- Tests added / changed: 0 (policy test line for online removed)
+- Build: `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `048` in Supabase after `047` if any DB had `online` in CHECKs; PR #124 description should note product is clinic + home only
+- Notes: `telehealth_room_id` column left on appointments (unused). Copy like “Paid online” still means Razorpay, not visit modality.
+
 ## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG commit sha for 047 entry
 - Commit: a3e6215 (docs: correct CHANGELOG commit sha for schema 047 entry)
 - Files touched: `CHANGELOG.md`

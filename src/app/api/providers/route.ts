@@ -420,7 +420,7 @@ export async function GET(request: NextRequest) {
   } catch (cacheError) {
     console.error('[api/providers] Cache read degraded:', cacheError)
   }
-  if (params.visit_type !== 'in_clinic' && params.visit_type !== 'home_visit' && params.visit_type !== 'online') {
+  if (params.visit_type !== 'in_clinic' && params.visit_type !== 'home_visit') {
     delete params.visit_type
   }
   const parsed = searchFiltersSchema.safeParse(params)

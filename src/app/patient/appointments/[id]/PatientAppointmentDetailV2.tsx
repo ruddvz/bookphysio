@@ -18,7 +18,7 @@ import { Breadcrumbs } from '@/components/dashboard/primitives/Breadcrumbs'
 import { formatIndiaDateTime } from '@/lib/india-date'
 import { statusBadgeVariant, STATUS_LABEL } from '../appointments-utils'
 
-type VisitType = 'in_clinic' | 'home_visit' | 'online'
+type VisitType = 'in_clinic' | 'home_visit'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 export interface PatientAppointmentDetailV2Props {

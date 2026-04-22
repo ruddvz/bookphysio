@@ -49,7 +49,7 @@ CREATE TABLE locations (
   lat numeric(10,7),
   lng numeric(10,7),
   visit_type text[] NOT NULL DEFAULT '{in_clinic}'
-    CHECK (visit_type <@ ARRAY['in_clinic','home_visit','online']::text[])
+    CHECK (visit_type <@ ARRAY['in_clinic','home_visit']::text[])
 );
 
 -- Provider availability slots

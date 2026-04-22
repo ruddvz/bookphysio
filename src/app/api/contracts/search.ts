@@ -6,7 +6,7 @@ export interface SearchFilters {
   query?: string
   city?: string
   specialty_id?: string
-  visit_type?: 'in_clinic' | 'home_visit' | 'online'
+  visit_type?: 'in_clinic' | 'home_visit'
   sort?: SearchSort
   available_date?: string
   min_rating?: number

@@ -215,32 +215,26 @@ export async function POST(request: NextRequest) {
     return jsonNoStore({ error: 'Slot unavailable' }, { status: 409 })
   }
 
-  if (visit_type !== 'online' && !slot.location_id) {
+  if (!slot.location_id) {
     return jsonNoStore({ error: 'Selected slot is missing a provider location. Please choose another slot.' }, { status: 409 })
   }
 
-  if (visit_type !== 'online' && location_id && slot.location_id !== location_id) {
+  if (location_id && slot.location_id !== location_id) {
     return jsonNoStore({ error: 'Selected slot location changed. Please refresh and try again.' }, { status: 409 })
   }
 
-  if (visit_type === 'online' && location_id && slot.location_id && slot.location_id !== location_id) {
-    return jsonNoStore({ error: 'Selected slot location changed. Please refresh and try again.' }, { status: 409 })
+  const { data: slotLocation, error: locationError } = await supabase
+    .from('locations')
+    .select('visit_type')
+    .eq('id', slot.location_id)
+    .maybeSingle()
+
+  if (locationError) {
+    return jsonNoStore({ error: 'Failed to validate slot location' }, { status: 500 })
   }
 
-  if (slot.location_id) {
-    const { data: slotLocation, error: locationError } = await supabase
-      .from('locations')
-      .select('visit_type')
-      .eq('id', slot.location_id)
-      .maybeSingle()
-
-    if (locationError) {
-      return jsonNoStore({ error: 'Failed to validate slot location' }, { status: 500 })
-    }
-
-    if (slotLocation && !slotLocation.visit_type.includes(visit_type)) {
-      return jsonNoStore({ error: 'Selected slot is not available for that visit type.' }, { status: 409 })
-    }
+  if (slotLocation && !slotLocation.visit_type.includes(visit_type)) {
+    return jsonNoStore({ error: 'Selected slot is not available for that visit type.' }, { status: 409 })
   }
 
   if (activeIpHoldKey && provisionalHoldToken) {

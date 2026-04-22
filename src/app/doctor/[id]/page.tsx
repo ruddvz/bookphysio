@@ -309,7 +309,6 @@ export default async function DoctorPage({ params }: DoctorPageProps) {
   const feeMap: Record<VisitType, number> = {
     in_clinic: getVisitTypeConsultationFee(baseFee, 'in_clinic'),
     home_visit: getVisitTypeConsultationFee(baseFee, 'home_visit'),
-    online: getVisitTypeConsultationFee(baseFee, 'online'),
   }
   const mobileFeeOptions = visitTypes.length > 0
     ? visitTypes.map((visitType) => feeMap[visitType]).filter((fee) => Number.isFinite(fee) && fee > 0)

@@ -195,9 +195,7 @@ export default function SearchContent({
     if (pincode) apiParams.pincode = pincode
     if (specialty) apiParams.specialty_id = specialty
     if (conditionFilters.query) apiParams.query = conditionFilters.query
-    if (visit_type === 'in_clinic' || visit_type === 'home_visit' || visit_type === 'online') {
-      apiParams.visit_type = visit_type
-    }
+    if (visit_type === 'in_clinic' || visit_type === 'home_visit') apiParams.visit_type = visit_type
     if (qualification) apiParams.qualification = qualification
     if (sort) apiParams.sort = sort
     if (max_fee) apiParams.max_fee_inr = max_fee

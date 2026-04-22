@@ -92,7 +92,7 @@ const onboardSignupSchema = z.object({
     }
   }),
   step3: z.object({
-    visitTypes: z.array(z.enum(['in_clinic', 'home_visit', 'online'])).min(1, 'Select at least one visit type'),
+    visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
     clinicName: z.string().max(200).optional(),
     address: z.string().max(500).optional(),
     city: z.string().min(2).max(100),
