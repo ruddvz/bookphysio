@@ -25,7 +25,7 @@ export const locationSchema = z.object({
   city: z.string().min(1).max(100),
   state: z.string().min(1).max(100),
   pincode: pincodeSchema,
-  visit_type: z.array(z.enum(['in_clinic', 'home_visit'])).min(1),
+  visit_type: z.array(z.enum(['in_clinic', 'home_visit', 'online'])).min(1),
 })
 
 export type ProviderProfileInput = z.infer<typeof providerProfileSchema>

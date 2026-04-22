@@ -2,7 +2,7 @@ import type { ProviderCard, ProviderLocation } from './provider'
 import type { PaymentStatus } from './payment'
 import type { UserProfile } from './user'
 
-export type VisitType = 'in_clinic' | 'home_visit'
+export type VisitType = 'in_clinic' | 'home_visit' | 'online'
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 export interface AppointmentSlot {
@@ -40,4 +40,5 @@ export interface BookingRequest {
   visit_type: VisitType
   notes?: string
   patient_address?: string
+  insurance_id?: string
 }

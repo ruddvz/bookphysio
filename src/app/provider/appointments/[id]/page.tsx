@@ -29,7 +29,7 @@ import {
   type TileTone,
 } from '@/components/dashboard/primitives'
 
-type VisitType = 'in_clinic' | 'home_visit'
+type VisitType = 'in_clinic' | 'home_visit' | 'online'
 type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 
 interface AppointmentDetail {

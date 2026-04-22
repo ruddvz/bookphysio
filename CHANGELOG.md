@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — feat: migration 047 + online visits + insurance FK alignment
+- Commit: 32a2440 (feat: align schema 047 — online visits, insurances, location_modalities)
+- Files touched: `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `src/lib/validations/booking.ts`, `src/lib/validations/search.ts`, `src/lib/validations/provider.ts`, `src/lib/booking/policy.ts`, `src/app/api/appointments/route.ts`, `src/app/api/providers/route.ts`, `src/app/api/providers/[id]/availability/route.ts`, `src/app/api/contracts/*.ts`, `src/app/doctor/[id]/BookingCard.tsx`, `src/app/doctor/[id]/page.tsx`, `src/app/search/SearchContent.tsx`, `src/components/VisitTypeBadge.tsx`, appointment/patient/provider pages for VisitType, tests
+- Tests added / changed: updated search + appointments-post + providers tests for optional `insurance_id` (uuid)
+- Build: not run in agent env (missing `.env` secrets for `prebuild`); `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `047` in Supabase; set CI/build env for full `npm run build`; optional: extend doctor onboard Zod to allow `online` in `visitTypes` if product wants it in signup
+- Notes: Brings repo SQL + API in line with canonical schema: `insurances` + `provider_insurances`, `appointments.insurance_id` + `telehealth_room_id`, `visit_type` includes `online`, `location_modalities` table + RLS, `booking_anomalies` patient/provider FKs. Online bookings skip requiring `locations` row on the slot when `location_id` is null.
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`

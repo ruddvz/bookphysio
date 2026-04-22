@@ -15,7 +15,7 @@ export interface ProviderLocation {
   name: string
   city: string | null
   state: string | null
-  visit_type: ('in_clinic' | 'home_visit')[]
+  visit_type: ('in_clinic' | 'home_visit' | 'online')[]
 }
 
 export interface ProviderCard {
@@ -32,7 +32,7 @@ export interface ProviderCard {
   consultation_fee_inr: number | null
   next_available_slot: string | null
   availability_preview?: ProviderAvailabilityPreviewDay[]
-  visit_types: ('in_clinic' | 'home_visit')[]
+  visit_types: ('in_clinic' | 'home_visit' | 'online')[]
   city: string | null
   distance?: string
   lat: number | null

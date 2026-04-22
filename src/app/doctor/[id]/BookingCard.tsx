@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Calendar, MapPin, Home, ShieldCheck, Lock } from 'lucide-react'
+import { ArrowRight, Calendar, MapPin, Home, ShieldCheck, Lock, Video } from 'lucide-react'
 import { formatIndiaDateInput, formatIndiaTime, getIndiaDayNumber, getIndiaWeekdayShort } from '@/lib/india-date'
 import { cn } from '@/lib/utils'
 
@@ -10,9 +10,9 @@ import { cn } from '@/lib/utils'
 // Types
 // ---------------------------------------------------------------------------
 
-type VisitType = 'in_clinic' | 'home_visit'
+type VisitType = 'in_clinic' | 'home_visit' | 'online'
 
-interface FeeMap { in_clinic: number; home_visit: number }
+interface FeeMap { in_clinic: number; home_visit: number; online: number }
 interface BookingCardProps {
   doctorId: string
   fee: FeeMap
@@ -41,6 +41,7 @@ interface GroupedSlots {
 const VISIT_TYPE_LABELS: Record<VisitType, { label: string; icon: any; iconColor: string; bgColor: string }> = {
   in_clinic: { label: 'In-clinic', icon: MapPin, iconColor: 'text-bp-accent', bgColor: 'bg-bp-accent/10' },
   home_visit: { label: 'Home Visit', icon: Home, iconColor: 'text-bp-secondary', bgColor: 'bg-bp-secondary/10' },
+  online: { label: 'Online', icon: Video, iconColor: 'text-bp-primary', bgColor: 'bg-bp-teal-light' },
 }
 
 // ---------------------------------------------------------------------------
@@ -239,7 +240,12 @@ export default function BookingCard({ doctorId, fee, visitTypes }: BookingCardPr
 
       {/* ── Visit Type Interaction ── */}
       <div className="mb-10 relative z-10">
-        <div className="grid grid-cols-2 gap-2 bg-bp-surface p-1.5 rounded-[28px] border border-bp-border/40 backdrop-blur-sm">
+        <div
+          className={cn(
+            'grid gap-2 bg-bp-surface p-1.5 rounded-[28px] border border-bp-border/40 backdrop-blur-sm',
+            (visitTypes as VisitType[]).length > 2 ? 'grid-cols-3' : 'grid-cols-2',
+          )}
+        >
           {(visitTypes as VisitType[]).map((type) => {
             const isActive = visitType === type
             const Icon = VISIT_TYPE_LABELS[type]?.icon

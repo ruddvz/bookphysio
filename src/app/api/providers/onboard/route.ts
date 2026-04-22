@@ -103,7 +103,7 @@ const onboardSchema = z.object({
     city: z.string().min(2).max(100),
     state: z.string().min(2).max(100),
     pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter a valid 6-digit pincode'),
-    visitTypes: z.array(z.enum(['in_clinic', 'home_visit'])).min(1, 'Select at least one visit type'),
+    visitTypes: z.array(z.enum(['in_clinic', 'home_visit', 'online'])).min(1, 'Select at least one visit type'),
   }),
   step4: z.object({
     fees: z.record(z.string(), z.coerce.number().int().min(0).max(999999)),

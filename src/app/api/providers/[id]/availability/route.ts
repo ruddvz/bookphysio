@@ -7,7 +7,7 @@ import { z } from 'zod'
 const querySchema = z.object({
   from: z.string().datetime({ offset: true }),
   to: z.string().datetime({ offset: true }),
-  visit_type: z.enum(['in_clinic', 'home_visit']).optional(),
+  visit_type: z.enum(['in_clinic', 'home_visit', 'online']).optional(),
 })
 
 export async function GET(
