@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG for 048
+- Commit: 2b87262 (docs: CHANGELOG for 048 no-online visit type)
+- Files touched: `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Push branch; apply migration `048` in Supabase
+- Notes: Sets `048` handoff line to d042eab.
+
 ## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — fix: no online visit type (048 + app revert)
 - Commit: d042eab (fix: remove online visit type — migration 048 + in_clinic/home only)
 - Files touched: `supabase/migrations/048_no_online_visit_type.sql`, `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `supabase/migrations/001_initial_schema.sql` (locations visit_type check), `src` visit_type enums and doctor booking UI
