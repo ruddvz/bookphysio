@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: booking status, Razorpay failure path, idempotency
+- Commit: fix: align booking lifecycle with webhook and add idempotency (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/app/book/[id]/StepPayment.tsx`, `src/lib/validations/booking.ts`, `src/lib/booking/active-booking-hold.ts`, `src/app/api/appointments/[id]/route.ts`, `supabase/migrations/047_appointment_booking_idempotency.sql`, tests under `src/app/api/__tests__/`
+- Tests added / changed: mocks updated for new helper; existing POST/detail tests still pass
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment, appointments-detail-route)
+- Status: done
+- Next up: Apply migration `047` in Supabase; re-enable Razorpay create-order/verify when launching online pay
+- Notes: New appointments use `status: 'pending'`; webhook confirms `pending|confirmed`→`paid`; `payment.failed` cancels pending appt, releases slot, clears Redis hold; optional `client_request_id` + partial unique indexes for retries; shared `clearActiveBookingHold`.
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`

@@ -3,6 +3,7 @@ import { verifyWebhookSignature } from '@/lib/razorpay'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendBookingConfirmation } from '@/lib/resend'
 import { sendBookingConfirmationSms } from '@/lib/msg91'
+import { clearActiveBookingHold } from '@/lib/booking/active-booking-hold'
 
 // NOTE: The create-order and verify endpoints are intentionally disabled (503) while
 // the payment flow is being re-architected. This webhook remains active to handle
@@ -28,40 +29,9 @@ interface RazorpayWebhookPayload {
   }
 }
 
-export async function POST(request: NextRequest) {
-  // 1. Read raw body for HMAC verification — must happen before any parsing
-  const rawBody = await request.text()
-  const signature = request.headers.get('x-razorpay-signature') ?? ''
-
-  if (!signature) {
-    return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
-  }
-
-  if (!verifyWebhookSignature(rawBody, signature)) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-  }
-
-  // 2. Parse payload
-  let payload: RazorpayWebhookPayload
-  try {
-    payload = JSON.parse(rawBody) as RazorpayWebhookPayload
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-  }
-
-  // 3. Only handle payment.captured — ignore all other events
-  if (payload.event !== 'payment.captured') {
-    return NextResponse.json({ received: true })
-  }
-
-  const payment = payload.payload.payment?.entity
-  if (!payment?.order_id || !payment?.id) {
-    return NextResponse.json({ error: 'Missing payment entity fields' }, { status: 400 })
-  }
-
+async function handlePaymentCaptured(payment: RazorpayPaymentEntity): Promise<NextResponse> {
   const { order_id: razorpayOrderId, id: razorpayPaymentId } = payment
 
-  // 4. Idempotency check — if already paid, return 200 without re-processing
   const { data: existingPayment, error: lookupError } = await supabaseAdmin
     .from('payments')
     .select('id, status, razorpay_payment_id, appointment_id, amount_inr')
@@ -74,13 +44,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (!existingPayment) {
-    // Order not found — could be a test event or replay for an unknown order
     console.warn('[webhook] No payment record for order:', razorpayOrderId)
     return NextResponse.json({ received: true })
   }
 
   if (existingPayment.razorpay_payment_id) {
-    // Already processed — idempotent 200
+    return NextResponse.json({ received: true })
+  }
+
+  if (existingPayment.status === 'paid') {
     return NextResponse.json({ received: true })
   }
 
@@ -102,7 +74,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid payment amount' }, { status: 400 })
   }
 
-  // 5. Mark payment as paid and confirm appointment — atomic via sequential admin calls
   const { error: paymentUpdateError } = await supabaseAdmin
     .from('payments')
     .update({
@@ -110,7 +81,7 @@ export async function POST(request: NextRequest) {
       status: 'paid',
     })
     .eq('razorpay_order_id', razorpayOrderId)
-    .eq('status', 'created') // Guard: only transition from 'created'
+    .eq('status', 'created')
 
   if (paymentUpdateError) {
     console.error('[webhook] Payment update failed:', paymentUpdateError)
@@ -121,15 +92,12 @@ export async function POST(request: NextRequest) {
     .from('appointments')
     .update({ status: 'confirmed' })
     .eq('id', existingPayment.appointment_id)
-    .eq('status', 'pending') // Guard: only transition from 'pending'
+    .in('status', ['pending', 'confirmed'])
 
   if (appointmentUpdateError) {
     console.error('[webhook] Appointment confirmation failed:', appointmentUpdateError)
-    // Payment is already marked paid — log but don't fail the webhook
-    // A follow-up job or admin can reconcile the appointment status
   }
 
-  // 6. Send booking confirmation email (best-effort — do not fail webhook on email error)
   try {
     const { data: appt } = await supabaseAdmin
       .from('appointments')
@@ -155,7 +123,6 @@ export async function POST(request: NextRequest) {
         const date = startsAt ? new Date(startsAt).toLocaleDateString('en-IN', { dateStyle: 'long' }) : 'TBD'
         const time = startsAt ? new Date(startsAt).toLocaleTimeString('en-IN', { timeStyle: 'short' }) : 'TBD'
 
-        // Send email only when a real email is available.
         if (patient.email) {
           try {
             await sendBookingConfirmation({
@@ -172,7 +139,6 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // Send SMS + WhatsApp (awaited separately, independent error handling)
         if (patient.phone) {
           try {
             await sendBookingConfirmationSms({
@@ -191,6 +157,128 @@ export async function POST(request: NextRequest) {
     }
   } catch (lookupError) {
     console.error('[webhook] Notification data lookup failed (non-fatal):', lookupError)
+  }
+
+  return NextResponse.json({ received: true })
+}
+
+async function handlePaymentFailed(payment: RazorpayPaymentEntity): Promise<NextResponse> {
+  const razorpayOrderId = payment.order_id
+  if (!razorpayOrderId) {
+    return NextResponse.json({ error: 'Missing order_id' }, { status: 400 })
+  }
+
+  const { data: existingPayment, error: lookupError } = await supabaseAdmin
+    .from('payments')
+    .select('id, status, appointment_id')
+    .eq('razorpay_order_id', razorpayOrderId)
+    .maybeSingle()
+
+  if (lookupError) {
+    console.error('[webhook] Payment lookup failed (failed event):', lookupError)
+    return NextResponse.json({ error: 'DB error' }, { status: 500 })
+  }
+
+  if (!existingPayment) {
+    return NextResponse.json({ received: true })
+  }
+
+  if (existingPayment.status === 'paid') {
+    return NextResponse.json({ received: true })
+  }
+
+  if (existingPayment.status === 'failed') {
+    return NextResponse.json({ received: true })
+  }
+
+  const { error: paymentUpdateError } = await supabaseAdmin
+    .from('payments')
+    .update({ status: 'failed' })
+    .eq('razorpay_order_id', razorpayOrderId)
+    .eq('status', 'created')
+
+  if (paymentUpdateError) {
+    console.error('[webhook] Payment failed status update error:', paymentUpdateError)
+    return NextResponse.json({ error: 'Failed to update payment' }, { status: 500 })
+  }
+
+  const { data: appointment, error: apptError } = await supabaseAdmin
+    .from('appointments')
+    .select('id, status, availability_id')
+    .eq('id', existingPayment.appointment_id)
+    .maybeSingle()
+
+  if (apptError || !appointment) {
+    return NextResponse.json({ received: true })
+  }
+
+  if (appointment.status !== 'pending') {
+    return NextResponse.json({ received: true })
+  }
+
+  const availabilityId = appointment.availability_id as string | null
+  if (!availabilityId) {
+    return NextResponse.json({ received: true })
+  }
+
+  const { error: cancelError } = await supabaseAdmin
+    .from('appointments')
+    .update({ status: 'cancelled' })
+    .eq('id', appointment.id)
+    .eq('status', 'pending')
+
+  if (cancelError) {
+    console.error('[webhook] Failed to cancel appointment after payment failure:', cancelError)
+    return NextResponse.json({ error: 'Failed to cancel appointment' }, { status: 500 })
+  }
+
+  const { error: releaseError } = await supabaseAdmin
+    .from('availabilities')
+    .update({ is_booked: false })
+    .eq('id', availabilityId)
+
+  if (releaseError) {
+    console.error('[webhook] Failed to release slot after payment failure:', releaseError)
+  }
+
+  await clearActiveBookingHold(appointment.id as string)
+
+  return NextResponse.json({ received: true })
+}
+
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text()
+  const signature = request.headers.get('x-razorpay-signature') ?? ''
+
+  if (!signature) {
+    return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
+  }
+
+  if (!verifyWebhookSignature(rawBody, signature)) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+  }
+
+  let payload: RazorpayWebhookPayload
+  try {
+    payload = JSON.parse(rawBody) as RazorpayWebhookPayload
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  if (payload.event === 'payment.captured') {
+    const payment = payload.payload.payment?.entity
+    if (!payment?.order_id || !payment?.id) {
+      return NextResponse.json({ error: 'Missing payment entity fields' }, { status: 400 })
+    }
+    return handlePaymentCaptured(payment)
+  }
+
+  if (payload.event === 'payment.failed') {
+    const payment = payload.payload.payment?.entity
+    if (!payment?.order_id) {
+      return NextResponse.json({ error: 'Missing payment entity fields' }, { status: 400 })
+    }
+    return handlePaymentFailed(payment)
   }
 
   return NextResponse.json({ received: true })

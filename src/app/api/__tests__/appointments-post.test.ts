@@ -25,6 +25,10 @@ vi.mock('@/lib/supabase/admin', () => ({
   },
 }))
 
+vi.mock('@/lib/booking/active-booking-hold', () => ({
+  clearActiveBookingHold: vi.fn().mockResolvedValue(undefined),
+}))
+
 vi.mock('@/lib/upstash', () => ({
   bookingIpRatelimit: {
     limit: (...args: unknown[]) => bookingIpRateLimitMock(...args),
@@ -129,11 +133,14 @@ function createAppointmentsTable(options: {
   }
 }
 
+let adminAppointmentMaybeSingleResult: { data: unknown; error: unknown } = { data: null, error: null }
+
 function createAdminAppointmentsChain() {
   const selectChain = {
     eq: vi.fn(() => selectChain),
     in: vi.fn(() => selectChain),
     gte: vi.fn(() => selectChain),
+    maybeSingle: vi.fn().mockImplementation(() => Promise.resolve(adminAppointmentMaybeSingleResult)),
     then: (onFulfilled: (value: { data: unknown[]; error: null }) => unknown) =>
       Promise.resolve({ data: adminExistingBookings ?? [], error: null }).then(onFulfilled),
   }
@@ -241,6 +248,7 @@ describe('POST /api/appointments', () => {
     vi.clearAllMocks()
     adminAppointmentInsertHandler = undefined
     adminExistingBookings = undefined
+    adminAppointmentMaybeSingleResult = { data: null, error: null }
     adminPaymentInsertHandler = undefined
     redisState = new Map()
     hasPublicSupabaseEnvMock.mockReturnValue(true)
@@ -553,7 +561,7 @@ describe('POST /api/appointments', () => {
       fee_inr: 1560,
       location_id: '22222222-2222-4222-8222-222222222222',
       patient_id: '00000000-0000-4000-8000-000000000010',
-      status: 'confirmed',
+      status: 'pending',
       visit_type: 'home_visit',
     })
     expect(insertedPaymentPayload).toMatchObject({

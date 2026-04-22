@@ -11,6 +11,8 @@ export const createAppointmentSchema = z.object({
   visit_type: z.enum(['in_clinic', 'home_visit']),
   patient_address: z.string().trim().min(10).max(250).optional(),
   notes: z.string().max(500).optional(),
+  /** Stable id from the client so retries return the same booking without duplicate rows. */
+  client_request_id: z.string().uuid().optional(),
   insurance_id: deprecatedInsuranceField,
 }).transform(({ insurance_id, ...booking }) => {
   void insurance_id
