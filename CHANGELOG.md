@@ -36,7 +36,7 @@
 ## Log (newest first)
 
 ## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — fix: no online visit type (048 + app revert)
-- Commit: (pending)
+- Commit: d042eab (fix: remove online visit type — migration 048 + in_clinic/home only)
 - Files touched: `supabase/migrations/048_no_online_visit_type.sql`, `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `supabase/migrations/001_initial_schema.sql` (locations visit_type check), `src` visit_type enums and doctor booking UI
 - Tests added / changed: 0 (policy test line for online removed)
 - Build: `npm run type-check` + `npm test` pass
