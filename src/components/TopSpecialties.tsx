@@ -44,7 +44,7 @@ export default function TopSpecialties() {
   )
 
   return (
-    <section ref={scope} className="relative z-0 isolate bg-slate-50 py-24 md:py-32 border-y border-slate-100" aria-label="Browse by specialty">
+    <section ref={scope} className="relative z-0 isolate bg-slate-50 py-14 md:py-20 border-y border-slate-100" aria-label="Browse by specialty">
       <div className="bp-container">
 
         {/* Header */}

@@ -196,7 +196,7 @@ export default function FAQ() {
   return (
     <section
       ref={scope}
-      className="relative z-0 isolate bg-white py-24 md:py-32"
+      className="relative z-0 isolate bg-white py-12 md:py-16"
       aria-label="Frequently asked questions"
       id="faq"
     >
