@@ -349,7 +349,7 @@ test.describe('Navigation: All Route Groups Load', () => {
     '/search',
     '/doctor/placeholder',
     '/book/placeholder',
-    '/specialty/sports',
+    '/specialties/sports',
     '/city/mumbai',
     '/about',
     '/faq',

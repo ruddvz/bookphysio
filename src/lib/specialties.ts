@@ -4,9 +4,9 @@
  * Single source of truth used by:
  *   - Navbar browse dropdown
  *   - TopSpecialties homepage section
- *   - /specialty/[slug] listing pages
  *   - /specialties/[slug] article pages
  *   - sitemap.ts
+ *   - Legacy /specialty/:slug → /specialties/:slug redirects in next.config.ts
  */
 
 export interface SpecialtyCondition {
@@ -16,7 +16,7 @@ export interface SpecialtyCondition {
 }
 
 export interface SpecialtyDef {
-  /** URL slug — used in /specialty/[slug] and /specialties/[slug] */
+  /** URL slug — used in /specialties/[slug] (and /specialty/:slug 301) */
   slug: string
   /** Short display name for navigation and cards */
   label: string

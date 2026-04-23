@@ -20,7 +20,7 @@ const PUBLIC_ANALYTICS_PATHS = new Set([
   '/hi/terms',
 ])
 
-const PUBLIC_ANALYTICS_PREFIXES = ['/city/', '/specialty/']
+const PUBLIC_ANALYTICS_PREFIXES = ['/city/']
 const PUBLIC_ANALYTICS_EXTRA_PREFIXES = ['/specialties/']
 const COOKIE_CONSENT_KEY = 'cookie-consent'
 const COOKIE_CONSENT_EVENT = 'cookie-consent-changed'

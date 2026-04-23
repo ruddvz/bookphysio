@@ -52,13 +52,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const specialtySlugs = SPECIALTIES.map((s) => s.slug)
 
-  const specialtyMaps = specialtySlugs.map((specialty) => ({
-    url: `${BASE_URL}/specialty/${specialty}`,
-    lastModified: new Date('2026-04-10'),
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
-
   const specialtyArticleMaps = specialtySlugs.map((specialty) => ({
     url: `${BASE_URL}/specialties/${specialty}`,
     lastModified: new Date('2026-04-10'),
@@ -66,5 +59,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
-  return [...staticMaps, ...cityMaps, ...specialtyMaps, ...specialtyArticleMaps]
+  return [...staticMaps, ...cityMaps, ...specialtyArticleMaps]
 }
