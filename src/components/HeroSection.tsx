@@ -26,7 +26,7 @@ const SPECIALTY_OPTIONS = SPECIALTIES.map((s) => s.label)
 const CITY_OPTIONS = INDIA_CITIES.map((c) => `${c.city}, ${c.state}`)
 
 const TRUST_STATS = [
-  { value: 'IAP',    label: 'Verified providers'   },
+  { value: 'IAP',    label: 'Verified doctors'      },
   { value: '15+',    label: 'Cities live'           },
   { value: 'Free',   label: 'To list your practice' },
   { value: '60s',    label: 'To book a session'     },
@@ -208,7 +208,7 @@ export default function HeroSection() {
 
       {/* Content — z-30 so the search-field dropdown (z-50 within this context)
           floats above any section rendered below the hero. */}
-      <div className="bp-container relative z-30 pt-24 pb-28">
+      <div className="bp-container relative z-30 pt-16 pb-16">
         <div className="max-w-3xl mx-auto text-center">
 
           {/* Headline */}
@@ -239,7 +239,7 @@ export default function HeroSection() {
           </p>
 
           {/* Search bar */}
-          <div className="mt-10 animate-fade-up delay-300 mb-10">
+          <div className="relative z-[10] mt-10 animate-fade-up delay-300 mb-10">
             <form
               onSubmit={e => { e.preventDefault(); handleSearch() }}
               className="flex flex-col lg:flex-row bg-white/90 backdrop-blur-md rounded-[2.5rem] lg:rounded-full overflow-visible border border-indigo-100 max-w-2xl mx-auto shadow-xl shadow-indigo-200/40 p-2"
@@ -251,7 +251,7 @@ export default function HeroSection() {
                 icon={Search}
                 value={specialty}
                 onChange={setSpecialty}
-                placeholder="e.g. Orthopaedic, Sports, Neuro..."
+                placeholder="Ortho, Sports, Neuro…"
                 options={SPECIALTY_OPTIONS}
                 onSelect={setSpecialty}
                 showOptions={showSpecialties}
@@ -269,7 +269,7 @@ export default function HeroSection() {
                 icon={MapPin}
                 value={city}
                 onChange={setCity}
-                placeholder="e.g. Mumbai, Surat, Delhi..."
+                placeholder="Mumbai, Delhi…"
                 options={CITY_OPTIONS}
                 onSelect={setCity}
                 showOptions={showCities}

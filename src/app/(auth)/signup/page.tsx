@@ -16,7 +16,7 @@ const signupSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number').or(z.literal('')).optional(),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
 })
 
 interface SignupForm {
@@ -242,10 +242,10 @@ export default function SignupPage() {
               {errors.password && <p className="text-xs font-medium text-red-500">{errors.password}</p>}
             </div>
 
-            {/* Phone (optional — data capture for future OTP rollout) */}
+            {/* Phone */}
             <div className="space-y-1.5">
               <label htmlFor={phoneId} className="block text-sm font-medium text-gray-700">
-                Mobile number <span className="font-normal text-gray-400">(optional)</span>
+                Mobile number
               </label>
               <div className={fieldWrap('phone', !!errors.phone)}>
                 <span className="flex shrink-0 items-center gap-1.5 border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-medium text-gray-600">
@@ -268,7 +268,7 @@ export default function SignupPage() {
               </div>
               {errors.phone
                 ? <p className="text-xs font-medium text-red-500">{errors.phone}</p>
-                : <p className="text-xs text-gray-400">Add your number for faster future verification.</p>
+                : null
               }
             </div>
 

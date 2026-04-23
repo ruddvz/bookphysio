@@ -341,14 +341,6 @@ export default function Navbar({
               >
                 How it works
               </Link>
-              <Link
-                href="/doctor-signup"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-[var(--sq-lg)] text-[14px] font-medium text-slate-700 bg-white/50 hover:bg-white/80 transition-all"
-              >
-                <Stethoscope size={16} className="text-indigo-400" />
-                For providers
-              </Link>
             </div>
           </nav>
 

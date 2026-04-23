@@ -103,10 +103,14 @@ export default function SpecialtyArticle({
 
               {/* Right — 16:9 squircle image container */}
               {image && (
-                <div className="w-full lg:w-[520px] xl:w-[600px] shrink-0">
+                <div className="w-full lg:w-[520px] xl:w-[600px] shrink-0 pb-8 lg:pb-0">
                   <div
                     className="relative w-full overflow-hidden rounded-[var(--sq-lg)]"
-                    style={{ aspectRatio: '16/9', backgroundColor: MUSTARD }}
+                    style={{
+                      aspectRatio: '16/9',
+                      backgroundColor: MUSTARD,
+                      boxShadow: 'inset 0 2px 16px rgba(0,0,0,0.14), inset 0 0 0 1px rgba(0,0,0,0.06)',
+                    }}
                   >
                     <Image
                       src={image}

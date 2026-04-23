@@ -74,17 +74,13 @@ type StepNumber = 1 | 2 | 3 | 4 | 5
 const STEP_LABELS = ['Personal', 'Professional', 'Practice', 'Pricing', 'Confirm']
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const SPECIALTIES = [
+  'Orthopaedic Physio',
+  'Neurological Physio',
   'Sports Physio',
-  'Ortho Physio',
-  'Neuro Physio',
   'Paediatric Physio',
   "Women's Health",
   'Geriatric Physio',
   'Cardiopulmonary',
-  'Oncology Physio',
-  'Community Physio',
-  'Industrial Physio',
-  'Vestibular Physio',
 ]
 
 const CERTIFICATIONS = [
@@ -132,7 +128,12 @@ const step1Schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
   email: z.string().email('Enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string()
+    .min(10, 'Password must be at least 10 characters')
+    .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Must contain at least one special character'),
 })
 
 const step2Schema = z.object({
@@ -166,7 +167,7 @@ const step3Schema = z.object({
   clinicName: z.string().optional(),
   address: z.string().optional(),
   city: z.string().min(1, 'Select a city'),
-  state: z.string().min(2, 'State is required'),
+  state: z.string().optional(),
   pincode: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digit pincode').optional().or(z.literal('')),
   modalities: z.array(z.string()),
 }).superRefine((data, ctx) => {
@@ -539,12 +540,12 @@ function Step1({ data, onChange, onNext, avatarPreview, onAvatarChange }: Step1P
             display: 'flex', alignItems: 'center',
             fontSize: '14px', fontWeight: 700, color: 'var(--color-bp-primary)', flexShrink: 0,
           }}>
-            , PT
+            PT
           </div>
         </div>
         {data.name && (
           <p style={{ fontSize: '12px', color: '#555B6E', marginTop: '5px' }}>
-            Your profile will appear as: <strong style={{ color: 'var(--color-bp-primary)' }}>Dr. {data.name}, PT</strong>
+            Your profile will appear as: <strong style={{ color: 'var(--color-bp-primary)' }}>Dr. {data.name} PT</strong>
           </p>
         )}
         <FieldError msg={errors.name} />
@@ -837,24 +838,38 @@ function Step2({ data, onChange, onNext, onBack }: Step2Props) {
 
       <div style={{ marginBottom: '24px' }}>
         <Label>Clinical Certifications <span style={{ fontWeight: 400, color: '#888', fontSize: '12px' }}>(optional)</span></Label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {CERTIFICATIONS.map((cert) => (
-            <label key={cert} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-bp-primary)' }}>
-              <input
-                type="checkbox"
-                checked={data.certifications.includes(cert)}
-                onChange={() => {
-                  const next = data.certifications.includes(cert)
-                    ? data.certifications.filter((c) => c !== cert)
-                    : [...data.certifications, cert]
-                  onChange({ ...data, certifications: next })
-                }}
-                style={{ accentColor: 'var(--color-bp-primary)', width: '16px', height: '16px', marginTop: '2px', flexShrink: 0 }}
-              />
-              {cert}
-            </label>
-          ))}
-        </div>
+        <details style={{ border: '1px solid var(--color-bp-border)', borderRadius: '8px', overflow: 'hidden' }}>
+          <summary style={{
+            padding: '10px 12px', cursor: 'pointer', fontSize: '14px',
+            color: 'var(--color-bp-primary)', backgroundColor: 'var(--color-bp-surface)',
+            userSelect: 'none', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span>
+              {data.certifications.length === 0
+                ? 'Select certifications…'
+                : `${data.certifications.length} selected`}
+            </span>
+            <span style={{ fontSize: '12px', color: '#888' }}>▾</span>
+          </summary>
+          <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: '#fff' }}>
+            {CERTIFICATIONS.map((cert) => (
+              <label key={cert} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-bp-primary)' }}>
+                <input
+                  type="checkbox"
+                  checked={data.certifications.includes(cert)}
+                  onChange={() => {
+                    const next = data.certifications.includes(cert)
+                      ? data.certifications.filter((c) => c !== cert)
+                      : [...data.certifications, cert]
+                    onChange({ ...data, certifications: next })
+                  }}
+                  style={{ accentColor: 'var(--color-bp-primary)', width: '15px', height: '15px', marginTop: '2px', flexShrink: 0 }}
+                />
+                {cert}
+              </label>
+            ))}
+          </div>
+        </details>
       </div>
 
       <PrimaryButton onClick={handleNext}>
@@ -891,7 +906,6 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         clinicName: flat.clinicName?.[0],
         address: flat.address?.[0],
         city: flat.city?.[0],
-        state: flat.state?.[0],
         pincode: flat.pincode?.[0],
         visitTypes: flat.visitTypes?.[0],
       })
@@ -988,25 +1002,10 @@ function Step3({ data, onChange, onNext, onBack }: Step3Props) {
         <CityCombobox
           value={data.city ? `${data.city}${data.state ? `, ${data.state}` : ''}` : ''}
           onChange={(city, state) => onChange({ ...data, city, state: state ?? data.state })}
-          placeholder="Search city… (e.g. Surat)"
+          placeholder="Search city… (e.g. Mumbai)"
           cityOnly={false}
         />
         <FieldError msg={errors.city} />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <Label>State</Label>
-        <select
-          value={data.state}
-          onChange={(e) => onChange({ ...data, state: e.target.value })}
-          style={{ ...inputStyle }}
-        >
-          <option value="">Select state</option>
-          {INDIA_STATES.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-        <FieldError msg={errors.state} />
       </div>
 
       <div style={{ marginBottom: '20px' }}>

@@ -51,7 +51,7 @@ export default function WhereWeOperate() {
   return (
     <section
       ref={scope}
-      className="relative z-0 isolate bg-gradient-to-b from-slate-50 to-white py-20 md:py-24 border-t border-slate-100"
+      className="relative z-0 isolate bg-gradient-to-b from-slate-50 to-white py-12 md:py-16 border-t border-slate-100"
       aria-label="Cities we operate in"
     >
       <div className="bp-container">

@@ -66,7 +66,7 @@ export default function ProviderCTA() {
   return (
     <section
       ref={scope}
-      className="relative z-0 isolate py-24 md:py-32 bg-slate-950 overflow-hidden"
+      className="relative z-0 isolate py-14 md:py-20 bg-slate-950 overflow-hidden"
       aria-label="For physiotherapists"
     >
       {/* Subtle background accents */}

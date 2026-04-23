@@ -137,7 +137,7 @@ export default function ProofSection() {
   return (
     <section
       ref={scope}
-      className="relative z-0 isolate bg-white py-24 md:py-32"
+      className="relative z-0 isolate bg-white py-14 md:py-20"
       aria-label="Real availability across providers"
     >
       <div className="bp-container">
