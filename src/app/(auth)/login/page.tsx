@@ -223,7 +223,7 @@ export default function LoginPage() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading || !!oauthLoading}
+              disabled={loading}
               className="mt-1 flex w-full items-center justify-center gap-2 rounded-[var(--sq-xs)] bg-bp-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bp-primary-dark disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? (
