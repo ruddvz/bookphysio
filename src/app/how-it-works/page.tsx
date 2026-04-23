@@ -39,7 +39,7 @@ const PATIENT_STEPS = [
   {
     num: '02',
     icon: UserCheck,
-    title: 'Choose Provider',
+    title: 'Choose a Doctor',
     text: 'Compare expert physiotherapists by specialty, rating, fees, and distance.',
     tint: 'bg-[#EDEAF8] text-[#5B4BC4]',
   },
@@ -135,7 +135,7 @@ export default function HowItWorksPage() {
   const [activeTab, setActiveTab] = useState<'patient' | 'provider'>('patient')
   const activeSteps = activeTab === 'patient' ? PATIENT_STEPS : PROVIDER_STEPS
   const primaryCtaHref = activeTab === 'patient' ? '/search' : '/doctor-signup'
-  const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a provider'
+  const primaryCtaLabel = activeTab === 'patient' ? 'Start searching' : 'Join as a doctor'
   const trust = activeTab === 'patient' ? PATIENT_TRUST : PROVIDER_TRUST
   const character = activeTab === 'patient' ? PATIENT_CHARACTER : PROVIDER_CHARACTER
   const v2Role: 'patient' | 'provider' = activeTab
@@ -153,14 +153,13 @@ export default function HowItWorksPage() {
     })
   }, { scope: heroScope })
 
-  // Step cards — re-animate whenever activeTab changes
+  // Step cards — re-animate whenever activeTab changes (no scrollTrigger so all 4 steps always animate)
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     gsap.from('[data-hiw-step]', {
       y: 24, opacity: 0, duration: 0.5, ease: 'power2.out', stagger: 0.08,
-      scrollTrigger: { trigger: stepsScope.current, start: 'top 82%', once: true },
     })
-  }, { scope: stepsScope, dependencies: [activeTab, ScrollTrigger] })
+  }, { scope: stepsScope, dependencies: [activeTab] })
 
   // CTA reveal
   useGSAP(() => {
@@ -229,7 +228,7 @@ export default function HowItWorksPage() {
                         : 'text-slate-500 hover:text-[#1A1C29]'
                     }`}
                   >
-                    For Providers
+                    For Doctors
                   </button>
                 </div>
               </div>
@@ -285,7 +284,7 @@ export default function HowItWorksPage() {
                 ))}
               </div>
             )}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {activeSteps.map((step, idx) => (
                 <div
                   key={step.title}
