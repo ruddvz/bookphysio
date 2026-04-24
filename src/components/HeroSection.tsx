@@ -43,7 +43,7 @@ function SearchField({
   showOptions: boolean; onOpenOptions: () => void; onCloseOptions: () => void
   className?: string;
 }) {
-  const ref      = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function SearchField({
   const listboxId = `${id}-options`
 
   return (
-    <div ref={ref} className="relative flex-1">
+    <div ref={ref} className="relative flex-1 min-w-0">
       <div
         onClick={() => { onOpenOptions(); inputRef.current?.focus() }}
         className={`flex flex-col gap-1 px-6 py-4 cursor-text transition-all duration-150 ${showOptions ? 'bg-white' : 'bg-transparent hover:bg-slate-50/50'} ${className}`}
@@ -96,7 +96,7 @@ function SearchField({
       </div>
 
       {showOptions && filtered.length > 0 && (
-        <div id={listboxId} role="listbox" className="absolute top-full left-0 right-0 mt-3 bg-white rounded-[var(--sq-xl)] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
+        <div id={listboxId} role="listbox" className="absolute top-full left-0 min-w-full mt-3 bg-white rounded-[var(--sq-xl)] border border-slate-100 shadow-2xl shadow-indigo-900/15 max-h-[260px] overflow-y-auto z-50 p-3 animate-slide-down">
           {filtered.slice(0, 10).map(opt => (
             <button
               key={opt}
@@ -277,7 +277,7 @@ export default function HeroSection() {
                 onCloseOptions={() => setShowCities(false)}
               />
 
-              <div className="pt-2 lg:pt-0 lg:flex lg:items-stretch">
+              <div className="pt-2 lg:pt-0 lg:flex lg:items-stretch shrink-0">
                 <button
                   type="submit"
                   className="flex items-center justify-center gap-2 w-full lg:w-auto lg:px-8 lg:py-0 font-bold text-[15px] rounded-[32px] lg:rounded-full px-6 py-4 active:scale-[0.97] transition-all duration-150 group text-white whitespace-nowrap"
