@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
   }
 
   const ext = file.type === 'image/webp' ? 'webp' : file.type === 'image/png' ? 'png' : 'jpg'
-  const storagePath = `avatars/${user.id}/avatar.${ext}`
+  const storagePath = `${user.id}/avatar.${ext}`
   const buffer = Buffer.from(await file.arrayBuffer())
 
   const { error: uploadError } = await supabaseAdmin.storage
-    .from('credentials')
+    .from('avatars')
     .upload(storagePath, buffer, { contentType: file.type, upsert: true })
 
   if (uploadError) {
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { data: { publicUrl } } = supabaseAdmin.storage
-    .from('credentials')
+    .from('avatars')
     .getPublicUrl(storagePath)
 
   const { error: updateError } = await supabaseAdmin
