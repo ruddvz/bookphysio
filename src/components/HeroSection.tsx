@@ -90,7 +90,7 @@ function SearchField({
           />
           <ChevronDown
             size={16}
-            className={`text-slate-400 shrink-0 transition-transform duration-200 ${showOptions ? 'rotate-180' : ''}`}
+            className={`text-slate-400 shrink-0 mr-2 transition-transform duration-200 ${showOptions ? 'rotate-180' : ''}`}
           />
         </div>
       </div>
@@ -123,6 +123,7 @@ export default function HeroSection() {
   const [city, setCity]           = useState('')
   const [showSpecialties, setShowSpecialties] = useState(false)
   const [showCities, setShowCities]           = useState(false)
+  const [cityError, setCityError]             = useState(false)
   const uiV2 = useUiV2()
 
   useEffect(() => {
@@ -141,11 +142,15 @@ export default function HeroSection() {
   }, [])
 
   const handleSearch = (overrideSpecialty?: string) => {
+    if (!city.trim()) {
+      setCityError(true)
+      return
+    }
     const params = new URLSearchParams()
     const s = overrideSpecialty ?? specialty
     if (s.trim()) params.set('specialty', s.trim())
-    if (city.trim()) params.set('city', city.split(',')[0]?.trim() ?? city.trim())
-    router.push(params.toString() ? `/search?${params}` : '/search')
+    params.set('city', city.split(',')[0]?.trim() ?? city.trim())
+    router.push(`/search?${params}`)
   }
 
   return (
@@ -268,10 +273,10 @@ export default function HeroSection() {
                 id="hero-city"
                 icon={MapPin}
                 value={city}
-                onChange={setCity}
+                onChange={(v) => { setCity(v); if (cityError) setCityError(false) }}
                 placeholder="Mumbai, Delhi…"
                 options={CITY_OPTIONS}
-                onSelect={setCity}
+                onSelect={(v) => { setCity(v); setCityError(false) }}
                 showOptions={showCities}
                 onOpenOptions={() => { setShowCities(true); setShowSpecialties(false) }}
                 onCloseOptions={() => setShowCities(false)}
@@ -291,6 +296,11 @@ export default function HeroSection() {
                 </button>
               </div>
             </form>
+            {cityError && (
+              <p className="mt-2 text-center text-[12px] font-medium text-red-500">
+                Please select a city — searching all of India won&apos;t give useful results
+              </p>
+            )}
           </div>
 
           {/* v2 premium trust strip — live micro-stat with sparkline */}

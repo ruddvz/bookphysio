@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  Building2,
+  Home,
   Award,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -150,14 +150,26 @@ export default function ProfileHero({
             <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.experience_years != null ? `${provider.experience_years}+` : 'N/A'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.experience_years != null ? 'Years' : ''}</span></p>
           </div>
           <div className="bg-[#FBFCFD] p-6 rounded-[var(--sq-lg)] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
-            <div className="w-12 h-12 bg-white rounded-[var(--sq-lg)] flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Building2 size={22} strokeWidth={2.5} /></div>
-            <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Patient Reviews</p>
-            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">{provider.rating_count > 0 ? provider.rating_count : 'New'} <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.rating_count === 1 ? 'Review' : 'Reviews'}</span></p>
+            <div className="w-12 h-12 bg-white rounded-[var(--sq-lg)] flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Home size={22} strokeWidth={2.5} /></div>
+            <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Visit Types</p>
+            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">
+              {(provider.visit_types ?? []).length > 0 ? (provider.visit_types ?? []).length : '—'}
+              {' '}
+              <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">
+                {(provider.visit_types ?? []).includes('home_visit') ? 'incl. Home' : (provider.visit_types ?? []).length === 1 ? 'Type' : 'Types'}
+              </span>
+            </p>
           </div>
           <div className="bg-[#FBFCFD] p-6 rounded-[var(--sq-lg)] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
             <div className="w-12 h-12 bg-white rounded-[var(--sq-lg)] flex items-center justify-center text-bp-primary mb-5 shadow-sm group-hover:bg-bp-primary group-hover:text-white transition-all duration-500"><Star size={22} strokeWidth={2.5} /></div>
-            <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Verification</p>
-            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none whitespace-pre-wrap">{provider.verified ? verificationSource : (hasRegistration ? verificationSource : 'Profile')}<br /><span className="text-[14px] text-bp-body/40 tracking-normal font-bold">{provider.verified ? 'Verified' : 'Pending'}</span></p>
+            <p className="text-[11px] font-bold text-bp-body/30 uppercase tracking-[0.2em] leading-none mb-2.5">Rating</p>
+            <p className="text-[22px] font-bold text-bp-primary tracking-tighter leading-none">
+              {(provider.rating_avg ?? 0).toFixed(1)}
+              {' '}
+              <span className="text-[14px] text-bp-body/40 tracking-normal font-bold">
+                / 5 ({provider.rating_count > 0 ? provider.rating_count : 'No'} {provider.rating_count === 1 ? 'review' : 'reviews'})
+              </span>
+            </p>
           </div>
           <div className="bg-[#FBFCFD] p-6 rounded-[var(--sq-lg)] border border-bp-border/10 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.05)] flex flex-col items-center lg:items-start group hover:border-bp-primary/40 hover:bg-white transition-all duration-500 hover:-translate-y-1">
             <div className="w-12 h-12 bg-emerald-50 rounded-[var(--sq-lg)] flex items-center justify-center text-emerald-600 mb-5 shadow-sm group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500"><Clock size={22} strokeWidth={2.5} /></div>

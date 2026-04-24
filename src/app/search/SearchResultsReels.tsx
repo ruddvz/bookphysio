@@ -1,12 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Doctor } from '@/components/DoctorCard'
+import DoctorCard, { type Doctor } from '@/components/DoctorCard'
 import { DoctorCardCompact } from '@/components/DoctorCardCompact'
-import { useUiV2 } from '@/hooks/useUiV2'
 
 export default function SearchResultsReels({ results }: { results: Doctor[] }) {
-  const isV2 = useUiV2()
   const containerRef = useRef<HTMLDivElement>(null)
   const slideRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
@@ -18,7 +16,7 @@ export default function SearchResultsReels({ results }: { results: Doctor[] }) {
   }, [total])
 
   useEffect(() => {
-    if (!isV2 || total === 0) return
+    if (total === 0) return
 
     const root = containerRef.current
     if (!root) return
@@ -40,7 +38,7 @@ export default function SearchResultsReels({ results }: { results: Doctor[] }) {
 
     for (const el of slides) observer.observe(el)
     return () => observer.disconnect()
-  }, [isV2, total, results])
+  }, [total, results])
 
   const scrollToIndex = useCallback((index: number) => {
     const el = slideRefs.current[index]
@@ -48,7 +46,7 @@ export default function SearchResultsReels({ results }: { results: Doctor[] }) {
   }, [])
 
   useEffect(() => {
-    if (!isV2 || total === 0) return
+    if (total === 0) return
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'PageDown' && e.key !== 'ArrowDown' && e.key !== 'PageUp' && e.key !== 'ArrowUp') {
@@ -64,17 +62,17 @@ export default function SearchResultsReels({ results }: { results: Doctor[] }) {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [activeIndex, isV2, scrollToIndex, total])
+  }, [activeIndex, scrollToIndex, total])
 
-  if (!isV2 || total === 0) {
+  if (total === 0) {
     return null
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <div
         ref={containerRef}
-        className="fixed inset-0 z-40 snap-y snap-mandatory overflow-y-scroll overscroll-contain bg-white"
+        className="h-full w-full snap-y snap-mandatory overflow-y-scroll overscroll-contain"
         tabIndex={0}
         aria-label="Search results, swipe or use arrow keys"
       >
@@ -84,15 +82,25 @@ export default function SearchResultsReels({ results }: { results: Doctor[] }) {
             ref={(el) => {
               slideRefs.current[i] = el
             }}
-            className="flex h-[100dvh] snap-start snap-always flex-col justify-center px-4"
+            className="flex h-[100dvh] snap-start snap-always flex-col items-center justify-center px-4 py-8"
             role="article"
             aria-label={`Result ${i + 1} of ${total}`}
           >
-            <DoctorCardCompact doctor={doctor} />
+            <div className="w-full max-w-3xl">
+              {/* Compact card on mobile, full card on desktop */}
+              <div className="block md:hidden">
+                <DoctorCardCompact doctor={doctor} />
+              </div>
+              <div className="hidden md:block">
+                <DoctorCard doctor={doctor} />
+              </div>
+            </div>
           </div>
         ))}
       </div>
-      <div className="pointer-events-none fixed top-4 right-4 z-50 text-sm text-[#666]">
+
+      {/* Slide counter */}
+      <div className="pointer-events-none absolute top-4 right-4 z-10 rounded-full bg-black/20 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
         {activeIndex + 1}/{total}
       </div>
     </div>
