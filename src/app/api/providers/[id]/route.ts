@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import type { ProviderProfile } from '@/app/api/contracts/provider'
 import { collectVisitTypes } from '@/lib/booking/policy'
 import {
@@ -23,14 +23,13 @@ function hasPublicReviewComment(review: PublicProviderReviewRow): review is Publ
 }
 
 async function fetchPublicProfileReviews(
-  supabase: Awaited<ReturnType<typeof createClient>>,
   providerId: string,
 ): Promise<{ data: PublicProviderReviewRow[] | null; error: string | null }> {
   const collectedReviews: PublicProviderReviewRow[] = []
   let from = 0
 
   while (collectedReviews.length < MAX_PUBLIC_PROFILE_REVIEWS) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('reviews')
       .select('id, rating, comment, created_at')
       .eq('provider_id', providerId)
@@ -60,9 +59,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const supabase = await createClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('providers')
     .select(`
       id,
@@ -95,7 +93,7 @@ export async function GET(
     return NextResponse.json({ error: 'Provider not found' }, { status: 404 })
   }
 
-  const { data: reviewData, error: reviewsError } = await fetchPublicProfileReviews(supabase, id)
+  const { data: reviewData, error: reviewsError } = await fetchPublicProfileReviews(id)
 
   if (reviewsError) {
     return NextResponse.json({ error: 'Failed to load provider reviews' }, { status: 500 })

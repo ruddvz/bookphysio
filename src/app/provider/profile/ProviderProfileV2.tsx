@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useRef, useState, type ChangeEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { User, ShieldCheck, Check, Loader2, AlertCircle } from 'lucide-react'
+import { Camera, User, ShieldCheck, Check, Loader2, AlertCircle } from 'lucide-react'
 import { useUiV2 } from '@/hooks/useUiV2'
 import { useAuth } from '@/context/AuthContext'
 import { Badge } from '@/components/dashboard/primitives/Badge'
 import { getProviderDisplayName, getProviderInitials } from '@/lib/providers/display-name'
+import { resizeImage } from '@/lib/providers/resize-image'
 import { cn } from '@/lib/utils'
 
 type ProviderTitle = 'Dr.' | 'PT' | 'BPT' | 'MPT'
@@ -63,6 +64,10 @@ export function ProviderProfileV2() {
   const queryClient = useQueryClient()
 
   const [overrides, setOverrides] = useState<Partial<FormState>>({})
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarError, setAvatarError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: profile, isLoading, isError, refetch } = useQuery({
     queryKey: ['profile'],
@@ -95,6 +100,32 @@ export function ProviderProfileV2() {
       await queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
   })
+
+  const handleAvatarFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarError(null)
+    setAvatarUploading(true)
+    try {
+      const blob = await resizeImage(file)
+      const resizedFile = new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
+      setAvatarPreview(URL.createObjectURL(blob))
+      const form = new FormData()
+      form.append('file', resizedFile)
+      const res = await fetch('/api/auth/avatar', { method: 'POST', body: form })
+      if (!res.ok) throw new Error('Upload failed')
+      const { avatar_url } = await res.json() as { avatar_url: string }
+      queryClient.setQueryData(['profile'], (old: ProfilePayload | undefined) =>
+        old ? { ...old, avatar_url } : old
+      )
+    } catch {
+      setAvatarError('Upload failed — please try again')
+      setAvatarPreview(null)
+    } finally {
+      setAvatarUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }, [queryClient])
 
   if (!isV2) return null
 
@@ -155,24 +186,51 @@ export function ProviderProfileV2() {
             data-testid="v2-identity-card"
           >
             <div className="flex items-center gap-5 mb-6">
-              <div
-                className="w-20 h-20 rounded-[var(--sq-lg)] bg-[var(--color-pv-tile-2-bg)] text-[var(--color-pv-tile-2-fg)] text-[20px] font-bold flex items-center justify-center overflow-hidden ring-4 ring-white shadow-sm"
-                aria-label={`Avatar for ${displayName}`}
-                data-testid="v2-avatar"
-              >
-                {profile.avatar_url ? (
-                  <Image
-                    src={profile.avatar_url}
-                    width={80}
-                    height={80}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  initials
-                )}
+              <div className="relative group/avatar">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={avatarUploading}
+                  aria-label="Change profile photo"
+                  data-testid="v2-avatar"
+                  className="w-20 h-20 rounded-[var(--sq-lg)] bg-[var(--color-pv-tile-2-bg)] text-[var(--color-pv-tile-2-fg)] text-[20px] font-bold flex items-center justify-center overflow-hidden ring-4 ring-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-pv-primary)]"
+                >
+                  {avatarUploading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" aria-hidden="true" />
+                  ) : (avatarPreview ?? profile.avatar_url) ? (
+                    <Image
+                      src={avatarPreview ?? profile.avatar_url!}
+                      width={80}
+                      height={80}
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    initials
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={avatarUploading}
+                  aria-label="Change profile photo"
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-[var(--color-pv-primary)] text-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover/avatar:opacity-100 transition-opacity"
+                >
+                  <Camera size={12} aria-hidden="true" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  aria-label="Upload profile photo"
+                  onChange={handleAvatarFile}
+                />
               </div>
               <div>
+                {avatarError && (
+                  <p className="text-[11px] font-bold text-rose-500 mb-1">{avatarError}</p>
+                )}
                 <h2 className="text-[17px] font-bold text-slate-900 mb-1.5">{displayName}</h2>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge role="provider" variant="soft" tone={1} data-testid="v2-role-badge">
