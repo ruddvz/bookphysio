@@ -7,6 +7,19 @@ import { apiRatelimit } from '@/lib/upstash'
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' }
 
+/** Parse PostgREST aggregate for SUM(fee_inr) on completed appointments. */
+function parseCompletedGmvAggregate(row: unknown): number {
+  if (row == null || typeof row !== 'object') return 0
+  const r = row as Record<string, unknown>
+  const raw = r.gmv ?? r.fee_inr_sum ?? r.fee_inr
+  if (typeof raw === 'number' && Number.isFinite(raw)) return Math.trunc(raw)
+  if (typeof raw === 'string' && raw.trim() !== '') {
+    const n = Number(raw)
+    return Number.isFinite(n) ? Math.trunc(n) : 0
+  }
+  return 0
+}
+
 function jsonNoStore(body: unknown, init?: ResponseInit) {
   return NextResponse.json(body, {
     ...init,
@@ -53,30 +66,36 @@ export async function GET(request: NextRequest) {
     // Rate limiter unavailable — allow through
   }
 
-  // Fetch counts
+  // Fetch counts + GMV as a DB aggregate (avoids loading every completed row to the app server).
   const [
     { count: providersCount, error: providersError },
     { count: pendingCount, error: pendingError },
     { count: patientsCount, error: patientsError },
-    { data: appointments, error: appointmentsError },
+    { data: gmvRow, error: gmvError },
   ] = await Promise.all([
     supabase.from('providers').select('id', { count: 'exact', head: true }).eq('verified', true),
     supabase.from('providers').select('id', { count: 'exact', head: true }).eq('verified', false),
     supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'patient'),
-    supabaseAdmin.from('appointments').select('fee_inr, status').eq('status', 'completed'),
+    supabaseAdmin
+      .from('appointments')
+      .select('gmv:fee_inr.sum()')
+      .eq('status', 'completed')
+      .maybeSingle(),
   ])
 
-  if (providersError || pendingError || patientsError || appointmentsError) {
+  if (providersError || pendingError || patientsError || gmvError) {
     console.error('[api/admin/stats] Failed to load stats:', {
       providersError,
       pendingError,
       patientsError,
-      appointmentsError,
+      gmvError,
     })
     return jsonNoStore({ error: 'Failed to fetch admin stats' }, { status: 500 })
   }
 
-  const gmv = appointments?.reduce((acc, curr) => acc + (curr.fee_inr || 0), 0) ?? 0
+  const gmv = parseCompletedGmvAggregate(
+    Array.isArray(gmvRow) ? gmvRow[0] : gmvRow,
+  )
 
   return jsonNoStore({
     activeProviders: providersCount ?? 0,

@@ -48,11 +48,9 @@ describe('GET /api/admin/stats', () => {
 
     const appointmentsChain = {
       select: vi.fn(() => appointmentsChain),
-      eq: vi.fn().mockResolvedValue({
-        data: [
-          { fee_inr: 1000, status: 'completed' },
-          { fee_inr: 1500, status: 'completed' },
-        ],
+      eq: vi.fn(() => appointmentsChain),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: { gmv: 2500 },
         error: null,
       }),
     }
@@ -152,8 +150,9 @@ describe('GET /api/admin/stats', () => {
 
     const appointmentsChain = {
       select: vi.fn(() => appointmentsChain),
-      eq: vi.fn().mockResolvedValue({
-        data: [{ fee_inr: 1000, status: 'completed' }],
+      eq: vi.fn(() => appointmentsChain),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: { gmv: 1000 },
         error: null,
       }),
     }
