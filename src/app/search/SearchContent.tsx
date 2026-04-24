@@ -4,14 +4,13 @@ import { useState, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import Link from 'next/link'
-import DoctorCard, { type Doctor } from '@/components/DoctorCard'
+import { type Doctor } from '@/components/DoctorCard'
 import SearchResultsReels from '@/app/search/SearchResultsReels'
 import { DoctorCardSkeleton } from '@/components/DoctorCardSkeleton'
-import FeaturedDoctors from '@/components/FeaturedDoctors'
 import { SpecialtyCTARail } from '@/components/specialties/SpecialtyCTARail'
 import SearchFilters from './SearchFilters'
 import { PatientSearchFiltersRail } from '@/app/patient/search/PatientSearchFiltersRail'
-import { Search as SearchIcon, RefreshCw, Sparkles, ArrowRight } from 'lucide-react'
+import { Search as SearchIcon, RefreshCw, ArrowRight, SlidersHorizontal } from 'lucide-react'
 import type { ProviderCard } from '@/app/api/contracts/provider'
 import { getProviderDisplayName } from '@/lib/providers/display-name'
 import type { SearchResponse } from '@/app/api/contracts/search'
@@ -152,13 +151,6 @@ function resolveConditionFilters(condition: string | null): {
   }
 }
 
-const SORT_OPTIONS: { value: 'relevance' | 'rating' | 'price_low' | 'price_high'; label: string }[] = [
-  { value: 'relevance', label: 'Relevance' },
-  { value: 'rating', label: 'Top Rated' },
-  { value: 'price_low', label: 'Price ↑' },
-  { value: 'price_high', label: 'Price ↓' },
-]
-
 export type SearchContentVariant = 'public' | 'patient'
 
 export default function SearchContent({
@@ -171,9 +163,7 @@ export default function SearchContent({
   const searchParams = useSearchParams()
   const router = useRouter()
   const isV2 = useUiV2()
-  const [hoveredDoctorId, setHoveredDoctorId] = useState<string | null>(null)
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false)
-  const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'price_low' | 'price_high'>('relevance')
 
   const location = searchParams.get('location')
   const city = searchParams.get('city') ?? location
@@ -215,19 +205,6 @@ export default function SearchContent({
   )
 
   const doctors = useMemo(() => data?.providers.map(providerToDoctor) ?? [], [data])
-  const sortedDoctors = useMemo(() => {
-    const list = [...doctors]
-    switch (sortBy) {
-      case 'rating':
-        return list.sort((a, b) => b.rating - a.rating)
-      case 'price_low':
-        return list.sort((a, b) => a.fee - b.fee)
-      case 'price_high':
-        return list.sort((a, b) => b.fee - a.fee)
-      default:
-        return list
-    }
-  }, [doctors, sortBy])
   const total = data?.total ?? 0
   const loading = swrLoading && !data
   const error = Boolean(swrError)
@@ -305,16 +282,16 @@ export default function SearchContent({
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F7F8F9]">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-[#F7F8F9]">
 
       {/* ── Search Header ── */}
       <header
         className={cn(
-          'z-30 flex-shrink-0 border-b border-[#E5E7EB]/80 bg-white sticky',
+          'z-30 flex-shrink-0 border-b border-[#E5E7EB]/80 bg-white',
           headerStickyTop
         )}
       >
-        <div className="max-w-[1142px] mx-auto px-4 sm:px-6 md:px-10 py-4">
+        <div className="max-w-[1142px] mx-auto px-4 sm:px-6 md:px-10 py-3">
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -342,79 +319,37 @@ export default function SearchContent({
             </ol>
           </nav>
 
-          {/* Title row + sort */}
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <h1 className="text-base font-medium text-[#333] md:text-xl leading-tight">
-                {loading ? 'Finding physios…' : `${total} physios · ${displayLocation}`}
-              </h1>
-              {loading && (
-                <div className="w-5 h-5 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin shrink-0" />
-              )}
-            </div>
-            {!loading && total > 0 && (
-              isV2 ? (
-                <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Sort results" data-testid="sort-chips">
-                  {SORT_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setSortBy(opt.value)}
-                      aria-pressed={sortBy === opt.value}
-                      className={cn(
-                        'rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all',
-                        sortBy === opt.value
-                          ? 'bg-bp-primary text-white shadow-sm'
-                          : 'border border-bp-border bg-white text-bp-body hover:border-bp-accent hover:text-bp-primary'
-                      )}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  aria-label="Sort results"
-                  className="rounded-[var(--sq-xs)] border border-[#E5E7EB] bg-white px-3 py-2 text-[13px] font-medium text-[#333] focus:border-[#00766C] focus:outline-none transition-colors cursor-pointer"
-                >
-                  <option value="relevance">Sort: Relevance</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="price_low">Price: Low to High</option>
-                  <option value="price_high">Price: High to Low</option>
-                </select>
-              )
+          {/* Clean title — context only, no count */}
+          <div className="flex items-center gap-3">
+            <h1 className="text-base font-semibold text-[#333] md:text-lg leading-tight">
+              {loading
+                ? 'Finding physios…'
+                : specialty
+                  ? `${specialty} · ${displayLocation}`
+                  : displayLocation}
+            </h1>
+            {loading && (
+              <div className="w-4 h-4 rounded-full border-2 border-[#E5E7EB] border-t-[#00766C] animate-spin shrink-0" />
             )}
           </div>
 
-          {/* Filters — patient v2: dedicated rail; otherwise mobile chip + shared SearchFilters */}
+          {/* Filters drawer — patient v2: dedicated rail; otherwise shared drawer */}
           {variant === 'patient' && isV2 ? (
             <PatientSearchFiltersRail basePath={searchBasePath} total={total} />
           ) : (
-            <>
-              <div className="flex md:hidden items-center gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={handleOpenFilters}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#333] active:scale-[0.99] transition-transform"
-                >
-                  Filters
-                  {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
-                </button>
-              </div>
-              <SearchFilters
-                total={total}
-                basePath={searchBasePath}
-                drawerOpen={filtersDrawerOpen}
-                onDrawerOpenChange={setFiltersDrawerOpen}
-                hideMobileFilterBar
-              />
-            </>
+            <SearchFilters
+              total={total}
+              basePath={searchBasePath}
+              drawerOpen={filtersDrawerOpen}
+              onDrawerOpenChange={setFiltersDrawerOpen}
+              hideMobileFilterBar
+              hideDesktopPills
+            />
           )}
 
           {/* v2: specialty CTA rail when a specialty filter is active */}
           {isV2 && specialty && (
-            <div className="mt-3 -mx-1">
+            <div className="mt-2 -mx-1">
               <SpecialtyCTARail
                 specialtyLabel={specialty}
                 bookingHref={`${searchBasePath}?specialty=${encodeURIComponent(specialty)}`}
@@ -424,84 +359,34 @@ export default function SearchContent({
         </div>
       </header>
 
-      {/* ── Main Results ── */}
-      <main className="flex-1">
-        <div className="max-w-[1142px] mx-auto py-6 sm:py-8 px-4 sm:px-6 md:px-10">
-          {loading ? (
-            <div className="flex flex-col gap-5">
+      {/* ── Main Results — full-height snap scroll ── */}
+      <main className="flex-1 overflow-hidden relative">
+        {loading ? (
+          <div className="h-full overflow-y-auto px-4 sm:px-6 py-6">
+            <div className="flex flex-col gap-5 max-w-3xl mx-auto">
               {[...Array(3)].map((_, i) => (
                 <DoctorCardSkeleton key={i} />
               ))}
             </div>
-          ) : doctors.length === 0 ? (
-            <div className="py-12">
-              {/* Empty state — clean, modern design */}
-              <div className="max-w-lg mx-auto text-center">
-                <div className="w-16 h-16 rounded-[var(--sq-lg)] bg-[#E6F4F3] flex items-center justify-center mx-auto mb-5">
-                  <SearchIcon size={28} className="text-[#00766C]" />
-                </div>
-
-                <h2 className="text-[20px] font-bold text-[#333] mb-2">{t.emptyTitle}</h2>
-                <p className="text-[14px] text-[#666] leading-relaxed mb-6">
-                  {t.emptyDescription(displayLocation)}
-                </p>
-
-                {error && (
-                  <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 mb-6 text-left">
-                    <div className="flex-1">
-                      <p className="text-[13px] font-semibold text-amber-800">{t.errorTitle}</p>
-                      <p className="text-[12px] text-amber-700/80 mt-0.5">{t.errorBody}</p>
-                    </div>
-                    <button
-                      onClick={() => { void mutate() }}
-                      className="shrink-0 flex items-center gap-1.5 rounded-[var(--sq-xs)] bg-amber-600 px-3 py-2 text-[12px] font-semibold text-white hover:bg-amber-700 transition-colors"
-                    >
-                      <RefreshCw size={12} />
-                      {t.retrySearch}
-                    </button>
-                  </div>
-                )}
-
-                {/* Suggested searches */}
-                <div className="mb-6">
-                  <p className="text-[12px] font-semibold text-[#999] uppercase tracking-wider mb-3">Try searching for</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {SUGGESTED_SEARCHES.map((s) => (
-                      <Link
-                        key={s.label}
-                        href={mapSuggestedHref(s.href)}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3.5 py-2 text-[13px] font-medium text-[#333] hover:border-[#00766C]/30 hover:bg-[#E6F4F3]/30 transition-all"
-                      >
-                        <span>{s.emoji}</span>
-                        {s.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => router.push(searchBasePath)}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-6 py-2.5 text-[13px] font-semibold text-white hover:bg-[#005A52] transition-colors"
-                >
-                  {t.clearFilters}
-                  <ArrowRight size={14} />
-                </button>
+          </div>
+        ) : doctors.length === 0 ? (
+          <div className="h-full overflow-y-auto px-4 sm:px-6 py-12">
+            {/* Empty state */}
+            <div className="max-w-lg mx-auto text-center">
+              <div className="w-16 h-16 rounded-[var(--sq-lg)] bg-[#E6F4F3] flex items-center justify-center mx-auto mb-5">
+                <SearchIcon size={28} className="text-[#00766C]" />
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-5 pb-16">
-              {isV2 ? (
-                <div className="block md:hidden">
-                  <SearchResultsReels results={sortedDoctors} />
-                </div>
-              ) : null}
-              <div className={isV2 ? 'hidden md:block' : ''}>
+
+              <h2 className="text-[20px] font-bold text-[#333] mb-2">{t.emptyTitle}</h2>
+              <p className="text-[14px] text-[#666] leading-relaxed mb-6">
+                {t.emptyDescription(displayLocation)}
+              </p>
+
               {error && (
-                <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 text-left">
+                <div className="flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 p-4 mb-6 text-left">
                   <div className="flex-1">
                     <p className="text-[13px] font-semibold text-amber-800">{t.errorTitle}</p>
-                    <p className="text-[12px] text-amber-700/80 mt-0.5">{t.errorBodyRetrying}</p>
+                    <p className="text-[12px] text-amber-700/80 mt-0.5">{t.errorBody}</p>
                   </div>
                   <button
                     onClick={() => { void mutate() }}
@@ -513,31 +398,64 @@ export default function SearchContent({
                 </div>
               )}
 
-              {/* Result count badge */}
-              <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-[#00766C]" />
-                <span className="text-[13px] font-medium text-[#666]">
-                  Showing {sortedDoctors.length} of {total} physiotherapists in <span className="text-[#333] font-semibold">{displayLocation}</span>
-                </span>
-              </div>
-
-              {sortedDoctors.map((doctor) => (
-                <div key={doctor.id} id={`doctor-${doctor.id}`}>
-                  <DoctorCard
-                    doctor={doctor}
-                    isHovered={hoveredDoctorId === doctor.id}
-                    onMouseEnter={() => setHoveredDoctorId(doctor.id)}
-                    onMouseLeave={() => setHoveredDoctorId(null)}
-                  />
+              <div className="mb-6">
+                <p className="text-[12px] font-semibold text-[#999] uppercase tracking-wider mb-3">Try searching for</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {SUGGESTED_SEARCHES.map((s) => (
+                    <Link
+                      key={s.label}
+                      href={mapSuggestedHref(s.href)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-3.5 py-2 text-[13px] font-medium text-[#333] hover:border-[#00766C]/30 hover:bg-[#E6F4F3]/30 transition-all"
+                    >
+                      <span>{s.emoji}</span>
+                      {s.label}
+                    </Link>
+                  ))}
                 </div>
-              ))}
-
-              <FeaturedDoctors />
               </div>
+
+              <button
+                type="button"
+                onClick={() => router.push(searchBasePath)}
+                className="inline-flex items-center gap-2 rounded-full bg-[#00766C] px-6 py-2.5 text-[13px] font-semibold text-white hover:bg-[#005A52] transition-colors"
+              >
+                {t.clearFilters}
+                <ArrowRight size={14} />
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <>
+            {error && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3 rounded-[var(--sq-sm)] border border-amber-200 bg-amber-50 px-4 py-2 text-left shadow-md max-w-sm w-full mx-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-semibold text-amber-800">{t.errorTitle}</p>
+                </div>
+                <button
+                  onClick={() => { void mutate() }}
+                  className="shrink-0 flex items-center gap-1.5 rounded-[var(--sq-xs)] bg-amber-600 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-amber-700 transition-colors"
+                >
+                  <RefreshCw size={11} />
+                  {t.retrySearch}
+                </button>
+              </div>
+            )}
+            <SearchResultsReels results={doctors} />
+          </>
+        )}
       </main>
+
+      {/* ── Floating Filters FAB ── */}
+      {doctors.length > 0 && (
+        <button
+          type="button"
+          onClick={handleOpenFilters}
+          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full bg-[#00766C] px-5 py-3 text-[13px] font-bold text-white shadow-xl shadow-[#00766C]/20 hover:bg-[#005A52] active:scale-[0.97] transition-all"
+        >
+          <SlidersHorizontal size={15} />
+          Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
+        </button>
+      )}
     </div>
   )
 }

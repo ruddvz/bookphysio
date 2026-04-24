@@ -203,6 +203,7 @@ export default function SearchFilters({
   drawerOpen: drawerOpenControlled,
   onDrawerOpenChange,
   hideMobileFilterBar = false,
+  hideDesktopPills = false,
 }: {
   total?: number
   basePath?: string
@@ -210,6 +211,8 @@ export default function SearchFilters({
   onDrawerOpenChange?: (open: boolean) => void
   /** When true, the full-width mobile "Filters" row is not rendered (e.g. header chip opens the drawer). */
   hideMobileFilterBar?: boolean
+  /** When true, the desktop horizontal pill row is hidden (drawer-only mode). */
+  hideDesktopPills?: boolean
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -291,7 +294,7 @@ export default function SearchFilters({
   return (
     <div className="w-full">
       {/* ── Desktop Horizontal Bar ── */}
-      <div className="hidden md:flex items-center gap-2.5 flex-wrap">
+      <div className={hideDesktopPills ? 'hidden' : 'hidden md:flex items-center gap-2.5 flex-wrap'}>
         <LocationFilterPill
           value={currentCity}
           icon={MapPin}
