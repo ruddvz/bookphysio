@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Specialty & City Landing Pages', () => {
   test('specialty page renders correct content and title', async ({ page }) => {
-    await page.goto('/specialty/sports')
+    await page.goto('/specialties/sports')
     await expect(page.locator('h1')).toContainText('Sports Sciences Physiotherapists')
     await expect(page).toHaveTitle(/Best Sports Sciences Physiotherapists in India/)
     await expect(page.getByRole('link', { name: /search sports sciences/i })).toBeVisible()

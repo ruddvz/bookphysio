@@ -26,12 +26,12 @@
 
 ### Technical Foundation
 - `robots.ts` correctly disallows `/admin`, `/api`, `/book`, `/patient`, `/provider`, `/preview`, `/dev-login` — no accidental indexation of app routes
-- `sitemap.ts` covers 5 route categories: static pages, Hindi static pages, 10 city pages, 8 specialty landing pages, 6 specialty article pages
+- `sitemap.ts` covers 4 route categories: static pages, Hindi static pages, 10 city pages, 7 specialty article pages (`/specialties/[slug]` only; legacy `/specialty/*` 301s)
 - `metadataBase` correctly set to `https://bookphysio.in` — OG/Twitter image URLs resolve correctly
 - Auth pages (`/login`, `/signup`, `/verify-otp`, `/forgot-password`, `/update-password`, `/doctor-signup`) all have `robots: { index: false, follow: false }` — correctly noindexed
 - PWA manifest at `/manifest.json` correctly configured with shortcuts and `theme_color: "#00766C"`
 - `next/font/google` with `display: 'swap'` for Inter + Outfit — no FOUT, good Core Web Vitals signal
-- `generateStaticParams` on `/city/[slug]` and `/specialty/[slug]` — SSG at build time, fast TTFB
+- `generateStaticParams` on `/city/[slug]` and `/specialties/[slug]` — SSG at build time, fast TTFB
 
 ### On-Page Metadata
 - Home title: *"Book Physiotherapists Online in India | Home Visits | BookPhysio.in"* — keyword-rich, well-structured
@@ -175,14 +175,14 @@ const doctorMaps = liveProviders.map((provider) => ({
 
 ## 🟡 Medium Priority — Next Quarter
 
-### 8. Specialty listing pages missing schema (`/specialty/[slug]`)
-8 specialty listing pages have clean metadata but no JSON-LD. Add `ItemList` + `MedicalSpecialty` structured data.
+### 8. ~~Specialty listing pages~~ (removed)
+Former `/specialty/[slug]` listing pages were removed; public specialty SEO is **only** `/specialties/[slug]` articles. Ensure each article has complete `MedicalWebPage` + breadcrumb JSON-LD.
 
 ### 9. City pages use hardcoded mock data
 `/city/[slug]` renders `MOCK_DOCTORS` — same 5 doctors filtered by city name. Most cities return 0 results (thin content). Replace with real Supabase queries when provider data is live.
 
 ### 10. Hindi city and specialty pages don't exist
-`/hi/search` is in the sitemap but there are no `/hi/city/[slug]` or `/hi/specialty/[slug]` pages. Hreflang coverage is incomplete for the highest-traffic page types.
+`/hi/search` is in the sitemap but there are no `/hi/city/[slug]` or `/hi/specialties/[slug]` pages. Hreflang coverage is incomplete for the highest-traffic page types.
 
 ### 11. `foundingDate` should use ISO format
 ```ts

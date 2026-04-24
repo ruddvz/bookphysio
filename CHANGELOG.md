@@ -35,6 +35,24 @@
 
 ## Log (newest first)
 
+## 2026-04-23 — cursor/remove-specialty-routes-8f8c — docs: CHANGELOG commit hash fix
+- Commit: ad079bd (docs: fix CHANGELOG commit hash for specialty route removal)
+- Files touched: `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR or continue from `docs/planning/ACTIVE.md`
+- Notes: Corrected handoff entry to point at the squashed feature commit `72b3ac2`.
+
+## 2026-04-23 — cursor/remove-specialty-routes-8f8c — feat: remove /specialty/*; 301 to /specialties/*
+- Commit: 72b3ac2 (feat: remove /specialty pages; 301 to /specialties; trim sitemap)
+- Files touched: `next.config.ts`, `src/app/sitemap.ts`, `src/lib/specialties.ts`, `src/components/PublicAnalytics.tsx`, `e2e/*.spec.ts`, `src/components/PublicAnalytics.test.tsx`, `vitest.config.ts`, `docs/CODEMAPS/*.md`, `docs/planning/EXECUTION-PLAN.md`, `docs/SEO.md`; removed `src/app/specialty/[slug]/*`
+- Tests added / changed: vitest (removed obsolete SpecialtyPage test)
+- Build: pass (`next build` with placeholder env)
+- Status: done
+- Next up: Re-submit sitemap in Search Console if cached URLs still list `/specialty/*`; optional cleanup of marketing docs that mention `/specialty/`
+- Notes: `/specialty/:slug` now permanent-redirects to `/specialties/:slug` for each slug in `SPECIALTIES`.
+
 ## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-CONTRACT.md
 - Commit: docs: add Folder AI strict backend contract (`git log -1 --oneline` on this branch)
 - Files touched: `docs/planning/FOLDER-AI-BACKEND-CONTRACT.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `CHANGELOG.md`
