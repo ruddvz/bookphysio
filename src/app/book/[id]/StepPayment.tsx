@@ -45,6 +45,8 @@ const PAYMENT_MODES = [
 ]
 
 export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, patient, onSuccess }: StepPaymentProps) {
+  const [clientRequestId] = useState(() => crypto.randomUUID())
+
   const [method, setMethod] = useState<PaymentMethod>('pay_at_clinic')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -118,6 +120,8 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
           visit_type: visitType,
           patient_address: visitType === 'home_visit' ? patient.homeVisitAddress : undefined,
           ...(combinedNotes ? { notes: combinedNotes } : {}),
+          client_request_id: clientRequestId,
+          payment_channel: method === 'pay_at_clinic' ? 'pay_at_clinic' : 'razorpay',
         }),
       })
 
@@ -129,6 +133,11 @@ export function StepPayment({ doctorId, slotId, locationId, visitType, feeInr, p
           return
         }
         setError(extractApiError(data.error))
+        return
+      }
+
+      if (apptRes.status !== 200 && apptRes.status !== 201) {
+        setError('Unable to complete this booking right now.')
         return
       }
 

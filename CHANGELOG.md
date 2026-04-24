@@ -146,6 +146,23 @@
 - Status: done
 - Next up: Apply migration `047` in Supabase; set CI/build env for full `npm run build`
 - Notes: Brings repo SQL + API in line with canonical schema: `insurances` + `provider_insurances`, `appointments.insurance_id` + `telehealth_room_id`, `visit_type` includes `online`, `location_modalities` table + RLS, `booking_anomalies` patient/provider FKs. Online bookings skip requiring `locations` row on the slot when `location_id` is null.
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: pay-at-clinic confirm + payments.booking_channel
+- Commit: fix: pay-at-clinic gateway confirmation + webhook guards (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/lib/validations/booking.ts`, `src/app/book/[id]/StepPayment.tsx`, `supabase/migrations/048_payments_booking_channel.sql`, `src/app/api/__tests__/appointments-post.test.ts`, `src/app/book/[id]/StepPayment.test.tsx`
+- Tests added / changed: POST asserts `payment_channel`; home-visit test asserts response `status: confirmed`
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment)
+- Status: done
+- Next up: Apply migrations `047` + `048` in Supabase before deploy
+- Notes: `payment_channel` / `booking_channel` + `gateway` distinguish Razorpay vs pay-at-clinic; API confirms appointment after payment insert for `pay_at_clinic` only; webhook skips failure handling for `pay_at_clinic`; captured path uses `.select().maybeSingle()` after payment update for replay safety.
+
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: booking status, Razorpay failure path, idempotency
+- Commit: fix: align booking lifecycle with webhook and add idempotency (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/app/book/[id]/StepPayment.tsx`, `src/lib/validations/booking.ts`, `src/lib/booking/active-booking-hold.ts`, `src/app/api/appointments/[id]/route.ts`, `supabase/migrations/047_appointment_booking_idempotency.sql`, tests under `src/app/api/__tests__/`
+- Tests added / changed: mocks updated for new helper; existing POST/detail tests still pass
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment, appointments-detail-route)
+- Status: done
+- Next up: Apply migration `047` in Supabase; re-enable Razorpay create-order/verify when launching online pay
+- Notes: New appointments use `status: 'pending'`; webhook confirms `pending|confirmed`→`paid`; `payment.failed` cancels pending appt, releases slot, clears Redis hold; optional `client_request_id` + partial unique indexes for retries; shared `clearActiveBookingHold`.
 
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)

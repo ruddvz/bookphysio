@@ -14,6 +14,7 @@ import {
   redis,
   releaseRedisLockIfOwned,
 } from '@/lib/upstash'
+import { clearActiveBookingHold } from '@/lib/booking/active-booking-hold'
 import { buildAppointmentNotes, getVisitTypeConsultationFee } from '@/lib/booking/policy'
 import { getRequestIpAddress } from '@/lib/server/runtime'
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
@@ -85,6 +86,7 @@ async function rollbackAppointmentCreation(args: {
     supabaseAdmin.from('appointments').delete().eq('id', args.appointmentId),
     supabaseAdmin.from('availabilities').update({ is_booked: false }).eq('id', args.availabilityId),
     releaseBookingHoldIfOwned(args.activeIpHoldKey, args.provisionalHoldToken),
+    clearActiveBookingHold(args.appointmentId),
   ])
 
   const cleanupFailures = cleanupResults.filter((result) => {
@@ -105,6 +107,15 @@ async function isProviderAvailabilityBeingUpdated(providerId: string) {
   const activeAvailabilityRewrite = await redis.get<string>(availabilityRewriteLockKey)
 
   return typeof activeAvailabilityRewrite === 'string' && activeAvailabilityRewrite.trim().length > 0
+}
+
+function isPostgresUniqueViolation(error: unknown): boolean {
+  return Boolean(
+    error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      (error as { code?: string }).code === '23505',
+  )
 }
 
 export async function POST(request: NextRequest) {
@@ -154,9 +165,38 @@ export async function POST(request: NextRequest) {
   const parsed = createAppointmentSchema.safeParse(body)
   if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { provider_id, availability_id, location_id, visit_type, notes, patient_address, insurance_id } = parsed.data
+  const {
+    provider_id,
+    availability_id,
+    location_id,
+    visit_type,
+    notes,
+    patient_address,
+    insurance_id,
+    client_request_id,
+    payment_channel: paymentChannelRaw,
+  } = parsed.data
+  const payment_channel = paymentChannelRaw ?? 'razorpay'
   const activeIpHoldKey = ip ? getActiveBookingIpHoldKey(ip, provider_id) : null
   const provisionalHoldToken = activeIpHoldKey ? `pending:${user.id}:${crypto.randomUUID()}` : null
+
+  if (client_request_id) {
+    const { data: existingForIdempotency, error: idempotencyLookupError } = await supabaseAdmin
+      .from('appointments')
+      .select('*, payments (status, amount_inr, gst_amount_inr, created_at)')
+      .eq('client_request_id', client_request_id)
+      .eq('patient_id', user.id)
+      .maybeSingle()
+
+    if (idempotencyLookupError) {
+      console.error('[api/appointments] Idempotency lookup failed:', idempotencyLookupError)
+      return jsonNoStore({ error: 'Failed to verify booking request' }, { status: 500 })
+    }
+
+    if (existingForIdempotency) {
+      return jsonNoStore(withSanitizedAppointmentNotes(existingForIdempotency), { status: 200 })
+    }
+  }
 
   if (visit_type === 'home_visit' && !patient_address?.trim()) {
     return jsonNoStore({ error: 'A patient address is required for home visits.' }, { status: 400 })
@@ -310,15 +350,46 @@ export async function POST(request: NextRequest) {
       availability_id,
       location_id: slot.location_id,
       visit_type,
-      status: 'confirmed',
+      status: 'pending',
       fee_inr: feeInr,
       notes: appointmentNotes,
       insurance_id: insurance_id ?? null,
+      ...(client_request_id ? { client_request_id } : {}),
     })
     .select()
     .single()
 
   if (error) {
+    if (isPostgresUniqueViolation(error) && client_request_id) {
+      const { data: replayAppointment, error: replayError } = await supabaseAdmin
+        .from('appointments')
+        .select('*, payments (status, amount_inr, gst_amount_inr, created_at)')
+        .eq('client_request_id', client_request_id)
+        .eq('patient_id', user.id)
+        .maybeSingle()
+
+      if (!replayError && replayAppointment) {
+        await supabaseAdmin.from('availabilities').update({ is_booked: false }).eq('id', availability_id)
+        await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+        return jsonNoStore(withSanitizedAppointmentNotes(replayAppointment), { status: 200 })
+      }
+    }
+
+    if (isPostgresUniqueViolation(error)) {
+      const { data: slotTakenAppointment, error: slotTakenError } = await supabaseAdmin
+        .from('appointments')
+        .select('*, payments (status, amount_inr, gst_amount_inr, created_at)')
+        .eq('availability_id', availability_id)
+        .in('status', ['pending', 'confirmed'])
+        .maybeSingle()
+
+      if (!slotTakenError && slotTakenAppointment && slotTakenAppointment.patient_id === user.id) {
+        await supabaseAdmin.from('availabilities').update({ is_booked: false }).eq('id', availability_id)
+        await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+        return jsonNoStore(withSanitizedAppointmentNotes(slotTakenAppointment), { status: 200 })
+      }
+    }
+
     await supabaseAdmin
       .from('availabilities')
       .update({ is_booked: false })
@@ -336,6 +407,8 @@ export async function POST(request: NextRequest) {
       amount_inr: totalAmountInr,
       gst_amount_inr: gstAmountInr,
       status: 'created',
+      gateway: payment_channel === 'pay_at_clinic' ? 'pay_at_clinic' : 'razorpay',
+      booking_channel: payment_channel,
     })
     .select('id')
     .single()
@@ -349,6 +422,25 @@ export async function POST(request: NextRequest) {
     })
     console.error('[api/appointments] Payment insert error:', paymentError)
     return jsonNoStore({ error: 'Failed to create payment record' }, { status: 500 })
+  }
+
+  if (payment_channel === 'pay_at_clinic') {
+    const { error: confirmError } = await supabaseAdmin
+      .from('appointments')
+      .update({ status: 'confirmed' })
+      .eq('id', appointment.id)
+      .eq('status', 'pending')
+
+    if (confirmError) {
+      await rollbackAppointmentCreation({
+        appointmentId: appointment.id,
+        availabilityId: availability_id,
+        activeIpHoldKey,
+        provisionalHoldToken,
+      })
+      console.error('[api/appointments] Pay-at-clinic confirmation failed:', confirmError)
+      return jsonNoStore({ error: 'Failed to confirm booking' }, { status: 500 })
+    }
   }
 
   if (activeIpHoldKey && provisionalHoldToken) {
@@ -373,6 +465,7 @@ export async function POST(request: NextRequest) {
       await redis.del(appointmentHoldKey)
       await releaseBookingHoldIfOwned(activeIpHoldKey, appointment.id as string)
       await releaseBookingHoldIfOwned(activeIpHoldKey, provisionalHoldToken)
+      await clearActiveBookingHold(appointment.id as string)
 
       console.error('[api/appointments] Failed to persist active booking hold:', error)
       return jsonNoStore({ error: 'Booking protection is temporarily unavailable. Please try again shortly.' }, { status: 503 })
@@ -391,7 +484,12 @@ export async function POST(request: NextRequest) {
     // Intentionally swallowed — anomaly detection must never affect the booking
   })
 
-  return jsonNoStore(withSanitizedAppointmentNotes(appointment), { status: 201 })
+  const appointmentForResponse =
+    payment_channel === 'pay_at_clinic'
+      ? { ...appointment, status: 'confirmed' as const }
+      : appointment
+
+  return jsonNoStore(withSanitizedAppointmentNotes(appointmentForResponse), { status: 201 })
 }
 
 export async function GET(request: NextRequest) {
