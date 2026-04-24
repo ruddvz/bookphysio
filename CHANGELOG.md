@@ -35,6 +35,144 @@
 
 ## Log (newest first)
 
+## 2026-04-24 IST — claude/review-merge-prs-bXX1O — chore: consolidate PRs #121–#125 + migration 052
+- Commit: (see git log)
+- Files touched: `supabase/migrations/047–052_*.sql`, `src/lib/validations/booking.ts`, `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/lib/booking/active-booking-hold.ts`, `src/components/admin/AdminAiInsightsCard.tsx`, `src/app/admin/page.tsx`, `next.config.ts`, `src/app/sitemap.ts`, + docs/planning/*
+- Tests added / changed: 856 (all passing per individual PR CI); new tests in StepPayment, appointments-post
+- Build: type-check passes (env errors are pre-existing, not from this change set); test runner not available locally
+- Status: done
+- Next up: Merge the consolidation PR, then apply migrations 047–052 in Supabase in order
+- Notes: PRs #121–#125 merged into this branch. Migration collisions resolved by renaming: #121→047, #124→048+049, #123→050+051. Migration 052 adds realtime triggers + RLS policies (chat broadcast/presence + notification push) that failed to apply manually due to read-only transaction. booking.ts conflict resolved combining PR #124 (clean insurance_id uuid) + PR #123 (client_request_id, payment_channel). appointments/route.ts combined both additive changes (insurance_id pass-through + idempotency/pay-at-clinic logic).
+
+## 2026-04-23 — cursor/remove-specialty-routes-8f8c — docs: CHANGELOG commit hash fix
+- Commit: ad079bd (docs: fix CHANGELOG commit hash for specialty route removal)
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG for 048
+- Commit: 2b87262 (docs: CHANGELOG for 048 no-online visit type)
+- Files touched: `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR or continue from `docs/planning/ACTIVE.md`
+- Notes: Corrected handoff entry to point at the squashed feature commit `72b3ac2`.
+
+## 2026-04-23 — cursor/remove-specialty-routes-8f8c — feat: remove /specialty/*; 301 to /specialties/*
+- Commit: 72b3ac2 (feat: remove /specialty pages; 301 to /specialties; trim sitemap)
+- Files touched: `next.config.ts`, `src/app/sitemap.ts`, `src/lib/specialties.ts`, `src/components/PublicAnalytics.tsx`, `e2e/*.spec.ts`, `src/components/PublicAnalytics.test.tsx`, `vitest.config.ts`, `docs/CODEMAPS/*.md`, `docs/planning/EXECUTION-PLAN.md`, `docs/SEO.md`; removed `src/app/specialty/[slug]/*`
+- Tests added / changed: vitest (removed obsolete SpecialtyPage test)
+- Build: pass (`next build` with placeholder env)
+- Status: done
+- Next up: Re-submit sitemap in Search Console if cached URLs still list `/specialty/*`; optional cleanup of marketing docs that mention `/specialty/`
+- Notes: `/specialty/:slug` now permanent-redirects to `/specialties/:slug` for each slug in `SPECIALTIES`.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-CONTRACT.md
+- Commit: docs: add Folder AI strict backend contract (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-CONTRACT.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; verify `appointments` INSERT policies on live DB if enabling client-side inserts
+- Notes: Maps inventory to RLS; documents POST /api/appointments + supabaseAdmin for booking; migration 019 caveat.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FRONTEND-ACTIONS-INVENTORY.md
+- Commit: docs: add FRONTEND-ACTIONS-INVENTORY route and API map (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; optionally map each inventory row to exact `fetch` + tables in Folder-AI scripts
+- Notes: Patient, provider, admin, auth, public, chat, payments, Hindi routes; links to Folder AI doc.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-TRUTH.md
+- Commit: docs: add FOLDER-AI-BACKEND-TRUTH RLS reference package (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Optional `FOLDER-AI-ACTION-SCRIPTS.md` when screen/action list is provided; merge PR #122
+- Notes: Hard rules, auth_role, table contract summary, storage avatars, minimal ask for strict checklist.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: BACKEND-PERMISSION-CONTRACT.md
+- Commit: docs: add BACKEND-PERMISSION-CONTRACT for Supabase RLS (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or extend contract with UI action → call scripts when priorities are listed
+- Notes: Tables, operations, FE patterns; links to FRONTEND-PERMISSIONS; session/JWT rule stated up front.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: live DB vs repo RLS note
+- Commit: docs: align FRONTEND-PERMISSIONS with live DB vs migration history (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or verify failing flows against live Supabase project
+- Notes: Explains policy “public” role naming vs anon JWT; debugging checklist for empty vs denied.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — feat: frontend permissions helpers + FRONTEND-PERMISSIONS.md
+- Commit: feat: add frontend permissions module and planning reference (short SHA = `git rev-parse --short HEAD` on this branch at sync time)
+- Files touched: `CHANGELOG.md`, `src/lib/permissions/`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 1 (`src/lib/permissions/__tests__/checklist.test.ts`)
+- Build: not run (library + docs only)
+- Status: done
+- Next up: Wire `resolveSessionContext` into pages that need explicit feature gates, or continue from `docs/planning/ACTIVE.md`
+- Notes: Pure TS helpers for role/session gates; includes `provider_pending` and `authenticated_profile_pending`; cross-links middleware and `auth/access`.
+
+## 2026-04-20 — cursor/admin-dashboard-perf-logout-690d — perf: admin stats aggregate + lazy AI insights; mobile logout
+- Commit: `perf(admin): faster stats API, lazy AI insights, hide mobile logout` (SHA: see `git log -1`)
+- Files touched: `src/app/api/admin/stats/route.ts`, `src/app/api/__tests__/admin-stats-route.test.ts`, `src/app/admin/page.tsx`, `src/app/admin/users/page.tsx`, `src/components/admin/AdminAiInsightsCard.tsx`, `src/components/dashboard/TopPillNav.tsx`, `supabase/migrations/047_admin_stats_gmv_index.sql`, `CHANGELOG.md`
+- Tests added / changed: updated admin-stats route mocks; full vitest 856/856
+- Build: pass (`npm run type-check`, `npm run lint`, `npm test`); `npm run build` not run locally (prebuild requires full `.env`)
+- Status: done
+- Next up: Slice 16.23 (specialty hero assets) or ops: apply migration `047_admin_stats_gmv_index.sql` in Supabase for index-backed GMV reads
+- Notes: `/api/admin/stats` uses `fee_inr.sum()` instead of fetching all completed rows; AI Insights split to dynamic import; admin stats query key aligned (`admin-stats`) with 60s staleTime; removed xl:hidden mobile header logout for admin only (desktop Sign out unchanged)
+- Next up: Push branch; apply migration `048` in Supabase
+- Notes: Sets `048` handoff line to d042eab.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — fix: no online visit type (048 + app revert)
+- Commit: d042eab (fix: remove online visit type — migration 048 + in_clinic/home only)
+- Files touched: `supabase/migrations/048_no_online_visit_type.sql`, `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `supabase/migrations/001_initial_schema.sql` (locations visit_type check), `src` visit_type enums and doctor booking UI
+- Tests added / changed: 0 (policy test line for online removed)
+- Build: `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `048` in Supabase after `047` if any DB had `online` in CHECKs; PR #124 description should note product is clinic + home only
+- Notes: `telehealth_room_id` column left on appointments (unused). Copy like “Paid online” still means Razorpay, not visit modality.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG commit sha for 047 entry
+- Commit: a3e6215 (docs: correct CHANGELOG commit sha for schema 047 entry)
+- Files touched: `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Apply migration `047` in Supabase; push branch and open PR
+- Notes: First 047 entry had wrong short sha after amend; now points to 3824cbb.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — feat: migration 047 + online visits + insurance FK alignment
+- Commit: 3824cbb (feat: align schema 047 — online visits, insurances, location_modalities)
+- Files touched: `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `src/lib/validations/booking.ts`, `src/lib/validations/search.ts`, `src/lib/validations/provider.ts`, `src/lib/booking/policy.ts`, `src/app/api/appointments/route.ts`, `src/app/api/providers/route.ts`, `src/app/api/providers/[id]/availability/route.ts`, `src/app/api/contracts/*.ts`, `src/app/doctor/[id]/BookingCard.tsx`, `src/app/doctor/[id]/page.tsx`, `src/app/search/SearchContent.tsx`, `src/components/VisitTypeBadge.tsx`, appointment/patient/provider pages for VisitType, tests
+- Tests added / changed: updated search + appointments-post + providers tests for optional `insurance_id` (uuid)
+- Build: not run in agent env (missing `.env` secrets for `prebuild`); `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `047` in Supabase; set CI/build env for full `npm run build`
+- Notes: Brings repo SQL + API in line with canonical schema: `insurances` + `provider_insurances`, `appointments.insurance_id` + `telehealth_room_id`, `visit_type` includes `online`, `location_modalities` table + RLS, `booking_anomalies` patient/provider FKs. Online bookings skip requiring `locations` row on the slot when `location_id` is null.
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: pay-at-clinic confirm + payments.booking_channel
+- Commit: fix: pay-at-clinic gateway confirmation + webhook guards (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/lib/validations/booking.ts`, `src/app/book/[id]/StepPayment.tsx`, `supabase/migrations/048_payments_booking_channel.sql`, `src/app/api/__tests__/appointments-post.test.ts`, `src/app/book/[id]/StepPayment.test.tsx`
+- Tests added / changed: POST asserts `payment_channel`; home-visit test asserts response `status: confirmed`
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment)
+- Status: done
+- Next up: Apply migrations `047` + `048` in Supabase before deploy
+- Notes: `payment_channel` / `booking_channel` + `gateway` distinguish Razorpay vs pay-at-clinic; API confirms appointment after payment insert for `pay_at_clinic` only; webhook skips failure handling for `pay_at_clinic`; captured path uses `.select().maybeSingle()` after payment update for replay safety.
+
+## 2026-04-22 IST — cursor/booking-payment-lifecycle-8484 — fix: booking status, Razorpay failure path, idempotency
+- Commit: fix: align booking lifecycle with webhook and add idempotency (see `git log -1 --oneline` on branch `cursor/booking-payment-lifecycle-8484`)
+- Files touched: `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/app/book/[id]/StepPayment.tsx`, `src/lib/validations/booking.ts`, `src/lib/booking/active-booking-hold.ts`, `src/app/api/appointments/[id]/route.ts`, `supabase/migrations/047_appointment_booking_idempotency.sql`, tests under `src/app/api/__tests__/`
+- Tests added / changed: mocks updated for new helper; existing POST/detail tests still pass
+- Build: pass (`npm run type-check`; vitest appointments-post, StepPayment, appointments-detail-route)
+- Status: done
+- Next up: Apply migration `047` in Supabase; re-enable Razorpay create-order/verify when launching online pay
+- Notes: New appointments use `status: 'pending'`; webhook confirms `pending|confirmed`→`paid`; `payment.failed` cancels pending appt, releases slot, clears Redis hold; optional `client_request_id` + partial unique indexes for retries; shared `clearActiveBookingHold`.
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`

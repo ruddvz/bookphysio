@@ -239,16 +239,18 @@ export default function TopPillNav({
               Sign out
             </button>
 
-            {/* Mobile sign-out (icon only) */}
-            <button
-              type="button"
-              onClick={() => void handleSignOut()}
-              className="xl:hidden w-10 h-10 rounded-full bg-white border flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-              style={{ borderColor: `var(--color-${prefix}-border)` }}
-              aria-label="Sign out"
-            >
-              <LogOut size={16} />
-            </button>
+            {/* Mobile sign-out (icon only) — admin uses desktop "Sign out" only */}
+            {role !== 'admin' && (
+              <button
+                type="button"
+                onClick={() => void handleSignOut()}
+                className="xl:hidden w-10 h-10 rounded-full bg-white border flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                style={{ borderColor: `var(--color-${prefix}-border)` }}
+                aria-label="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            )}
           </div>
         </div>
       </header>

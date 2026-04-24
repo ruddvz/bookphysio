@@ -29,7 +29,7 @@ describe('PublicAnalytics', () => {
     expect(shouldTrackPublicPath('/')).toBe(true)
     expect(shouldTrackPublicPath('/search')).toBe(true)
     expect(shouldTrackPublicPath('/city/mumbai')).toBe(true)
-    expect(shouldTrackPublicPath('/specialty/sports')).toBe(true)
+    expect(shouldTrackPublicPath('/specialties/sports')).toBe(true)
     expect(shouldTrackPublicPath('/book/placeholder')).toBe(false)
     expect(shouldTrackPublicPath('/doctor/placeholder')).toBe(false)
     expect(shouldTrackPublicPath('/patient/dashboard')).toBe(false)

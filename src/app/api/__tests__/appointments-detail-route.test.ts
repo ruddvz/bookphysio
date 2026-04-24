@@ -19,6 +19,10 @@ vi.mock('@/lib/supabase/admin', () => ({
   },
 }))
 
+vi.mock('@/lib/booking/active-booking-hold', () => ({
+  clearActiveBookingHold: vi.fn().mockResolvedValue(undefined),
+}))
+
 vi.mock('@/lib/upstash', () => ({
   redis: {
     get: (...args: unknown[]) => redisGetMock(...args),

@@ -12,7 +12,7 @@
 | `/doctor/[id]` | `app/doctor/[id]/page.tsx` | Server | Navbar, BookingCard (client), Footer | Fetches `/api/providers/[id]` |
 | `/doctor/[id]` | `app/doctor/[id]/BookingCard.tsx` | Client | — | Visit type tabs, date picker, time slots, "Book Session" CTA |
 | `/book/[id]` | `app/book/[id]/page.tsx` | Client | Navbar, StepConfirm, StepPayment, StepSuccess | 3-step booking wizard |
-| `/specialty/[slug]` | `app/specialty/[slug]/page.tsx` | Server | Navbar, DoctorCard, Footer | Specialty landing |
+| `/specialties/[slug]` | `app/specialties/[slug]/page.tsx` | Server | Navbar, SpecialtyArticle, Footer | Long-form specialty article; legacy `/specialty/:slug` 301s here |
 | `/city/[slug]` | `app/city/[slug]/page.tsx` | Server | Navbar, DoctorCard, Footer | City landing |
 | `/about` | `app/about/page.tsx` | Server | Navbar, Footer | Static: mission, team, stats |
 | `/faq` | `app/faq/page.tsx` | Server | Navbar, Footer | Accordion FAQ |

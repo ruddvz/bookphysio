@@ -101,13 +101,13 @@ export default function AdminUsers() {
   })
 
   const statsQuery = useQuery<AdminStatsResponse>({
-    queryKey: ['admin-stats-summary'],
+    queryKey: ['admin-stats'],
     queryFn: async () => {
       const response = await fetch('/api/admin/stats')
       if (!response.ok) throw new Error(`Failed to load stats (${response.status})`)
       return response.json()
     },
-    staleTime: 60000,
+    staleTime: 60_000,
   })
 
   const allUsers = useMemo(() => usersQuery.data?.users ?? [], [usersQuery.data?.users])

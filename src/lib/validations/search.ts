@@ -1,9 +1,5 @@
 import { z } from 'zod'
 
-const deprecatedInsuranceField = z.any().optional().refine((value) => value === undefined, {
-  message: 'insurance_id is no longer supported',
-})
-
 export const searchFiltersSchema = z.object({
   query: z.string().optional(),
   city: z.string().optional(),
@@ -21,10 +17,8 @@ export const searchFiltersSchema = z.object({
   radius_km: z.coerce.number().min(1).default(50),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
-  insurance_id: deprecatedInsuranceField,
-}).transform(({ insurance_id, ...filters }) => {
-  void insurance_id
-  return filters
+  /** Reserved for future provider search by accepted insurer; ignored by RPC today. */
+  insurance_id: z.string().uuid().optional(),
 })
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>

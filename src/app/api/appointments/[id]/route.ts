@@ -10,7 +10,8 @@ import { parseAppointmentNotes, updateProviderAppointmentNotes } from '@/lib/boo
 import { fetchPatientSummaryMap, fetchProviderSummaryMap } from '@/lib/appointments/profile-summaries'
 import type { SummaryLookupClient } from '@/lib/appointments/profile-summaries'
 import { canPatientCancelAppointment } from '@/lib/appointments/cancellation'
-import { getActiveBookingAppointmentHoldKey, mutationRatelimit, redis, releaseRedisLockIfOwned } from '@/lib/upstash'
+import { clearActiveBookingHold } from '@/lib/booking/active-booking-hold'
+import { mutationRatelimit } from '@/lib/upstash'
 import { getDemoAppointmentDetail } from '@/lib/demo/store'
 import { getDemoSessionFromCookies } from '@/lib/demo/session'
 import { sendRescheduleConfirmationSms } from '@/lib/msg91'
@@ -27,21 +28,6 @@ function jsonNoStore(body: unknown, init?: ResponseInit) {
   const response = NextResponse.json(body, init)
   response.headers.set('Cache-Control', 'no-store')
   return response
-}
-
-async function clearActiveBookingHold(appointmentId: string) {
-  try {
-    const appointmentHoldKey = getActiveBookingAppointmentHoldKey(appointmentId)
-    const activeIpHoldKey = await redis.get<string>(appointmentHoldKey)
-
-    if (typeof activeIpHoldKey === 'string' && activeIpHoldKey.trim()) {
-      await releaseRedisLockIfOwned(activeIpHoldKey, appointmentId)
-    }
-
-    await redis.del(appointmentHoldKey)
-  } catch (error) {
-    console.error('[api/appointments/[id]] Failed to clear active booking hold:', error)
-  }
 }
 
 function withAppointmentDetailNotes<T extends { notes: string | null }>(

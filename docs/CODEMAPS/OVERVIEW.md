@@ -15,7 +15,7 @@ bookphysio.in
 │   │   ├── search/             # Search results + filters
 │   │   ├── doctor/[id]/        # Doctor profile + BookingCard
 │   │   ├── book/[id]/          # Booking wizard (3 steps)
-│   │   ├── specialty/[slug]/   # Specialty landing
+│   │   ├── specialties/[slug]/ # Specialty article pages (legacy /specialty/* → 301)
 │   │   ├── city/[slug]/        # City landing
 │   │   ├── about/              # Static: About
 │   │   ├── faq/                # Static: FAQ

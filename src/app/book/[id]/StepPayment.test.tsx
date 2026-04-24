@@ -96,7 +96,9 @@ describe('StepPayment', () => {
     expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toMatchObject({
       patient_address: '12 Palm Street, Bengaluru',
       visit_type: 'home_visit',
+      payment_channel: 'pay_at_clinic',
     })
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toHaveProperty('client_request_id')
   })
 
   it('omits the optional notes field when the patient leaves booking notes blank', async () => {

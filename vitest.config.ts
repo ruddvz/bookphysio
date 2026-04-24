@@ -21,7 +21,6 @@ export default defineConfig({
       '**/static-pages.test.tsx',
       '**/design-tokens.test.ts',
       '**/AdminDashboard.test.tsx',
-      '**/SpecialtyPage.test.tsx',
       '**/CityPage.test.tsx',
     ],
   },

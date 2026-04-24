@@ -22,8 +22,10 @@ describe('searchFiltersSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects deprecated insurance filters', () => {
-    const result = searchFiltersSchema.safeParse({ insurance_id: 'legacy-plan' })
-    expect(result.success).toBe(false)
+  it('accepts optional insurance_id as a uuid', () => {
+    const result = searchFiltersSchema.safeParse({
+      insurance_id: '11111111-1111-4111-8111-111111111111',
+    })
+    expect(result.success).toBe(true)
   })
 })

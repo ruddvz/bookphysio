@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SPECIALTIES } from "./src/lib/specialties";
 
 const nextConfig = {
   images: {
@@ -27,6 +28,16 @@ const nextConfig = {
         ],
       },
     ]
+  },
+  /**
+   * Legacy /specialty/:slug URLs (removed in favour of /specialties/:slug) → 301.
+   */
+  async redirects() {
+    return SPECIALTIES.map((s) => ({
+      source: `/specialty/${s.slug}`,
+      destination: `/specialties/${s.slug}`,
+      permanent: true,
+    }))
   },
 } satisfies NextConfig;
 

@@ -30,7 +30,7 @@
 - [~] Homepage — all sections built, needs visual polish pass
 - [~] Search Results (`/search`) — built, mock data fallback, map view stub
 - [~] Doctor Profile (`/doctor/[id]`) — built, BookingCard wired, needs polish
-- [~] Specialty Landing (`/specialty/[slug]`) — built, minimal styling
+- [~] Specialty article pages (`/specialties/[slug]`) — built; former `/specialty/*` removed (301 to `/specialties/*`)
 - [~] City Landing (`/city/[slug]`) — built, minimal styling
 - [x] Shared components (DoctorCard, Avatar, StarRating, VisitTypeBadge, PriceDisplay, StatusBadge, PageHeader, SidebarNav)
 

@@ -151,7 +151,7 @@ describe('GET /api/providers', () => {
     })
   })
 
-  it('rejects deprecated insurance filters', async () => {
+  it('rejects invalid insurance_id query param', async () => {
     const { GET } = await import('../providers/route')
     const res = await GET(new Request('http://localhost/api/providers?insurance_id=legacy-plan') as never)
 
