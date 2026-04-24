@@ -35,6 +35,15 @@
 
 ## Log (newest first)
 
+## 2026-04-24 IST — claude/review-merge-prs-bXX1O — chore: consolidate PRs #121–#125 + migration 052
+- Commit: (see git log)
+- Files touched: `supabase/migrations/047–052_*.sql`, `src/lib/validations/booking.ts`, `src/app/api/appointments/route.ts`, `src/app/api/payments/webhook/route.ts`, `src/lib/booking/active-booking-hold.ts`, `src/components/admin/AdminAiInsightsCard.tsx`, `src/app/admin/page.tsx`, `next.config.ts`, `src/app/sitemap.ts`, + docs/planning/*
+- Tests added / changed: 856 (all passing per individual PR CI); new tests in StepPayment, appointments-post
+- Build: type-check passes (env errors are pre-existing, not from this change set); test runner not available locally
+- Status: done
+- Next up: Merge the consolidation PR, then apply migrations 047–052 in Supabase in order
+- Notes: PRs #121–#125 merged into this branch. Migration collisions resolved by renaming: #121→047, #124→048+049, #123→050+051. Migration 052 adds realtime triggers + RLS policies (chat broadcast/presence + notification push) that failed to apply manually due to read-only transaction. booking.ts conflict resolved combining PR #124 (clean insurance_id uuid) + PR #123 (client_request_id, payment_channel). appointments/route.ts combined both additive changes (insurance_id pass-through + idempotency/pay-at-clinic logic).
+
 ## 2026-04-23 — cursor/remove-specialty-routes-8f8c — docs: CHANGELOG commit hash fix
 - Commit: ad079bd (docs: fix CHANGELOG commit hash for specialty route removal)
 ## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG for 048
