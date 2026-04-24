@@ -35,6 +35,60 @@
 
 ## Log (newest first)
 
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-CONTRACT.md
+- Commit: docs: add Folder AI strict backend contract (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-CONTRACT.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; verify `appointments` INSERT policies on live DB if enabling client-side inserts
+- Notes: Maps inventory to RLS; documents POST /api/appointments + supabaseAdmin for booking; migration 019 caveat.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FRONTEND-ACTIONS-INVENTORY.md
+- Commit: docs: add FRONTEND-ACTIONS-INVENTORY route and API map (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-ACTIONS-INVENTORY.md`, `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122; optionally map each inventory row to exact `fetch` + tables in Folder-AI scripts
+- Notes: Patient, provider, admin, auth, public, chat, payments, Hindi routes; links to Folder AI doc.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: FOLDER-AI-BACKEND-TRUTH.md
+- Commit: docs: add FOLDER-AI-BACKEND-TRUTH RLS reference package (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FOLDER-AI-BACKEND-TRUTH.md`, `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Optional `FOLDER-AI-ACTION-SCRIPTS.md` when screen/action list is provided; merge PR #122
+- Notes: Hard rules, auth_role, table contract summary, storage avatars, minimal ask for strict checklist.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: BACKEND-PERMISSION-CONTRACT.md
+- Commit: docs: add BACKEND-PERMISSION-CONTRACT for Supabase RLS (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/BACKEND-PERMISSION-CONTRACT.md`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or extend contract with UI action → call scripts when priorities are listed
+- Notes: Tables, operations, FE patterns; links to FRONTEND-PERMISSIONS; session/JWT rule stated up front.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — docs: live DB vs repo RLS note
+- Commit: docs: align FRONTEND-PERMISSIONS with live DB vs migration history (`git log -1 --oneline` on this branch)
+- Files touched: `docs/planning/FRONTEND-PERMISSIONS.md`, `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Merge PR #122 or verify failing flows against live Supabase project
+- Notes: Explains policy “public” role naming vs anon JWT; debugging checklist for empty vs denied.
+
+## 2026-04-21 IST — cursor/frontend-permissions-docs-2b76 — feat: frontend permissions helpers + FRONTEND-PERMISSIONS.md
+- Commit: feat: add frontend permissions module and planning reference (short SHA = `git rev-parse --short HEAD` on this branch at sync time)
+- Files touched: `CHANGELOG.md`, `src/lib/permissions/`, `docs/planning/FRONTEND-PERMISSIONS.md`
+- Tests added / changed: 1 (`src/lib/permissions/__tests__/checklist.test.ts`)
+- Build: not run (library + docs only)
+- Status: done
+- Next up: Wire `resolveSessionContext` into pages that need explicit feature gates, or continue from `docs/planning/ACTIVE.md`
+- Notes: Pure TS helpers for role/session gates; includes `provider_pending` and `authenticated_profile_pending`; cross-links middleware and `auth/access`.
+
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)
 - Files touched: `README.md`
