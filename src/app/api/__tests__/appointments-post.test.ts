@@ -335,7 +335,7 @@ describe('POST /api/appointments', () => {
     expect(adminFromMock).not.toHaveBeenCalled()
   })
 
-  it('rejects deprecated insurance fields in the booking payload', async () => {
+  it('rejects invalid insurance_id in the booking payload', async () => {
     createClientMock.mockResolvedValue(buildSupabaseClient({ role: 'patient' }))
 
     const { POST } = await import('../appointments/route')
@@ -347,7 +347,7 @@ describe('POST /api/appointments', () => {
         availability_id: '33333333-3333-4333-8333-333333333333',
         location_id: '22222222-2222-4222-8222-222222222222',
         visit_type: 'in_clinic',
-        insurance_id: 'legacy-plan',
+        insurance_id: 'not-a-uuid',
       }),
     }))
 

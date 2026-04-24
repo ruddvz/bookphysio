@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
   const parsed = createAppointmentSchema.safeParse(body)
   if (!parsed.success) return jsonNoStore({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { provider_id, availability_id, location_id, visit_type, notes, patient_address } = parsed.data
+  const { provider_id, availability_id, location_id, visit_type, notes, patient_address, insurance_id } = parsed.data
   const activeIpHoldKey = ip ? getActiveBookingIpHoldKey(ip, provider_id) : null
   const provisionalHoldToken = activeIpHoldKey ? `pending:${user.id}:${crypto.randomUUID()}` : null
 
@@ -313,6 +313,7 @@ export async function POST(request: NextRequest) {
       status: 'confirmed',
       fee_inr: feeInr,
       notes: appointmentNotes,
+      insurance_id: insurance_id ?? null,
     })
     .select()
     .single()

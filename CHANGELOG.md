@@ -37,6 +37,8 @@
 
 ## 2026-04-23 — cursor/remove-specialty-routes-8f8c — docs: CHANGELOG commit hash fix
 - Commit: ad079bd (docs: fix CHANGELOG commit hash for specialty route removal)
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG for 048
+- Commit: 2b87262 (docs: CHANGELOG for 048 no-online visit type)
 - Files touched: `CHANGELOG.md`
 - Tests added / changed: 0
 - Build: n/a
@@ -115,6 +117,35 @@
 - Status: done
 - Next up: Slice 16.23 (specialty hero assets) or ops: apply migration `047_admin_stats_gmv_index.sql` in Supabase for index-backed GMV reads
 - Notes: `/api/admin/stats` uses `fee_inr.sum()` instead of fetching all completed rows; AI Insights split to dynamic import; admin stats query key aligned (`admin-stats`) with 60s staleTime; removed xl:hidden mobile header logout for admin only (desktop Sign out unchanged)
+- Next up: Push branch; apply migration `048` in Supabase
+- Notes: Sets `048` handoff line to d042eab.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — fix: no online visit type (048 + app revert)
+- Commit: d042eab (fix: remove online visit type — migration 048 + in_clinic/home only)
+- Files touched: `supabase/migrations/048_no_online_visit_type.sql`, `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `supabase/migrations/001_initial_schema.sql` (locations visit_type check), `src` visit_type enums and doctor booking UI
+- Tests added / changed: 0 (policy test line for online removed)
+- Build: `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `048` in Supabase after `047` if any DB had `online` in CHECKs; PR #124 description should note product is clinic + home only
+- Notes: `telehealth_room_id` column left on appointments (unused). Copy like “Paid online” still means Razorpay, not visit modality.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — docs: CHANGELOG commit sha for 047 entry
+- Commit: a3e6215 (docs: correct CHANGELOG commit sha for schema 047 entry)
+- Files touched: `CHANGELOG.md`
+- Tests added / changed: 0
+- Build: n/a
+- Status: done
+- Next up: Apply migration `047` in Supabase; push branch and open PR
+- Notes: First 047 entry had wrong short sha after amend; now points to 3824cbb.
+
+## 2026-04-22 IST — cursor/schema-align-appointments-047-bc7f — feat: migration 047 + online visits + insurance FK alignment
+- Commit: 3824cbb (feat: align schema 047 — online visits, insurances, location_modalities)
+- Files touched: `supabase/migrations/047_canonical_schema_appointments_insurance.sql`, `src/lib/validations/booking.ts`, `src/lib/validations/search.ts`, `src/lib/validations/provider.ts`, `src/lib/booking/policy.ts`, `src/app/api/appointments/route.ts`, `src/app/api/providers/route.ts`, `src/app/api/providers/[id]/availability/route.ts`, `src/app/api/contracts/*.ts`, `src/app/doctor/[id]/BookingCard.tsx`, `src/app/doctor/[id]/page.tsx`, `src/app/search/SearchContent.tsx`, `src/components/VisitTypeBadge.tsx`, appointment/patient/provider pages for VisitType, tests
+- Tests added / changed: updated search + appointments-post + providers tests for optional `insurance_id` (uuid)
+- Build: not run in agent env (missing `.env` secrets for `prebuild`); `npm run type-check` + `npm test` pass
+- Status: done
+- Next up: Apply migration `047` in Supabase; set CI/build env for full `npm run build`
+- Notes: Brings repo SQL + API in line with canonical schema: `insurances` + `provider_insurances`, `appointments.insurance_id` + `telehealth_room_id`, `visit_type` includes `online`, `location_modalities` table + RLS, `booking_anomalies` patient/provider FKs. Online bookings skip requiring `locations` row on the slot when `location_id` is null.
 
 ## 2026-04-19 IST — cursor/readme-github-a8fc — docs: README visual preview (characters + specialties)
 - Commit: 30dd065 (docs: add character and specialty images to README)

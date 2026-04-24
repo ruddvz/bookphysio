@@ -40,4 +40,5 @@ export interface BookingRequest {
   visit_type: VisitType
   notes?: string
   patient_address?: string
+  insurance_id?: string
 }
